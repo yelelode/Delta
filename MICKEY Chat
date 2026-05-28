@@ -1,0 +1,503 @@
+local Env = getfenv();
+local C = {};
+local v1 = {...};
+local r1 = true;
+local r2 = string.gmatch;
+local function r3(...)
+    error("Tamper Detected!");
+    return; 
+end;
+local r4 = false;
+local v2 = pcall(function(...)
+    r4 = true;
+    return; 
+end);
+local v3 = v2;
+if v2 then
+    v3 = r4;
+end;
+local v4 = 1;
+local r5 = math.random;
+local v5 = table.concat;
+local function v6(...)
+    while true do
+        l1 = l2;
+        l2 = l1;
+        r3(); 
+    end;
+    return; 
+end;
+local r6 = table and table.unpack or unpack;
+local r7 = r5(3, 65);
+local v7 = {
+    pcall(function(...)
+        return "Ct3Ld" / (5990681 - "Z9" ^ 12450595); 
+    end)
+};
+local v8 = v7[2];
+local r8 = tonumber(r2(tostring(v8), ":(%d*):")());
+for J = 1, r7 do
+    r9 = J;
+    r10 = math.random(1, 100);
+    r11 = r5(0, 255);
+    r12 = r5(1, r10);
+    r13 = r5(1, 2) == 1;
+    r14 = v8.gsub(v8, ":(%d*):", ":" .. tostring(r5(0, 10000)) .. ":");
+    r = {
+        pcall(function(...)
+            if r5(1, 2) == 1 or r9 == r7 then
+                r1 = r1 and r8 == tonumber(r2(tostring(({
+                    pcall(function(...)
+                        return "uNHepdj0" / (10173318 - "es24TU" ^ 6700889); 
+                    end)
+                })[2]), ":(%d*):")());
+            end;
+            if r13 then
+                error(r14, 0);
+            end;
+            v1 = {};
+            for N = 1, r10 do
+                v1[N] = r5(0, 255); 
+            end;
+            v1[r12] = r11;
+            return r6(v1); 
+        end)
+    };
+    if r13 then
+        r1 = r1 and (pcall(function(...)
+            if r5(1, 2) == 1 or r9 == r7 then
+                r1 = r1 and r8 == tonumber(r2(tostring(({
+                    pcall(function(...)
+                        return "uNHepdj0" / (10173318 - "es24TU" ^ 6700889); 
+                    end)
+                })[2]), ":(%d*):")());
+            end;
+            if r13 then
+                error(r14, 0);
+            end;
+            v1 = {};
+            for N = 1, r10 do
+                v1[N] = r5(0, 255); 
+            end;
+            v1[r12] = r11;
+            return r6(v1); 
+        end) == false and r[2] == r14);
+    end; 
+end;
+local v9 = r1;
+r1 = v9 and 0 == 0;
+if r1 then
+    r17 = math.floor;
+    v7 = {};
+    N = math.random;
+    r18 = 0;
+    r19 = 2;
+    r20 = {};
+    p = 0;
+    for l = 1, 256 do
+        v7[l] = l; 
+    end;
+    v8 = #v7 == 0;
+    l = table.remove(v7, N(1, #v7));
+    r20[l] = string.char(l - 1);
+    if #v7 == 0 then
+        r21 = {};
+        r23 = {};
+        r15 = setmetatable({}, {
+            ["__index"] = r23,
+            ["__metatable"] = nil
+        });
+        S = game;
+        N = not S.IsLoaded(S);
+        if N then
+            N = game.Loaded;
+            N.Wait(N);
+        end;
+        r24 = game.Players.LocalPlayer;
+        N = r24;
+        N.FindFirstChild(N, "PlayerGui");
+        task.wait();
+        N = r24;
+        if N.FindFirstChild(N, "PlayerGui") then
+            r25 = r24.DisplayName;
+            r26 = "";
+            r27 = true;
+            r28 = {};
+            print("Player Display Name: " .. r25);
+            v7 = game;
+            M = v7.GetService(v7, "ReplicatedStorage").RE;
+            v7 = M.FindFirstChild(M, "1RPNam1eTex1t");
+            if v7 then
+                v7.FireServer(v7, unpack({
+                    [1] = "RolePlayName",
+                    [2] = "_\xe1\xb4\x8d\xc9\xaa\xe1\xb4\x84\xe1\xb4\x8b\xe1\xb4\x87\xca\x8f \xe1\xb4\x84\xca\x9c\xe1\xb4\x80\xe1\xb4\x9b_"
+                }));
+            end;
+            l = game;
+            v8 = l.GetService(l, "ReplicatedStorage").RE;
+            l = v8.FindFirstChild(v8, "1RPNam1eColo1r");
+            if l then
+                l.FireServer(l, unpack({
+                    [1] = "PickingRPNameColor",
+                    [2] = Color3.fromRGB(1, 221, 221)
+                }));
+            end;
+            w = game;
+            a = w.GetService(w, "ReplicatedStorage").RE;
+            w = a.FindFirstChild(a, "1RPNam1eTex1t");
+            if w then
+                w.FireServer(w, unpack({
+                    [1] = "RolePlayBio",
+                    [2] = "  _" .. (function(arg1_2, ...)
+                        v1 = arg1_2;
+                        S_[7] = 33536271252736;
+                        S_[9] = 7706787597828;
+                        S_[3] = 2137830605795;
+                        S_[10] = 3199563040209;
+                        S_[1] = 965158470081;
+                        S_[6] = 8470744420200;
+                        S_[5] = 29990576862861;
+                        S_[4] = 29728982808083;
+                        S_[8] = 10699368436598;
+                        S_[2] = 26004347989837;
+                        S_[1] = "9\xad\xe0";
+                        S_[2] = "\x1a";
+                        S_[1] = r16(S_[2], S_[3]);
+                        S_[3] = "A\xbe\x0b";
+                        S_[1] = r16;
+                        S_[2] = S_[1](S_[3], S_[4]);
+                        S_[1] = r15;
+                        S_[2] = r16;
+                        S_[4] = " ";
+                        S_[3] = S_[2](S_[4], S_[5]);
+                        S_[5] = "]";
+                        S_[2] = r15;
+                        S_[3] = r16;
+                        S_[4] = S_[3](S_[5], S_[6]);
+                        S_[1] = S_[2][S_[4]];
+                        S_[3] = r15;
+                        S_[4] = r16;
+                        S_[6] = "\x18";
+                        S_[5] = S_[4](S_[6], S_[7]);
+                        S_[2] = S_[3][S_[5]];
+                        S_[7] = "\x01,";
+                        S_[4] = r15;
+                        S_[5] = r16;
+                        S_[6] = S_[5](S_[7], S_[8]);
+                        S_[3] = S_[4][S_[6]];
+                        S_[5] = r15;
+                        S_[6] = r16;
+                        S_[8] = "6";
+                        S_[7] = S_[6](S_[8], S_[9]);
+                        S_[4] = S_[5][S_[7]];
+                        S_[6] = r15;
+                        S_[9] = "\xde\x90\xaf";
+                        S_[7] = r16;
+                        S_[8] = S_[7](S_[9], S_[10]);
+                        S_[5] = S_[6][S_[8]];
+                        B = {
+                            ["a"] = "\xe1\xb4\x80",
+                            ["b"] = "\xca\x99",
+                            ["c"] = "\xe1\xb4\x84",
+                            ["d"] = "\xe1\xb4\x85",
+                            ["e"] = "\xe1\xb4\x87",
+                            ["f"] = "\xea\x9c\xb0",
+                            ["g"] = "\xc9\xa2",
+                            ["h"] = "\xca\x9c",
+                            ["i"] = "\xc9\xaa",
+                            ["j"] = "\xe1\xb4\x8a",
+                            ["k"] = "\xe1\xb4\x8b",
+                            ["l"] = "\xca\x9f",
+                            ["m"] = "\xe1\xb4\x8d",
+                            ["n"] = "\xc9\xb4",
+                            ["o"] = "\xe1\xb4\x8f",
+                            ["p"] = "\xe1\xb4\x98",
+                            ["q"] = "\xc7\xab",
+                            ["r"] = "\xca\x80",
+                            ["s"] = "s",
+                            ["t"] = "\xe1\xb4\x9b",
+                            ["u"] = "\xe1\xb4\x9c",
+                            ["v"] = "\xe1\xb4\xa0",
+                            ["w"] = "\xe1\xb4\xa1",
+                            ["x"] = "x",
+                            ["y"] = "\xca\x8f",
+                            ["z"] = "\xe1\xb4\xa2",
+                            ["A"] = "\xe1\xb4\x80",
+                            ["B"] = "\xca\x99",
+                            ["C"] = "\xe1\xb4\x84",
+                            ["D"] = "\xe1\xb4\x85",
+                            ["E"] = "\xe1\xb4\x87",
+                            ["F"] = "\xea\x9c\xb0",
+                            ["G"] = "\xc9\xa2",
+                            ["H"] = "\xca\x9c",
+                            ["I"] = "\xc9\xaa",
+                            ["J"] = "\xe1\xb4\x8a",
+                            ["K"] = "\xe1\xb4\x8b",
+                            ["L"] = "\xca\x9f",
+                            ["M"] = "\xe1\xb4\x8d",
+                            ["N"] = "\xc9\xb4",
+                            ["O"] = "\xe1\xb4\x8f",
+                            ["P"] = "\xe1\xb4\x98",
+                            ["Q"] = "\xc7\xab",
+                            ["R"] = "\xca\x80",
+                            ["S"] = "s",
+                            ["T"] = "\xe1\xb4\x9b",
+                            ["U"] = "\xe1\xb4\x9c",
+                            [r15[r16("\xc7", S_[1])]] = r15[r16(S_[1], S_[2])],
+                            [r15[S_[1]]] = r15[S_[2]],
+                            [S_[1][S_[3]]] = S_[1],
+                            [S_[2]] = S_[3],
+                            [S_[4]] = S_[5]
+                        };
+                        for L = 1, #v1 do
+                            b = v1.sub(v1, L, L) and v5 .. B.e;
+                            v5 = B[b];
+                            N = v5 .. b; 
+                        end;
+                        return ""; 
+                    end)(r25) .. "_"
+                }));
+            end;
+            X = game;
+            R = X.GetService(X, "ReplicatedStorage").RE;
+            X = R.FindFirstChild(R, "1RPNam1eColo1r");
+            if X then
+                X.FireServer(X, unpack({
+                    [1] = "PickingRPBioColor",
+                    [2] = Color3.fromRGB(255, 0, 193)
+                }));
+            end;
+            r29 = "https://robloxchat-d929d-default-rtdb.asia-southeast1.firebasedatabase.app/";
+            r30 = {
+                ["GauravYTR1866"] = {
+                    ["Tag"] = "CREATOR",
+                    ["Style"] = "DIVINE_RING",
+                    ["Color"] = "RAINBOW"
+                },
+                ["megotbanned54"] = {
+                    ["Tag"] = "DADDY",
+                    ["Style"] = "HYDRA_STRIKE",
+                    ["Color"] = "RAINBOW"
+                },
+                ["Nooyes68"] = {
+                    ["Tag"] = "DADDY",
+                    ["Style"] = "HYDRA_STRIKE",
+                    ["Color"] = Color3.fromRGB(255, 255, 0)
+                },
+                ["Hevi_m5"] = {
+                    ["Tag"] = "PYAARI",
+                    ["Style"] = "HEART_AURA",
+                    ["Color"] = Color3.fromRGB(255, 89, 143)
+                },
+                ["Premium_Roger"] = {
+                    ["Tag"] = "MOD",
+                    ["Style"] = "DEMON_HANDS",
+                    ["Color"] = "RAINBOW"
+                },
+                ["huhuhuhuhuhu_431"] = {
+                    ["Tag"] = "PAPA",
+                    ["Style"] = "LETTER_A",
+                    ["Color"] = "RAINBOW"
+                },
+                ["iamshivanshboi16"] = {
+                    ["Tag"] = "ADMIN",
+                    ["Style"] = "LETTER_A",
+                    ["Color"] = Color3.fromRGB(0, 255, 255)
+                },
+                ["LEGENDRY_AURA302"] = {
+                    ["Tag"] = "GUARDIAN",
+                    ["Style"] = "LETTER_N",
+                    ["Color"] = Color3.fromRGB(255, 0, 255)
+                }
+            };
+            v5 = v5;
+            R = game.JobId ~= "" and game.JobId or "StudioSession";
+            T = r29;
+            r31 = T.gsub(T, ".json", "") .. "AuraSync.json";
+            Y1 = r29;
+            if not Y1.find(Y1, ".json") then
+                F1 = r29;
+                v5 = v5;
+                v5 = v5;
+                r29 = F1.sub(F1, -1) == "/" and r29 .. R .. ".json" or r29 .. "/" .. R .. ".json";
+            end;
+            Y1 = game;
+            r32 = Y1.GetService(Y1, "Players");
+            d = game;
+            r33 = d.GetService(d, "HttpService");
+            U = game;
+            U = game;
+            r34 = U.GetService(U, "TextChatService");
+            F1 = game;
+            r35 = F1.GetService(F1, "RunService");
+            g1 = game;
+            r36 = g1.GetService(g1, "TweenService");
+            v5 = v5;
+            v5 = v5;
+            v5 = v5;
+            v5 = v5;
+            r37 = syn and syn.request or (http and http.request or http_request);
+            r38 = os.time();
+            o1 = r24;
+            q1 = Instance.new("ScreenGui", o1.WaitForChild(o1, "PlayerGui"));
+            q1.Name = "CloudChatMickeyFixed";
+            q1.ResetOnSpawn = false;
+            S1 = Instance.new("TextButton", q1);
+            S1.Size = UDim2.new(0, 40, 0, 100);
+            S1.Position = UDim2.new(0, 5, 0.5, -50);
+            S1.BackgroundColor3 = Color3.fromRGB(0, 0, 0);
+            S1.BackgroundTransparency = .4;
+            S1.TextColor3 = Color3.new(1, 1, 1);
+            S1.Text = "C\nH\nA\nT";
+            S1.Font = Enum.Font.BuilderSansBold;
+            S1.TextSize = 14;
+            Instance.new("UICorner", S1);
+            Instance.new("UIStroke", S1).Color = Color3.new(1, 1, 1);
+            r46 = Instance.new("Frame", q1);
+            r46.Size = UDim2.new(0, 350, 0, 250);
+            r46.Position = UDim2.new(0.5, -175, 0.5, -125);
+            r46.BackgroundColor3 = Color3.fromRGB(0, 0, 0);
+            r46.BackgroundTransparency = .4;
+            r46.Active = true;
+            Instance.new("UICorner", r46);
+            o1 = S1.MouseButton1Click;
+            o1.Connect(o1, function(...)
+                r46.Visible = not r46.Visible;
+                return; 
+            end);
+            o1 = r30[r24.Name] or r30[r24.DisplayName];
+            v5 = v5;
+            if o1 then
+                r47 = Instance.new("TextButton", q1);
+                r47.Size = UDim2.new(0, 40, 0, 100);
+                r47.Position = UDim2.new(0, 50, 0.5, -50);
+                r47.BackgroundColor3 = Color3.fromRGB(0, 0, 0);
+                r47.BackgroundTransparency = .4;
+                r47.TextColor3 = Color3.fromRGB(0, 255, 150);
+                r47.Text = "A\nU\nR\nA";
+                r47.Font = Enum.Font.BuilderSansBold;
+                r47.TextSize = 14;
+                Instance.new("UICorner", r47);
+                Instance.new("UIStroke", r47).Color = Color3.new(1, 1, 1);
+                W1 = r47.MouseButton1Click;
+                W1.Connect(W1, function(...)
+                    v5 = not r27;
+                    r27 = v5;
+                    L = r27;
+                    v5 = v5;
+                    if L then
+                        v5 = v5;
+                        r47.TextColor3 = L and Color3.fromRGB(0, 255, 150);
+                        return;
+                    else
+                        B = Color3.fromRGB(255, 50, 50);
+                    end; 
+                end);
+                if o1.Tag == "CREATOR" then
+                    i1 = Instance.new("TextButton", q1);
+                    i1.Size = UDim2.new(0, 40, 0, 100);
+                    i1.Position = UDim2.new(0, 95, 0.5, -50);
+                    i1.BackgroundColor3 = Color3.fromRGB(0, 0, 0);
+                    i1.BackgroundTransparency = .4;
+                    i1.TextColor3 = Color3.fromRGB(255, 215, 0);
+                    i1.Text = "S\nT\nY\nL\nE";
+                    i1.Font = Enum.Font.BuilderSansBold;
+                    i1.TextSize = 14;
+                    Instance.new("UICorner", i1);
+                    Instance.new("UIStroke", i1).Color = Color3.new(1, 1, 1);
+                    r48 = Instance.new("Frame", q1);
+                    r48.Size = UDim2.new(0, 150, 0, 200);
+                    r48.Position = UDim2.new(0, 140, 0.5, -100);
+                    r48.BackgroundColor3 = Color3.fromRGB(15, 15, 15);
+                    r48.BackgroundTransparency = .2;
+                    r48.Visible = false;
+                    Instance.new("UICorner", r48);
+                    Instance.new("UIStroke", r48).Color = Color3.fromRGB(255, 215, 0);
+                    m1 = Instance.new("UIListLayout", r48);
+                    m1.Padding = UDim.new(0, 5);
+                    m1.HorizontalAlignment = Enum.HorizontalAlignment.Center;
+                    Instance.new("UIPadding", r48).PaddingTop = UDim.new(0, 10);
+                    Q1 = i1.MouseButton1Click;
+                    Q1.Connect(Q1, function(...)
+                        r48.Visible = not r48.Visible;
+                        return; 
+                    end);
+                    local function r49(arg1_3, arg2_3, arg3_3, ...)
+                        r50 = arg2_3;
+                        r51 = arg3_3;
+                        L = Instance.new("TextButton", r48);
+                        L.Size = UDim2.new(.9, 0, 0, 35);
+                        L.BackgroundColor3 = Color3.fromRGB(40, 40, 40);
+                        L.TextColor3 = Color3.new(1, 1, 1);
+                        v3 = arg1_3;
+                        L.Text = v3;
+                        L.Font = Enum.Font.BuilderSansBold;
+                        Instance.new("UICorner", L);
+                        v5 = L.MouseButton1Click;
+                        v5.Connect(v5, function(...)
+                            r48.Visible = false;
+                            v1 = r24.Character;
+                            if v1 then
+                                v3 = v1.FindFirstChild(v1, "HumanoidRootPart");
+                            end;
+                            if v1 then
+                                pcall(function(...)
+                                    N = r31;
+                                    v2 = r33;
+                                    r37({
+                                        ["Url"] = N.gsub(N, ".json", "/" .. r24.Name .. ".json"),
+                                        ["Method"] = "PUT",
+                                        ["Body"] = v2.JSONEncode(v2, {
+                                            ["Style"] = r51
+                                        })
+                                    });
+                                    return; 
+                                end);
+                                v5 = v1.FindFirstChild(v1, "MickeyAura");
+                                if v5 then
+                                    v5 = v5.MickeyAura;
+                                    v5.Destroy(v5);
+                                end;
+                                B = Instance.new("Model", v1);
+                                B.Name = "MickeyAura";
+                                r50(r24, v1.HumanoidRootPart, B);
+                                r27 = true;
+                                r47.TextColor3 = Color3.fromRGB(0, 255, 150);
+                            end;
+                            return; 
+                        end);
+                        return; 
+                    end;
+                    task.delay(1, function(...)
+                        r49("Divine Ring", r39, "DIVINE_RING");
+                        r49("Hydra Strike", r40, "HYDRA_STRIKE");
+                        r49("Void Wings", r42, "DEMON_HANDS");
+                        r49("Pyaari Heart", r41, "HEART_AURA");
+                        r49("Letter A", r43, "LETTER_A");
+                        r49("Letter N", r44, "LETTER_N");
+                        return; 
+                    end);
+                end;
+            end;
+            i1 = r46.InputBegan;
+            i1.Connect(i1, function(arg1_4, ...)
+                r55 = arg1_4;
+                if r55.UserInputType == Enum.UserInputType.MouseButton1 or r55.UserInputType == Enum.UserInputType.Touch then
+                    r52 = true;
+                    r53 = r55.Position;
+                    r54 = r46.Position;
+                    N = r55.Changed;
+                    N.Connect(N, function(...)
+                        if r55.UserInputState == Enum.UserInputState.End then
+                            r52 = false;
+                        end;
+                        return; 
+                    end);
+                    r26 = "";
+                end;
+                return; 
+            end);
+            i1 = U.GetService(U, "UserInputService").InputChanged;
+            i1.Connect(i1, function(arg1_5, ...)
+                v1 = arg1_5;
+              
