@@ -12,8 +12,8 @@ local StarterGui = game:GetService("StarterGui")
 local TextChatService = game:GetService("TextChatService")
 local lp = Players.LocalPlayer
 
--- 🔥 PUT YOUR EXACT ROBLOX USERNAME HERE FOR THE "ASHU PAPA" NOTIFICATION
-local CREATOR_USERNAME = "Your_Roblox_Username" -- Apna asli username yahan daalo!
+-- 🔥 YOUR EXACT ROBLOX USER ID FOR THE BOSS NOTIFICATION
+local CREATOR_USER_ID = 9685785248
 
 -- SAFE CLIPBOARD FUNCTION FOR DELTA EXECUTOR
 local copyToClip = setclipboard or toclipboard or function() end
@@ -80,7 +80,7 @@ local function triggerBossArrival()
     local txt = Instance.new("TextLabel", bossGui)
     txt.Size = UDim2.fromScale(1, 1); txt.Position = UDim2.fromScale(0, 0)
     txt.BackgroundTransparency = 1
-    txt.Text = "🚨 ASHU PaPA HAS JOINED THE SERVER 🚨"
+    txt.Text = "🚨 ASHU PAPA AAGAE 🚨"
     txt.TextColor3 = Colors.ClickAccent
     txt.TextStrokeTransparency = 1
     txt.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
@@ -104,12 +104,16 @@ local function triggerBossArrival()
     end)
 end
 
+-- TRACK WHEN THE CREATOR JOINS (Using UserID)
 Players.PlayerAdded:Connect(function(player)
-    if string.lower(player.Name) == string.lower(CREATOR_USERNAME) then triggerBossArrival() end
+    if player.UserId == CREATOR_USER_ID then 
+        triggerBossArrival() 
+    end
 end)
 
+-- CHECK IF CREATOR IS ALREADY IN SERVER ON EXECUTE
 for _, player in ipairs(Players:GetPlayers()) do
-    if string.lower(player.Name) == string.lower(CREATOR_USERNAME) and player.Name ~= lp.Name then
+    if player.UserId == CREATOR_USER_ID and player.UserId ~= lp.UserId then
         triggerBossArrival()
     end
 end
@@ -164,8 +168,9 @@ gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 _G.OrbitalGUI = gui
 
 local mainFrame = Instance.new("Frame", gui)
-mainFrame.AnchorPoint = Vector2.new(0.5, 0.5); mainFrame.Position = UDim2.fromScale(0.5, 0.5)
-mainFrame.Size = UDim2.fromScale(0.66, 0.62)
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.Position = UDim2.fromScale(0.5, 0.5)
+mainFrame.Size = UDim2.new(0, 290, 0, 440) 
 mainFrame.BackgroundColor3 = Colors.Background; mainFrame.BorderSizePixel = 0; mainFrame.ClipsDescendants = true
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14)
 
@@ -190,7 +195,7 @@ task.spawn(function()
     end
 end)
 
-local sizeConstraint = Instance.new("UISizeConstraint", mainFrame); sizeConstraint.MinSize = Vector2.new(270, 500); sizeConstraint.MaxSize = Vector2.new(360, 630)
+local sizeConstraint = Instance.new("UISizeConstraint", mainFrame); sizeConstraint.MinSize = Vector2.new(240, 380); sizeConstraint.MaxSize = Vector2.new(310, 460)
 
 local mainScale = Instance.new("UIScale", mainFrame)
 mainScale.Scale = 0
@@ -198,7 +203,7 @@ TweenService:Create(mainScale, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.Ea
 
 local header = Instance.new("Frame", mainFrame); header.Size = UDim2.new(1, 0, 0, 48); header.BackgroundColor3 = Colors.Background; header.BorderSizePixel = 0; header.ZIndex = 10; Instance.new("UICorner", header).CornerRadius = UDim.new(0, 14)
 
-local headerTitle = Instance.new("TextLabel", header); headerTitle.Size = UDim2.new(1, -90, 1, 0); headerTitle.Position = UDim2.fromOffset(15, 0); headerTitle.BackgroundTransparency = 1; headerTitle.Text = "⚡ TXR ASHU: ROBOT TROLL"; headerTitle.TextColor3 = Colors.Text; headerTitle.Font = Enum.Font.GothamBlack; headerTitle.TextSize = 14; headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.ZIndex = 11
+local headerTitle = Instance.new("TextLabel", header); headerTitle.Size = UDim2.new(1, -70, 1, 0); headerTitle.Position = UDim2.fromOffset(12, 0); headerTitle.BackgroundTransparency = 1; headerTitle.Text = "⚡ TXR ASHU: ROBOT TROLL"; headerTitle.TextColor3 = Colors.Text; headerTitle.Font = Enum.Font.GothamBlack; headerTitle.TextSize = 13; headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.ZIndex = 11
 
 local titleGrad = Instance.new("UIGradient", headerTitle)
 titleGrad.Color = ColorSequence.new({
@@ -216,14 +221,14 @@ task.spawn(function()
     end
 end)
 
-local minimizeBtn = Instance.new("TextButton", header); minimizeBtn.Size = UDim2.fromOffset(28, 28); minimizeBtn.Position = UDim2.new(1, -70, 0.5, -14); minimizeBtn.BackgroundColor3 = Colors.Surface; minimizeBtn.Text = "–"; minimizeBtn.TextColor3 = Colors.Text; minimizeBtn.Font = Enum.Font.GothamBold; minimizeBtn.TextSize = 14; minimizeBtn.ZIndex = 15; Instance.new("UICorner", minimizeBtn).CornerRadius = UDim.new(0, 8)
+local minimizeBtn = Instance.new("TextButton", header); minimizeBtn.Size = UDim2.fromOffset(24, 24); minimizeBtn.Position = UDim2.new(1, -58, 0.5, -12); minimizeBtn.BackgroundColor3 = Colors.Surface; minimizeBtn.Text = "–"; minimizeBtn.TextColor3 = Colors.Text; minimizeBtn.Font = Enum.Font.GothamBold; minimizeBtn.TextSize = 12; minimizeBtn.ZIndex = 15; Instance.new("UICorner", minimizeBtn).CornerRadius = UDim.new(0, 6)
 applyGlowAndHover(minimizeBtn, Colors.Surface, Colors.SurfaceHover, Colors.Primary)
 
-local closeBtn = Instance.new("TextButton", header); closeBtn.Size = UDim2.fromOffset(28, 28); closeBtn.Position = UDim2.new(1, -36, 0.5, -14); closeBtn.BackgroundColor3 = Colors.Surface; closeBtn.Text = "×"; closeBtn.TextColor3 = Colors.DangerHover; closeBtn.Font = Enum.Font.GothamBold; closeBtn.TextSize = 18; closeBtn.ZIndex = 15; Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
+local closeBtn = Instance.new("TextButton", header); closeBtn.Size = UDim2.fromOffset(24, 24); closeBtn.Position = UDim2.new(1, -30, 0.5, -12); closeBtn.BackgroundColor3 = Colors.Surface; closeBtn.Text = "×"; closeBtn.TextColor3 = Colors.DangerHover; closeBtn.Font = Enum.Font.GothamBold; closeBtn.TextSize = 16; closeBtn.ZIndex = 15; Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6)
 applyGlowAndHover(closeBtn, Colors.Surface, Colors.Danger, Colors.DangerHover, Colors.Text)
 
 local footer = Instance.new("Frame", mainFrame)
-footer.Size = UDim2.new(1, 0, 0, 34); footer.Position = UDim2.new(0, 0, 1, -34)
+footer.Size = UDim2.new(1, 0, 0, 32); footer.Position = UDim2.new(0, 0, 1, -32)
 footer.BackgroundColor3 = Colors.Surface; footer.BorderSizePixel = 0; footer.ZIndex = 15
 
 local footerTopLine = Instance.new("Frame", footer)
@@ -231,27 +236,27 @@ footerTopLine.Size = UDim2.new(1, 0, 0, 1); footerTopLine.BackgroundColor3 = Col
 
 local discordBtn = Instance.new("TextButton", footer)
 discordBtn.Size = UDim2.fromScale(1, 1); discordBtn.BackgroundTransparency = 1
-discordBtn.Text = "💬 Discord: @not_ashu. (Click to Copy)"
-discordBtn.TextColor3 = Colors.ClickAccent; discordBtn.Font = Enum.Font.GothamBold; discordBtn.TextSize = 12; discordBtn.ZIndex = 16
+discordBtn.Text = "💬 Discord: @not_ashu."
+discordBtn.TextColor3 = Colors.ClickAccent; discordBtn.Font = Enum.Font.GothamBold; discordBtn.TextSize = 11; discordBtn.ZIndex = 16
 
 discordBtn.MouseEnter:Connect(function() TweenService:Create(discordBtn, TweenInfo.new(0.2), {TextColor3 = Colors.Text}):Play() end)
 discordBtn.MouseLeave:Connect(function() TweenService:Create(discordBtn, TweenInfo.new(0.2), {TextColor3 = Colors.ClickAccent}):Play() end)
 discordBtn.MouseButton1Click:Connect(function()
     pcall(function() copyToClip("not_ashu.") end)
-    sendNotif("👑 TXR ASHU", "Discord ID 'not_ashu.' copied to clipboard!", 4)
-    discordBtn.Text = "✔ Copied to Clipboard!"
-    task.delay(2, function() if discordBtn then discordBtn.Text = "💬 Discord: @not_ashu. (Click to Copy)" end end)
+    sendNotif("👑 TXR ASHU", "Discord ID copied!", 3)
+    discordBtn.Text = "✔ Copied!"
+    task.delay(1.5, function() if discordBtn then discordBtn.Text = "💬 Discord: @not_ashu." end end)
 end)
 
-local openBtn = Instance.new("TextButton", gui); openBtn.Size = UDim2.fromOffset(54, 54); openBtn.AnchorPoint = Vector2.new(0.5, 0.5); openBtn.Position = UDim2.fromScale(0.08, 0.5); openBtn.BackgroundColor3 = Colors.Surface; openBtn.Text = "🪐"; openBtn.TextSize = 26; openBtn.Visible = false; Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0)
-local openStroke = Instance.new("UIStroke", openBtn); openStroke.Color = Colors.Primary; openStroke.Thickness = 2.5; openStroke.Transparency = 0.3
+local openBtn = Instance.new("TextButton", gui); openBtn.Size = UDim2.fromOffset(48, 48); openBtn.AnchorPoint = Vector2.new(0.5, 0.5); openBtn.Position = UDim2.fromScale(0.08, 0.5); openBtn.BackgroundColor3 = Colors.Surface; openBtn.Text = "🪐"; openBtn.TextSize = 22; openBtn.Visible = false; Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0)
+local openStroke = Instance.new("UIStroke", openBtn); openStroke.Color = Colors.Primary; openStroke.Thickness = 2; openStroke.Transparency = 0.3
 local openBtnScale = Instance.new("UIScale", openBtn); openBtnScale.Scale = 1
 
 task.spawn(function()
     while gui.Parent do
         if openBtn.Visible then
             TweenService:Create(openStroke, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {Transparency = 0}):Play()
-            TweenService:Create(openBtnScale, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {Scale = 1.12}):Play()
+            TweenService:Create(openBtnScale, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {Scale = 1.1}):Play()
         end
         task.wait(2.5)
     end
@@ -265,15 +270,15 @@ local function makeDraggable(frame, handle)
 end
 makeDraggable(mainFrame, header); makeDraggable(openBtn, openBtn)
 
-local mainList = Instance.new("ScrollingFrame", mainFrame); mainList.Size = UDim2.new(1, -24, 1, -92); mainList.Position = UDim2.fromOffset(12, 52); mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 3; mainList.CanvasSize = UDim2.new(0,0,0,0); mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ScrollBarImageColor3 = Colors.Primary; mainList.ZIndex = 5
-local listLayout = Instance.new("UIListLayout", mainList); listLayout.Padding = UDim.new(0, 8); listLayout.SortOrder = Enum.SortOrder.LayoutOrder; listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() mainList.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 20) end)
+local mainList = Instance.new("ScrollingFrame", mainFrame); mainList.Size = UDim2.new(1, -20, 1, -85); mainList.Position = UDim2.fromOffset(10, 50); mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 2; mainList.CanvasSize = UDim2.new(0,0,0,0); mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ScrollBarImageColor3 = Colors.Primary; mainList.ZIndex = 5
+local listLayout = Instance.new("UIListLayout", mainList); listLayout.Padding = UDim.new(0, 6); listLayout.SortOrder = Enum.SortOrder.LayoutOrder; listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() mainList.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 15) end)
 
 local confirmFrame = Instance.new("Frame", mainFrame); confirmFrame.Size = UDim2.fromScale(1, 1); confirmFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0); confirmFrame.BackgroundTransparency = 0.4; confirmFrame.Visible = false; confirmFrame.ZIndex = 50; Instance.new("UICorner", confirmFrame).CornerRadius = UDim.new(0, 14)
 local cBox = Instance.new("Frame", confirmFrame); cBox.Size = UDim2.new(0.85, 0, 0.28, 0); cBox.AnchorPoint = Vector2.new(0.5, 0.5); cBox.Position = UDim2.fromScale(0.5, 0.5); cBox.BackgroundColor3 = Colors.Surface; cBox.ZIndex = 51; Instance.new("UICorner", cBox).CornerRadius = UDim.new(0, 12)
-local cText = Instance.new("TextLabel", cBox); cText.Size = UDim2.fromScale(1, 0.5); cText.BackgroundTransparency = 1; cText.Text = "Terminate Matrix System?"; cText.TextColor3 = Colors.Text; cText.Font = Enum.Font.GothamBold; cText.TextSize = 14; cText.ZIndex = 52
-local yesBtn = Instance.new("TextButton", cBox); yesBtn.Size = UDim2.new(0.4, 0, 0.35, 0); yesBtn.Position = UDim2.new(0.07, 0, 0.55, 0); yesBtn.BackgroundColor3 = Colors.Danger; yesBtn.Text = "YES"; yesBtn.TextColor3 = Colors.Text; yesBtn.Font = Enum.Font.GothamBold; yesBtn.TextSize = 12; yesBtn.ZIndex = 52; Instance.new("UICorner", yesBtn).CornerRadius = UDim.new(0, 8)
-local noBtn = Instance.new("TextButton", cBox); noBtn.Size = UDim2.new(0.4, 0, 0.35, 0); noBtn.Position = UDim2.new(0.53, 0, 0.55, 0); noBtn.BackgroundColor3 = Colors.SurfaceHover; noBtn.Text = "NO"; noBtn.TextColor3 = Colors.Text; noBtn.Font = Enum.Font.GothamBold; noBtn.TextSize = 12; noBtn.ZIndex = 52; Instance.new("UICorner", noBtn).CornerRadius = UDim.new(0, 8)
+local cText = Instance.new("TextLabel", cBox); cText.Size = UDim2.fromScale(1, 0.5); cText.BackgroundTransparency = 1; cText.Text = "Terminate System?"; cText.TextColor3 = Colors.Text; cText.Font = Enum.Font.GothamBold; cText.TextSize = 13; cText.ZIndex = 52
+local yesBtn = Instance.new("TextButton", cBox); yesBtn.Size = UDim2.new(0.4, 0, 0.35, 0); yesBtn.Position = UDim2.new(0.07, 0, 0.55, 0); yesBtn.BackgroundColor3 = Colors.Danger; yesBtn.Text = "YES"; yesBtn.TextColor3 = Colors.Text; yesBtn.Font = Enum.Font.GothamBold; yesBtn.TextSize = 11; yesBtn.ZIndex = 52; Instance.new("UICorner", yesBtn).CornerRadius = UDim.new(0, 8)
+local noBtn = Instance.new("TextButton", cBox); noBtn.Size = UDim2.new(0.4, 0, 0.35, 0); noBtn.Position = UDim2.new(0.53, 0, 0.55, 0); noBtn.BackgroundColor3 = Colors.SurfaceHover; noBtn.Text = "NO"; noBtn.TextColor3 = Colors.Text; noBtn.Font = Enum.Font.GothamBold; noBtn.TextSize = 11; noBtn.ZIndex = 52; Instance.new("UICorner", noBtn).CornerRadius = UDim.new(0, 8)
 applyGlowAndHover(yesBtn, Colors.Danger, Colors.DangerHover, Colors.DangerHover, Colors.Text)
 applyGlowAndHover(noBtn, Colors.SurfaceHover, Colors.Primary, Colors.Primary)
 
@@ -301,29 +306,29 @@ end)
 local function createMenu(titleStr)
     local menu = Instance.new("Frame", mainFrame); menu.Size = UDim2.fromScale(1, 1); menu.Position = UDim2.fromScale(1.1, 0); menu.BackgroundColor3 = Colors.Background; menu.ZIndex = 20; Instance.new("UICorner", menu).CornerRadius = UDim.new(0, 14)
     local top = Instance.new("Frame", menu); top.Size = UDim2.new(1, 0, 0, 48); top.BackgroundColor3 = Colors.Background; top.ZIndex = 21; Instance.new("UICorner", top).CornerRadius = UDim.new(0, 14)
-    local title = Instance.new("TextLabel", top); title.Size = UDim2.new(1, -70, 1, 0); title.Position = UDim2.fromOffset(18, 0); title.BackgroundTransparency = 1; title.Text = titleStr; title.TextColor3 = Colors.Text; title.Font = Enum.Font.GothamBold; title.TextSize = 14; title.TextXAlignment = Enum.TextXAlignment.Left; title.ZIndex = 22
-    local backBtn = Instance.new("TextButton", top); backBtn.Size = UDim2.fromOffset(54, 28); backBtn.Position = UDim2.new(1, -70, 0.5, -14); backBtn.BackgroundColor3 = Colors.Surface; backBtn.Text = "Back"; backBtn.TextColor3 = Colors.SubText; backBtn.Font = Enum.Font.GothamBold; backBtn.TextSize = 11; backBtn.ZIndex = 22; Instance.new("UICorner", backBtn).CornerRadius = UDim.new(0, 8)
+    local title = Instance.new("TextLabel", top); title.Size = UDim2.new(1, -70, 1, 0); title.Position = UDim2.fromOffset(12, 0); title.BackgroundTransparency = 1; title.Text = titleStr; title.TextColor3 = Colors.Text; title.Font = Enum.Font.GothamBold; title.TextSize = 13; title.TextXAlignment = Enum.TextXAlignment.Left; title.ZIndex = 22
+    local backBtn = Instance.new("TextButton", top); backBtn.Size = UDim2.fromOffset(48, 24); backBtn.Position = UDim2.new(1, -58, 0.5, -12); backBtn.BackgroundColor3 = Colors.Surface; backBtn.Text = "Back"; backBtn.TextColor3 = Colors.SubText; backBtn.Font = Enum.Font.GothamBold; backBtn.TextSize = 10; backBtn.ZIndex = 22; Instance.new("UICorner", backBtn).CornerRadius = UDim.new(0, 6)
     applyGlowAndHover(backBtn, Colors.Surface, Colors.SurfaceHover, Colors.Primary)
-    local scroll = Instance.new("ScrollingFrame", menu); scroll.Size = UDim2.new(1, -24, 1, -92); scroll.Position = UDim2.fromOffset(12, 52); scroll.BackgroundTransparency = 1; scroll.ScrollBarThickness = 3; scroll.CanvasSize = UDim2.new(0,0,0,0); scroll.ScrollingDirection = Enum.ScrollingDirection.Y; scroll.ZIndex = 21; scroll.ScrollBarImageColor3 = Colors.Primary
-    local lay = Instance.new("UIListLayout", scroll); lay.Padding = UDim.new(0, 8); lay.SortOrder = Enum.SortOrder.LayoutOrder; lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 20) end)
+    local scroll = Instance.new("ScrollingFrame", menu); scroll.Size = UDim2.new(1, -20, 1, -85); scroll.Position = UDim2.fromOffset(10, 50); scroll.BackgroundTransparency = 1; scroll.ScrollBarThickness = 2; scroll.CanvasSize = UDim2.new(0,0,0,0); scroll.ScrollingDirection = Enum.ScrollingDirection.Y; scroll.ZIndex = 21; scroll.ScrollBarImageColor3 = Colors.Primary
+    local lay = Instance.new("UIListLayout", scroll); lay.Padding = UDim.new(0, 6); lay.SortOrder = Enum.SortOrder.LayoutOrder; lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 15) end)
     backBtn.MouseButton1Click:Connect(function() TweenService:Create(menu, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.1, 0)}):Play(); task.delay(0.2, function() mainList.Visible = true end) end)
     return menu, scroll
 end
 
-local playerMenu, playerScroll = createMenu("👥 Select Targets")
-local geoMenu, geoScroll = createMenu("📐 Select Geometry")
+local playerMenu, playerScroll = createMenu("👥 Targets")
+local geoMenu, geoScroll = createMenu("📐 Geometry")
 
 local function refreshPlayers()
     for _, child in ipairs(playerScroll:GetChildren()) do if child:IsA("TextButton") then child:Destroy() end end
     for _, plr in ipairs(Players:GetPlayers()) do
         local btn = Instance.new("TextButton", playerScroll)
-        btn.Size = UDim2.new(1, 0, 0, 42) 
+        btn.Size = UDim2.new(1, 0, 0, 38) 
         btn.BackgroundColor3 = selectedPlayers[plr] and Colors.Primary or Colors.Surface
-        btn.Font = Enum.Font.GothamSemibold; btn.TextSize = 12; btn.TextXAlignment = Enum.TextXAlignment.Left; btn.ZIndex = 22
-        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
+        btn.Font = Enum.Font.GothamSemibold; btn.TextSize = 11; btn.TextXAlignment = Enum.TextXAlignment.Left; btn.ZIndex = 22
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
         
-        local formattedName = string.format("   %s  |  @%s", plr.DisplayName, plr.Name)
+        local formattedName = string.format("  %s | @%s", plr.DisplayName, plr.Name)
         btn.Text = formattedName
         btn.TextColor3 = selectedPlayers[plr] and Color3.new(0,0,0) or Colors.Text
         
@@ -346,23 +351,23 @@ Players.PlayerAdded:Connect(refreshPlayers); Players.PlayerRemoving:Connect(refr
 
 local layoutIdx = 1; local function getOrder() layoutIdx = layoutIdx + 1; return layoutIdx end
 local function createMainBtn(text, color, textColor, hoverColor, glowColor)
-    local btn = Instance.new("TextButton", mainList); btn.Size = UDim2.new(1, 0, 0, 42); btn.BackgroundColor3 = color; btn.Text = text; btn.TextColor3 = textColor or Colors.Text; btn.Font = Enum.Font.GothamBold; btn.TextSize = 12; btn.LayoutOrder = getOrder(); btn.ZIndex = 6; Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
+    local btn = Instance.new("TextButton", mainList); btn.Size = UDim2.new(1, 0, 0, 38); btn.BackgroundColor3 = color; btn.Text = text; btn.TextColor3 = textColor or Colors.Text; btn.Font = Enum.Font.GothamBold; btn.TextSize = 11; btn.LayoutOrder = getOrder(); btn.ZIndex = 6; Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
     applyGlowAndHover(btn, color, hoverColor or Colors.SurfaceHover, glowColor or color)
     return btn
 end
 
 local geometries = {"Spin", "Reverse Spin", "Bobbing Orbit", "Vertical Halo", "Atom", "Galaxy Spiral", "Crown", "DNA", "Snake Body", "Wings", "Discipline Army", "Flower", "Domain Expansion"}
 for _, geo in ipairs(geometries) do
-    local btn = Instance.new("TextButton", geoScroll); btn.Size = UDim2.new(1, 0, 0, 40); btn.BackgroundColor3 = Colors.Surface; btn.Text = "  ⚡ " .. geo; btn.TextColor3 = Colors.Text; btn.Font = Enum.Font.GothamSemibold; btn.TextSize = 12; btn.TextXAlignment = Enum.TextXAlignment.Left; btn.ZIndex = 22; Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+    local btn = Instance.new("TextButton", geoScroll); btn.Size = UDim2.new(1, 0, 0, 36); btn.BackgroundColor3 = Colors.Surface; btn.Text = "  ⚡ " .. geo; btn.TextColor3 = Colors.Text; btn.Font = Enum.Font.GothamSemibold; btn.TextSize = 11; btn.TextXAlignment = Enum.TextXAlignment.Left; btn.ZIndex = 22; Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
     applyGlowAndHover(btn, Colors.Surface, Colors.SurfaceHover, Colors.Primary)
     
-    btn.MouseButton1Click:Connect(function() activeGeometry = geo; sendNotif("Pattern Locked", "Geometry: " .. geo, 2); TweenService:Create(geoMenu, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.1, 0)}):Play(); task.delay(0.2, function() mainList.Visible = true end) end)
+    btn.MouseButton1Click:Connect(function() activeGeometry = geo; sendNotif("Locked", "Geometry: " .. geo, 2); TweenService:Create(geoMenu, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.1, 0)}):Play(); task.delay(0.2, function() mainList.Visible = true end) end)
 end
 
 local function createSlider(name, min, max, defaultVal)
-    local container = Instance.new("Frame", mainList); container.Size = UDim2.new(1, 0, 0, 46); container.BackgroundTransparency = 1; container.LayoutOrder = getOrder()
-    local label = Instance.new("TextLabel", container); label.Size = UDim2.new(1, 0, 0, 18); label.BackgroundTransparency = 1; label.TextColor3 = Colors.SubText; label.Text = name .. ": " .. tostring(defaultVal); label.Font = Enum.Font.GothamMedium; label.TextSize = 12; label.TextXAlignment = Enum.TextXAlignment.Left
-    local bg = Instance.new("TextButton", container); bg.Size = UDim2.new(1, 0, 0, 6); bg.Position = UDim2.new(0, 0, 0, 28); bg.BackgroundColor3 = Colors.Surface; bg.Text = ""; Instance.new("UICorner", bg).CornerRadius = UDim.new(1, 0)
+    local container = Instance.new("Frame", mainList); container.Size = UDim2.new(1, 0, 0, 40); container.BackgroundTransparency = 1; container.LayoutOrder = getOrder()
+    local label = Instance.new("TextLabel", container); label.Size = UDim2.new(1, 0, 0, 16); label.BackgroundTransparency = 1; label.TextColor3 = Colors.SubText; label.Text = name .. ": " .. tostring(defaultVal); label.Font = Enum.Font.GothamMedium; label.TextSize = 11; label.TextXAlignment = Enum.TextXAlignment.Left
+    local bg = Instance.new("TextButton", container); bg.Size = UDim2.new(1, 0, 0, 6); bg.Position = UDim2.new(0, 0, 0, 24); bg.BackgroundColor3 = Colors.Surface; bg.Text = ""; Instance.new("UICorner", bg).CornerRadius = UDim.new(1, 0)
     local fill = Instance.new("Frame", bg); fill.Size = UDim2.new((defaultVal - min) / (max - min), 0, 1, 0); fill.BackgroundColor3 = Colors.Primary; Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
     
     local fillStroke = Instance.new("UIStroke", fill); fillStroke.Color = Colors.PrimaryHover; fillStroke.Thickness = 2; fillStroke.Transparency = 0.5
@@ -380,18 +385,18 @@ end
 local getRadius = createSlider("Radius Spread", 5, 100, 10)
 local getSpeed = createSlider("Orbital Speed", 1, 100, 10)
 
-local openTargetBtn = createMainBtn("👥  Open Target Selection", Colors.Surface, Colors.Text, Colors.SurfaceHover, Colors.Primary)
+local openTargetBtn = createMainBtn("👥 Targets", Colors.Surface, Colors.Text, Colors.SurfaceHover, Colors.Primary)
 openTargetBtn.MouseButton1Click:Connect(function() mainList.Visible = false; TweenService:Create(playerMenu, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play() end)
 
-local openGeoBtn = createMainBtn("📐  Select Geometry Pattern", Colors.Surface, Colors.Text, Colors.SurfaceHover, Colors.Primary)
+local openGeoBtn = createMainBtn("📐 Geometry", Colors.Surface, Colors.Text, Colors.SurfaceHover, Colors.Primary)
 openGeoBtn.MouseButton1Click:Connect(function() mainList.Visible = false; TweenService:Create(geoMenu, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play() end)
 
-local orbitBtn = createMainBtn("🪐 Mode: ORBIT", Colors.Primary, Color3.new(0,0,0), Colors.PrimaryHover, Colors.PrimaryHover)
-local robotBtn = createMainBtn("🤖 Mode: 4-WAY SURROUND", Colors.Surface, Colors.Text)
-local multiBtn = createMainBtn("🤖 Mode: MULTI-TARGET", Colors.Surface, Colors.Text) 
-local ringBtn = createMainBtn("⭕ Mode: RING OF DEATH", Colors.Surface, Colors.Text)
-local headBtn = createMainBtn("🧠 Mode: HEAD-BANG", Colors.Surface, Colors.Text)
-local chairBtn = createMainBtn("🛏️ Mode: CHAIR TROLL", Colors.Surface, Colors.Text)
+local orbitBtn = createMainBtn("🪐 ORBIT", Colors.Primary, Color3.new(0,0,0), Colors.PrimaryHover, Colors.PrimaryHover)
+local robotBtn = createMainBtn("🤖 SURROUND", Colors.Surface, Colors.Text)
+local multiBtn = createMainBtn("🤖 MULTI-ROBOT", Colors.Surface, Colors.Text) 
+local ringBtn = createMainBtn("⭕ RING OF DEATH", Colors.Surface, Colors.Text)
+local headBtn = createMainBtn("🧠 HEAD-BANG", Colors.Surface, Colors.Text)
+local chairBtn = createMainBtn("🛏️ CHAIR TROLL", Colors.Surface, Colors.Text)
 
 local modeBtns = {Orbit = orbitBtn, Robot = robotBtn, MultiRobot = multiBtn, Ring = ringBtn, HeadBang = headBtn, Chair = chairBtn}
 local function updateModeUI()
@@ -405,17 +410,17 @@ local function updateModeUI()
 end
 for modeName, btn in pairs(modeBtns) do btn.MouseButton1Click:Connect(function() targetMode = modeName; updateModeUI() end) end
 
-local rainbowBtn = createMainBtn("🌈 Rainbow Glow: OFF", Colors.Surface, Colors.Text, Colors.SurfaceHover, Colors.Purple)
+local rainbowBtn = createMainBtn("🌈 Rainbow Glow", Colors.Surface, Colors.Text, Colors.SurfaceHover, Colors.Purple)
 rainbowBtn.MouseButton1Click:Connect(function()
-    isRainbowEnabled = not isRainbowEnabled; rainbowBtn.Text = "🌈 Rainbow Glow: " .. (isRainbowEnabled and "ON" or "OFF")
+    isRainbowEnabled = not isRainbowEnabled
     TweenService:Create(rainbowBtn, TweenInfo.new(0.25), {BackgroundColor3 = isRainbowEnabled and Colors.Purple or Colors.Surface}):Play()
 end)
 
-local toggleRow = Instance.new("Frame", mainList); toggleRow.Size = UDim2.new(1, 0, 0, 45); toggleRow.BackgroundTransparency = 1; toggleRow.LayoutOrder = getOrder(); toggleRow.ZIndex = 6
-local startBtn = Instance.new("TextButton", toggleRow); startBtn.Size = UDim2.new(0.48, 0, 1, 0); startBtn.BackgroundColor3 = Colors.Primary; startBtn.Text = "▶ START"; startBtn.TextColor3 = Color3.new(0,0,0); startBtn.Font = Enum.Font.GothamBold; startBtn.TextSize = 13; Instance.new("UICorner", startBtn).CornerRadius = UDim.new(0, 10)
+local toggleRow = Instance.new("Frame", mainList); toggleRow.Size = UDim2.new(1, 0, 0, 38); toggleRow.BackgroundTransparency = 1; toggleRow.LayoutOrder = getOrder(); toggleRow.ZIndex = 6
+local startBtn = Instance.new("TextButton", toggleRow); startBtn.Size = UDim2.new(0.48, 0, 1, 0); startBtn.BackgroundColor3 = Colors.Primary; startBtn.Text = "▶ START"; startBtn.TextColor3 = Color3.new(0,0,0); startBtn.Font = Enum.Font.GothamBold; startBtn.TextSize = 11; Instance.new("UICorner", startBtn).CornerRadius = UDim.new(0, 8)
 applyGlowAndHover(startBtn, Colors.Primary, Colors.PrimaryHover, Colors.PrimaryHover, Colors.Text)
 
-local stopBtn = Instance.new("TextButton", toggleRow); stopBtn.Size = UDim2.new(0.48, 0, 1, 0); stopBtn.Position = UDim2.new(0.52, 0, 0, 0); stopBtn.BackgroundColor3 = Colors.Surface; stopBtn.Text = "⏹ STOP"; stopBtn.TextColor3 = Colors.Danger; stopBtn.Font = Enum.Font.GothamBold; stopBtn.TextSize = 13; Instance.new("UICorner", stopBtn).CornerRadius = UDim.new(0, 10)
+local stopBtn = Instance.new("TextButton", toggleRow); stopBtn.Size = UDim2.new(0.48, 0, 1, 0); stopBtn.Position = UDim2.new(0.52, 0, 0, 0); stopBtn.BackgroundColor3 = Colors.Surface; stopBtn.Text = "⏹ STOP"; stopBtn.TextColor3 = Colors.Danger; stopBtn.Font = Enum.Font.GothamBold; stopBtn.TextSize = 11; Instance.new("UICorner", stopBtn).CornerRadius = UDim.new(0, 8)
 applyGlowAndHover(stopBtn, Colors.Surface, Color3.fromRGB(45, 25, 30), Colors.DangerHover, Colors.Text)
 
 local function doSpawn(tMode)
@@ -426,12 +431,12 @@ end
 startBtn.MouseButton1Click:Connect(function()
     isSystemActive = true
     activeModes = {}; assignedRemotes = {}; voidedPlayers = {}; activeModes[targetMode] = true; isRespawning = true
-    task.spawn(function() sendNotif("TXR ASHU TROLL", "Initiating " .. targetMode .. " Protocol", 2); clearProps(); task.wait(0.5); doSpawn(targetMode); task.wait(0.5); isRespawning = false end)
+    task.spawn(function() sendNotif("TXR ASHU TROLL", "Initiating " .. targetMode, 2); clearProps(); task.wait(0.5); doSpawn(targetMode); task.wait(0.5); isRespawning = false end)
 end)
 
 stopBtn.MouseButton1Click:Connect(function()
     isSystemActive = false 
-    sendNotif("System Frozen", "Props Stopped. Press Start to reset & resume.", 2)
+    sendNotif("System Frozen", "Props Stopped.", 2)
 end)
 
 local function updatePropsCache()
