@@ -1,5 +1,5 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V15.1 (POLISHED MASTERPIECE) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V15.2 (POLISHED MASTERPIECE) 👑
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -121,7 +121,6 @@ local function spawnProp(propName, category) pcall(function() ReplicatedStorage:
 -- --- GUI CONSTRUCTION ---
 local gui = Instance.new("ScreenGui", targetGuiParent); gui.Name = "OrbitalCyberUI"; gui.ResetOnSpawn = false; _G.OrbitalGUI = gui
 
--- CLASSIC SCRIPT BOX AURA
 local aura = Instance.new("ImageLabel", gui)
 aura.AnchorPoint = Vector2.new(0.5, 0.5); aura.Position = UDim2.fromScale(0.5, 0.5); aura.Size = UDim2.new(0, 320, 0, 450)
 aura.BackgroundTransparency = 1; aura.Image = "rbxassetid://1316045217"; 
@@ -143,7 +142,6 @@ local strokeGrad = Instance.new("UIGradient", mainStroke); strokeGrad.Color = Co
 
 local mainScale = Instance.new("UIScale", mainFrame); mainScale.Scale = 0.85; 
 
--- FLOATING PARTICLES (POLISHED OPACITY)
 local particleContainer = Instance.new("Frame", mainFrame)
 particleContainer.Size = UDim2.fromScale(1, 1)
 particleContainer.BackgroundTransparency = 1
@@ -154,7 +152,7 @@ for i = 1, 15 do
     p.Size = UDim2.fromOffset(math.random(2, 4), math.random(8, 25))
     p.BackgroundColor3 = Colors.Primary
     p.Position = UDim2.fromScale(math.random(), math.random())
-    p.BackgroundTransparency = math.random(75, 95) / 100 -- Softer blend
+    p.BackgroundTransparency = math.random(75, 95) / 100
     p.BorderSizePixel = 0
     Instance.new("UICorner", p).CornerRadius = UDim.new(1, 0)
     table.insert(dataParticles, {element = p, speed = math.random(15, 30) / 100})
@@ -337,7 +335,7 @@ local function spawnSonar(pulseColor)
     task.delay(pulseSpeed, function() pcall(function() ring:Destroy() end) end)
 end
 
--- ⚡ THE MASTER RENDER ENGINE (Polished Math) ⚡
+-- ⚡ THE MASTER RENDER ENGINE (UI Visuals) ⚡
 task.spawn(function()
     local t = 0
     local sonarTimer = 0
@@ -353,7 +351,6 @@ task.spawn(function()
             strokeGrad.Rotation = rot
             bgGradient.Rotation = (rot/2) - 45
             
-            -- POLISHED: Smoother unified sine wave for breathing
             local breath = (math.sin(t * 3) + 1) / 2 
             aura.ImageTransparency = 0.45 + (breath * 0.15)
             mainStroke.Transparency = 0.15 + (breath * 0.2)
@@ -388,14 +385,12 @@ task.spawn(function()
             
             local lerpAlpha = (math.sin(activeT * 0.8) + 1) / 2
             
-            -- Glowing Aura Pulse
             coreGlow.ImageColor3 = baseColor1:Lerp(baseColor2, lerpAlpha)
             coreGlow.ImageTransparency = 0.4 + (math.sin(activeT) * 0.25)
             
             openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
             outerGrad.Rotation = (activeT * 30) % 360
             
-            -- 8-Pointed Star Matrix Math 
             diamond1.Rotation = (activeT * 35) % 360
             diamond2.Rotation = -(activeT * 35) % 360
             crosshair.Rotation = -(activeT * 40) % 360
@@ -404,7 +399,6 @@ task.spawn(function()
             d1Stroke.Color = baseColor2:Lerp(baseColor1, lerpAlpha)
             d2Stroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
             
-            -- POLISHED: Smooth Heartbeat expansion for the core
             local corePulse = math.abs(math.sin(activeT * 1.5))
             diamond1.Size = UDim2.fromOffset(26 + (corePulse * 3), 26 + (corePulse * 3))
             diamond2.Size = UDim2.fromOffset(26 + (corePulse * 3), 26 + (corePulse * 3))
@@ -413,7 +407,6 @@ task.spawn(function()
             centerCore.Size = UDim2.fromOffset(9 + (corePulse * 3), 9 + (corePulse * 3))
             coreStroke.Color = baseColor2
 
-            -- Atom Gyroscope 3D Orbits
             local rBase = 26 * currentRadiusMod
             
             orbs[1].Position = UDim2.new(0.5, math.cos(activeT * 1.5) * rBase, 0.5, math.sin(activeT * 1.5) * (rBase * 0.3))
@@ -670,7 +663,7 @@ startBtn.MouseButton1Click:Connect(function()
     isSystemActive = true; table.clear(assignedRemotes); table.clear(voidedPlayers)
     TweenService:Create(startBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.PrimaryDark, TextColor3 = Colors.Text}):Play(); TweenService:Create(stopBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Danger, TextColor3 = Colors.TextDark}):Play(); TweenService:Create(stopStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Transparency = 1}):Play()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
-    task.spawn(function() sendNotif("ENGINE CORE", "V15.1 Polished Setup Activated.", 2); clearProps(); if activeModes["Chair"] then spawnProp("FurnitureBleachers", "Furniture") end; for i = 1, 25 do spawnProp("ScreensRobotBig", "Screens"); task.wait(0.01) end end) 
+    task.spawn(function() sendNotif("ENGINE CORE", "V15.2 Polished Setup Activated.", 2); clearProps(); if activeModes["Chair"] then spawnProp("FurnitureBleachers", "Furniture") end; for i = 1, 25 do spawnProp("ScreensRobotBig", "Screens"); task.wait(0.01) end end) 
 end)
 stopBtn.MouseButton1Click:Connect(function() 
     if not isSystemActive then return end 
@@ -682,7 +675,7 @@ end)
 local function getAvailableRemotes() table.clear(propsCache); local com = workspace:FindFirstChild("WorkspaceCom"); if com then for _, f in ipairs(com:GetChildren()) do for _, c in ipairs(f:GetChildren()) do if c.Name == "Prop" .. lp.Name then table.insert(propsCache, c) end end end end; local remotes = {}; for _, p in ipairs(propsCache) do local r = p:FindFirstChild("SetCurrentCFrame"); if r and r.Parent then table.insert(remotes, r) end end return remotes end
 local function isRemoteAssigned(remote) for _, assigned in pairs(assignedRemotes) do if type(assigned) == "table" then for _, sr in pairs(assigned) do if sr == remote then return true end end elseif assigned == remote then return true end end return false end
 
--- 🔥 HYBRID DUAL-SPEED ENGINE (V15.1) 🔥
+-- 🔥 HYBRID DUAL-SPEED ENGINE (V15.2 - CHAIR FIX) 🔥
 RunService.Heartbeat:Connect(function(dt)
     if not isSystemActive then return end 
 
@@ -794,13 +787,28 @@ RunService.Heartbeat:Connect(function(dt)
                 if assignedRemotes[plr].m_back then task.spawn(function() pcall(function() assignedRemotes[plr].m_back:InvokeServer(CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end) end) end
             end
 
+            -- ✨ FIXED CHAIR LOGIC ✨
             if activeModes["Chair"] then
                 if voidedPlayers[plr] and not tHum.Sit then voidedPlayers[plr] = nil end
                 if not voidedPlayers[plr] then
-                    if not assignedRemotes[plr].chair or not assignedRemotes[plr].chair.Parent then for _, r in ipairs(allRemotes) do if not isRemoteAssigned(r) then assignedRemotes[plr].chair = r; break end end end
+                    if not assignedRemotes[plr].chair or not assignedRemotes[plr].chair.Parent then 
+                        for _, r in ipairs(allRemotes) do 
+                            if not isRemoteAssigned(r) then assignedRemotes[plr].chair = r; break end 
+                        end 
+                    end
                     if assignedRemotes[plr].chair then
-                        if tHum.Sit then pcall(function() assignedRemotes[plr].chair:InvokeServer(CFrame.new(0, -5000, 0)) end); voidedPlayers[plr] = true; assignedRemotes[plr].chair = nil
-                        elseif tHum.MoveDirection.Magnitude < 0.1 then pcall(function() assignedRemotes[plr].chair:InvokeServer(CFrame.new(bodyPos) * CFrame.new(0, -3.2, 0)) end) end
+                        if tHum.Sit then 
+                            -- Baithega toh seedha map ke bahar void me!
+                            pcall(function() assignedRemotes[plr].chair:InvokeServer(CFrame.new(0, -5000, 0)) end)
+                            voidedPlayers[plr] = true
+                            assignedRemotes[plr].chair = nil
+                        elseif tHum.MoveDirection.Magnitude < 0.1 then 
+                            -- Ruka hua hai: Stealth mode me uske peechhe chair spawn
+                            pcall(function() assignedRemotes[plr].chair:InvokeServer(dynamicBaseCFrame * CFrame.new(0, -3.2, 1.5)) end)
+                        else
+                            -- Chal raha hai: Chair ko aasmaan me chhupa do (no sticking!)
+                            pcall(function() assignedRemotes[plr].chair:InvokeServer(CFrame.new(0, 10000, 0)) end)
+                        end
                     end
                 end
             end
@@ -871,7 +879,7 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
--- ✨ V15.1 RADIO-SYNC RAINBOW ENGINE ✨
+-- ✨ V15.2 RADIO-SYNC RAINBOW ENGINE ✨
 local hue = 0
 RunService.Heartbeat:Connect(function(dt)
     if isRainbowEnabled then 
