@@ -126,7 +126,7 @@ end)
 -- --- GUI CONSTRUCTION ---
 local gui = Instance.new("ScreenGui", targetGuiParent); gui.Name = "OrbitalCyberUI"; gui.ResetOnSpawn = false; gui.IgnoreGuiInset = true; _G.OrbitalGUI = gui
 
--- ✨ V21.0 AETHER OS: UPGRADED CINEMATIC INTRO SEQUENCE ✨
+-- ✨ V21.0 AETHER OS: ULTIMATE CINEMATIC INTRO SEQUENCE ✨
 local introBg = Instance.new("Frame", gui)
 introBg.Size = UDim2.fromScale(1, 1)
 introBg.BackgroundColor3 = Color3.fromRGB(5, 6, 9)
@@ -138,7 +138,7 @@ local introGrid = Instance.new("ImageLabel", introBg)
 introGrid.Size = UDim2.fromScale(2, 2)
 introGrid.Position = UDim2.fromScale(-0.5, -0.5)
 introGrid.BackgroundTransparency = 1
-introGrid.Image = "rbxassetid://6156947266" -- Minimalist tech grid
+introGrid.Image = "rbxassetid://6156947266" 
 introGrid.ImageTransparency = 0.96
 introGrid.ImageColor3 = Colors.Primary
 introGrid.TileSize = UDim2.fromOffset(60, 60)
@@ -147,7 +147,7 @@ introGrid.ZIndex = 10001
 
 local introCore = Instance.new("Frame", introBg)
 introCore.Size = UDim2.fromOffset(0, 0) 
-introCore.Position = UDim2.fromScale(0.5, 0.45)
+introCore.Position = UDim2.fromScale(0.5, 0.4) -- Slightly higher to make room for logs
 introCore.AnchorPoint = Vector2.new(0.5, 0.5)
 introCore.BackgroundTransparency = 1
 introCore.ZIndex = 10005
@@ -176,7 +176,6 @@ for i = 1, 3 do
     s.Color = (i == 1) and Colors.Primary or ((i == 2) and Colors.Purple or Color3.new(1,1,1))
     s.Transparency = 0.2
     
-    -- Dynamic Nodes on Rings
     local node = Instance.new("Frame", r)
     node.Size = UDim2.fromOffset(3, 3)
     node.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -204,7 +203,7 @@ end
 -- Premium Centered Typography
 local brandText = Instance.new("TextLabel", introBg)
 brandText.Size = UDim2.new(1, 0, 0, 40)
-brandText.Position = UDim2.fromScale(0.5, 0.6)
+brandText.Position = UDim2.fromScale(0.5, 0.55)
 brandText.AnchorPoint = Vector2.new(0.5, 0.5)
 brandText.BackgroundTransparency = 1
 brandText.Text = ""
@@ -215,23 +214,23 @@ brandText.TextTransparency = 1
 brandText.ZIndex = 10002
 crispText(brandText)
 
--- Elegant Fade-in Status Text
-local statusText = Instance.new("TextLabel", introBg)
-statusText.Size = UDim2.new(1, 0, 0, 30)
-statusText.Position = UDim2.fromScale(0.5, 0.65)
-statusText.AnchorPoint = Vector2.new(0.5, 0.5)
-statusText.BackgroundTransparency = 1
-statusText.Text = ""
-statusText.TextColor3 = Colors.SubText
-statusText.Font = Enum.Font.Gotham
-statusText.TextSize = 12
-statusText.TextTransparency = 1
-statusText.ZIndex = 10002
+-- Terminal Boot Log Area (NEW)
+local terminalFrame = Instance.new("Frame", introBg)
+terminalFrame.Size = UDim2.new(0, 300, 0, 100)
+terminalFrame.Position = UDim2.fromScale(0.5, 0.65)
+terminalFrame.AnchorPoint = Vector2.new(0.5, 0)
+terminalFrame.BackgroundTransparency = 1
+terminalFrame.ZIndex = 10002
+
+local terminalLayout = Instance.new("UIListLayout", terminalFrame)
+terminalLayout.SortOrder = Enum.SortOrder.LayoutOrder
+terminalLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+terminalLayout.Padding = UDim.new(0, 4)
 
 -- Thin Center-Expanding Loading Line
 local introBarBg = Instance.new("Frame", introBg)
 introBarBg.Size = UDim2.new(0, 250, 0, 2) 
-introBarBg.Position = UDim2.fromScale(0.5, 0.69)
+introBarBg.Position = UDim2.fromScale(0.5, 0.61)
 introBarBg.AnchorPoint = Vector2.new(0.5, 0.5)
 introBarBg.BackgroundColor3 = Colors.SurfaceHover
 introBarBg.BackgroundTransparency = 1
@@ -246,22 +245,37 @@ introBarFill.BackgroundColor3 = Colors.Primary
 introBarFill.BorderSizePixel = 0
 introBarFill.ZIndex = 10003
 
-local whiteFlash = Instance.new("Frame", gui)
-whiteFlash.Size = UDim2.fromScale(1, 1)
-whiteFlash.BackgroundColor3 = Color3.fromRGB(240, 250, 255)
-whiteFlash.BackgroundTransparency = 1
-whiteFlash.ZIndex = 99999
+-- Quantum Shockwave Flash (FIXED AND UPGRADED)
+local shockwave = Instance.new("Frame", gui)
+shockwave.AnchorPoint = Vector2.new(0.5, 0.5)
+shockwave.Position = UDim2.fromScale(0.5, 0.5)
+shockwave.Size = UDim2.fromOffset(0, 0)
+shockwave.BackgroundColor3 = Colors.Primary
+shockwave.BackgroundTransparency = 0
+shockwave.BorderSizePixel = 0
+shockwave.Visible = false
+shockwave.ZIndex = 99999
+local swCorner = Instance.new("UICorner", shockwave)
+swCorner.CornerRadius = UDim.new(1, 0)
 
 -- INTRO ENGINE
 local isBooting = true
 local bootTime = 0
 
-local function fadeText(text, duration)
-    statusText.Text = text
-    TweenService:Create(statusText, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
-    task.wait(duration)
-    TweenService:Create(statusText, TweenInfo.new(0.4), {TextTransparency = 1}):Play()
-    task.wait(0.4)
+-- System Logs Generator
+local function addLogLine(text, delayTime)
+    local line = Instance.new("TextLabel", terminalFrame)
+    line.Size = UDim2.new(1, 0, 0, 14)
+    line.BackgroundTransparency = 1
+    line.Text = text
+    line.TextColor3 = Colors.SubText
+    line.Font = Enum.Font.Code
+    line.TextSize = 11
+    line.TextXAlignment = Enum.TextXAlignment.Center
+    line.TextTransparency = 1
+    
+    TweenService:Create(line, TweenInfo.new(0.2), {TextTransparency = 0.2}):Play()
+    task.wait(delayTime)
 end
 
 -- Cryptographic text decode effect
@@ -294,7 +308,6 @@ task.spawn(function()
         local activeT = bootTime * 2
         local ringPulse = 100 + (math.sin(activeT) * 10)
         
-        -- Dynamic Background Drift
         introGrid.Position = UDim2.new(-0.5, math.sin(bootTime * 0.3) * 30, -0.5, math.cos(bootTime * 0.3) * 30)
         
         rings[1].Size = UDim2.fromOffset(ringPulse * math.abs(math.cos(activeT * 0.5)), ringPulse)
@@ -306,7 +319,6 @@ task.spawn(function()
         rings[3].Size = UDim2.fromOffset(ringPulse * math.abs(math.cos(activeT * 0.7)), ringPulse * math.abs(math.sin(activeT * 0.7)))
         rings[3].Rotation = (activeT * 50) % 360
         
-        -- Particle Physics
         for i, p in ipairs(introParticles) do
             local pAngle = activeT * (1 + (i * 0.1)) + (i * math.pi / 5)
             local pRadius = ringPulse * 0.4 * math.sin(activeT * 0.5 + i)
@@ -323,12 +335,14 @@ task.spawn(function()
     TweenService:Create(introBarBg, TweenInfo.new(1, Enum.EasingStyle.Sine), {BackgroundTransparency = 0.7}):Play()
     TweenService:Create(introBarFill, TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.fromScale(1, 1)}):Play()
     
-    -- Launch Decode Cipher
     task.spawn(function() decodeText(brandText, "T X R   A S H U", 1.2) end)
     
-    fadeText("Initializing Aether Engine...", 0.8)
-    fadeText("Calibrating Spatial Matrix...", 0.8)
-    fadeText("System Ready.", 0.5)
+    -- Cinematic Boot Logs Sequence
+    addLogLine("[*] INITIATING AETHER KERNEL...", 0.6)
+    addLogLine("[*] BYPASSING SECURITY PROTOCOLS...", 0.6)
+    addLogLine("[*] INJECTING QUANTUM HOOKS...", 0.5)
+    addLogLine("[*] ALIGNING SPATIAL VECTORS...", 0.5)
+    addLogLine("[+] ALL SYSTEMS NOMINAL.", 0.6)
     
     isBooting = false
     TweenService:Create(rings[1], TweenInfo.new(0.5, Enum.EasingStyle.Quart), {Size = UDim2.fromOffset(120, 120), Rotation = 0}):Play()
@@ -339,6 +353,9 @@ task.spawn(function()
     TweenService:Create(introBarBg, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
     TweenService:Create(introBarFill, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
     
+    for _, log in ipairs(terminalFrame:GetChildren()) do
+        if log:IsA("TextLabel") then TweenService:Create(log, TweenInfo.new(0.3), {TextTransparency = 1}):Play() end
+    end
     for _, p in ipairs(introParticles) do
         TweenService:Create(p, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
     end
@@ -348,11 +365,14 @@ task.spawn(function()
     TweenService:Create(introCore, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.fromOffset(0, 0)}):Play()
     task.wait(0.3)
     
-    whiteFlash.BackgroundTransparency = 0
+    -- THE NEW FIX: Smooth Expanding Shockwave instead of buggy white frame
+    shockwave.Visible = true
     introBg:Destroy() 
     
     mainFrame.Visible = true
     aura.Visible = true
+    
+    TweenService:Create(shockwave, TweenInfo.new(0.6, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(2500, 2500), BackgroundTransparency = 1}):Play()
     
     TweenService:Create(mainScale, TweenInfo.new(0.9, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
     TweenService:Create(mainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play()
@@ -360,9 +380,8 @@ task.spawn(function()
     TweenService:Create(auraScale, TweenInfo.new(0.9, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
     TweenService:Create(aura, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
     
-    TweenService:Create(whiteFlash, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
-    task.wait(1.2)
-    whiteFlash:Destroy()
+    task.wait(0.6)
+    shockwave:Destroy()
 end)
 
 -- MAIN UI ELEMENTS (HIDDEN DURING INTRO)
@@ -376,6 +395,21 @@ local mainFrame = Instance.new("Frame", gui); mainFrame.AnchorPoint = Vector2.ne
 mainFrame.Position = UDim2.fromScale(0.5, 0.5); mainFrame.Size = UDim2.new(0, 280, 0, 410)
 mainFrame.BackgroundColor3 = Colors.Background; mainFrame.BackgroundTransparency = 1; mainFrame.BorderSizePixel = 0; mainFrame.ClipsDescendants = true; mainFrame.ZIndex = 5; mainFrame.Visible = false
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14) 
+
+-- The Bug Fix: Adding Scanlines properly to prevent indexing nil error
+local scanlines = Instance.new("Frame", mainFrame)
+scanlines.Size = UDim2.fromScale(1, 2)
+scanlines.Position = UDim2.fromScale(0, 0)
+scanlines.BackgroundTransparency = 1
+scanlines.ZIndex = 4
+for i = 1, 40 do
+    local sl = Instance.new("Frame", scanlines)
+    sl.Size = UDim2.new(1, 0, 0, 1)
+    sl.Position = UDim2.fromScale(0, i/40)
+    sl.BackgroundColor3 = Color3.new(0,0,0)
+    sl.BackgroundTransparency = 0.85
+    sl.BorderSizePixel = 0
+end
 
 local bgGradient = Instance.new("UIGradient", mainFrame)
 bgGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(16, 20, 30)), ColorSequenceKeypoint.new(0.5, Colors.Background), ColorSequenceKeypoint.new(1, Color3.fromRGB(16, 20, 30))})
@@ -579,7 +613,7 @@ task.spawn(function()
     
     RunService.RenderStepped:Connect(function(dt)
         if not gui.Parent then return end
-        if isBooting then return end -- Wait for intro to finish
+        if isBooting then return end 
         
         t = t + dt
         
@@ -592,6 +626,9 @@ task.spawn(function()
             aura.ImageTransparency = 0.45 + (breath * 0.15)
             mainStroke.Transparency = 0.15 + (breath * 0.2)
             titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
+            
+            -- FIX: Scanlines variable is now properly animated
+            scanlines.Position = UDim2.new(0, 0, ((t * 0.08) % 1) - 1, 0)
 
             for _, pData in ipairs(dataParticles) do
                 local newY = pData.element.Position.Y.Scale - (pData.speed * dt)
