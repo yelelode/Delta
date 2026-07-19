@@ -1,5 +1,5 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V15.3 (FLUID CHAIR EDITION) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V15.4 (SMART CLICK EDITION) 👑
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -116,6 +116,24 @@ end
 
 local function clearProps() pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("ClearAllProps") end); task.wait(0.35) end
 local function spawnProp(propName, category) pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("RequestingPropName", propName, category) end) end
+
+-- ✨ V15.4 SMART CLICK-TO-SPAWN OVERRIDE ✨
+local mouse = lp:GetMouse()
+mouse.Button1Down:Connect(function()
+    if not isSystemActive then return end
+    local char = lp.Character
+    if char then
+        local tool = char:FindFirstChildOfClass("Tool")
+        -- Agar haath me prop box hai
+        if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
+            if activeModes["Chair"] then
+                spawnProp("FurnitureBleachers", "Furniture") -- Chair mode par bina select kiye chair aayegi
+            else
+                spawnProp("ScreensRobotBig", "Screens") -- Baaki mode par robot aayega
+            end
+        end
+    end
+end)
 
 -- --- GUI CONSTRUCTION ---
 local gui = Instance.new("ScreenGui", targetGuiParent); gui.Name = "OrbitalCyberUI"; gui.ResetOnSpawn = false; _G.OrbitalGUI = gui
@@ -656,21 +674,21 @@ startBtn.MouseButton1Click:Connect(function()
     TweenService:Create(startBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.PrimaryDark, TextColor3 = Colors.Text}):Play(); TweenService:Create(stopBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Danger, TextColor3 = Colors.TextDark}):Play(); TweenService:Create(stopStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Transparency = 1}):Play()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
-    -- ✨ AUTO-SPAWN LOGIC ✨
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V15.3 Auto-Spawn Setup Activated.", 2)
+        sendNotif("ENGINE CORE", "V15.4 Auto-Spawn Activated.", 2)
         clearProps()
         task.wait(0.3)
-        if activeModes["Chair"] then 
-            spawnProp("FurnitureBleachers", "Furniture") 
-            spawnProp("FurnitureBleachers", "Seating") 
+        if activeModes["Chair"] and not (activeModes["Orbit"] or activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["Ring"] or activeModes["HeadBang"]) then
+            -- ONLY Chair mode is active
+            for i = 1, 10 do spawnProp("FurnitureBleachers", "Furniture"); task.wait(0.01) end
+        else
+            -- Mixed or Robot modes
+            if activeModes["Chair"] then spawnProp("FurnitureBleachers", "Furniture") end
+            for i = 1, 25 do spawnProp("ScreensRobotBig", "Screens"); task.wait(0.01) end 
         end
-        for i = 1, 25 do 
-            spawnProp("ScreensRobotBig", "Screens")
-            task.wait(0.01) 
-        end 
     end) 
 end)
+
 stopBtn.MouseButton1Click:Connect(function() 
     if not isSystemActive then return end 
     isSystemActive = false
@@ -681,7 +699,7 @@ end)
 local function getAvailableRemotes() table.clear(propsCache); local com = workspace:FindFirstChild("WorkspaceCom"); if com then for _, f in ipairs(com:GetChildren()) do for _, c in ipairs(f:GetChildren()) do if c.Name == "Prop" .. lp.Name then table.insert(propsCache, c) end end end end; local remotes = {}; for _, p in ipairs(propsCache) do local r = p:FindFirstChild("SetCurrentCFrame"); if r and r.Parent then table.insert(remotes, r) end end return remotes end
 local function isRemoteAssigned(remote) for _, assigned in pairs(assignedRemotes) do if type(assigned) == "table" then for _, sr in pairs(assigned) do if sr == remote then return true end end elseif assigned == remote then return true end end return false end
 
--- 🔥 HYBRID DUAL-SPEED ENGINE (V15.3 - CONTINUOUS CHAIR) 🔥
+-- 🔥 HYBRID DUAL-SPEED ENGINE (V15.4 - CLICK TO SPAWN OVERRIDE) 🔥
 RunService.Heartbeat:Connect(function(dt)
     if not isSystemActive then return end 
 
@@ -793,7 +811,6 @@ RunService.Heartbeat:Connect(function(dt)
                 if assignedRemotes[plr].m_back then task.spawn(function() pcall(function() assignedRemotes[plr].m_back:InvokeServer(CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end) end) end
             end
 
-            -- ✨ V15.3 FIXED CONTINUOUS CHAIR ✨
             if activeModes["Chair"] then
                 if voidedPlayers[plr] and not tHum.Sit then voidedPlayers[plr] = nil end
                 if not voidedPlayers[plr] then
@@ -804,12 +821,10 @@ RunService.Heartbeat:Connect(function(dt)
                     end
                     if assignedRemotes[plr].chair then
                         if tHum.Sit then 
-                            -- Seedha Void Me!
                             pcall(function() assignedRemotes[plr].chair:InvokeServer(CFrame.new(0, -5000, 0)) end)
                             voidedPlayers[plr] = true
                             assignedRemotes[plr].chair = nil
                         else
-                            -- Continuous Tracking: Chahe daude ya ruke, chair peeche chipki rahegi!
                             pcall(function() assignedRemotes[plr].chair:InvokeServer(dynamicBaseCFrame * CFrame.new(0, -3.2, 1.5)) end)
                         end
                     end
@@ -882,7 +897,7 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
--- ✨ V15.3 RADIO-SYNC RAINBOW ENGINE ✨
+-- ✨ V15.4 RADIO-SYNC RAINBOW ENGINE ✨
 local hue = 0
 RunService.Heartbeat:Connect(function(dt)
     if isRainbowEnabled then 
