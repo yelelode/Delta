@@ -1,5 +1,6 @@
--- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V23.0 (ECLIPSE HUD EDITION) 👑
+
+               -- =========================================================
+-- 👑 TXR ASHU: QUANTUM CORE V21.0 (AETHER OS EDITION) 👑
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -27,19 +28,19 @@ local isRainbowEnabled, isSoundEnabled, isSystemActive = false, false, false
 local animTime, angle, selfAngle = 0, 0, 0 
 local robotAnimTime = 0 
 
--- --- 🌌 PREMIUM CYBERPALETTE 🌌 ---
+-- --- 🌌 NEXT-GEN CYBERPALETTE (CLEANER & SOOTHER) 🌌 ---
 local Colors = {
-    Background = Color3.fromRGB(8, 10, 15),       
-    Surface = Color3.fromRGB(18, 22, 30),          
-    SurfaceHover = Color3.fromRGB(25, 30, 45),     
+    Background = Color3.fromRGB(10, 12, 18),       
+    Surface = Color3.fromRGB(20, 24, 34),          
+    SurfaceHover = Color3.fromRGB(28, 34, 50),     
     ActiveTint = Color3.fromRGB(12, 40, 55),       
-    Primary = Color3.fromRGB(0, 255, 200),         
+    Primary = Color3.fromRGB(0, 255, 200),         -- Cyan
     PrimaryDark = Color3.fromRGB(0, 160, 140),     
-    Danger = Color3.fromRGB(255, 40, 80),          
+    Danger = Color3.fromRGB(255, 45, 85),          
     Warning = Color3.fromRGB(255, 170, 0),         
-    Purple = Color3.fromRGB(150, 60, 255),         
-    Text = Color3.fromRGB(245, 250, 255),          
-    SubText = Color3.fromRGB(130, 145, 165),       
+    Purple = Color3.fromRGB(140, 60, 255),         -- Elegant Purple
+    Text = Color3.fromRGB(250, 250, 255),          
+    SubText = Color3.fromRGB(140, 150, 170),       
     TextDark = Color3.fromRGB(10, 15, 22)
 }
 
@@ -50,7 +51,7 @@ end
 local function crispText(element)
     local stroke = Instance.new("UIStroke", element)
     stroke.Color = Color3.new(0, 0, 0)
-    stroke.Transparency = 0.8
+    stroke.Transparency = 0.85
     stroke.Thickness = 1.2
 end
 
@@ -107,7 +108,6 @@ end
 local function clearProps() pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("ClearAllProps") end); task.wait(0.35) end
 local function spawnProp(propName, category) pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("RequestingPropName", propName, category) end) end
 
--- ✨ SMART CLICK-TO-SPAWN OVERRIDE ✨
 local mouse = lp:GetMouse()
 mouse.Button1Down:Connect(function()
     if not isSystemActive then return end
@@ -127,33 +127,33 @@ end)
 -- --- GUI CONSTRUCTION ---
 local gui = Instance.new("ScreenGui", targetGuiParent); gui.Name = "OrbitalCyberUI"; gui.ResetOnSpawn = false; gui.IgnoreGuiInset = true; _G.OrbitalGUI = gui
 
--- ✨ V23.0 THE QUANTUM ECLIPSE INTRO ✨
+-- ✨ V21.0 AETHER OS: CLEAN & ELEGANT INTRO SEQUENCE ✨
 local introBg = Instance.new("Frame", gui)
 introBg.Size = UDim2.fromScale(1, 1)
-introBg.BackgroundColor3 = Color3.fromRGB(2, 4, 8)
-introBg.BackgroundTransparency = 0.35 -- Glassmorphism
+introBg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+introBg.BackgroundTransparency = 0.3 -- Sleek glass look
 introBg.ZIndex = 10000
 
 local introCore = Instance.new("Frame", introBg)
-introCore.Size = UDim2.fromOffset(0, 0)
+introCore.Size = UDim2.fromOffset(0, 0) 
 introCore.Position = UDim2.fromScale(0.5, 0.45)
 introCore.AnchorPoint = Vector2.new(0.5, 0.5)
 introCore.BackgroundTransparency = 1
 introCore.ZIndex = 10005
 
+-- Very soft minimal glow
 local introGlow = Instance.new("ImageLabel", introCore)
-introGlow.Size = UDim2.fromScale(3.5, 3.5)
+introGlow.Size = UDim2.fromScale(4, 4)
 introGlow.Position = UDim2.fromScale(0.5, 0.5)
 introGlow.AnchorPoint = Vector2.new(0.5, 0.5)
 introGlow.BackgroundTransparency = 1
 introGlow.Image = "rbxassetid://10470601783" 
 introGlow.ImageColor3 = Colors.Primary
 introGlow.ImageTransparency = 1
-introGlow.ZIndex = 10001
-Instance.new("UICorner", introGlow).CornerRadius = UDim.new(1, 0)
+introGlow.ZIndex = 10003
 
--- Eclipse 3D Rings
-local iRings = {}
+-- 3 Ultra-Thin, Clean Orbital Rings
+local rings = {}
 for i = 1, 3 do
     local r = Instance.new("Frame", introCore)
     r.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -162,15 +162,16 @@ for i = 1, 3 do
     r.ZIndex = 10006
     Instance.new("UICorner", r).CornerRadius = UDim.new(1, 0)
     local s = Instance.new("UIStroke", r)
-    s.Thickness = 1.5
+    s.Thickness = 1
     s.Color = (i == 1) and Colors.Primary or ((i == 2) and Colors.Purple or Color3.new(1,1,1))
     s.Transparency = 0.2
-    table.insert(iRings, r)
+    table.insert(rings, r)
 end
 
+-- Premium Centered Typography
 local brandText = Instance.new("TextLabel", introBg)
 brandText.Size = UDim2.new(1, 0, 0, 40)
-brandText.Position = UDim2.fromScale(0.5, 0.58)
+brandText.Position = UDim2.fromScale(0.5, 0.6)
 brandText.AnchorPoint = Vector2.new(0.5, 0.5)
 brandText.BackgroundTransparency = 1
 brandText.Text = "T X R   A S H U"
@@ -181,9 +182,10 @@ brandText.TextTransparency = 1
 brandText.ZIndex = 10002
 crispText(brandText)
 
+-- Elegant Fade-in Status Text
 local statusText = Instance.new("TextLabel", introBg)
 statusText.Size = UDim2.new(1, 0, 0, 30)
-statusText.Position = UDim2.fromScale(0.5, 0.63)
+statusText.Position = UDim2.fromScale(0.5, 0.65)
 statusText.AnchorPoint = Vector2.new(0.5, 0.5)
 statusText.BackgroundTransparency = 1
 statusText.Text = ""
@@ -193,9 +195,10 @@ statusText.TextSize = 12
 statusText.TextTransparency = 1
 statusText.ZIndex = 10002
 
+-- Thin Center-Expanding Loading Line
 local introBarBg = Instance.new("Frame", introBg)
-introBarBg.Size = UDim2.new(0, 260, 0, 2) 
-introBarBg.Position = UDim2.fromScale(0.5, 0.67)
+introBarBg.Size = UDim2.new(0, 250, 0, 2) -- Very thin premium line
+introBarBg.Position = UDim2.fromScale(0.5, 0.69)
 introBarBg.AnchorPoint = Vector2.new(0.5, 0.5)
 introBarBg.BackgroundColor3 = Colors.SurfaceHover
 introBarBg.BackgroundTransparency = 1
@@ -204,22 +207,19 @@ introBarBg.ZIndex = 10002
 
 local introBarFill = Instance.new("Frame", introBarBg)
 introBarFill.Size = UDim2.fromScale(0, 1)
-introBarFill.Position = UDim2.fromScale(0.5, 0.5) 
+introBarFill.Position = UDim2.fromScale(0.5, 0.5) -- Expands from center
 introBarFill.AnchorPoint = Vector2.new(0.5, 0.5)
 introBarFill.BackgroundColor3 = Colors.Primary
 introBarFill.BorderSizePixel = 0
 introBarFill.ZIndex = 10003
 
-local shockwave = Instance.new("Frame", gui)
-shockwave.Size = UDim2.fromOffset(0, 0)
-shockwave.Position = UDim2.fromScale(0.5, 0.5)
-shockwave.AnchorPoint = Vector2.new(0.5, 0.5)
-shockwave.BackgroundColor3 = Colors.Primary
-shockwave.BackgroundTransparency = 1
-shockwave.ZIndex = 99998
-Instance.new("UICorner", shockwave).CornerRadius = UDim.new(1, 0)
+local whiteFlash = Instance.new("Frame", gui)
+whiteFlash.Size = UDim2.fromScale(1, 1)
+whiteFlash.BackgroundColor3 = Color3.fromRGB(240, 250, 255)
+whiteFlash.BackgroundTransparency = 1
+whiteFlash.ZIndex = 99999
 
--- MAIN UI ELEMENTS (HIDDEN)
+-- MAIN UI ELEMENTS (HIDDEN DURING INTRO)
 local aura = Instance.new("ImageLabel", gui)
 aura.AnchorPoint = Vector2.new(0.5, 0.5); aura.Position = UDim2.fromScale(0.5, 0.5); aura.Size = UDim2.new(0, 320, 0, 450)
 aura.BackgroundTransparency = 1; aura.Image = "rbxassetid://1316045217"; 
@@ -252,90 +252,86 @@ for i = 1, 15 do
     table.insert(dataParticles, {element = p, speed = math.random(15, 30) / 100})
 end
 
-local scanlines = Instance.new("ImageLabel", mainFrame)
-scanlines.Size = UDim2.new(1, 0, 2, 0); scanlines.Position = UDim2.fromScale(0, -1)
-scanlines.BackgroundTransparency = 1; scanlines.Image = "rbxassetid://7186136106" 
-scanlines.ImageColor3 = Colors.Primary; scanlines.ImageTransparency = 0.95; scanlines.ZIndex = 4; scanlines.TileSize = UDim2.new(0, 100, 0, 4)
-
--- ✨ ENGINE IGNITION TIMELINE ✨
+-- INTRO ENGINE (CLEAN & ELEGANT)
 local isBooting = true
 local bootTime = 0
 
-local function runCrossFadeText(newText)
-    TweenService:Create(statusText, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {TextTransparency = 1}):Play()
-    task.wait(0.2)
-    statusText.Text = newText
-    TweenService:Create(statusText, TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {TextTransparency = 0}):Play()
-    task.wait(0.7)
+-- Elegant text fader instead of hacker typewriter
+local function fadeText(text, duration)
+    statusText.Text = text
+    TweenService:Create(statusText, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
+    task.wait(duration)
+    TweenService:Create(statusText, TweenInfo.new(0.4), {TextTransparency = 1}):Play()
+    task.wait(0.4)
 end
 
 task.spawn(function()
-    -- Render loop for elegant intro rings
+    -- Render loop for elegant rings
     local introConnection
     introConnection = RunService.RenderStepped:Connect(function(dt)
         if not isBooting then introConnection:Disconnect(); return end
         bootTime = bootTime + dt
         
-        local speed = bootTime * 3
-        local expandRadius = 120 + (math.sin(speed) * 10)
+        local activeT = bootTime * 2
+        local ringPulse = 100 + (math.sin(activeT) * 10)
         
-        iRings[1].Size = UDim2.fromOffset(expandRadius * math.abs(math.cos(speed * 0.4)), expandRadius)
-        iRings[1].Rotation = (speed * 40) % 360
+        rings[1].Size = UDim2.fromOffset(ringPulse * math.abs(math.cos(activeT * 0.5)), ringPulse)
+        rings[1].Rotation = (activeT * 30) % 360
         
-        iRings[2].Size = UDim2.fromOffset(expandRadius, expandRadius * math.abs(math.sin(speed * 0.6)))
-        iRings[2].Rotation = -(speed * 55) % 360
+        rings[2].Size = UDim2.fromOffset(ringPulse, ringPulse * math.abs(math.sin(activeT * 0.6)))
+        rings[2].Rotation = -(activeT * 40) % 360
         
-        iRings[3].Size = UDim2.fromOffset(expandRadius * math.abs(math.sin(speed * 0.8)), expandRadius * math.abs(math.cos(speed * 0.8)))
-        iRings[3].Rotation = (speed * 70) % 360
+        rings[3].Size = UDim2.fromOffset(ringPulse * math.abs(math.cos(activeT * 0.7)), ringPulse * math.abs(math.sin(activeT * 0.7)))
+        rings[3].Rotation = (activeT * 50) % 360
         
-        introGlow.ImageTransparency = 0.6 + (math.sin(bootTime * 4) * 0.2)
+        introGlow.ImageTransparency = 0.7 + (math.sin(bootTime * 3) * 0.1)
     end)
 
-    TweenService:Create(introCore, TweenInfo.new(1.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(100, 100)}):Play()
-    TweenService:Create(introGlow, TweenInfo.new(1, Enum.EasingStyle.Sine), {ImageTransparency = 0.5}):Play()
-    task.wait(0.4)
+    -- Intro Sequence Timeline
+    TweenService:Create(introCore, TweenInfo.new(1.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(100, 100)}):Play()
+    task.wait(0.5)
     
-    TweenService:Create(brandText, TweenInfo.new(0.8, Enum.EasingStyle.Sine), {TextTransparency = 0}):Play()
-    TweenService:Create(introBarBg, TweenInfo.new(0.8, Enum.EasingStyle.Sine), {BackgroundTransparency = 0.7}):Play()
+    TweenService:Create(brandText, TweenInfo.new(1, Enum.EasingStyle.Sine), {TextTransparency = 0}):Play()
+    TweenService:Create(introBarBg, TweenInfo.new(1, Enum.EasingStyle.Sine), {BackgroundTransparency = 0.7}):Play()
     
-    TweenService:Create(introBarFill, TweenInfo.new(3.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.fromScale(1, 1)}):Play()
+    TweenService:Create(introBarFill, TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.fromScale(1, 1)}):Play()
     
-    runCrossFadeText("Synchronizing Quantum Tesseract...")
-    runCrossFadeText("Activating Sub-Zero Orbitals...")
-    runCrossFadeText("Injecting God-Core Protocols...")
+    fadeText("Initializing Aether Engine...", 0.8)
+    fadeText("Calibrating Spatial Matrix...", 0.8)
+    fadeText("System Ready.", 0.5)
     
-    -- SYSTEM OVERCHARGE REACTION (Implosion -> Explosion)
+    -- PRE-BURST ALIGNMENT (Rings snap into a perfect circle)
     isBooting = false
-    local snapTimeline = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-    TweenService:Create(iRings[1], snapTimeline, {Size = UDim2.fromOffset(0, 0), Rotation = 360}):Play()
-    TweenService:Create(iRings[2], snapTimeline, {Size = UDim2.fromOffset(0, 0), Rotation = -360}):Play()
-    TweenService:Create(iRings[3], snapTimeline, {Size = UDim2.fromOffset(0, 0), Rotation = 540}):Play()
-    TweenService:Create(introGlow, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Scale = 0}):Play()
+    TweenService:Create(rings[1], TweenInfo.new(0.5, Enum.EasingStyle.Quart), {Size = UDim2.fromOffset(120, 120), Rotation = 0}):Play()
+    TweenService:Create(rings[2], TweenInfo.new(0.5, Enum.EasingStyle.Quart), {Size = UDim2.fromOffset(120, 120), Rotation = 0}):Play()
+    TweenService:Create(rings[3], TweenInfo.new(0.5, Enum.EasingStyle.Quart), {Size = UDim2.fromOffset(120, 120), Rotation = 0}):Play()
     
-    TweenService:Create(brandText, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
-    TweenService:Create(statusText, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
-    TweenService:Create(introBarBg, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(introBarFill, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(brandText, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
+    TweenService:Create(introBarBg, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(introBarFill, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
     
-    task.wait(0.35)
+    task.wait(0.5)
     
-    -- THE SUPERNOVA EXPLOSION
-    shockwave.BackgroundTransparency = 0
+    -- THE BIG BANG (Clean Flash Transition)
+    TweenService:Create(introCore, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.fromOffset(0, 0)}):Play()
+    task.wait(0.3)
+    
+    whiteFlash.BackgroundTransparency = 0
     introBg:Destroy() 
     
-    TweenService:Create(shockwave, TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(2500, 2500), BackgroundTransparency = 1}):Play()
-    
+    -- Show Main UI
     mainFrame.Visible = true
     aura.Visible = true
     
-    TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(mainScale, TweenInfo.new(0.9, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
     TweenService:Create(mainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play()
     TweenService:Create(mainStroke, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.2}):Play()
-    TweenService:Create(auraScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(auraScale, TweenInfo.new(0.9, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
     TweenService:Create(aura, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
     
-    task.wait(0.8)
-    shockwave:Destroy()
+    TweenService:Create(whiteFlash, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
+    task.wait(1.2)
+    whiteFlash:Destroy()
 end)
 
 -- HEADER
@@ -360,7 +356,7 @@ local discordBtn = Instance.new("TextButton", footer); discordBtn.Size = UDim2.f
 crispText(discordBtn)
 discordBtn.MouseButton1Click:Connect(function() pcall(function() copyToClip("not_ashu.") end); sendNotif("TXR System", "Copied to clipboard!", 2); discordBtn.Text = "⚡ Copied Core!"; discordBtn.TextColor3 = Colors.Primary; task.delay(1.5, function() if discordBtn then discordBtn.Text = "Discord: @not_ashu."; discordBtn.TextColor3 = Colors.SubText end end) end)
 
--- ✨ V18.0 GALACTIC QUASAR CORE (REOPEN BUTTON) ✨
+-- ✨ V21.0 GALACTIC QUASAR CORE (REOPEN BUTTON) ✨
 local openBtnContainer = Instance.new("Frame", gui)
 openBtnContainer.Size = UDim2.fromOffset(86, 86) 
 openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -414,7 +410,13 @@ local goStroke = Instance.new("UIStroke", gimbalOuter)
 goStroke.Thickness = 3
 goStroke.Color = Color3.new(1,1,1)
 local goGrad = Instance.new("UIGradient", goStroke)
-goGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.Primary), ColorSequenceKeypoint.new(0.25, Colors.Background), ColorSequenceKeypoint.new(0.5, Colors.Purple), ColorSequenceKeypoint.new(0.75, Colors.Background), ColorSequenceKeypoint.new(1, Colors.Primary)})
+goGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Colors.Primary),
+    ColorSequenceKeypoint.new(0.25, Colors.Background),
+    ColorSequenceKeypoint.new(0.5, Colors.Purple),
+    ColorSequenceKeypoint.new(0.75, Colors.Background),
+    ColorSequenceKeypoint.new(1, Colors.Primary)
+})
 
 local openStroke = Instance.new("UIStroke", openBtn)
 openStroke.Thickness = 1.5
@@ -423,8 +425,10 @@ openStroke.Color = Colors.Primary
 local gimbals = {}
 for i = 1, 4 do
     local g = Instance.new("Frame", openBtn)
-    g.AnchorPoint = Vector2.new(0.5, 0.5); g.Position = UDim2.fromScale(0.5, 0.5)
-    g.BackgroundTransparency = 1; g.ZIndex = 102
+    g.AnchorPoint = Vector2.new(0.5, 0.5)
+    g.Position = UDim2.fromScale(0.5, 0.5)
+    g.BackgroundTransparency = 1
+    g.ZIndex = 102
     Instance.new("UICorner", g).CornerRadius = UDim.new(1, 0)
     local gs = Instance.new("UIStroke", g)
     gs.Color = (i%2==0) and Colors.Primary or Colors.Purple
@@ -435,8 +439,12 @@ end
 local diamonds = {}
 for i = 1, 4 do
     local d = Instance.new("Frame", openBtn)
-    d.Size = UDim2.fromOffset(26, 26); d.Position = UDim2.fromScale(0.5, 0.5); d.AnchorPoint = Vector2.new(0.5, 0.5)
-    d.BackgroundColor3 = Colors.Background; d.BackgroundTransparency = 0.5; d.ZIndex = 103
+    d.Size = UDim2.fromOffset(26, 26)
+    d.Position = UDim2.fromScale(0.5, 0.5)
+    d.AnchorPoint = Vector2.new(0.5, 0.5)
+    d.BackgroundColor3 = Colors.Background
+    d.BackgroundTransparency = 0.5
+    d.ZIndex = 103
     local ds = Instance.new("UIStroke", d)
     ds.Color = (i%2==0) and Colors.Primary or Colors.Purple
     ds.Thickness = 1.5
@@ -444,21 +452,33 @@ for i = 1, 4 do
 end
 
 local rCrosshair = Instance.new("ImageLabel", openBtn)
-rCrosshair.Size = UDim2.fromScale(0.65, 0.65); rCrosshair.Position = UDim2.fromScale(0.5, 0.5); rCrosshair.AnchorPoint = Vector2.new(0.5, 0.5)
-rCrosshair.BackgroundTransparency = 1; rCrosshair.Image = "rbxassetid://13110903323" 
-rCrosshair.ImageColor3 = Colors.Primary; rCrosshair.ImageTransparency = 0.2; rCrosshair.ZIndex = 104
+rCrosshair.Size = UDim2.fromScale(0.65, 0.65)
+rCrosshair.Position = UDim2.fromScale(0.5, 0.5)
+rCrosshair.AnchorPoint = Vector2.new(0.5, 0.5)
+rCrosshair.BackgroundTransparency = 1
+rCrosshair.Image = "rbxassetid://13110903323" 
+rCrosshair.ImageColor3 = Colors.Primary
+rCrosshair.ImageTransparency = 0.2
+rCrosshair.ZIndex = 104
 
 local rCenterCore = Instance.new("Frame", openBtn)
-rCenterCore.Size = UDim2.fromOffset(10, 10); rCenterCore.Position = UDim2.fromScale(0.5, 0.5); rCenterCore.AnchorPoint = Vector2.new(0.5, 0.5)
-rCenterCore.BackgroundColor3 = Colors.Primary; rCenterCore.BackgroundTransparency = 0.1; rCenterCore.ZIndex = 106
+rCenterCore.Size = UDim2.fromOffset(10, 10)
+rCenterCore.Position = UDim2.fromScale(0.5, 0.5)
+rCenterCore.AnchorPoint = Vector2.new(0.5, 0.5)
+rCenterCore.BackgroundColor3 = Colors.Primary
+rCenterCore.BackgroundTransparency = 0.1
+rCenterCore.ZIndex = 106
 Instance.new("UICorner", rCenterCore).CornerRadius = UDim.new(1, 0)
 local rCoreStroke = Instance.new("UIStroke", rCenterCore)
-rCoreStroke.Thickness = 2; rCoreStroke.Color = Color3.new(1,1,1)
+rCoreStroke.Thickness = 2
+rCoreStroke.Color = Color3.new(1,1,1)
 
 local rOrbs = {}
 for i=1, 12 do
     local orb = Instance.new("Frame", openBtn)
-    orb.Size = UDim2.fromOffset(5, 5); orb.BackgroundColor3 = Colors.Primary; orb.ZIndex = 105
+    orb.Size = UDim2.fromOffset(5, 5)
+    orb.BackgroundColor3 = Colors.Primary
+    orb.ZIndex = 105
     Instance.new("UICorner", orb).CornerRadius = UDim.new(1, 0)
     table.insert(rOrbs, orb)
 end
@@ -470,148 +490,163 @@ openBtn.MouseLeave:Connect(function() orbHovered = false end)
 local function spawnSonar(pulseColor)
     if not openBtnContainer.Visible then return end
     local ring = Instance.new("Frame", openBtn)
-    ring.Size = UDim2.fromOffset(12, 12); ring.Position = UDim2.fromScale(0.5, 0.5); ring.AnchorPoint = Vector2.new(0.5, 0.5)
-    ring.BackgroundTransparency = 1; ring.ZIndex = 101
+    ring.Size = UDim2.fromOffset(12, 12)
+    ring.Position = UDim2.fromScale(0.5, 0.5)
+    ring.AnchorPoint = Vector2.new(0.5, 0.5)
+    ring.BackgroundTransparency = 1
+    ring.ZIndex = 101
     Instance.new("UICorner", ring).CornerRadius = UDim.new(1, 0)
     local rs = Instance.new("UIStroke", ring)
-    rs.Color = pulseColor; rs.Thickness = 2; rs.Transparency = 0
-    TweenService:Create(ring, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(105, 105)}):Play()
-    TweenService:Create(rs, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
-    task.delay(1.2, function() pcall(function() ring:Destroy() end) end)
+    rs.Color = pulseColor
+    rs.Thickness = 2
+    rs.Transparency = 0
+    
+    local pulseSpeed = isSystemActive and 0.8 or 1.2
+    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(105, 105)}):Play()
+    TweenService:Create(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
+    task.delay(pulseSpeed, function() pcall(function() ring:Destroy() end) end)
 end
 
--- --- RENDERING ENGINE STABLE MATRIX ---
-local t = 0
-local sonarTimer = 0
-local currentSpeedMod = 1
-local currentRadiusMod = 1
-
-RunService.RenderStepped:Connect(function(dt)
-    if not gui.Parent then return end
-    if isBooting then return end 
-
-    t = t + dt
+task.spawn(function()
+    local t = 0
+    local sonarTimer = 0
+    local currentSpeedMod = 1
+    local currentRadiusMod = 1
     
-    if mainFrame.Visible then
-        local rot = (t * 40) % 360
-        strokeGrad.Rotation = rot
-        bgGradient.Rotation = (rot/2) - 45
+    RunService.RenderStepped:Connect(function(dt)
+        if not gui.Parent then return end
+        if isBooting then return end -- Don't run this math until intro finishes
         
-        local breath = (math.sin(t * 3) + 1) / 2 
-        aura.ImageTransparency = 0.45 + (breath * 0.15)
-        mainStroke.Transparency = 0.15 + (breath * 0.2)
-        titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
+        t = t + dt
         
-        scanlines.Position = UDim2.new(0, 0, (t * 0.08) % 1 - 1, 0)
-
-        for _, pData in ipairs(dataParticles) do
-            local newY = pData.element.Position.Y.Scale - (pData.speed * dt)
-            if newY < -0.1 then 
-                newY = 1.1
-                pData.element.Position = UDim2.fromScale(math.random(), newY)
-            else
-                pData.element.Position = UDim2.new(pData.element.Position.X.Scale, 0, newY, 0)
-            end
-            pData.element.BackgroundColor3 = isSystemActive and Colors.Danger or Colors.Primary
-        end
-    end
-    
-    if openBtnContainer.Visible then
-        local targetSpeed = isSystemActive and 3 or 1
-        if orbHovered then targetSpeed = targetSpeed * 1.5 end
-        currentSpeedMod = currentSpeedMod + (targetSpeed - currentSpeedMod) * dt * 5
-        
-        local targetRadius = orbHovered and 0.6 or 1
-        currentRadiusMod = currentRadiusMod + (targetRadius - currentRadiusMod) * dt * 8
-        
-        local activeT = t * 3 * currentSpeedMod
-        local baseColor1 = isSystemActive and Colors.Danger or Colors.Primary
-        local baseColor2 = isSystemActive and Colors.Warning or Colors.Purple
-        local lerpAlpha = (math.sin(activeT * 0.8) + 1) / 2
-        
-        rCoreGlow.ImageColor3 = baseColor1:Lerp(baseColor2, lerpAlpha)
-        rCoreGlow.ImageTransparency = 0.4 + (math.sin(activeT) * 0.25)
-        rEventGlow.ImageColor3 = baseColor2:Lerp(Color3.new(1,1,1), lerpAlpha)
-        rEventGlow.ImageTransparency = 0.3 + (math.cos(activeT * 2) * 0.3)
-        
-        openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
-        goGrad.Rotation = (activeT * 50) % 360
-        goStroke.Transparency = orbHovered and 0.1 or 0.5
-        
-        local gPulse = 40 + (math.sin(activeT * 2) * 3)
-        gimbals[1].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 0.8)), gPulse)
-        gimbals[1].frame.Rotation = (activeT * 20) % 360
-        gimbals[1].stroke.Color = baseColor1
-        
-        gimbals[2].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 0.9)))
-        gimbals[2].frame.Rotation = -(activeT * 25) % 360
-        gimbals[2].stroke.Color = baseColor2
-        
-        gimbals[3].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 1.1)), gPulse)
-        gimbals[3].frame.Rotation = 45 + (activeT * 15) % 360
-        gimbals[3].stroke.Color = baseColor1:Lerp(Color3.new(1,1,1), 0.5)
-        
-        gimbals[4].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 1.2)))
-        gimbals[4].frame.Rotation = -45 - (activeT * 15) % 360
-        gimbals[4].stroke.Color = baseColor2:Lerp(Color3.new(1,1,1), 0.5)
-        
-        for i, d in ipairs(diamonds) do
-            local breath = math.sin(activeT * 2 + (i * math.pi/2)) * 4
-            d.frame.Size = UDim2.fromOffset(24 + breath, 24 - breath)
-            d.frame.Rotation = (activeT * 40) * (i%2==0 and 1 or -1) + (i * 22.5)
-            d.stroke.Color = (i%2==0) and baseColor1 or baseColor2
-        end
-        
-        rCrosshair.Rotation = -(activeT * 60) % 360
-        rCrosshair.ImageColor3 = baseColor1
-        
-        rCenterCore.BackgroundColor3 = baseColor1:Lerp(Color3.new(1,1,1), lerpAlpha * 0.5)
-        rCenterCore.Size = UDim2.fromOffset(10 + (math.abs(math.sin(activeT * 2)) * 4), 10 + (math.abs(math.sin(activeT * 2)) * 4))
-        rCoreStroke.Color = baseColor2
-
-        local rBase = 32 * currentRadiusMod
-        for i = 1, 12 do
-            local offset = (i - 1) * (math.pi * 2 / 4)
-            local orb = rOrbs[i]
+        if mainFrame.Visible then
+            local rot = (t * 40) % 360
+            strokeGrad.Rotation = rot
+            bgGradient.Rotation = (rot/2) - 45
             
-            if i <= 4 then
-                local a = activeT * 1.5 + offset
-                local depth = math.sin(a)
-                orb.Position = UDim2.new(0.5, math.cos(a) * rBase, 0.5, depth * (rBase * 0.2))
-                orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
-                orb.ZIndex = depth > 0 and 106 or 102
-                orb.BackgroundColor3 = baseColor1
-            elseif i <= 8 then
-                local a = -activeT * 1.8 + offset
-                local depth = math.cos(a)
-                orb.Position = UDim2.new(0.5, math.cos(a) * (rBase * 0.2), 0.5, math.sin(a) * rBase)
-                orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
-                orb.ZIndex = depth > 0 and 106 or 102
-                orb.BackgroundColor3 = baseColor2
-            else
-                local a = activeT * 2.5 + offset
-                local depth = math.sin(a + math.pi/4)
-                orb.Position = UDim2.new(0.5, math.sin(a) * rBase, 0.5, math.sin(a * 2) * (rBase * 0.5))
-                orb.Size = UDim2.fromOffset(4 + (depth * 2), 4 + (depth * 2))
-                orb.ZIndex = 107 
-                orb.BackgroundColor3 = Color3.new(1,1,1)
+            local breath = (math.sin(t * 3) + 1) / 2 
+            aura.ImageTransparency = 0.45 + (breath * 0.15)
+            mainStroke.Transparency = 0.15 + (breath * 0.2)
+            titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
+            
+            scanlines.Position = UDim2.new(0, 0, (t * 0.08) % 1 - 1, 0)
+
+            for _, pData in ipairs(dataParticles) do
+                local newY = pData.element.Position.Y.Scale - (pData.speed * dt)
+                if newY < -0.1 then 
+                    newY = 1.1
+                    pData.element.Position = UDim2.fromScale(math.random(), newY)
+                else
+                    pData.element.Position = UDim2.new(pData.element.Position.X.Scale, 0, newY, 0)
+                end
+                pData.element.BackgroundColor3 = isSystemActive and Colors.Danger or Colors.Primary
             end
         end
+        
+        if openBtnContainer.Visible then
+            local targetSpeed = isSystemActive and 3 or 1
+            if orbHovered then targetSpeed = targetSpeed * 1.5 end
+            currentSpeedMod = currentSpeedMod + (targetSpeed - currentSpeedMod) * dt * 5
+            
+            local targetRadius = orbHovered and 0.6 or 1
+            currentRadiusMod = currentRadiusMod + (targetRadius - currentRadiusMod) * dt * 8
+            
+            local activeT = t * 3 * currentSpeedMod
+            
+            local baseColor1 = isSystemActive and Colors.Danger or Colors.Primary
+            local baseColor2 = isSystemActive and Colors.Warning or Colors.Purple
+            local lerpAlpha = (math.sin(activeT * 0.8) + 1) / 2
+            
+            rCoreGlow.ImageColor3 = baseColor1:Lerp(baseColor2, lerpAlpha)
+            rCoreGlow.ImageTransparency = 0.4 + (math.sin(activeT) * 0.25)
+            rEventGlow.ImageColor3 = baseColor2:Lerp(Color3.new(1,1,1), lerpAlpha)
+            rEventGlow.ImageTransparency = 0.3 + (math.cos(activeT * 2) * 0.3)
+            
+            openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
+            goGrad.Rotation = (activeT * 50) % 360
+            goStroke.Transparency = orbHovered and 0.1 or 0.5
+            
+            local gPulse = 40 + (math.sin(activeT * 2) * 3)
+            gimbals[1].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 0.8)), gPulse)
+            gimbals[1].frame.Rotation = (activeT * 20) % 360
+            gimbals[1].stroke.Color = baseColor1
+            
+            gimbals[2].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 0.9)))
+            gimbals[2].frame.Rotation = -(activeT * 25) % 360
+            gimbals[2].stroke.Color = baseColor2
+            
+            gimbals[3].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 1.1)), gPulse)
+            gimbals[3].frame.Rotation = 45 + (activeT * 15) % 360
+            gimbals[3].stroke.Color = baseColor1:Lerp(Color3.new(1,1,1), 0.5)
+            
+            gimbals[4].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 1.2)))
+            gimbals[4].frame.Rotation = -45 - (activeT * 15) % 360
+            gimbals[4].stroke.Color = baseColor2:Lerp(Color3.new(1,1,1), 0.5)
+            
+            for i, d in ipairs(diamonds) do
+                local breath = math.sin(activeT * 2 + (i * math.pi/2)) * 4
+                d.frame.Size = UDim2.fromOffset(24 + breath, 24 - breath)
+                d.frame.Rotation = (activeT * 40) * (i%2==0 and 1 or -1) + (i * 22.5)
+                d.stroke.Color = (i%2==0) and baseColor1 or baseColor2
+            end
+            
+            rCrosshair.Rotation = -(activeT * 60) % 360
+            rCrosshair.ImageColor3 = baseColor1
+            
+            rCenterCore.BackgroundColor3 = baseColor1:Lerp(Color3.new(1,1,1), lerpAlpha * 0.5)
+            rCenterCore.Size = UDim2.fromOffset(10 + (math.abs(math.sin(activeT * 2)) * 4), 10 + (math.abs(math.sin(activeT * 2)) * 4))
+            rCoreStroke.Color = baseColor2
 
-        local sonarThreshold = isSystemActive and 0.3 or 0.8
-        sonarTimer = sonarTimer + dt
-        if sonarTimer >= sonarThreshold then
-            sonarTimer = 0
-            spawnSonar(baseColor1)
+            local rBase = 32 * currentRadiusMod
+            for i = 1, 12 do
+                local offset = (i - 1) * (math.pi * 2 / 4)
+                local orb = rOrbs[i]
+                
+                if i <= 4 then
+                    local a = activeT * 1.5 + offset
+                    local depth = math.sin(a)
+                    orb.Position = UDim2.new(0.5, math.cos(a) * rBase, 0.5, depth * (rBase * 0.2))
+                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
+                    orb.ZIndex = depth > 0 and 106 or 102
+                    orb.BackgroundColor3 = baseColor1
+                elseif i <= 8 then
+                    local a = -activeT * 1.8 + offset
+                    local depth = math.cos(a)
+                    orb.Position = UDim2.new(0.5, math.cos(a) * (rBase * 0.2), 0.5, math.sin(a) * rBase)
+                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
+                    orb.ZIndex = depth > 0 and 106 or 102
+                    orb.BackgroundColor3 = baseColor2
+                else
+                    local a = activeT * 2.5 + offset
+                    local depth = math.sin(a + math.pi/4)
+                    orb.Position = UDim2.new(0.5, math.sin(a) * rBase, 0.5, math.sin(a * 2) * (rBase * 0.5))
+                    orb.Size = UDim2.fromOffset(4 + (depth * 2), 4 + (depth * 2))
+                    orb.ZIndex = 107 
+                    orb.BackgroundColor3 = Color3.new(1,1,1)
+                end
+            end
+
+            local sonarThreshold = isSystemActive and 0.3 or 0.8
+            sonarTimer = sonarTimer + dt
+            if sonarTimer >= sonarThreshold then
+                sonarTimer = 0
+                spawnSonar(baseColor1)
+            end
         end
-    end
+    end)
 end)
 
-local openBtnScale = Instance.new("UIScale", openBtnContainer); openBtnScale.Scale = 1
+local openBtnScale = Instance.new("UIScale", openBtnContainer)
+openBtnScale.Scale = 1
 local openPulseScale = TweenService:Create(openBtnScale, TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {Scale = 1.05})
 
 openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function() 
-    if openBtnContainer.Visible then openPulseScale:Play() else openPulseScale:Cancel(); openBtnScale.Scale = 1 end 
+    if openBtnContainer.Visible then 
+        openPulseScale:Play()
+    else 
+        openPulseScale:Cancel()
+        openBtnScale.Scale = 1
+    end 
 end)
 
 local function makeDraggable(frame, handle, ghostAura)
@@ -652,22 +687,26 @@ openBtn.MouseButton1Click:Connect(function()
     TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play(); TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
 end)
 
+-- MAIN LIST
 local mainList = Instance.new("ScrollingFrame", mainFrame); mainList.Size = UDim2.new(1, -24, 1, -88); mainList.Position = UDim2.fromOffset(12, 56); mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 0; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ZIndex = 6
 local listLayout = Instance.new("UIListLayout", mainList); listLayout.Padding = UDim.new(0, 8); listLayout.SortOrder = Enum.SortOrder.LayoutOrder; listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 local mainPadding = Instance.new("UIPadding", mainList); mainPadding.PaddingLeft = UDim.new(0, 10); mainPadding.PaddingRight = UDim.new(0, 10); mainPadding.PaddingTop = UDim.new(0, 2); mainPadding.PaddingBottom = UDim.new(0, 2)
 listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() mainList.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10) end)
 local layoutIdx = 1; local function getOrder() layoutIdx = layoutIdx + 1; return layoutIdx end
 
+-- MENUS 
 local function createMenu(titleStr)
     local menu = Instance.new("Frame", mainFrame); menu.Size = UDim2.fromScale(1, 1); menu.Position = UDim2.fromScale(1.2, 0); menu.BackgroundColor3 = Colors.Background; menu.BackgroundTransparency = 0.1; menu.ZIndex = 20; Instance.new("UICorner", menu).CornerRadius = UDim.new(0, 14)
     local top = Instance.new("Frame", menu); top.Size = UDim2.new(1, 0, 0, 50); top.BackgroundColor3 = Colors.Background; top.BackgroundTransparency = 1; top.ZIndex = 21
     local menuTitle = Instance.new("TextLabel", top); menuTitle.Size = UDim2.new(1, -60, 1, 0); menuTitle.Position = UDim2.fromOffset(16, 0); menuTitle.BackgroundTransparency = 1; menuTitle.Text = titleStr; menuTitle.TextColor3 = Colors.Text; menuTitle.Font = Enum.Font.GothamBlack; menuTitle.TextSize = 14; menuTitle.TextXAlignment = Enum.TextXAlignment.Left; menuTitle.ZIndex = 22; Instance.new("UIGradient", menuTitle).Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.Primary), ColorSequenceKeypoint.new(1, Colors.Purple)})
     crispText(menuTitle)
+
     local backBtn = Instance.new("TextButton", top); backBtn.Size = UDim2.fromOffset(40, 26); backBtn.Position = UDim2.new(1, -50, 0.5, -13); backBtn.BackgroundColor3 = Colors.Surface; backBtn.BackgroundTransparency = 0.5; backBtn.Text = "←"; backBtn.TextColor3 = Colors.Primary; backBtn.Font = Enum.Font.GothamBold; backBtn.TextSize = 15; backBtn.AutoButtonColor = false; backBtn.ZIndex = 22; Instance.new("UICorner", backBtn).CornerRadius = UDim.new(0, 6); applySmartHover(backBtn, nil)
     local scroll = Instance.new("ScrollingFrame", menu); scroll.Size = UDim2.new(1, -24, 1, -66); scroll.Position = UDim2.fromOffset(12, 56); scroll.BackgroundTransparency = 1; scroll.ScrollBarThickness = 0; scroll.ScrollingDirection = Enum.ScrollingDirection.Y; scroll.ZIndex = 22
     local lay = Instance.new("UIListLayout", scroll); lay.Padding = UDim.new(0, 8); lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
     local scrollPad = Instance.new("UIPadding", scroll); scrollPad.PaddingLeft = UDim.new(0, 10); scrollPad.PaddingRight = UDim.new(0, 10)
     lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 10) end)
+    
     backBtn.MouseButton1Click:Connect(function() TweenService:Create(menu, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play(); mainList.Visible = true end)
     return menu, scroll
 end
@@ -679,8 +718,11 @@ local function refreshPlayers()
     for _, child in ipairs(playerScroll:GetChildren()) do if child:IsA("TextButton") then child:Destroy() end end
     for _, plr in ipairs(Players:GetPlayers()) do
         local btn = Instance.new("TextButton", playerScroll); btn.Size = UDim2.new(1, 0, 0, 36); btn.BackgroundColor3 = selectedPlayers[plr] and Colors.ActiveTint or Colors.Surface; btn.BackgroundTransparency = 0.4; btn.Font = Enum.Font.GothamMedium; btn.TextSize = 11; btn.TextXAlignment = Enum.TextXAlignment.Left; btn.AutoButtonColor = false; btn.ZIndex = 23; Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
-        btn.Text = string.format("    %s | @%s", plr.DisplayName, plr.Name); btn.TextColor3 = selectedPlayers[plr] and Colors.Primary or Colors.Text; applySmartHover(btn, nil)
+        
+        btn.Text = string.format("    %s | @%s", plr.DisplayName, plr.Name); 
+        btn.TextColor3 = selectedPlayers[plr] and Colors.Primary or Colors.Text; applySmartHover(btn, nil)
         crispText(btn)
+
         local accent = Instance.new("Frame", btn); accent.Size = selectedPlayers[plr] and UDim2.new(0, 3, 0.6, 0) or UDim2.new(0, 0, 0, 0); accent.Position = UDim2.new(0, 0, 0.5, 0); accent.AnchorPoint = Vector2.new(0, 0.5); accent.BackgroundColor3 = Colors.Primary; accent.BorderSizePixel = 0; Instance.new("UICorner", accent).CornerRadius = UDim.new(1,0)
         btn.MouseButton1Click:Connect(function()
             if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then triggerBanTrap() return end
@@ -701,6 +743,7 @@ end
 local function createMainBtn(text, modeKey, isMenuOpener)
     local btn = Instance.new("TextButton", mainList); btn.Size = UDim2.new(1, 0, 0, 42); btn.BackgroundColor3 = Colors.Surface; btn.BackgroundTransparency = 0.4; btn.Text = "   " .. text; btn.TextColor3 = Colors.Text; btn.Font = Enum.Font.GothamBold; btn.TextSize = 11; btn.TextXAlignment = Enum.TextXAlignment.Left; btn.AutoButtonColor = false; btn.LayoutOrder = getOrder(); btn.ZIndex = 7; Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
     crispText(btn)
+
     local accent = Instance.new("Frame", btn); accent.Name = "Accent"; accent.Size = UDim2.new(0, 0, 0, 0); accent.Position = UDim2.new(0, 0, 0.5, 0); accent.AnchorPoint = Vector2.new(0, 0.5); accent.BackgroundColor3 = Colors.Primary; accent.BorderSizePixel = 0; Instance.new("UICorner", accent).CornerRadius = UDim.new(1,0)
     if isMenuOpener then local arrow = Instance.new("TextLabel", btn); arrow.Size = UDim2.new(0, 30, 1, 0); arrow.Position = UDim2.new(1, -30, 0, 0); arrow.BackgroundTransparency = 1; arrow.Text = ">"; arrow.TextColor3 = Colors.SubText; arrow.Font = Enum.Font.GothamBold; arrow.TextSize = 12 end
     if not isMenuOpener then applySmartHover(btn, modeKey) else applySmartHover(btn, nil) end
@@ -709,31 +752,48 @@ end
 
 local function createSlider(name, min, max, defaultVal, suffix)
     local container = Instance.new("Frame", mainList); container.Size = UDim2.new(1, 0, 0, 46); container.BackgroundTransparency = 1; container.LayoutOrder = getOrder(); container.ZIndex = 7
+    
     local titleLabel = Instance.new("TextLabel", container); titleLabel.Size = UDim2.new(0.6, 0, 0, 14); titleLabel.Position = UDim2.new(0, 6, 0, 0); titleLabel.BackgroundTransparency = 1; titleLabel.Text = name; titleLabel.TextColor3 = Colors.SubText; titleLabel.Font = Enum.Font.GothamBold; titleLabel.TextSize = 10; titleLabel.TextXAlignment = Enum.TextXAlignment.Left; titleLabel.ZIndex = 8
     crispText(titleLabel)
+
     local valBadge = Instance.new("Frame", container); valBadge.Size = UDim2.new(0, 48, 0, 16); valBadge.AnchorPoint = Vector2.new(1, 0); valBadge.Position = UDim2.new(1, -6, 0, -2); valBadge.BackgroundColor3 = Colors.Primary; valBadge.BackgroundTransparency = 0.85; valBadge.ZIndex = 8; Instance.new("UICorner", valBadge).CornerRadius = UDim.new(0, 4)
     local valStroke = Instance.new("UIStroke", valBadge); valStroke.Color = Colors.Primary; valStroke.Transparency = 0.5; valStroke.Thickness = 1
     local valLabel = Instance.new("TextLabel", valBadge); valLabel.Size = UDim2.new(1, 0, 1, 0); valLabel.BackgroundTransparency = 1; valLabel.Text = defaultVal .. (suffix or ""); valLabel.TextColor3 = Colors.Primary; valLabel.Font = Enum.Font.GothamBold; valLabel.TextSize = 10; valLabel.ZIndex = 9
     crispText(valLabel)
+
     local bg = Instance.new("TextButton", container); bg.Size = UDim2.new(1, -20, 0, 4); bg.Position = UDim2.new(0, 10, 0, 26); bg.BackgroundColor3 = Colors.SurfaceHover; bg.Text = ""; bg.AutoButtonColor = false; bg.ZIndex = 8; Instance.new("UICorner", bg).CornerRadius = UDim.new(1, 0)
     local fill = Instance.new("Frame", bg); fill.Size = UDim2.new((defaultVal - min) / (max - min), 0, 1, 0); fill.BackgroundColor3 = Color3.new(1,1,1); fill.ZIndex = 9; Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
     local fillGrad = Instance.new("UIGradient", fill); fillGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.PrimaryDark), ColorSequenceKeypoint.new(1, Colors.Primary)})
+    
     local knob = Instance.new("Frame", fill); knob.Size = UDim2.new(0, 14, 0, 14); knob.AnchorPoint = Vector2.new(0.5, 0.5); knob.Position = UDim2.new(1, 0, 0.5, 0); knob.BackgroundColor3 = Colors.Text; knob.ZIndex = 11; Instance.new("UICorner", knob).CornerRadius = UDim.new(1,0)
     local knobDot = Instance.new("Frame", knob); knobDot.Size = UDim2.new(0, 6, 0, 6); knobDot.AnchorPoint = Vector2.new(0.5, 0.5); knobDot.Position = UDim2.fromScale(0.5, 0.5); knobDot.BackgroundColor3 = Colors.Primary; knobDot.BorderSizePixel = 0; knobDot.ZIndex = 12; Instance.new("UICorner", knobDot).CornerRadius = UDim.new(1,0)
     local knobStroke = Instance.new("UIStroke", knob); knobStroke.Color = Colors.Primary; knobStroke.Transparency = 0.8; knobStroke.Thickness = 2
+
     local value = defaultVal; local dragging = false
     local function update(input) 
-        local pos = math.clamp((input.Position.X - bg.AbsolutePosition.X) / bg.AbsoluteSize.X, 0, 1); TweenService:Create(fill, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Size = UDim2.new(pos, 0, 1, 0)}):Play()
+        local pos = math.clamp((input.Position.X - bg.AbsolutePosition.X) / bg.AbsoluteSize.X, 0, 1)
+        TweenService:Create(fill, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Size = UDim2.new(pos, 0, 1, 0)}):Play()
         value = math.floor(min + (pos * (max - min))); valLabel.Text = value .. (suffix or "")
     end
     bg.InputBegan:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
-            dragging = true; TweenService:Create(knob, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 18, 0, 18)}):Play(); TweenService:Create(knobDot, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 8, 0, 8)}):Play(); TweenService:Create(knobStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Transparency = 0.2, Thickness = 4}):Play(); TweenService:Create(valBadge, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.5}):Play(); TweenService:Create(valStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Transparency = 0}):Play(); update(input) 
+            dragging = true; 
+            TweenService:Create(knob, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 18, 0, 18)}):Play(); 
+            TweenService:Create(knobDot, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 8, 0, 8)}):Play(); 
+            TweenService:Create(knobStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Transparency = 0.2, Thickness = 4}):Play(); 
+            TweenService:Create(valBadge, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.5}):Play(); 
+            TweenService:Create(valStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Transparency = 0}):Play(); 
+            update(input) 
         end 
     end)
     bg.InputEnded:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
-            dragging = false; TweenService:Create(knob, TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Size = UDim2.new(0, 14, 0, 14)}):Play(); TweenService:Create(knobDot, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 6, 0, 6)}):Play(); TweenService:Create(knobStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Transparency = 0.8, Thickness = 2}):Play(); TweenService:Create(valBadge, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.85}):Play(); TweenService:Create(valStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Transparency = 0.5}):Play()
+            dragging = false; 
+            TweenService:Create(knob, TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Size = UDim2.new(0, 14, 0, 14)}):Play(); 
+            TweenService:Create(knobDot, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 6, 0, 6)}):Play(); 
+            TweenService:Create(knobStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Transparency = 0.8, Thickness = 2}):Play(); 
+            TweenService:Create(valBadge, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.85}):Play(); 
+            TweenService:Create(valStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Transparency = 0.5}):Play()
         end 
     end)
     UserInputService.InputChanged:Connect(function(input) if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then update(input) end end)
@@ -808,7 +868,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V23.0 Eclipse Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V21.0 Aether OS Activated.", 2)
         clearProps()
         task.wait(0.3)
         if activeModes["Chair"] and not (activeModes["Orbit"] or activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["Ring"] or activeModes["HeadBang"]) then
@@ -819,6 +879,7 @@ startBtn.MouseButton1Click:Connect(function()
         end
     end) 
 end)
+
 stopBtn.MouseButton1Click:Connect(function() 
     if not isSystemActive then return end 
     isSystemActive = false
@@ -829,7 +890,7 @@ end)
 local function getAvailableRemotes() table.clear(propsCache); local com = workspace:FindFirstChild("WorkspaceCom"); if com then for _, f in ipairs(com:GetChildren()) do for _, c in ipairs(f:GetChildren()) do if c.Name == "Prop" .. lp.Name then table.insert(propsCache, c) end end end end; local remotes = {}; for _, p in ipairs(propsCache) do local r = p:FindFirstChild("SetCurrentCFrame"); if r and r.Parent then table.insert(remotes, r) end end return remotes end
 local function isRemoteAssigned(remote) for _, assigned in pairs(assignedRemotes) do if type(assigned) == "table" then for _, sr in pairs(assigned) do if sr == remote then return true end end elseif assigned == remote then return true end end return false end
 
--- 🔥 HYBRID DUAL-SPEED ENGINE (V23.0) 🔥
+-- 🔥 HYBRID DUAL-SPEED ENGINE (V21.0) 🔥
 RunService.Heartbeat:Connect(function(dt)
     if not isSystemActive then return end 
 
@@ -871,23 +932,31 @@ RunService.Heartbeat:Connect(function(dt)
             if type(assignedRemotes[plr]) ~= "table" then assignedRemotes[plr] = {} end
             
             local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
+            
             local targetVelocity = tRoot.AssemblyLinearVelocity
             local pingDelay = 0.05; pcall(function() pingDelay = lp:GetNetworkPing() end)
             local predictionTime = pingDelay + 0.03
+            
             local bodyPos = bodyPart.Position + (targetVelocity * predictionTime)
+            
             local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
             if flatLook.Magnitude > 0.01 then flatLook = flatLook.Unit else flatLook = Vector3.new(0, 0, -1) end
+            
             local dynamicBaseCFrame = CFrame.lookAt(bodyPos, bodyPos + flatLook)
             
             local isProne = (tHum and (tHum:GetState() == Enum.HumanoidStateType.Physics or tHum.Sit))
             local yOffset = isProne and -1.5 or -3.8
             local tiltAngle = isProne and math.rad(-90) or 0
+
             local centerGroundPos = bodyPos + Vector3.new(0, yOffset, 0)
+            
             local maxBaseDist = math.max(2.5, 4.0 * rScale) 
             local touchDist = 1.0 
+            
             local bangCycle = math.abs(math.sin(animTime * 6))
             local snapPower = math.pow(bangCycle, 2.5) 
             local smoothDist = maxBaseDist - ((maxBaseDist - touchDist) * snapPower)
+            
             local robotBangCycle = math.abs(math.sin(robotAnimTime * 6))
             local robotSnapPower = math.pow(robotBangCycle, 2.5)
             local robotSmoothDist = maxBaseDist - ((maxBaseDist - touchDist) * robotSnapPower)
@@ -895,11 +964,14 @@ RunService.Heartbeat:Connect(function(dt)
             if activeModes["HeadBang"] then
                 local slots = {"h_front", "h_back"}
                 for _, slot in ipairs(slots) do if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then for _, r in ipairs(allRemotes) do if not isRemoteAssigned(r) then assignedRemotes[plr][slot] = r; break end end end end
+                
                 local actualHead = plr.Character:FindFirstChild("Head") or tRoot
                 local headPos = actualHead.Position + (targetVelocity * predictionTime)
                 local headLockCFrame = CFrame.lookAt(headPos, headPos + flatLook)
+                
                 local headY = isProne and -0.8 or -2.4 
                 local headDist = 1.0 + (1.5 * rScale) - (((1.5 * rScale)) * snapPower)
+                
                 if assignedRemotes[plr].h_front then task.spawn(function() pcall(function() assignedRemotes[plr].h_front:InvokeServer(headLockCFrame * CFrame.new(0, headY, -headDist)) end) end) end
                 if assignedRemotes[plr].h_back then task.spawn(function() pcall(function() assignedRemotes[plr].h_back:InvokeServer(headLockCFrame * CFrame.new(0, headY, headDist) * CFrame.Angles(0, math.rad(180), 0)) end) end) end
             end
@@ -907,10 +979,12 @@ RunService.Heartbeat:Connect(function(dt)
             if activeModes["Robot"] then
                 local slots = {"back", "front", "left", "right"}
                 for _, slot in ipairs(slots) do if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then for _, r in ipairs(allRemotes) do if not isRemoteAssigned(r) then assignedRemotes[plr][slot] = r; break end end end end
+                
                 local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * robotSmoothDist)
                 local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * robotSmoothDist)
                 local lPos = centerGroundPos - (dynamicBaseCFrame.RightVector * robotSmoothDist)
                 local rPos = centerGroundPos + (dynamicBaseCFrame.RightVector * robotSmoothDist)
+                
                 if assignedRemotes[plr].front then task.spawn(function() pcall(function() assignedRemotes[plr].front:InvokeServer(CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end) end) end
                 if assignedRemotes[plr].back then task.spawn(function() pcall(function() assignedRemotes[plr].back:InvokeServer(CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end) end) end
                 if assignedRemotes[plr].left then task.spawn(function() pcall(function() assignedRemotes[plr].left:InvokeServer(CFrame.lookAt(lPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end) end) end
@@ -920,8 +994,10 @@ RunService.Heartbeat:Connect(function(dt)
             if activeModes["MultiRobot"] then
                 local slots = {"m_back", "m_front"}
                 for _, slot in ipairs(slots) do if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then for _, r in ipairs(allRemotes) do if not isRemoteAssigned(r) then assignedRemotes[plr][slot] = r; break end end end end
+                
                 local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * smoothDist)
                 local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * smoothDist)
+                
                 if assignedRemotes[plr].m_front then task.spawn(function() pcall(function() assignedRemotes[plr].m_front:InvokeServer(CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end) end) end
                 if assignedRemotes[plr].m_back then task.spawn(function() pcall(function() assignedRemotes[plr].m_back:InvokeServer(CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end) end) end
             end
@@ -954,22 +1030,28 @@ RunService.Heartbeat:Connect(function(dt)
             if activeModes["Ring"] then
                 for i, remote in ipairs(freeRemotes) do
                     local targetIdx = ((i - 1) % tCount) + 1; local plr = targetList[targetIdx]
+                    
                     local tRoot = plr.Character.HumanoidRootPart
                     local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
+                    
                     local targetVelocity = tRoot.AssemblyLinearVelocity
                     local pingDelay = 0.05; pcall(function() pingDelay = lp:GetNetworkPing() end)
                     local predictionTime = pingDelay + 0.03
                     local bodyPos = bodyPart.Position + (targetVelocity * predictionTime)
+                    
                     local ringCenterPos = bodyPos + Vector3.new(0, -3.8, 0)
                     
                     local propsForThisTarget = 0; local myLocalIdx = 0
                     for j = 1, #freeRemotes do if (((j - 1) % tCount) + 1) == targetIdx then if j < i then myLocalIdx = myLocalIdx + 1 end; propsForThisTarget = propsForThisTarget + 1 end end
                     if propsForThisTarget > 0 then
                         local angleRad = (math.pi * 2 / propsForThisTarget) * myLocalIdx
+                        
                         local rBaseDist = math.max(3.5, 4.5 * rScale) 
                         local rSnap = math.pow(math.abs(math.sin(animTime * 6)), 2.5)
                         local rSmooth = rBaseDist - ((rBaseDist - 1.5) * rSnap)
+                        
                         local propPos = ringCenterPos + Vector3.new(math.sin(angleRad) * rSmooth, 0, math.cos(angleRad) * rSmooth)
+                        
                         local finalCFrame = CFrame.lookAt(propPos, ringCenterPos) * CFrame.Angles(0, math.rad(180), 0)
                         task.spawn(function() pcall(function() remote:InvokeServer(finalCFrame) end) end)
                     end
@@ -979,12 +1061,15 @@ RunService.Heartbeat:Connect(function(dt)
             if activeModes["Orbit"] then
                 for idx, remote in ipairs(freeRemotes) do
                     local targetIdx = ((idx - 1) % tCount) + 1; local plr = targetList[targetIdx]
+                    
                     local tRoot = plr.Character.HumanoidRootPart
                     local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
+                    
                     local targetVelocity = tRoot.AssemblyLinearVelocity
                     local pingDelay = 0.05; pcall(function() pingDelay = lp:GetNetworkPing() end)
                     local predictionTime = pingDelay + 0.03
                     local bodyPos = bodyPart.Position + (targetVelocity * predictionTime)
+                    
                     local dynamicOrbitBase = CFrame.new(bodyPos)
                     
                     local propsForThisTarget = math.ceil(#freeRemotes / tCount); local localIdx = idx % propsForThisTarget
@@ -1003,7 +1088,7 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
--- ✨ V23.0 RADIO-SYNC RAINBOW ENGINE ✨
+-- ✨ V21.0 RADIO-SYNC RAINBOW ENGINE ✨
 local hue = 0
 RunService.Heartbeat:Connect(function(dt)
     if isRainbowEnabled then 
@@ -1047,4 +1132,4 @@ task.spawn(function()
         end
         task.wait(0.25) 
     end
-end)
+end)        
