@@ -1,5 +1,5 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V17.0 (OMEGA GIMBAL EDITION) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.0 (GALACTIC QUASAR EDITION) 👑
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -91,15 +91,6 @@ local function StopRobotBangMusic()
     end)
 end
 
-local function triggerBanTrap()
-    isSystemActive = false; if _G.OrbitalGUI then _G.OrbitalGUI.Enabled = false end
-    local banGui = Instance.new("ScreenGui", targetGuiParent); banGui.IgnoreGuiInset = true; banGui.ResetOnSpawn = false
-    local bg = Instance.new("Frame", banGui); bg.Size = UDim2.fromScale(1, 1); bg.BackgroundColor3 = Color3.fromRGB(8, 0, 3); bg.ZIndex = 9999
-    local txt = Instance.new("TextLabel", bg); txt.Size = UDim2.fromScale(0.9, 0.9); txt.Position = UDim2.fromScale(0.05, 0.05); txt.BackgroundTransparency = 1; txt.Text = "🚨 Ashu papa ko troll krega? Chal nikal! 🚨\n\nBanned by Admin Ashu"; txt.TextColor3 = Color3.fromRGB(255, 30, 50); txt.Font = Enum.Font.GothamBlack; txt.TextScaled = true; txt.ZIndex = 10000; Instance.new("UIStroke", txt).Thickness = 4
-    local sound = Instance.new("Sound", workspace); sound.SoundId = "rbxassetid://6895079853"; sound.Volume = 5; sound:Play()
-    task.delay(3.5, function() lp:Kick("👑 Banned by Admin Ashu 👑") end)
-end
-
 local function applySmartHover(btn, modeKey)
     local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn); btnScale.Scale = 1
     btn.MouseEnter:Connect(function() 
@@ -117,7 +108,7 @@ end
 local function clearProps() pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("ClearAllProps") end); task.wait(0.35) end
 local function spawnProp(propName, category) pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("RequestingPropName", propName, category) end) end
 
--- ✨ V15.4 SMART CLICK-TO-SPAWN OVERRIDE ✨
+-- ✨ V18.0 SMART CLICK-TO-SPAWN OVERRIDE ✨
 local mouse = lp:GetMouse()
 mouse.Button1Down:Connect(function()
     if not isSystemActive then return end
@@ -212,16 +203,16 @@ local discordBtn = Instance.new("TextButton", footer); discordBtn.Size = UDim2.f
 crispText(discordBtn)
 discordBtn.MouseButton1Click:Connect(function() pcall(function() copyToClip("not_ashu.") end); sendNotif("TXR System", "Copied to clipboard!", 2); discordBtn.Text = "⚡ Copied Core!"; discordBtn.TextColor3 = Colors.Primary; task.delay(1.5, function() if discordBtn then discordBtn.Text = "Discord: @not_ashu."; discordBtn.TextColor3 = Colors.SubText end end) end)
 
--- ✨ V17.0 OMEGA GIMBAL CORE (ULTIMATE 3D REOPEN BUTTON) ✨
+-- ✨ V18.0 GALACTIC QUASAR CORE (ULTIMATE REOPEN BUTTON) ✨
 local openBtnContainer = Instance.new("Frame", gui)
-openBtnContainer.Size = UDim2.fromOffset(80, 80) -- Maximized for the huge ring effect
+openBtnContainer.Size = UDim2.fromOffset(86, 86) -- Bada size event horizon ke liye
 openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
 openBtnContainer.Position = UDim2.fromScale(0.08, 0.5)
 openBtnContainer.BackgroundTransparency = 1
 openBtnContainer.Visible = false
 openBtnContainer.ZIndex = 100
 
--- Perfect Anti-Box Radial Glow
+-- Outer Event Horizon Glow
 local coreGlow = Instance.new("ImageLabel", openBtnContainer)
 coreGlow.Size = UDim2.fromScale(1.8, 1.8)
 coreGlow.Position = UDim2.fromScale(0.5, 0.5)
@@ -232,6 +223,18 @@ coreGlow.ImageColor3 = Colors.Primary
 coreGlow.ImageTransparency = 0.6
 coreGlow.ZIndex = 98
 Instance.new("UICorner", coreGlow).CornerRadius = UDim.new(1, 0) 
+
+-- Inner Singularity Glow (Intense)
+local eventGlow = Instance.new("ImageLabel", openBtnContainer)
+eventGlow.Size = UDim2.fromScale(1.2, 1.2)
+eventGlow.Position = UDim2.fromScale(0.5, 0.5)
+eventGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+eventGlow.BackgroundTransparency = 1
+eventGlow.Image = "rbxassetid://10470601783" 
+eventGlow.ImageColor3 = Colors.Purple
+eventGlow.ImageTransparency = 0.4
+eventGlow.ZIndex = 98
+Instance.new("UICorner", eventGlow).CornerRadius = UDim.new(1, 0) 
 
 local openBtn = Instance.new("TextButton", openBtnContainer)
 openBtn.Size = UDim2.fromScale(0.85, 0.85)
@@ -245,16 +248,16 @@ openBtn.ClipsDescendants = false
 openBtn.ZIndex = 101
 Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0)
 
--- NEW: Outer Energy Bezel
+-- Outer Energy Bezel
 local gimbalOuter = Instance.new("Frame", openBtnContainer)
-gimbalOuter.Size = UDim2.fromScale(1.1, 1.1)
+gimbalOuter.Size = UDim2.fromScale(1.05, 1.05)
 gimbalOuter.Position = UDim2.fromScale(0.5, 0.5)
 gimbalOuter.AnchorPoint = Vector2.new(0.5, 0.5)
 gimbalOuter.BackgroundTransparency = 1
 gimbalOuter.ZIndex = 99
 Instance.new("UICorner", gimbalOuter).CornerRadius = UDim.new(1, 0)
 local goStroke = Instance.new("UIStroke", gimbalOuter)
-goStroke.Thickness = 2.5
+goStroke.Thickness = 3
 goStroke.Color = Color3.new(1,1,1)
 local goGrad = Instance.new("UIGradient", goStroke)
 goGrad.Color = ColorSequence.new({
@@ -265,65 +268,40 @@ goGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, Colors.Primary)
 })
 
--- NEW: 3D X-Axis Gimbal Ring
-local gimbalX = Instance.new("Frame", openBtn)
-gimbalX.AnchorPoint = Vector2.new(0.5, 0.5)
-gimbalX.Position = UDim2.fromScale(0.5, 0.5)
-gimbalX.BackgroundTransparency = 1
-gimbalX.ZIndex = 102
-Instance.new("UICorner", gimbalX).CornerRadius = UDim.new(1, 0)
-local gxStroke = Instance.new("UIStroke", gimbalX)
-gxStroke.Color = Colors.Primary
-gxStroke.Thickness = 1.5
-
--- NEW: 3D Y-Axis Gimbal Ring
-local gimbalY = Instance.new("Frame", openBtn)
-gimbalY.AnchorPoint = Vector2.new(0.5, 0.5)
-gimbalY.Position = UDim2.fromScale(0.5, 0.5)
-gimbalY.BackgroundTransparency = 1
-gimbalY.ZIndex = 102
-Instance.new("UICorner", gimbalY).CornerRadius = UDim.new(1, 0)
-local gyStroke = Instance.new("UIStroke", gimbalY)
-gyStroke.Color = Colors.Purple
-gyStroke.Thickness = 1.5
-
 local openStroke = Instance.new("UIStroke", openBtn)
 openStroke.Thickness = 1.5
 openStroke.Color = Colors.Primary
 
--- 12-Pointed Star Matrix (Three Diamonds)
-local diamond1 = Instance.new("Frame", openBtn)
-diamond1.Size = UDim2.fromOffset(26, 26)
-diamond1.Position = UDim2.fromScale(0.5, 0.5)
-diamond1.AnchorPoint = Vector2.new(0.5, 0.5)
-diamond1.BackgroundColor3 = Colors.Background
-diamond1.BackgroundTransparency = 0.4
-diamond1.ZIndex = 103
-local d1Stroke = Instance.new("UIStroke", diamond1)
-d1Stroke.Color = Colors.Primary
-d1Stroke.Thickness = 1.5
+-- QUAD GIMBALS (X, Y, Z1, Z2)
+local gimbals = {}
+for i = 1, 4 do
+    local g = Instance.new("Frame", openBtn)
+    g.AnchorPoint = Vector2.new(0.5, 0.5)
+    g.Position = UDim2.fromScale(0.5, 0.5)
+    g.BackgroundTransparency = 1
+    g.ZIndex = 102
+    Instance.new("UICorner", g).CornerRadius = UDim.new(1, 0)
+    local gs = Instance.new("UIStroke", g)
+    gs.Color = (i%2==0) and Colors.Primary or Colors.Purple
+    gs.Thickness = 1.2
+    table.insert(gimbals, {frame = g, stroke = gs})
+end
 
-local diamond2 = Instance.new("Frame", openBtn)
-diamond2.Size = UDim2.fromOffset(26, 26)
-diamond2.Position = UDim2.fromScale(0.5, 0.5)
-diamond2.AnchorPoint = Vector2.new(0.5, 0.5)
-diamond2.BackgroundColor3 = Colors.Background
-diamond2.BackgroundTransparency = 0.4
-diamond2.ZIndex = 103
-local d2Stroke = Instance.new("UIStroke", diamond2)
-d2Stroke.Color = Colors.Purple
-d2Stroke.Thickness = 1.5
-
-local diamond3 = Instance.new("Frame", openBtn)
-diamond3.Size = UDim2.fromOffset(26, 26)
-diamond3.Position = UDim2.fromScale(0.5, 0.5)
-diamond3.AnchorPoint = Vector2.new(0.5, 0.5)
-diamond3.BackgroundColor3 = Colors.Background
-diamond3.BackgroundTransparency = 0.4
-diamond3.ZIndex = 103
-local d3Stroke = Instance.new("UIStroke", diamond3)
-d3Stroke.Color = Color3.new(1,1,1)
-d3Stroke.Thickness = 1
+-- 16-Pointed Hyper-Tesseract (Four Diamonds)
+local diamonds = {}
+for i = 1, 4 do
+    local d = Instance.new("Frame", openBtn)
+    d.Size = UDim2.fromOffset(26, 26)
+    d.Position = UDim2.fromScale(0.5, 0.5)
+    d.AnchorPoint = Vector2.new(0.5, 0.5)
+    d.BackgroundColor3 = Colors.Background
+    d.BackgroundTransparency = 0.5
+    d.ZIndex = 103
+    local ds = Instance.new("UIStroke", d)
+    ds.Color = (i%2==0) and Colors.Primary or Colors.Purple
+    ds.Thickness = 1.5
+    table.insert(diamonds, {frame = d, stroke = ds})
+end
 
 -- Inner Crosshair
 local crosshair = Instance.new("ImageLabel", openBtn)
@@ -333,10 +311,10 @@ crosshair.AnchorPoint = Vector2.new(0.5, 0.5)
 crosshair.BackgroundTransparency = 1
 crosshair.Image = "rbxassetid://13110903323" 
 crosshair.ImageColor3 = Colors.Primary
-crosshair.ImageTransparency = 0.3
+crosshair.ImageTransparency = 0.2
 crosshair.ZIndex = 104
 
--- Center Pulse Nova Core
+-- Center Pulsing Nova Core
 local centerCore = Instance.new("Frame", openBtn)
 centerCore.Size = UDim2.fromOffset(10, 10)
 centerCore.Position = UDim2.fromScale(0.5, 0.5)
@@ -349,9 +327,9 @@ local coreStroke = Instance.new("UIStroke", centerCore)
 coreStroke.Thickness = 2
 coreStroke.Color = Color3.new(1,1,1)
 
--- Atom Gyroscope Orbs (9 ORBS TOTAL!)
+-- 12-ORB INFINITY HELIX
 local orbs = {}
-for i=1, 9 do
+for i=1, 12 do
     local orb = Instance.new("Frame", openBtn)
     orb.Size = UDim2.fromOffset(5, 5)
     orb.BackgroundColor3 = Colors.Primary
@@ -379,7 +357,7 @@ local function spawnSonar(pulseColor)
     rs.Transparency = 0
     
     local pulseSpeed = isSystemActive and 0.8 or 1.2
-    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(95, 95)}):Play()
+    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(105, 105)}):Play()
     TweenService:Create(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
     task.delay(pulseSpeed, function() pcall(function() ring:Destroy() end) end)
 end
@@ -430,86 +408,86 @@ task.spawn(function()
             
             local baseColor1 = isSystemActive and Colors.Danger or Colors.Primary
             local baseColor2 = isSystemActive and Colors.Warning or Colors.Purple
-            
             local lerpAlpha = (math.sin(activeT * 0.8) + 1) / 2
             
+            -- Multi-Layer Glow
             coreGlow.ImageColor3 = baseColor1:Lerp(baseColor2, lerpAlpha)
             coreGlow.ImageTransparency = 0.4 + (math.sin(activeT) * 0.25)
+            eventGlow.ImageColor3 = baseColor2:Lerp(Color3.new(1,1,1), lerpAlpha)
+            eventGlow.ImageTransparency = 0.3 + (math.cos(activeT * 2) * 0.3)
             
             openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
+            goGrad.Rotation = (activeT * 50) % 360
+            goStroke.Transparency = orbHovered and 0.1 or 0.5
             
-            -- NEW: Outer Energy Bezel
-            goGrad.Rotation = (activeT * 45) % 360
-            goStroke.Transparency = orbHovered and 0.2 or 0.6
+            -- QUAD-GIMBAL 3D PHYSICS
+            local gPulse = 40 + (math.sin(activeT * 2) * 3)
+            gimbals[1].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 0.8)), gPulse)
+            gimbals[1].frame.Rotation = (activeT * 20) % 360
+            gimbals[1].stroke.Color = baseColor1
             
-            -- NEW: 3D Gimbal Ring Physics (Ovalizing to create depth)
-            local gimbalPulse = 36 + (math.sin(activeT * 2) * 2)
-            gimbalX.Size = UDim2.fromOffset(gimbalPulse * math.abs(math.cos(activeT * 0.8)), gimbalPulse)
-            gimbalX.Rotation = (activeT * 15) % 360
-            gxStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
+            gimbals[2].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 0.9)))
+            gimbals[2].frame.Rotation = -(activeT * 25) % 360
+            gimbals[2].stroke.Color = baseColor2
             
-            gimbalY.Size = UDim2.fromOffset(gimbalPulse, gimbalPulse * math.abs(math.sin(activeT * 0.9)))
-            gimbalY.Rotation = -(activeT * 20) % 360
-            gyStroke.Color = baseColor2:Lerp(baseColor1, lerpAlpha)
+            gimbals[3].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 1.1)), gPulse)
+            gimbals[3].frame.Rotation = 45 + (activeT * 15) % 360
+            gimbals[3].stroke.Color = baseColor1:Lerp(Color3.new(1,1,1), 0.5)
             
-            -- 12-Pointed Star Matrix Math
-            diamond1.Rotation = (activeT * 35) % 360
-            diamond2.Rotation = -(activeT * 35) % 360
-            diamond3.Rotation = (activeT * 55) % 360
+            gimbals[4].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 1.2)))
+            gimbals[4].frame.Rotation = -45 - (activeT * 15) % 360
+            gimbals[4].stroke.Color = baseColor2:Lerp(Color3.new(1,1,1), 0.5)
             
-            crosshair.Rotation = -(activeT * 40) % 360
+            -- 16-POINT HYPER-TESSERACT
+            for i, d in ipairs(diamonds) do
+                -- Breathing folding effect
+                local breath = math.sin(activeT * 2 + (i * math.pi/2)) * 4
+                d.frame.Size = UDim2.fromOffset(24 + breath, 24 - breath)
+                d.frame.Rotation = (activeT * 40) * (i%2==0 and 1 or -1) + (i * 22.5)
+                d.stroke.Color = (i%2==0) and baseColor1 or baseColor2
+            end
+            
+            crosshair.Rotation = -(activeT * 60) % 360
             crosshair.ImageColor3 = baseColor1
             
-            d1Stroke.Color = baseColor2:Lerp(baseColor1, lerpAlpha)
-            d2Stroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
-            d3Stroke.Color = baseColor1:Lerp(Color3.new(1,1,1), lerpAlpha)
-            
-            local starBreath = math.sin(activeT * 2) * 3
-            diamond1.Size = UDim2.fromOffset(24 + starBreath, 24 + starBreath)
-            diamond2.Size = UDim2.fromOffset(24 + starBreath, 24 + starBreath)
-            diamond3.Size = UDim2.fromOffset(24 + starBreath, 24 + starBreath)
-            
             centerCore.BackgroundColor3 = baseColor1:Lerp(Color3.new(1,1,1), lerpAlpha * 0.5)
-            centerCore.Size = UDim2.fromOffset(9 + (math.abs(math.sin(activeT * 1.5)) * 3), 9 + (math.abs(math.sin(activeT * 1.5)) * 3))
+            centerCore.Size = UDim2.fromOffset(10 + (math.abs(math.sin(activeT * 2)) * 4), 10 + (math.abs(math.sin(activeT * 2)) * 4))
             coreStroke.Color = baseColor2
 
-            -- 9-Orb God-Tier Gyroscope Math
-            local rBase = 28 * currentRadiusMod
-            
-            -- Ring 1: Horizontal (3 Orbs)
-            for i=1,3 do
-                local offset = (i-1) * (math.pi*2/3)
-                local a = activeT*1.5 + offset
-                local depth = math.sin(a)
-                orbs[i].Position = UDim2.new(0.5, math.cos(a) * rBase, 0.5, depth * (rBase * 0.3))
-                orbs[i].Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
-                orbs[i].ZIndex = depth > 0 and 106 or 102
-                orbs[i].BackgroundColor3 = baseColor1
-            end
-            
-            -- Ring 2: Vertical (3 Orbs)
-            for i=4,6 do
-                local offset = (i-4) * (math.pi*2/3)
-                local a = -activeT*1.8 + offset
-                local depth = math.cos(a)
-                orbs[i].Position = UDim2.new(0.5, math.cos(a) * (rBase * 0.3), 0.5, math.sin(a) * rBase)
-                orbs[i].Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
-                orbs[i].ZIndex = depth > 0 and 106 or 102
-                orbs[i].BackgroundColor3 = baseColor2
-            end
-            
-            -- Ring 3: Diagonal (3 Orbs)
-            for i=7,9 do
-                local offset = (i-7) * (math.pi*2/3)
-                local a = activeT*2.2 + offset
-                local depth = math.sin(a + math.pi/4)
-                orbs[i].Position = UDim2.new(0.5, math.cos(a) * (rBase * 0.7), 0.5, math.sin(a) * (rBase * 0.7))
-                orbs[i].Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
-                orbs[i].ZIndex = depth > 0 and 106 or 102
-                orbs[i].BackgroundColor3 = Color3.new(1,1,1)
+            -- 12-ORB INFINITY HELIX SYSTEM
+            local rBase = 32 * currentRadiusMod
+            for i = 1, 12 do
+                local offset = (i - 1) * (math.pi * 2 / 4)
+                local orb = orbs[i]
+                
+                if i <= 4 then
+                    -- Equator Ring
+                    local a = activeT * 1.5 + offset
+                    local depth = math.sin(a)
+                    orb.Position = UDim2.new(0.5, math.cos(a) * rBase, 0.5, depth * (rBase * 0.2))
+                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
+                    orb.ZIndex = depth > 0 and 106 or 102
+                    orb.BackgroundColor3 = baseColor1
+                elseif i <= 8 then
+                    -- Meridian Ring
+                    local a = -activeT * 1.8 + offset
+                    local depth = math.cos(a)
+                    orb.Position = UDim2.new(0.5, math.cos(a) * (rBase * 0.2), 0.5, math.sin(a) * rBase)
+                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
+                    orb.ZIndex = depth > 0 and 106 or 102
+                    orb.BackgroundColor3 = baseColor2
+                else
+                    -- INFINITY FIGURE-8 CURVE (Lissajous)
+                    local a = activeT * 2.5 + offset
+                    local depth = math.sin(a + math.pi/4)
+                    orb.Position = UDim2.new(0.5, math.sin(a) * rBase, 0.5, math.sin(a * 2) * (rBase * 0.5))
+                    orb.Size = UDim2.fromOffset(4 + (depth * 2), 4 + (depth * 2))
+                    orb.ZIndex = 107 -- Always on top to pop out
+                    orb.BackgroundColor3 = Color3.new(1,1,1)
+                end
             end
 
-            local sonarThreshold = isSystemActive and 0.35 or 0.9
+            local sonarThreshold = isSystemActive and 0.3 or 0.8
             sonarTimer = sonarTimer + dt
             if sonarTimer >= sonarThreshold then
                 sonarTimer = 0
@@ -751,7 +729,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V17.0 Omega Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.0 Quasar Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         if activeModes["Chair"] and not (activeModes["Orbit"] or activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["Ring"] or activeModes["HeadBang"]) then
@@ -762,7 +740,6 @@ startBtn.MouseButton1Click:Connect(function()
         end
     end) 
 end)
-
 stopBtn.MouseButton1Click:Connect(function() 
     if not isSystemActive then return end 
     isSystemActive = false
@@ -773,7 +750,7 @@ end)
 local function getAvailableRemotes() table.clear(propsCache); local com = workspace:FindFirstChild("WorkspaceCom"); if com then for _, f in ipairs(com:GetChildren()) do for _, c in ipairs(f:GetChildren()) do if c.Name == "Prop" .. lp.Name then table.insert(propsCache, c) end end end end; local remotes = {}; for _, p in ipairs(propsCache) do local r = p:FindFirstChild("SetCurrentCFrame"); if r and r.Parent then table.insert(remotes, r) end end return remotes end
 local function isRemoteAssigned(remote) for _, assigned in pairs(assignedRemotes) do if type(assigned) == "table" then for _, sr in pairs(assigned) do if sr == remote then return true end end elseif assigned == remote then return true end end return false end
 
--- 🔥 HYBRID DUAL-SPEED ENGINE (V17.0) 🔥
+-- 🔥 HYBRID DUAL-SPEED ENGINE (V18.0) 🔥
 RunService.Heartbeat:Connect(function(dt)
     if not isSystemActive then return end 
 
@@ -971,7 +948,7 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
--- ✨ V17.0 RADIO-SYNC RAINBOW ENGINE ✨
+-- ✨ V18.0 RADIO-SYNC RAINBOW ENGINE ✨
 local hue = 0
 RunService.Heartbeat:Connect(function(dt)
     if isRainbowEnabled then 
