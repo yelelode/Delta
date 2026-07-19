@@ -192,21 +192,25 @@ local function clearProps() pcall(function() ReplicatedStorage:WaitForChild("RE"
 local function spawnProp(propName, category) pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("RequestingPropName", propName, category) end) end
 
 -- ✨ V18.0 DYNAMIC CLICK-TO-SPAWN (FIXED) ✨
-local mouse = lp:GetMouse()
-mouse.Button1Down:Connect(function()
-    if not isSystemActive then return end
-    local char = lp.Character
-    local tool = char and char:FindFirstChildOfClass("Tool")
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    -- Agar UI (menu) par click kiya hai, toh script kuch nahi karegi, game usko normally spawn karne degi!
+    if gameProcessed then return end 
     
-    -- Agar haath mein koi tool nahi hai (bina select kiya click kiya) toh default spawn karo
-    if not tool then
-        if activeModes["Chair"] then
-            spawnProp("FurnitureBleachers", "Furniture") 
-        else
-            spawnProp("ScreensRobotBig", "Screens") 
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if not isSystemActive then return end
+        local char = lp.Character
+        if char then
+            local tool = char:FindFirstChildOfClass("Tool")
+            -- Agar "Prop" ya "Box" wala tool haath mein hai aur directly road/screen pe click kiya:
+            if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
+                if activeModes["Chair"] then
+                    spawnProp("FurnitureBleachers", "Furniture") 
+                else
+                    spawnProp("ScreensRobotBig", "Screens") 
+                end
+            end
         end
     end
-    -- Agar tool selected hai, toh hum overwrite nahi karenge, game usko normally spawn karegi aur script usko grab kar legi!
 end)
 
 -- --- GUI CONSTRUCTION ---
