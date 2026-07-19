@@ -1,5 +1,5 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V16.0 (FINAL GOD-CORE EDITION) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V17.0 (OMEGA GIMBAL EDITION) 👑
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -212,16 +212,16 @@ local discordBtn = Instance.new("TextButton", footer); discordBtn.Size = UDim2.f
 crispText(discordBtn)
 discordBtn.MouseButton1Click:Connect(function() pcall(function() copyToClip("not_ashu.") end); sendNotif("TXR System", "Copied to clipboard!", 2); discordBtn.Text = "⚡ Copied Core!"; discordBtn.TextColor3 = Colors.Primary; task.delay(1.5, function() if discordBtn then discordBtn.Text = "Discord: @not_ashu."; discordBtn.TextColor3 = Colors.SubText end end) end)
 
--- ✨ V16.0 FINAL GOD-CORE REOPEN BUTTON ✨
+-- ✨ V17.0 OMEGA GIMBAL CORE (ULTIMATE 3D REOPEN BUTTON) ✨
 local openBtnContainer = Instance.new("Frame", gui)
-openBtnContainer.Size = UDim2.fromOffset(78, 78) -- Thoda aur bada final epic look ke liye
+openBtnContainer.Size = UDim2.fromOffset(80, 80) -- Maximized for the huge ring effect
 openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
 openBtnContainer.Position = UDim2.fromScale(0.08, 0.5)
 openBtnContainer.BackgroundTransparency = 1
 openBtnContainer.Visible = false
 openBtnContainer.ZIndex = 100
 
--- Perfect Anti-Box Glowing Aura
+-- Perfect Anti-Box Radial Glow
 local coreGlow = Instance.new("ImageLabel", openBtnContainer)
 coreGlow.Size = UDim2.fromScale(1.8, 1.8)
 coreGlow.Position = UDim2.fromScale(0.5, 0.5)
@@ -245,19 +245,19 @@ openBtn.ClipsDescendants = false
 openBtn.ZIndex = 101
 Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0)
 
--- Outer Rotating Boundary Ring
-local outerRing = Instance.new("Frame", openBtnContainer)
-outerRing.Size = UDim2.fromScale(1, 1)
-outerRing.Position = UDim2.fromScale(0.5, 0.5)
-outerRing.AnchorPoint = Vector2.new(0.5, 0.5)
-outerRing.BackgroundTransparency = 1
-outerRing.ZIndex = 99
-Instance.new("UICorner", outerRing).CornerRadius = UDim.new(1, 0)
-local outerStroke = Instance.new("UIStroke", outerRing)
-outerStroke.Thickness = 2.5
-outerStroke.Color = Color3.new(1,1,1)
-local outerGrad = Instance.new("UIGradient", outerStroke)
-outerGrad.Color = ColorSequence.new({
+-- NEW: Outer Energy Bezel
+local gimbalOuter = Instance.new("Frame", openBtnContainer)
+gimbalOuter.Size = UDim2.fromScale(1.1, 1.1)
+gimbalOuter.Position = UDim2.fromScale(0.5, 0.5)
+gimbalOuter.AnchorPoint = Vector2.new(0.5, 0.5)
+gimbalOuter.BackgroundTransparency = 1
+gimbalOuter.ZIndex = 99
+Instance.new("UICorner", gimbalOuter).CornerRadius = UDim.new(1, 0)
+local goStroke = Instance.new("UIStroke", gimbalOuter)
+goStroke.Thickness = 2.5
+goStroke.Color = Color3.new(1,1,1)
+local goGrad = Instance.new("UIGradient", goStroke)
+goGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Colors.Primary),
     ColorSequenceKeypoint.new(0.25, Colors.Background),
     ColorSequenceKeypoint.new(0.5, Colors.Purple),
@@ -265,23 +265,27 @@ outerGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, Colors.Primary)
 })
 
--- Inner Counter-Rotating Boundary Ring
-local innerRing = Instance.new("Frame", openBtnContainer)
-innerRing.Size = UDim2.fromScale(0.85, 0.85)
-innerRing.Position = UDim2.fromScale(0.5, 0.5)
-innerRing.AnchorPoint = Vector2.new(0.5, 0.5)
-innerRing.BackgroundTransparency = 1
-innerRing.ZIndex = 99
-Instance.new("UICorner", innerRing).CornerRadius = UDim.new(1, 0)
-local innerStroke = Instance.new("UIStroke", innerRing)
-innerStroke.Thickness = 1
-innerStroke.Color = Colors.Primary
-local innerGrad = Instance.new("UIGradient", innerStroke)
-innerGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Colors.Purple),
-    ColorSequenceKeypoint.new(0.5, Colors.Background),
-    ColorSequenceKeypoint.new(1, Colors.Primary)
-})
+-- NEW: 3D X-Axis Gimbal Ring
+local gimbalX = Instance.new("Frame", openBtn)
+gimbalX.AnchorPoint = Vector2.new(0.5, 0.5)
+gimbalX.Position = UDim2.fromScale(0.5, 0.5)
+gimbalX.BackgroundTransparency = 1
+gimbalX.ZIndex = 102
+Instance.new("UICorner", gimbalX).CornerRadius = UDim.new(1, 0)
+local gxStroke = Instance.new("UIStroke", gimbalX)
+gxStroke.Color = Colors.Primary
+gxStroke.Thickness = 1.5
+
+-- NEW: 3D Y-Axis Gimbal Ring
+local gimbalY = Instance.new("Frame", openBtn)
+gimbalY.AnchorPoint = Vector2.new(0.5, 0.5)
+gimbalY.Position = UDim2.fromScale(0.5, 0.5)
+gimbalY.BackgroundTransparency = 1
+gimbalY.ZIndex = 102
+Instance.new("UICorner", gimbalY).CornerRadius = UDim.new(1, 0)
+local gyStroke = Instance.new("UIStroke", gimbalY)
+gyStroke.Color = Colors.Purple
+gyStroke.Thickness = 1.5
 
 local openStroke = Instance.new("UIStroke", openBtn)
 openStroke.Thickness = 1.5
@@ -332,7 +336,7 @@ crosshair.ImageColor3 = Colors.Primary
 crosshair.ImageTransparency = 0.3
 crosshair.ZIndex = 104
 
--- Center Pulse Core
+-- Center Pulse Nova Core
 local centerCore = Instance.new("Frame", openBtn)
 centerCore.Size = UDim2.fromOffset(10, 10)
 centerCore.Position = UDim2.fromScale(0.5, 0.5)
@@ -375,7 +379,7 @@ local function spawnSonar(pulseColor)
     rs.Transparency = 0
     
     local pulseSpeed = isSystemActive and 0.8 or 1.2
-    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(90, 90)}):Play()
+    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(95, 95)}):Play()
     TweenService:Create(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
     task.delay(pulseSpeed, function() pcall(function() ring:Destroy() end) end)
 end
@@ -434,10 +438,19 @@ task.spawn(function()
             
             openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
             
-            -- Dual Rings
-            outerGrad.Rotation = (activeT * 30) % 360
-            innerGrad.Rotation = -(activeT * 45) % 360
-            innerStroke.Color = baseColor2:Lerp(baseColor1, lerpAlpha)
+            -- NEW: Outer Energy Bezel
+            goGrad.Rotation = (activeT * 45) % 360
+            goStroke.Transparency = orbHovered and 0.2 or 0.6
+            
+            -- NEW: 3D Gimbal Ring Physics (Ovalizing to create depth)
+            local gimbalPulse = 36 + (math.sin(activeT * 2) * 2)
+            gimbalX.Size = UDim2.fromOffset(gimbalPulse * math.abs(math.cos(activeT * 0.8)), gimbalPulse)
+            gimbalX.Rotation = (activeT * 15) % 360
+            gxStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
+            
+            gimbalY.Size = UDim2.fromOffset(gimbalPulse, gimbalPulse * math.abs(math.sin(activeT * 0.9)))
+            gimbalY.Rotation = -(activeT * 20) % 360
+            gyStroke.Color = baseColor2:Lerp(baseColor1, lerpAlpha)
             
             -- 12-Pointed Star Matrix Math
             diamond1.Rotation = (activeT * 35) % 360
@@ -452,9 +465,9 @@ task.spawn(function()
             d3Stroke.Color = baseColor1:Lerp(Color3.new(1,1,1), lerpAlpha)
             
             local starBreath = math.sin(activeT * 2) * 3
-            diamond1.Size = UDim2.fromOffset(26 + starBreath, 26 + starBreath)
-            diamond2.Size = UDim2.fromOffset(26 + starBreath, 26 + starBreath)
-            diamond3.Size = UDim2.fromOffset(26 + starBreath, 26 + starBreath)
+            diamond1.Size = UDim2.fromOffset(24 + starBreath, 24 + starBreath)
+            diamond2.Size = UDim2.fromOffset(24 + starBreath, 24 + starBreath)
+            diamond3.Size = UDim2.fromOffset(24 + starBreath, 24 + starBreath)
             
             centerCore.BackgroundColor3 = baseColor1:Lerp(Color3.new(1,1,1), lerpAlpha * 0.5)
             centerCore.Size = UDim2.fromOffset(9 + (math.abs(math.sin(activeT * 1.5)) * 3), 9 + (math.abs(math.sin(activeT * 1.5)) * 3))
@@ -738,7 +751,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V16.0 Final God-Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V17.0 Omega Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         if activeModes["Chair"] and not (activeModes["Orbit"] or activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["Ring"] or activeModes["HeadBang"]) then
@@ -760,7 +773,7 @@ end)
 local function getAvailableRemotes() table.clear(propsCache); local com = workspace:FindFirstChild("WorkspaceCom"); if com then for _, f in ipairs(com:GetChildren()) do for _, c in ipairs(f:GetChildren()) do if c.Name == "Prop" .. lp.Name then table.insert(propsCache, c) end end end end; local remotes = {}; for _, p in ipairs(propsCache) do local r = p:FindFirstChild("SetCurrentCFrame"); if r and r.Parent then table.insert(remotes, r) end end return remotes end
 local function isRemoteAssigned(remote) for _, assigned in pairs(assignedRemotes) do if type(assigned) == "table" then for _, sr in pairs(assigned) do if sr == remote then return true end end elseif assigned == remote then return true end end return false end
 
--- 🔥 HYBRID DUAL-SPEED ENGINE (V16.0) 🔥
+-- 🔥 HYBRID DUAL-SPEED ENGINE (V17.0) 🔥
 RunService.Heartbeat:Connect(function(dt)
     if not isSystemActive then return end 
 
@@ -958,7 +971,7 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
--- ✨ V16.0 RADIO-SYNC RAINBOW ENGINE ✨
+-- ✨ V17.0 RADIO-SYNC RAINBOW ENGINE ✨
 local hue = 0
 RunService.Heartbeat:Connect(function(dt)
     if isRainbowEnabled then 
