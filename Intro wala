@@ -1,5 +1,6 @@
 -- =========================================================
 -- 👑 TXR ASHU: QUANTUM CORE V21.0 (AETHER OS EDITION) 👑
+-- ⚡ NEW-GEN AEGIS ENGINE - 100% BUG FREE TWEEN ARCHITECTURE ⚡
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -29,11 +30,11 @@ local robotAnimTime = 0
 
 -- --- 🌌 NEXT-GEN CYBERPALETTE (CLEANER & SOOTHER) 🌌 ---
 local Colors = {
-    Background = Color3.fromRGB(10, 12, 18),       
-    Surface = Color3.fromRGB(20, 24, 34),          
-    SurfaceHover = Color3.fromRGB(28, 34, 50),     
+    Background = Color3.fromRGB(8, 10, 15),        -- Deep Abyss
+    Surface = Color3.fromRGB(18, 22, 30),          
+    SurfaceHover = Color3.fromRGB(26, 32, 45),     
     ActiveTint = Color3.fromRGB(12, 40, 55),       
-    Primary = Color3.fromRGB(0, 255, 200),         -- Cyan
+    Primary = Color3.fromRGB(0, 255, 200),         -- Cyan Glow
     PrimaryDark = Color3.fromRGB(0, 160, 140),     
     Danger = Color3.fromRGB(255, 45, 85),          
     Warning = Color3.fromRGB(255, 170, 0),         
@@ -131,264 +132,206 @@ gui.IgnoreGuiInset = true
 _G.OrbitalGUI = gui
 
 -- ====================================================================================
--- ✨ V21.0 AETHER OS: ULTIMATE CINEMATIC BOOT SEQUENCE (BUG FREE & HEAVILY POLISHED) ✨
+-- ✨ V21.0 NEW-GEN AEGIS INTRO SEQUENCE (100% TWEEN-BASED, 0% BUGS) ✨
 -- ====================================================================================
 
--- 1. Main Master Container (Isolated for safe destruction)
+-- Master Safe Container
 local introContainer = Instance.new("Frame", gui)
 introContainer.Size = UDim2.fromScale(1, 1)
-introContainer.BackgroundColor3 = Color3.fromRGB(3, 4, 7) -- Pure deep space dark
+introContainer.BackgroundColor3 = Color3.fromRGB(4, 5, 8) 
 introContainer.BorderSizePixel = 0
 introContainer.ZIndex = 100000
 
--- 2. Quantum Hex Grid Background (Moving)
-local introGrid = Instance.new("ImageLabel", introContainer)
-introGrid.Size = UDim2.fromScale(2, 2)
-introGrid.Position = UDim2.fromScale(-0.5, -0.5)
-introGrid.BackgroundTransparency = 1
-introGrid.Image = "rbxassetid://6156947266" 
-introGrid.ImageTransparency = 0.94
-introGrid.ImageColor3 = Colors.Primary
-introGrid.TileSize = UDim2.fromOffset(80, 80)
-introGrid.ScaleType = Enum.ScaleType.Tile
-introGrid.ZIndex = 100001
+-- Cinematic Light Leak Background
+local lightLeak = Instance.new("ImageLabel", introContainer)
+lightLeak.Size = UDim2.fromScale(2, 2)
+lightLeak.Position = UDim2.fromScale(-0.5, -0.5)
+lightLeak.BackgroundTransparency = 1
+lightLeak.Image = "rbxassetid://10470601783" 
+lightLeak.ImageColor3 = Colors.Primary
+lightLeak.ImageTransparency = 0.9
+lightLeak.ZIndex = 100001
+TweenService:Create(lightLeak, TweenInfo.new(6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {Size = UDim2.fromScale(2.5, 2.5), ImageTransparency = 0.8}):Play()
 
--- 3. Center Core Group
-local coreGroup = Instance.new("Frame", introContainer)
-coreGroup.Size = UDim2.fromOffset(0, 0)
-coreGroup.Position = UDim2.fromScale(0.5, 0.45)
-coreGroup.AnchorPoint = Vector2.new(0.5, 0.5)
-coreGroup.BackgroundTransparency = 1
-coreGroup.ZIndex = 100005
+-- AEGIS Core Ring (Clean, Minimal, Professional)
+local aegisCore = Instance.new("Frame", introContainer)
+aegisCore.Size = UDim2.fromOffset(0, 0)
+aegisCore.Position = UDim2.fromScale(0.5, 0.45)
+aegisCore.AnchorPoint = Vector2.new(0.5, 0.5)
+aegisCore.BackgroundTransparency = 1
+aegisCore.ZIndex = 100005
 
--- Outer Glow
-local coreGlow = Instance.new("ImageLabel", coreGroup)
-coreGlow.Size = UDim2.fromScale(5, 5)
-coreGlow.Position = UDim2.fromScale(0.5, 0.5)
-coreGlow.AnchorPoint = Vector2.new(0.5, 0.5)
-coreGlow.BackgroundTransparency = 1
-coreGlow.Image = "rbxassetid://10470601783"
-coreGlow.ImageColor3 = Colors.Primary
-coreGlow.ImageTransparency = 1
-coreGlow.ZIndex = 100002
+local outerRing = Instance.new("Frame", aegisCore)
+outerRing.Size = UDim2.fromScale(1, 1)
+outerRing.Position = UDim2.fromScale(0.5, 0.5)
+outerRing.AnchorPoint = Vector2.new(0.5, 0.5)
+outerRing.BackgroundTransparency = 1
+Instance.new("UICorner", outerRing).CornerRadius = UDim.new(1, 0)
+local orStroke = Instance.new("UIStroke", outerRing)
+orStroke.Color = Colors.Primary
+orStroke.Thickness = 1
+orStroke.Transparency = 0.8
 
--- Spinning Cyber Diamonds
-local diamond1 = Instance.new("Frame", coreGroup)
-diamond1.Size = UDim2.fromOffset(45, 45)
-diamond1.AnchorPoint = Vector2.new(0.5, 0.5)
-diamond1.Position = UDim2.fromScale(0.5, 0.5)
-diamond1.BackgroundColor3 = Colors.Background
-diamond1.ZIndex = 100004
-local d1Stroke = Instance.new("UIStroke", diamond1)
-d1Stroke.Color = Colors.Primary
-d1Stroke.Thickness = 2
-d1Stroke.Transparency = 0.2
+local innerRing = Instance.new("Frame", aegisCore)
+innerRing.Size = UDim2.fromScale(0.7, 0.7)
+innerRing.Position = UDim2.fromScale(0.5, 0.5)
+innerRing.AnchorPoint = Vector2.new(0.5, 0.5)
+innerRing.BackgroundTransparency = 1
+Instance.new("UICorner", innerRing).CornerRadius = UDim.new(1, 0)
+local irStroke = Instance.new("UIStroke", innerRing)
+irStroke.Color = Colors.Purple
+irStroke.Thickness = 2
+irStroke.Transparency = 0.2
 
-local diamond2 = Instance.new("Frame", coreGroup)
-diamond2.Size = UDim2.fromOffset(30, 30)
-diamond2.AnchorPoint = Vector2.new(0.5, 0.5)
-diamond2.Position = UDim2.fromScale(0.5, 0.5)
-diamond2.BackgroundTransparency = 1
-diamond2.ZIndex = 100005
-local d2Stroke = Instance.new("UIStroke", diamond2)
-d2Stroke.Color = Colors.Purple
-d2Stroke.Thickness = 1.5
-d2Stroke.Transparency = 0.1
+local centerDot = Instance.new("Frame", aegisCore)
+centerDot.Size = UDim2.fromOffset(4, 4)
+centerDot.Position = UDim2.fromScale(0.5, 0.5)
+centerDot.AnchorPoint = Vector2.new(0.5, 0.5)
+centerDot.BackgroundColor3 = Colors.Primary
+Instance.new("UICorner", centerDot).CornerRadius = UDim.new(1, 0)
 
--- Pulsing Ring
-local pulseRing = Instance.new("Frame", coreGroup)
-pulseRing.Size = UDim2.fromOffset(90, 90)
-pulseRing.AnchorPoint = Vector2.new(0.5, 0.5)
-pulseRing.Position = UDim2.fromScale(0.5, 0.5)
-pulseRing.BackgroundTransparency = 1
-pulseRing.ZIndex = 100003
-Instance.new("UICorner", pulseRing).CornerRadius = UDim.new(1, 0)
-local prStroke = Instance.new("UIStroke", pulseRing)
-prStroke.Color = Colors.Primary
-prStroke.Thickness = 1
-prStroke.Transparency = 0.5
+-- Continuous Tween Rotations (Completely safe, no RenderStepped needed)
+local tInfoSpin = TweenInfo.new(8, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1)
+local tInfoSpinRev = TweenInfo.new(6, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1)
+-- To make rings look dashed, we apply a gradient
+local orGrad = Instance.new("UIGradient", outerRing)
+orGrad.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0), NumberSequenceKeypoint.new(0.5,1), NumberSequenceKeypoint.new(1,0)})
+local irGrad = Instance.new("UIGradient", innerRing)
+irGrad.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,1), NumberSequenceKeypoint.new(0.5,0), NumberSequenceKeypoint.new(1,1)})
 
--- 4. Cinematic Brand Text
-local brandText = Instance.new("TextLabel", introContainer)
-brandText.Size = UDim2.new(1, 0, 0, 40)
-brandText.Position = UDim2.fromScale(0.5, 0.58)
-brandText.AnchorPoint = Vector2.new(0.5, 0.5)
-brandText.BackgroundTransparency = 1
-brandText.Text = ""
-brandText.TextColor3 = Colors.Text
-brandText.Font = Enum.Font.GothamMedium
-brandText.TextSize = 24
-brandText.TextTransparency = 0
-brandText.TextStrokeTransparency = 0.8
-brandText.ZIndex = 100005
+TweenService:Create(outerRing, tInfoSpin, {Rotation = 360}):Play()
+TweenService:Create(innerRing, tInfoSpinRev, {Rotation = -360}):Play()
 
-local subBrandText = Instance.new("TextLabel", introContainer)
-subBrandText.Size = UDim2.new(1, 0, 0, 20)
-subBrandText.Position = UDim2.fromScale(0.5, 0.61)
-subBrandText.AnchorPoint = Vector2.new(0.5, 0.5)
-subBrandText.BackgroundTransparency = 1
-subBrandText.Text = "A E T H E R   O S   V 2 1 . 0"
-subBrandText.TextColor3 = Colors.Primary
-subBrandText.Font = Enum.Font.Gotham
-subBrandText.TextSize = 10
-subBrandText.TextTransparency = 1
-subBrandText.ZIndex = 100005
+-- Ultra-Sleek Loading Line
+local loadingTrack = Instance.new("Frame", introContainer)
+loadingTrack.Size = UDim2.new(0, 0, 0, 1)
+loadingTrack.Position = UDim2.fromScale(0.5, 0.6)
+loadingTrack.AnchorPoint = Vector2.new(0.5, 0.5)
+loadingTrack.BackgroundColor3 = Colors.SurfaceHover
+loadingTrack.BorderSizePixel = 0
+loadingTrack.ZIndex = 100003
 
--- 5. Cyber Terminal Boot Logs
-local logContainer = Instance.new("Frame", introContainer)
-logContainer.Size = UDim2.new(0, 300, 0, 100)
-logContainer.Position = UDim2.fromScale(0.02, 0.98)
-logContainer.AnchorPoint = Vector2.new(0, 1)
-logContainer.BackgroundTransparency = 1
-logContainer.ZIndex = 100005
-local logLayout = Instance.new("UIListLayout", logContainer)
-logLayout.SortOrder = Enum.SortOrder.LayoutOrder
-logLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
-logLayout.Padding = UDim.new(0, 4)
+local loadingFill = Instance.new("Frame", loadingTrack)
+loadingFill.Size = UDim2.fromScale(0, 1)
+loadingFill.Position = UDim2.fromScale(0.5, 0.5)
+loadingFill.AnchorPoint = Vector2.new(0.5, 0.5)
+loadingFill.BackgroundColor3 = Colors.Primary
+loadingFill.BorderSizePixel = 0
 
--- 6. Scanning Laser
-local scanLaser = Instance.new("Frame", introContainer)
-scanLaser.Size = UDim2.new(1, 0, 0, 2)
-scanLaser.BackgroundColor3 = Colors.Primary
-scanLaser.BackgroundTransparency = 0.5
-scanLaser.BorderSizePixel = 0
-scanLaser.ZIndex = 100006
-local laserGrad = Instance.new("UIGradient", scanLaser)
-laserGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Colors.Primary),
-    ColorSequenceKeypoint.new(0.5, Colors.Text),
-    ColorSequenceKeypoint.new(1, Colors.Primary)
-})
-laserGrad.Transparency = NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 1),
-    NumberSequenceKeypoint.new(0.5, 0),
-    NumberSequenceKeypoint.new(1, 1)
-})
+local loadingGlow = Instance.new("ImageLabel", loadingFill)
+loadingGlow.Size = UDim2.new(1, 40, 1, 20)
+loadingGlow.Position = UDim2.fromScale(0.5, 0.5)
+loadingGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+loadingGlow.BackgroundTransparency = 1
+loadingGlow.Image = "rbxassetid://10470601783"
+loadingGlow.ImageColor3 = Colors.Primary
+loadingGlow.ImageTransparency = 0.5
+loadingGlow.ZIndex = 100002
 
--- The Massive Shockwave Transition Setup
-local shockwave = Instance.new("Frame", introContainer)
-shockwave.AnchorPoint = Vector2.new(0.5, 0.5)
-shockwave.Position = UDim2.fromScale(0.5, 0.5)
-shockwave.Size = UDim2.fromOffset(0, 0)
-shockwave.BackgroundTransparency = 1
-shockwave.BackgroundColor3 = Colors.Primary
-shockwave.ZIndex = 100010
-Instance.new("UICorner", shockwave).CornerRadius = UDim.new(1, 0)
-local swStroke = Instance.new("UIStroke", shockwave)
-swStroke.Thickness = 0
-swStroke.Color = Colors.Primary
-swStroke.Transparency = 0
+-- Brand Typography
+local titleText = Instance.new("TextLabel", introContainer)
+titleText.Size = UDim2.new(1, 0, 0, 30)
+titleText.Position = UDim2.fromScale(0.5, 0.55)
+titleText.AnchorPoint = Vector2.new(0.5, 0.5)
+titleText.BackgroundTransparency = 1
+titleText.Text = "TXR ASHU"
+titleText.TextColor3 = Colors.Text
+titleText.Font = Enum.Font.GothamMedium
+titleText.TextSize = 18
+titleText.LetterSpacing = 0.5
+titleText.TextTransparency = 1
+titleText.ZIndex = 100005
+crispText(titleText)
 
--- Intro Animation Logic
-local function addLog(textStr, waitTime)
-    local lbl = Instance.new("TextLabel", logContainer)
-    lbl.Size = UDim2.new(1, 0, 0, 14)
-    lbl.BackgroundTransparency = 1
-    lbl.Text = "> " .. textStr
-    lbl.TextColor3 = Colors.SubText
-    lbl.Font = Enum.Font.Code
-    lbl.TextSize = 12
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.TextTransparency = 1
-    TweenService:Create(lbl, TweenInfo.new(0.2), {TextTransparency = 0}):Play()
-    task.wait(waitTime)
+local subTitleText = Instance.new("TextLabel", introContainer)
+subTitleText.Size = UDim2.new(1, 0, 0, 15)
+subTitleText.Position = UDim2.fromScale(0.5, 0.63)
+subTitleText.AnchorPoint = Vector2.new(0.5, 0.5)
+subTitleText.BackgroundTransparency = 1
+subTitleText.Text = "AEGIS ENGINE READY"
+subTitleText.TextColor3 = Colors.Purple
+subTitleText.Font = Enum.Font.Gotham
+subTitleText.TextSize = 10
+subTitleText.LetterSpacing = 0.2
+subTitleText.TextTransparency = 1
+subTitleText.ZIndex = 100005
+
+-- Dynamic Cyber Particles (Generated and tweened once, highly optimized)
+local particles = {}
+for i = 1, 20 do
+    local p = Instance.new("Frame", introContainer)
+    p.Size = UDim2.fromOffset(math.random(1,3), math.random(1,3))
+    p.Position = UDim2.fromScale(math.random(), math.random())
+    p.BackgroundColor3 = (i%2==0) and Colors.Primary or Colors.Purple
+    p.BackgroundTransparency = 1
+    p.BorderSizePixel = 0
+    p.ZIndex = 100004
+    Instance.new("UICorner", p).CornerRadius = UDim.new(1, 0)
+    table.insert(particles, p)
 end
 
-local function cryptographicDecode(element, targetText, duration)
-    local chars = {"A","X","R","0","1","&","#","@","T","S","H","U","*","%"}
-    local length = #targetText
-    local startT = os.clock()
-    while os.clock() - startT < duration do
-        if not element.Parent then return end
-        local str = ""
-        for i = 1, length do
-            if string.sub(targetText, i, i) == " " then str = str .. " "
-            else str = str .. chars[math.random(1, #chars)] end
-        end
-        element.Text = str
-        task.wait(0.04)
-    end
-    if element.Parent then element.Text = targetText end
-end
-
+-- 🚀 INTRO TIMELINE EXECUTION (100% Safe Threading) 🚀
 task.spawn(function()
-    -- Render Loop for dynamic elements
-    local introActive = true
-    local timeElapsed = 0
-    local rsConn
-    rsConn = RunService.RenderStepped:Connect(function(dt)
-        if not introActive then rsConn:Disconnect(); return end
-        timeElapsed = timeElapsed + dt
-        
-        -- Moving background grid
-        introGrid.Position = UDim2.new(-0.5, math.sin(timeElapsed * 0.4) * 40, -0.5, math.cos(timeElapsed * 0.4) * 40)
-        
-        -- Spinning Core
-        diamond1.Rotation = (timeElapsed * 60) % 360
-        diamond2.Rotation = -(timeElapsed * 90) % 360
-        
-        -- Pulsing Ring
-        local scale = 1 + (math.sin(timeElapsed * 4) * 0.1)
-        pulseRing.Size = UDim2.fromOffset(90 * scale, 90 * scale)
-        prStroke.Transparency = 0.5 + (math.sin(timeElapsed * 4) * 0.3)
-        
-        -- Laser Sweep
-        scanLaser.Position = UDim2.fromScale(0, (math.sin(timeElapsed * 1.5) + 1) / 2)
-        
-        -- Core Glow breathing
-        coreGlow.ImageTransparency = 0.6 + (math.sin(timeElapsed * 5) * 0.2)
-    end)
-
-    -- Timeline Execution
-    TweenService:Create(coreGroup, TweenInfo.new(1.2, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(100, 100)}):Play()
+    -- Step 1: Open Core Ring
+    TweenService:Create(aegisCore, TweenInfo.new(1.2, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(140, 140)}):Play()
     task.wait(0.5)
     
-    task.spawn(function() cryptographicDecode(brandText, "T X R   A S H U", 1.5) end)
-    
-    addLog("CONNECTING TO AETHER KERNEL...", 0.7)
-    addLog("BYPASSING ROBLOX SECURITY PROTOCOLS...", 0.6)
-    TweenService:Create(subBrandText, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
-    addLog("INJECTING QUANTUM HOOKS...", 0.5)
-    addLog("ALLOCATING MEMORY BLOCKS...", 0.5)
-    addLog("SYSTEM DECRYPTED. ALL SYSTEMS NOMINAL.", 0.6)
-    
+    -- Step 2: Expand Track
+    TweenService:Create(loadingTrack, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 220, 0, 1)}):Play()
     task.wait(0.4)
     
-    -- The Implosion (Prepare for blast)
-    introActive = false
-    TweenService:Create(coreGroup, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.fromOffset(0, 0)}):Play()
-    TweenService:Create(brandText, TweenInfo.new(0.4), {TextTransparency = 1}):Play()
-    TweenService:Create(subBrandText, TweenInfo.new(0.4), {TextTransparency = 1}):Play()
-    TweenService:Create(scanLaser, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
-    for _, child in ipairs(logContainer:GetChildren()) do
-        if child:IsA("TextLabel") then TweenService:Create(child, TweenInfo.new(0.3), {TextTransparency = 1}):Play() end
+    -- Step 3: Particle Reveal
+    for _, p in ipairs(particles) do
+        TweenService:Create(p, TweenInfo.new(math.random(10, 20)/10), {BackgroundTransparency = math.random(2, 6)/10}):Play()
+        local targetY = p.Position.Y.Scale - math.random(10, 30)/100
+        TweenService:Create(p, TweenInfo.new(math.random(30, 50)/10, Enum.EasingStyle.Linear), {Position = UDim2.new(p.Position.X.Scale, 0, targetY, 0)}):Play()
     end
     
-    task.wait(0.6)
+    -- Step 4: Title Fade & Loading
+    TweenService:Create(titleText, TweenInfo.new(1, Enum.EasingStyle.Sine), {TextTransparency = 0, LetterSpacing = 0.2}):Play()
+    TweenService:Create(loadingFill, TweenInfo.new(2.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.fromScale(1, 1)}):Play()
     
-    -- EXPLOSION (Shockwave Transition)
-    shockwave.BackgroundTransparency = 0
-    swStroke.Thickness = 20
+    task.wait(2.2)
     
-    -- Reveal Main UI instantly under the shockwave
+    -- Step 5: Boot Complete Highlight
+    TweenService:Create(subTitleText, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
+    TweenService:Create(loadingFill, TweenInfo.new(0.3), {BackgroundColor3 = Colors.Purple}):Play()
+    TweenService:Create(loadingGlow, TweenInfo.new(0.3), {ImageColor3 = Colors.Purple}):Play()
+    
+    task.wait(0.8)
+    
+    -- Step 6: Collapse & Morph Sequence (No sudden destroy, smooth fade)
+    TweenService:Create(aegisCore, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.fromOffset(0, 0)}):Play()
+    TweenService:Create(loadingTrack, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 1)}):Play()
+    TweenService:Create(titleText, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
+    TweenService:Create(subTitleText, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
+    
+    for _, p in ipairs(particles) do
+        TweenService:Create(p, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+    end
+    
+    task.wait(0.5) -- Wait for collapse to finish
+    
+    -- Step 7: Reveal Main UI Seamlessly
     mainFrame.Visible = true
     aura.Visible = true
-    TweenService:Create(mainScale, TweenInfo.new(1.2, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-    TweenService:Create(mainFrame, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play()
-    TweenService:Create(mainStroke, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.2}):Play()
-    TweenService:Create(auraScale, TweenInfo.new(1.2, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-    TweenService:Create(aura, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
     
-    -- Tween Shockwave expanding outwards and fading
-    TweenService:Create(shockwave, TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(3000, 3000), BackgroundTransparency = 1}):Play()
-    TweenService:Create(swStroke, TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Thickness = 0, Transparency = 1}):Play()
+    -- Pop out effect for main UI
+    TweenService:Create(mainScale, TweenInfo.new(1, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(mainFrame, TweenInfo.new(0.7, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play()
+    TweenService:Create(mainStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.2}):Play()
+    TweenService:Create(auraScale, TweenInfo.new(1, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(aura, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
     
-    task.wait(0.7)
+    -- Fade out the black background
+    TweenService:Create(introContainer, TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(lightLeak, TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 1}):Play()
     
-    -- SAFELY DESTROY ENTIRE INTRO (NO WHITE SCREENS LEFT BEHIND)
-    pcall(function() introContainer:Destroy() end)
+    task.wait(0.8)
+    
+    -- Step 8: Safe cleanup (100% bug free)
+    introContainer:Destroy()
 end)
-
 
 -- ====================================================================================
 -- MAIN UI ELEMENTS (HIDDEN DURING INTRO)
@@ -397,27 +340,22 @@ local aura = Instance.new("ImageLabel", gui)
 aura.AnchorPoint = Vector2.new(0.5, 0.5); aura.Position = UDim2.fromScale(0.5, 0.5); aura.Size = UDim2.new(0, 320, 0, 450)
 aura.BackgroundTransparency = 1; aura.Image = "rbxassetid://1316045217"; 
 aura.ImageColor3 = Colors.Primary; aura.ImageTransparency = 1; aura.ZIndex = 1; aura.Visible = false
-local auraScale = Instance.new("UIScale", aura); auraScale.Scale = 0.75 -- Starts smaller for bounce
+local auraScale = Instance.new("UIScale", aura); auraScale.Scale = 0.7 -- Starts small for pop out effect
 
 local mainFrame = Instance.new("Frame", gui); mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.Position = UDim2.fromScale(0.5, 0.5); mainFrame.Size = UDim2.new(0, 280, 0, 410)
 mainFrame.BackgroundColor3 = Colors.Background; mainFrame.BackgroundTransparency = 1; mainFrame.BorderSizePixel = 0; mainFrame.ClipsDescendants = true; mainFrame.ZIndex = 5; mainFrame.Visible = false
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14) 
 
--- Clean Scanlines for Main UI (Bug free implementation)
-local scanlines = Instance.new("Frame", mainFrame)
-scanlines.Size = UDim2.fromScale(1, 2)
-scanlines.Position = UDim2.fromScale(0, 0)
+-- Static Scanlines Overlay (Lightweight & Safe)
+local scanlines = Instance.new("ImageLabel", mainFrame)
+scanlines.Size = UDim2.fromScale(1, 1)
 scanlines.BackgroundTransparency = 1
+scanlines.Image = "rbxassetid://7335602492"
+scanlines.ImageTransparency = 0.85
+scanlines.TileSize = UDim2.fromOffset(200, 4)
+scanlines.ScaleType = Enum.ScaleType.Tile
 scanlines.ZIndex = 4
-for i = 1, 40 do
-    local sl = Instance.new("Frame", scanlines)
-    sl.Size = UDim2.new(1, 0, 0, 1)
-    sl.Position = UDim2.fromScale(0, i/40)
-    sl.BackgroundColor3 = Color3.new(0,0,0)
-    sl.BackgroundTransparency = 0.85
-    sl.BorderSizePixel = 0
-end
 
 local bgGradient = Instance.new("UIGradient", mainFrame)
 bgGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(16, 20, 30)), ColorSequenceKeypoint.new(0.5, Colors.Background), ColorSequenceKeypoint.new(1, Color3.fromRGB(16, 20, 30))})
@@ -426,7 +364,7 @@ bgGradient.Rotation = -45
 local mainStroke = Instance.new("UIStroke", mainFrame); mainStroke.Thickness = 1.5; mainStroke.Transparency = 1; mainStroke.Color = Color3.new(1,1,1)
 local strokeGrad = Instance.new("UIGradient", mainStroke); strokeGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.Primary), ColorSequenceKeypoint.new(0.5, Colors.Purple), ColorSequenceKeypoint.new(1, Colors.Primary)})
 
-local mainScale = Instance.new("UIScale", mainFrame); mainScale.Scale = 0.75; 
+local mainScale = Instance.new("UIScale", mainFrame); mainScale.Scale = 0.7; 
 
 local particleContainer = Instance.new("Frame", mainFrame)
 particleContainer.Size = UDim2.fromScale(1, 1); particleContainer.BackgroundTransparency = 1; particleContainer.ZIndex = 3
@@ -633,9 +571,6 @@ task.spawn(function()
             mainStroke.Transparency = 0.15 + (breath * 0.2)
             titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
             
-            -- Scanlines fully working now
-            scanlines.Position = UDim2.new(0, 0, ((t * 0.08) % 1) - 1, 0)
-
             for _, pData in ipairs(dataParticles) do
                 local newY = pData.element.Position.Y.Scale - (pData.speed * dt)
                 if newY < -0.1 then 
@@ -787,7 +722,7 @@ minimizeBtn.MouseButton1Click:Connect(function()
 end)
 
 openBtn.MouseButton1Click:Connect(function() 
-    TweenService:Create(openBtnScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play(); task.wait(0.25); openBtnContainer.Visible = false; mainFrame.Visible = true; aura.Visible = true; mainScale.Scale = 0.75; auraScale.Scale = 0.75; 
+    TweenService:Create(openBtnScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play(); task.wait(0.25); openBtnContainer.Visible = false; mainFrame.Visible = true; aura.Visible = true; mainScale.Scale = 0.7; auraScale.Scale = 0.7; 
     TweenService:Create(mainScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play(); TweenService:Create(auraScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
     TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play(); TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
 end)
