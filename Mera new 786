@@ -1,5 +1,5 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.0 (GALACTIC QUASAR EDITION) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V19.0 (AETHERIAL BOOT EDITION) 👑
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -91,6 +91,15 @@ local function StopRobotBangMusic()
     end)
 end
 
+local function triggerBanTrap()
+    isSystemActive = false; if _G.OrbitalGUI then _G.OrbitalGUI.Enabled = false end
+    local banGui = Instance.new("ScreenGui", targetGuiParent); banGui.IgnoreGuiInset = true; banGui.ResetOnSpawn = false
+    local bg = Instance.new("Frame", banGui); bg.Size = UDim2.fromScale(1, 1); bg.BackgroundColor3 = Color3.fromRGB(8, 0, 3); bg.ZIndex = 9999
+    local txt = Instance.new("TextLabel", bg); txt.Size = UDim2.fromScale(0.9, 0.9); txt.Position = UDim2.fromScale(0.05, 0.05); txt.BackgroundTransparency = 1; txt.Text = "🚨 Ashu papa ko troll krega? Chal nikal! 🚨\n\nBanned by Admin Ashu"; txt.TextColor3 = Color3.fromRGB(255, 30, 50); txt.Font = Enum.Font.GothamBlack; txt.TextScaled = true; txt.ZIndex = 10000; Instance.new("UIStroke", txt).Thickness = 4
+    local sound = Instance.new("Sound", workspace); sound.SoundId = "rbxassetid://6895079853"; sound.Volume = 5; sound:Play()
+    task.delay(3.5, function() lp:Kick("👑 Banned by Admin Ashu 👑") end)
+end
+
 local function applySmartHover(btn, modeKey)
     local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn); btnScale.Scale = 1
     btn.MouseEnter:Connect(function() 
@@ -128,15 +137,141 @@ end)
 -- --- GUI CONSTRUCTION ---
 local gui = Instance.new("ScreenGui", targetGuiParent); gui.Name = "OrbitalCyberUI"; gui.ResetOnSpawn = false; _G.OrbitalGUI = gui
 
+-- ✨ V19.0 THE AETHERIAL BOOT SEQUENCE (CINEMATIC INTRO) ✨
+local introBg = Instance.new("Frame", gui)
+introBg.Size = UDim2.fromScale(1, 1)
+introBg.BackgroundColor3 = Color3.fromRGB(5, 6, 9)
+introBg.BackgroundTransparency = 0
+introBg.ZIndex = 1000
+
+local introGlow = Instance.new("ImageLabel", introBg)
+introGlow.Size = UDim2.fromScale(1.5, 1.5)
+introGlow.Position = UDim2.fromScale(0.5, 0.5)
+introGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+introGlow.BackgroundTransparency = 1
+introGlow.Image = "rbxassetid://10470601783" 
+introGlow.ImageColor3 = Colors.Primary
+introGlow.ImageTransparency = 1
+introGlow.ZIndex = 1001
+
+local introCore = Instance.new("Frame", introBg)
+introCore.Size = UDim2.fromOffset(0, 0)
+introCore.Position = UDim2.fromScale(0.5, 0.45)
+introCore.AnchorPoint = Vector2.new(0.5, 0.5)
+introCore.BackgroundTransparency = 1
+introCore.ZIndex = 1002
+
+local introRing1 = Instance.new("ImageLabel", introCore)
+introRing1.Size = UDim2.fromScale(1, 1)
+introRing1.Position = UDim2.fromScale(0.5, 0.5)
+introRing1.AnchorPoint = Vector2.new(0.5, 0.5)
+introRing1.BackgroundTransparency = 1
+introRing1.Image = "rbxassetid://13110903323"
+introRing1.ImageColor3 = Colors.Primary
+introRing1.ImageTransparency = 0.2
+
+local introRing2 = Instance.new("ImageLabel", introCore)
+introRing2.Size = UDim2.fromScale(0.8, 0.8)
+introRing2.Position = UDim2.fromScale(0.5, 0.5)
+introRing2.AnchorPoint = Vector2.new(0.5, 0.5)
+introRing2.BackgroundTransparency = 1
+introRing2.Image = "rbxassetid://13110903323"
+introRing2.ImageColor3 = Colors.Purple
+introRing2.ImageTransparency = 0.2
+
+local introText = Instance.new("TextLabel", introBg)
+introText.Size = UDim2.new(1, 0, 0, 30)
+introText.Position = UDim2.fromScale(0.5, 0.65)
+introText.AnchorPoint = Vector2.new(0.5, 0.5)
+introText.BackgroundTransparency = 1
+introText.Text = "[ SYSTEM BOOT ]"
+introText.TextColor3 = Colors.Text
+introText.Font = Enum.Font.GothamBlack
+introText.TextSize = 16
+introText.TextTransparency = 1
+introText.ZIndex = 1002
+crispText(introText)
+
+local introBarBg = Instance.new("Frame", introBg)
+introBarBg.Size = UDim2.new(0, 300, 0, 6)
+introBarBg.Position = UDim2.fromScale(0.5, 0.7)
+introBarBg.AnchorPoint = Vector2.new(0.5, 0.5)
+introBarBg.BackgroundColor3 = Colors.SurfaceHover
+introBarBg.BackgroundTransparency = 1
+introBarBg.ZIndex = 1002
+Instance.new("UICorner", introBarBg).CornerRadius = UDim.new(1, 0)
+
+local introBarFill = Instance.new("Frame", introBarBg)
+introBarFill.Size = UDim2.fromScale(0, 1)
+introBarFill.BackgroundColor3 = Color3.new(1,1,1)
+introBarFill.ZIndex = 1003
+Instance.new("UICorner", introBarFill).CornerRadius = UDim.new(1, 0)
+local introGrad = Instance.new("UIGradient", introBarFill)
+introGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.PrimaryDark), ColorSequenceKeypoint.new(1, Colors.Primary)})
+
+-- INTRO ANIMATION LOGIC
+task.spawn(function()
+    local bootTime = 0
+    local introActive = true
+    
+    -- Fade in Core
+    TweenService:Create(introCore, TweenInfo.new(1, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(180, 180)}):Play()
+    TweenService:Create(introGlow, TweenInfo.new(1, Enum.EasingStyle.Sine), {ImageTransparency = 0.7}):Play()
+    TweenService:Create(introText, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
+    TweenService:Create(introBarBg, TweenInfo.new(0.5), {BackgroundTransparency = 0.5}):Play()
+    
+    -- Load Bar Animation
+    TweenService:Create(introBarFill, TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.fromScale(1, 1)}):Play()
+    
+    -- Rotate Rings
+    local introConnection
+    introConnection = RunService.RenderStepped:Connect(function(dt)
+        if not introActive then introConnection:Disconnect(); return end
+        bootTime = bootTime + dt
+        introRing1.Rotation = (bootTime * 80) % 360
+        introRing2.Rotation = -(bootTime * 120) % 360
+        introGlow.ImageTransparency = 0.6 + (math.sin(bootTime * 5) * 0.1)
+    end)
+    
+    -- Text Changing Sequence
+    task.wait(0.6); introText.Text = "[ DECRYPTING PROTOCOLS... ]"
+    task.wait(0.7); introText.Text = "[ BYPASSING FE SECURITY... ]"; introText.TextColor3 = Colors.Danger
+    task.wait(0.8); introText.Text = "[ INJECTING ASTRAL CORE... ]"; introText.TextColor3 = Colors.Purple
+    task.wait(0.8); introText.Text = "[ SYNCING NEURAL NETWORK... ]"; introText.TextColor3 = Colors.Primary
+    task.wait(0.6); introText.Text = "[ WELCOME TO TXR ASHU ]"; introText.TextSize = 20
+    
+    -- THE BIG BANG TRANSITION
+    task.wait(0.3)
+    introActive = false
+    TweenService:Create(introText, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
+    TweenService:Create(introBarBg, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(introBarFill, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+    
+    -- Screen Tear Expansion
+    TweenService:Create(introCore, TweenInfo.new(0.6, Enum.EasingStyle.Exponential, Enum.EasingDirection.In), {Size = UDim2.fromOffset(2500, 2500)}):Play()
+    TweenService:Create(introRing1, TweenInfo.new(0.6), {ImageTransparency = 1}):Play()
+    TweenService:Create(introRing2, TweenInfo.new(0.6), {ImageTransparency = 1}):Play()
+    TweenService:Create(introBg, TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
+    
+    task.wait(0.6)
+    introBg:Destroy()
+    
+    -- NOW SHOW MAIN UI
+    _G.ShowMainUI()
+end)
+
+-- --- MAIN UI SETUP (HIDDEN INITIALLY) ---
 local aura = Instance.new("ImageLabel", gui)
 aura.AnchorPoint = Vector2.new(0.5, 0.5); aura.Position = UDim2.fromScale(0.5, 0.5); aura.Size = UDim2.new(0, 320, 0, 450)
 aura.BackgroundTransparency = 1; aura.Image = "rbxassetid://1316045217"; 
 aura.ImageColor3 = Colors.Primary; aura.ImageTransparency = 1; aura.ZIndex = 1
+aura.Visible = false
 local auraScale = Instance.new("UIScale", aura); auraScale.Scale = 0.85
 
 local mainFrame = Instance.new("Frame", gui); mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.Position = UDim2.fromScale(0.5, 0.5); mainFrame.Size = UDim2.new(0, 280, 0, 410)
 mainFrame.BackgroundColor3 = Colors.Background; mainFrame.BackgroundTransparency = 1; mainFrame.BorderSizePixel = 0; mainFrame.ClipsDescendants = true; mainFrame.ZIndex = 5
+mainFrame.Visible = false
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14) 
 mainFrame:GetPropertyChangedSignal("Position"):Connect(function() aura.Position = mainFrame.Position end)
 
@@ -175,11 +310,16 @@ scanlines.ImageTransparency = 0.95
 scanlines.ZIndex = 4 
 scanlines.TileSize = UDim2.new(0, 100, 0, 4)
 
-TweenService:Create(mainScale, TweenInfo.new(0.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
-TweenService:Create(mainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play()
-TweenService:Create(mainStroke, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.2}):Play()
-TweenService:Create(auraScale, TweenInfo.new(0.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
-TweenService:Create(aura, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.5}):Play()
+-- THIS FUNCTION IS CALLED AFTER INTRO FINISHES
+_G.ShowMainUI = function()
+    mainFrame.Visible = true
+    aura.Visible = true
+    TweenService:Create(mainScale, TweenInfo.new(0.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(mainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play()
+    TweenService:Create(mainStroke, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.2}):Play()
+    TweenService:Create(auraScale, TweenInfo.new(0.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(aura, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.5}):Play()
+end
 
 -- HEADER
 local header = Instance.new("Frame", mainFrame); header.Size = UDim2.new(1, 0, 0, 50); header.BackgroundColor3 = Colors.Background; header.BackgroundTransparency = 1; header.BorderSizePixel = 0; header.ZIndex = 10
@@ -205,7 +345,7 @@ discordBtn.MouseButton1Click:Connect(function() pcall(function() copyToClip("not
 
 -- ✨ V18.0 GALACTIC QUASAR CORE (ULTIMATE REOPEN BUTTON) ✨
 local openBtnContainer = Instance.new("Frame", gui)
-openBtnContainer.Size = UDim2.fromOffset(86, 86) -- Bada size event horizon ke liye
+openBtnContainer.Size = UDim2.fromOffset(86, 86) 
 openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
 openBtnContainer.Position = UDim2.fromScale(0.08, 0.5)
 openBtnContainer.BackgroundTransparency = 1
@@ -440,7 +580,6 @@ task.spawn(function()
             
             -- 16-POINT HYPER-TESSERACT
             for i, d in ipairs(diamonds) do
-                -- Breathing folding effect
                 local breath = math.sin(activeT * 2 + (i * math.pi/2)) * 4
                 d.frame.Size = UDim2.fromOffset(24 + breath, 24 - breath)
                 d.frame.Rotation = (activeT * 40) * (i%2==0 and 1 or -1) + (i * 22.5)
@@ -461,7 +600,6 @@ task.spawn(function()
                 local orb = orbs[i]
                 
                 if i <= 4 then
-                    -- Equator Ring
                     local a = activeT * 1.5 + offset
                     local depth = math.sin(a)
                     orb.Position = UDim2.new(0.5, math.cos(a) * rBase, 0.5, depth * (rBase * 0.2))
@@ -469,7 +607,6 @@ task.spawn(function()
                     orb.ZIndex = depth > 0 and 106 or 102
                     orb.BackgroundColor3 = baseColor1
                 elseif i <= 8 then
-                    -- Meridian Ring
                     local a = -activeT * 1.8 + offset
                     local depth = math.cos(a)
                     orb.Position = UDim2.new(0.5, math.cos(a) * (rBase * 0.2), 0.5, math.sin(a) * rBase)
@@ -477,12 +614,11 @@ task.spawn(function()
                     orb.ZIndex = depth > 0 and 106 or 102
                     orb.BackgroundColor3 = baseColor2
                 else
-                    -- INFINITY FIGURE-8 CURVE (Lissajous)
                     local a = activeT * 2.5 + offset
                     local depth = math.sin(a + math.pi/4)
                     orb.Position = UDim2.new(0.5, math.sin(a) * rBase, 0.5, math.sin(a * 2) * (rBase * 0.5))
                     orb.Size = UDim2.fromOffset(4 + (depth * 2), 4 + (depth * 2))
-                    orb.ZIndex = 107 -- Always on top to pop out
+                    orb.ZIndex = 107 
                     orb.BackgroundColor3 = Color3.new(1,1,1)
                 end
             end
@@ -729,7 +865,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.0 Quasar Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V19.0 God-Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         if activeModes["Chair"] and not (activeModes["Orbit"] or activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["Ring"] or activeModes["HeadBang"]) then
@@ -740,6 +876,7 @@ startBtn.MouseButton1Click:Connect(function()
         end
     end) 
 end)
+
 stopBtn.MouseButton1Click:Connect(function() 
     if not isSystemActive then return end 
     isSystemActive = false
@@ -750,7 +887,7 @@ end)
 local function getAvailableRemotes() table.clear(propsCache); local com = workspace:FindFirstChild("WorkspaceCom"); if com then for _, f in ipairs(com:GetChildren()) do for _, c in ipairs(f:GetChildren()) do if c.Name == "Prop" .. lp.Name then table.insert(propsCache, c) end end end end; local remotes = {}; for _, p in ipairs(propsCache) do local r = p:FindFirstChild("SetCurrentCFrame"); if r and r.Parent then table.insert(remotes, r) end end return remotes end
 local function isRemoteAssigned(remote) for _, assigned in pairs(assignedRemotes) do if type(assigned) == "table" then for _, sr in pairs(assigned) do if sr == remote then return true end end elseif assigned == remote then return true end end return false end
 
--- 🔥 HYBRID DUAL-SPEED ENGINE (V18.0) 🔥
+-- 🔥 HYBRID DUAL-SPEED ENGINE (V19.0) 🔥
 RunService.Heartbeat:Connect(function(dt)
     if not isSystemActive then return end 
 
@@ -948,7 +1085,7 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
--- ✨ V18.0 RADIO-SYNC RAINBOW ENGINE ✨
+-- ✨ V19.0 RADIO-SYNC RAINBOW ENGINE ✨
 local hue = 0
 RunService.Heartbeat:Connect(function(dt)
     if isRainbowEnabled then 
