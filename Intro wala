@@ -1,0 +1,1146 @@
+-- =========================================================
+-- 👑 TXR ASHU: QUANTUM CORE V19.0 (THE OMEGA AWAKENING) 👑
+-- =========================================================
+
+if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
+if _G.TXRAdminPanel and _G.TXRAdminPanel.Parent then _G.TXRAdminPanel:Destroy() end
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StarterGui = game:GetService("StarterGui")
+local lp = Players.LocalPlayer
+
+local copyToClip = setclipboard or toclipboard or function() end
+local targetGuiParent = game:GetService("CoreGui")
+if gethui then pcall(function() targetGuiParent = gethui() end) end
+
+local CREATOR_USER_ID = 9685785248
+
+-- --- CORE LOGIC ---
+local selectedPlayers, assignedRemotes, voidedPlayers, propsCache = {}, {}, {}, {}
+local activeModes, modeQueue = {}, {} 
+local activeGeometry = "Spin"
+local isRainbowEnabled, isSoundEnabled, isSystemActive = false, false, false
+local animTime, angle, selfAngle = 0, 0, 0 
+local robotAnimTime = 0 
+
+-- --- 🌌 PREMIUM CYBERPALETTE 🌌 ---
+local Colors = {
+    Background = Color3.fromRGB(10, 12, 18),       
+    Surface = Color3.fromRGB(20, 24, 34),          
+    SurfaceHover = Color3.fromRGB(28, 34, 50),     
+    ActiveTint = Color3.fromRGB(12, 40, 55),       
+    Primary = Color3.fromRGB(0, 255, 200),         
+    PrimaryDark = Color3.fromRGB(0, 160, 140),     
+    Danger = Color3.fromRGB(255, 40, 80),          
+    Warning = Color3.fromRGB(255, 170, 0),         
+    Purple = Color3.fromRGB(160, 50, 255),         
+    Text = Color3.fromRGB(240, 245, 255),          
+    SubText = Color3.fromRGB(120, 135, 160),       
+    TextDark = Color3.fromRGB(10, 15, 22)
+}
+
+local function sendNotif(title, text, duration)
+    pcall(function() StarterGui:SetCore("SendNotification", {Title = title, Text = text, Duration = duration or 3}) end)
+end
+
+local function crispText(element)
+    local stroke = Instance.new("UIStroke", element)
+    stroke.Color = Color3.new(0, 0, 0)
+    stroke.Transparency = 0.75
+    stroke.Thickness = 1.2
+end
+
+-- 🔥 EXPLOIT METHODS 🔥
+local function PlayRobotBangMusic()
+    local soundId = "134489447055645" 
+    local RE = ReplicatedStorage:WaitForChild("RE")
+    pcall(function()
+        local spawnVehicle = RE:FindFirstChild("1NoMoto1rVehicle1s")
+        if spawnVehicle then spawnVehicle:FireServer("SegwaySmall"); task.wait(0.3) end
+        for _, remote in ipairs(RE:GetChildren()) do
+            if remote:IsA("RemoteEvent") then pcall(function() remote:FireServer("PickingScooterMusicText", soundId, true); remote:FireServer("ToolMusicText", soundId, true); remote:FireServer("Music", soundId, true) end) end
+        end
+    end)
+    sendNotif("⚡ TXR SOUND", "Audio Core Injected!", 2)
+end
+
+local function StopRobotBangMusic()
+    local RE = ReplicatedStorage:WaitForChild("RE")
+    pcall(function()
+        if lp.Character then
+            local hum = lp.Character:FindFirstChildOfClass("Humanoid")
+            if hum then hum.Sit = false; hum.Jump = true end
+            for _, v in ipairs(lp.Character:GetDescendants()) do
+                if v.Name == "SeatWeld" or (v:IsA("Weld") and v.Part1 and string.match(v.Part1.Name, "Seat")) then pcall(function() v:Destroy() end) end
+            end
+        end
+        task.wait(0.25)
+        for _, remote in ipairs(RE:GetChildren()) do
+            if remote:IsA("RemoteEvent") then pcall(function() remote:FireServer("PickingScooterMusicText", "0", true); remote:FireServer("ToolMusicText", "0", true); remote:FireServer("Music", "0", true) end) end
+        end
+        local despawnVehicle = RE:FindFirstChild("1DeSpawnVehi1cle")
+        if despawnVehicle then pcall(function() despawnVehicle:FireServer() end) end
+        task.spawn(function()
+            local vehiclesFolder = workspace:FindFirstChild("Vehicles")
+            if vehiclesFolder then for _, v in ipairs(vehiclesFolder:GetChildren()) do if string.find(string.lower(v.Name), "segway") then pcall(function() v:Destroy() end) end end end
+        end)
+    end)
+end
+
+local function triggerBanTrap()
+    isSystemActive = false; if _G.OrbitalGUI then _G.OrbitalGUI.Enabled = false end
+    local banGui = Instance.new("ScreenGui", targetGuiParent); banGui.IgnoreGuiInset = true; banGui.ResetOnSpawn = false
+    local bg = Instance.new("Frame", banGui); bg.Size = UDim2.fromScale(1, 1); bg.BackgroundColor3 = Color3.fromRGB(8, 0, 3); bg.ZIndex = 9999
+    local txt = Instance.new("TextLabel", bg); txt.Size = UDim2.fromScale(0.9, 0.9); txt.Position = UDim2.fromScale(0.05, 0.05); txt.BackgroundTransparency = 1; txt.Text = "🚨 Ashu papa ko troll krega? Chal nikal! 🚨\n\nBanned by Admin Ashu"; txt.TextColor3 = Color3.fromRGB(255, 30, 50); txt.Font = Enum.Font.GothamBlack; txt.TextScaled = true; txt.ZIndex = 10000; Instance.new("UIStroke", txt).Thickness = 4
+    local sound = Instance.new("Sound", workspace); sound.SoundId = "rbxassetid://6895079853"; sound.Volume = 5; sound:Play()
+    task.delay(3.5, function() lp:Kick("👑 Banned by Admin Ashu 👑") end)
+end
+
+local function applySmartHover(btn, modeKey)
+    local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn); btnScale.Scale = 1
+    btn.MouseEnter:Connect(function() 
+        TweenService:Create(btnScale, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1.04}):Play()
+        if not modeKey or not activeModes[modeKey] then TweenService:Create(btn, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundColor3 = Colors.SurfaceHover}):Play() end
+    end)
+    btn.MouseLeave:Connect(function() 
+        TweenService:Create(btnScale, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1}):Play()
+        if not modeKey or not activeModes[modeKey] then TweenService:Create(btn, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundColor3 = Colors.Surface}):Play() end
+    end)
+    btn.MouseButton1Down:Connect(function() TweenService:Create(btnScale, TweenInfo.new(0.15, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 0.95}):Play() end)
+    btn.MouseButton1Up:Connect(function() TweenService:Create(btnScale, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1.04}):Play() end)
+end
+
+local function clearProps() pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("ClearAllProps") end); task.wait(0.35) end
+local function spawnProp(propName, category) pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("RequestingPropName", propName, category) end) end
+
+-- ✨ SMART CLICK-TO-SPAWN OVERRIDE ✨
+local mouse = lp:GetMouse()
+mouse.Button1Down:Connect(function()
+    if not isSystemActive then return end
+    local char = lp.Character
+    if char then
+        local tool = char:FindFirstChildOfClass("Tool")
+        if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
+            if activeModes["Chair"] then
+                spawnProp("FurnitureBleachers", "Furniture") 
+            else
+                spawnProp("ScreensRobotBig", "Screens") 
+            end
+        end
+    end
+end)
+
+-- --- GUI CONSTRUCTION ---
+local gui = Instance.new("ScreenGui", targetGuiParent); gui.Name = "OrbitalCyberUI"; gui.ResetOnSpawn = false; gui.IgnoreGuiInset = true; _G.OrbitalGUI = gui
+
+-- ✨ V19.0 THE AETHERIAL BOOT SEQUENCE (CINEMATIC INTRO) ✨
+local introBg = Instance.new("Frame", gui)
+introBg.Size = UDim2.fromScale(1, 1)
+introBg.BackgroundColor3 = Color3.fromRGB(5, 6, 9)
+introBg.BackgroundTransparency = 0
+introBg.ZIndex = 10000
+
+local introScanlines = Instance.new("ImageLabel", introBg)
+introScanlines.Size = UDim2.fromScale(1, 2)
+introScanlines.Position = UDim2.fromScale(0, -1)
+introScanlines.BackgroundTransparency = 1
+introScanlines.Image = "rbxassetid://7186136106"
+introScanlines.ImageColor3 = Colors.Primary
+introScanlines.ImageTransparency = 0.95
+introScanlines.TileSize = UDim2.new(0, 100, 0, 4)
+introScanlines.ZIndex = 10001
+
+local introCore = Instance.new("Frame", introBg)
+introCore.Size = UDim2.fromOffset(0, 0)
+introCore.Position = UDim2.fromScale(0.5, 0.45)
+introCore.AnchorPoint = Vector2.new(0.5, 0.5)
+introCore.BackgroundTransparency = 1
+introCore.ZIndex = 10005
+
+local introGlow = Instance.new("ImageLabel", introCore)
+introGlow.Size = UDim2.fromScale(3, 3)
+introGlow.Position = UDim2.fromScale(0.5, 0.5)
+introGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+introGlow.BackgroundTransparency = 1
+introGlow.Image = "rbxassetid://10470601783" 
+introGlow.ImageColor3 = Colors.Primary
+introGlow.ImageTransparency = 1
+introGlow.ZIndex = 10003
+
+local introRing1 = Instance.new("ImageLabel", introCore)
+introRing1.Size = UDim2.fromScale(1, 1)
+introRing1.Position = UDim2.fromScale(0.5, 0.5)
+introRing1.AnchorPoint = Vector2.new(0.5, 0.5)
+introRing1.BackgroundTransparency = 1
+introRing1.Image = "rbxassetid://13110903323"
+introRing1.ImageColor3 = Colors.Primary
+introRing1.ImageTransparency = 0.2
+introRing1.ZIndex = 10006
+
+local introRing2 = Instance.new("ImageLabel", introCore)
+introRing2.Size = UDim2.fromScale(0.8, 0.8)
+introRing2.Position = UDim2.fromScale(0.5, 0.5)
+introRing2.AnchorPoint = Vector2.new(0.5, 0.5)
+introRing2.BackgroundTransparency = 1
+introRing2.Image = "rbxassetid://13110903323"
+introRing2.ImageColor3 = Colors.Purple
+introRing2.ImageTransparency = 0.2
+introRing2.ZIndex = 10006
+
+local introText = Instance.new("TextLabel", introBg)
+introText.Size = UDim2.new(1, 0, 0, 30)
+introText.Position = UDim2.fromScale(0.5, 0.65)
+introText.AnchorPoint = Vector2.new(0.5, 0.5)
+introText.BackgroundTransparency = 1
+introText.Text = "[ SYSTEM BOOT ]"
+introText.TextColor3 = Colors.Text
+introText.Font = Enum.Font.GothamBlack
+introText.TextSize = 16
+introText.TextTransparency = 1
+introText.ZIndex = 10002
+crispText(introText)
+
+local introBarBg = Instance.new("Frame", introBg)
+introBarBg.Size = UDim2.new(0, 250, 0, 6)
+introBarBg.Position = UDim2.fromScale(0.5, 0.7)
+introBarBg.AnchorPoint = Vector2.new(0.5, 0.5)
+introBarBg.BackgroundColor3 = Colors.SurfaceHover
+introBarBg.BackgroundTransparency = 1
+introBarBg.BorderSizePixel = 0
+introBarBg.ZIndex = 10002
+Instance.new("UICorner", introBarBg).CornerRadius = UDim.new(1, 0)
+
+local introBarFill = Instance.new("Frame", introBarBg)
+introBarFill.Size = UDim2.fromScale(0, 1)
+introBarFill.BackgroundColor3 = Colors.Primary
+introBarFill.BorderSizePixel = 0
+introBarFill.ZIndex = 10003
+Instance.new("UICorner", introBarFill).CornerRadius = UDim.new(1, 0)
+
+local whiteFlash = Instance.new("Frame", gui)
+whiteFlash.Size = UDim2.fromScale(1, 1)
+whiteFlash.BackgroundColor3 = Color3.new(1, 1, 1)
+whiteFlash.BackgroundTransparency = 1
+whiteFlash.ZIndex = 99999
+
+-- MAIN UI ELEMENTS (HIDDEN DURING INTRO)
+local aura = Instance.new("ImageLabel", gui)
+aura.AnchorPoint = Vector2.new(0.5, 0.5); aura.Position = UDim2.fromScale(0.5, 0.5); aura.Size = UDim2.new(0, 320, 0, 450)
+aura.BackgroundTransparency = 1; aura.Image = "rbxassetid://1316045217"; 
+aura.ImageColor3 = Colors.Primary; aura.ImageTransparency = 1; aura.ZIndex = 1; aura.Visible = false
+local auraScale = Instance.new("UIScale", aura); auraScale.Scale = 0.85
+
+local mainFrame = Instance.new("Frame", gui); mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.Position = UDim2.fromScale(0.5, 0.5); mainFrame.Size = UDim2.new(0, 280, 0, 410)
+mainFrame.BackgroundColor3 = Colors.Background; mainFrame.BackgroundTransparency = 1; mainFrame.BorderSizePixel = 0; mainFrame.ClipsDescendants = true; mainFrame.ZIndex = 5; mainFrame.Visible = false
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14) 
+mainFrame:GetPropertyChangedSignal("Position"):Connect(function() aura.Position = mainFrame.Position end)
+
+local bgGradient = Instance.new("UIGradient", mainFrame)
+bgGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(16, 20, 30)), ColorSequenceKeypoint.new(0.5, Colors.Background), ColorSequenceKeypoint.new(1, Color3.fromRGB(16, 20, 30))})
+bgGradient.Rotation = -45
+
+local mainStroke = Instance.new("UIStroke", mainFrame); mainStroke.Thickness = 1.5; mainStroke.Transparency = 1; mainStroke.Color = Color3.new(1,1,1)
+local strokeGrad = Instance.new("UIGradient", mainStroke); strokeGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.Primary), ColorSequenceKeypoint.new(0.5, Colors.Purple), ColorSequenceKeypoint.new(1, Colors.Primary)})
+
+local mainScale = Instance.new("UIScale", mainFrame); mainScale.Scale = 0.85; 
+
+local particleContainer = Instance.new("Frame", mainFrame)
+particleContainer.Size = UDim2.fromScale(1, 1); particleContainer.BackgroundTransparency = 1; particleContainer.ZIndex = 3
+local dataParticles = {}
+for i = 1, 15 do
+    local p = Instance.new("Frame", particleContainer)
+    p.Size = UDim2.fromOffset(math.random(2, 4), math.random(8, 25))
+    p.BackgroundColor3 = Colors.Primary; p.Position = UDim2.fromScale(math.random(), math.random())
+    p.BackgroundTransparency = math.random(75, 95) / 100; p.BorderSizePixel = 0
+    Instance.new("UICorner", p).CornerRadius = UDim.new(1, 0)
+    table.insert(dataParticles, {element = p, speed = math.random(15, 30) / 100})
+end
+
+local scanlines = Instance.new("ImageLabel", mainFrame)
+scanlines.Size = UDim2.new(1, 0, 2, 0); scanlines.Position = UDim2.fromScale(0, -1)
+scanlines.BackgroundTransparency = 1; scanlines.Image = "rbxassetid://7186136106" 
+scanlines.ImageColor3 = Colors.Primary; scanlines.ImageTransparency = 0.95; scanlines.ZIndex = 4; scanlines.TileSize = UDim2.new(0, 100, 0, 4)
+
+-- HEADER
+local header = Instance.new("Frame", mainFrame); header.Size = UDim2.new(1, 0, 0, 50); header.BackgroundColor3 = Colors.Background; header.BackgroundTransparency = 1; header.BorderSizePixel = 0; header.ZIndex = 10
+local headerTitle = Instance.new("TextLabel", header); headerTitle.Size = UDim2.new(1, -90, 1, 0); headerTitle.Position = UDim2.fromOffset(16, 0); headerTitle.BackgroundTransparency = 1; headerTitle.Text = "TXR ASHU"; headerTitle.TextColor3 = Color3.new(1,1,1); headerTitle.Font = Enum.Font.GothamBlack; headerTitle.TextSize = 16; headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.ZIndex = 11
+local titleGrad = Instance.new("UIGradient", headerTitle); titleGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.Primary), ColorSequenceKeypoint.new(1, Colors.Purple)})
+crispText(headerTitle)
+
+local proBadge = Instance.new("Frame", header); proBadge.Size = UDim2.fromOffset(42, 18); proBadge.Position = UDim2.new(0, 108, 0.5, -9); proBadge.BackgroundColor3 = Colors.Primary; proBadge.ZIndex = 11; Instance.new("UICorner", proBadge).CornerRadius = UDim.new(0, 6)
+local proText = Instance.new("TextLabel", proBadge); proText.Size = UDim2.fromScale(1, 1); proText.BackgroundTransparency = 1; proText.Text = "PRO"; proText.TextColor3 = Colors.TextDark; proText.Font = Enum.Font.GothamBlack; proText.TextSize = 10; proText.ZIndex = 12
+crispText(proText)
+
+local headerDivider = Instance.new("Frame", header); headerDivider.Size = UDim2.new(1, 0, 0, 1); headerDivider.Position = UDim2.new(0, 0, 1, 0); headerDivider.BorderSizePixel = 0; headerDivider.ZIndex = 15
+Instance.new("UIGradient", headerDivider).Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.Background), ColorSequenceKeypoint.new(0.5, Colors.PrimaryDark), ColorSequenceKeypoint.new(1, Colors.Background)})
+
+local minimizeBtn = Instance.new("TextButton", header); minimizeBtn.Size = UDim2.fromOffset(28, 28); minimizeBtn.Position = UDim2.new(1, -70, 0.5, -14); minimizeBtn.BackgroundColor3 = Colors.Surface; minimizeBtn.BackgroundTransparency = 0.5; minimizeBtn.Text = "–"; minimizeBtn.TextColor3 = Colors.Text; minimizeBtn.Font = Enum.Font.GothamBold; minimizeBtn.AutoButtonColor = false; minimizeBtn.ZIndex = 15; Instance.new("UICorner", minimizeBtn).CornerRadius = UDim.new(0, 8); applySmartHover(minimizeBtn, nil)
+local closeBtn = Instance.new("TextButton", header); closeBtn.Size = UDim2.fromOffset(28, 28); closeBtn.Position = UDim2.new(1, -36, 0.5, -14); closeBtn.BackgroundColor3 = Colors.Surface; closeBtn.BackgroundTransparency = 0.5; closeBtn.Text = "×"; closeBtn.TextColor3 = Colors.Danger; closeBtn.Font = Enum.Font.GothamBold; closeBtn.TextSize = 16; closeBtn.AutoButtonColor = false; closeBtn.ZIndex = 15; Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8); applySmartHover(closeBtn, nil)
+
+-- FOOTER
+local footer = Instance.new("Frame", mainFrame); footer.Size = UDim2.new(1, 0, 0, 32); footer.Position = UDim2.new(0, 0, 1, -32); footer.BackgroundColor3 = Colors.Background; footer.BackgroundTransparency = 1; footer.BorderSizePixel = 0; footer.ZIndex = 15
+local discordBtn = Instance.new("TextButton", footer); discordBtn.Size = UDim2.fromScale(1, 1); discordBtn.BackgroundTransparency = 1; discordBtn.Text = "Discord: @not_ashu."; discordBtn.TextColor3 = Colors.SubText; discordBtn.Font = Enum.Font.GothamMedium; discordBtn.TextSize = 10; discordBtn.AutoButtonColor = false; discordBtn.ZIndex = 16
+crispText(discordBtn)
+discordBtn.MouseButton1Click:Connect(function() pcall(function() copyToClip("not_ashu.") end); sendNotif("TXR System", "Copied to clipboard!", 2); discordBtn.Text = "⚡ Copied Core!"; discordBtn.TextColor3 = Colors.Primary; task.delay(1.5, function() if discordBtn then discordBtn.Text = "Discord: @not_ashu."; discordBtn.TextColor3 = Colors.SubText end end) end)
+
+-- ✨ V18.0 GALACTIC QUASAR CORE (ULTIMATE REOPEN BUTTON) ✨
+local openBtnContainer = Instance.new("Frame", gui)
+openBtnContainer.Size = UDim2.fromOffset(86, 86) 
+openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+openBtnContainer.Position = UDim2.fromScale(0.08, 0.5)
+openBtnContainer.BackgroundTransparency = 1
+openBtnContainer.Visible = false
+openBtnContainer.ZIndex = 100
+
+-- Outer Event Horizon Glow
+local rCoreGlow = Instance.new("ImageLabel", openBtnContainer)
+rCoreGlow.Size = UDim2.fromScale(1.8, 1.8)
+rCoreGlow.Position = UDim2.fromScale(0.5, 0.5)
+rCoreGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+rCoreGlow.BackgroundTransparency = 1
+rCoreGlow.Image = "rbxassetid://10470601783" 
+rCoreGlow.ImageColor3 = Colors.Primary
+rCoreGlow.ImageTransparency = 0.6
+rCoreGlow.ZIndex = 98
+Instance.new("UICorner", rCoreGlow).CornerRadius = UDim.new(1, 0) 
+
+-- Inner Singularity Glow
+local rEventGlow = Instance.new("ImageLabel", openBtnContainer)
+rEventGlow.Size = UDim2.fromScale(1.2, 1.2)
+rEventGlow.Position = UDim2.fromScale(0.5, 0.5)
+rEventGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+rEventGlow.BackgroundTransparency = 1
+rEventGlow.Image = "rbxassetid://10470601783" 
+rEventGlow.ImageColor3 = Colors.Purple
+rEventGlow.ImageTransparency = 0.4
+rEventGlow.ZIndex = 98
+Instance.new("UICorner", rEventGlow).CornerRadius = UDim.new(1, 0) 
+
+local openBtn = Instance.new("TextButton", openBtnContainer)
+openBtn.Size = UDim2.fromScale(0.85, 0.85)
+openBtn.Position = UDim2.fromScale(0.5, 0.5)
+openBtn.AnchorPoint = Vector2.new(0.5, 0.5)
+openBtn.BackgroundColor3 = Colors.Surface
+openBtn.BackgroundTransparency = 0.15
+openBtn.Text = "" 
+openBtn.AutoButtonColor = false
+openBtn.ClipsDescendants = false 
+openBtn.ZIndex = 101
+Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0)
+
+-- Outer Energy Bezel
+local gimbalOuter = Instance.new("Frame", openBtnContainer)
+gimbalOuter.Size = UDim2.fromScale(1.05, 1.05)
+gimbalOuter.Position = UDim2.fromScale(0.5, 0.5)
+gimbalOuter.AnchorPoint = Vector2.new(0.5, 0.5)
+gimbalOuter.BackgroundTransparency = 1
+gimbalOuter.ZIndex = 99
+Instance.new("UICorner", gimbalOuter).CornerRadius = UDim.new(1, 0)
+local goStroke = Instance.new("UIStroke", gimbalOuter)
+goStroke.Thickness = 3
+goStroke.Color = Color3.new(1,1,1)
+local goGrad = Instance.new("UIGradient", goStroke)
+goGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Colors.Primary),
+    ColorSequenceKeypoint.new(0.25, Colors.Background),
+    ColorSequenceKeypoint.new(0.5, Colors.Purple),
+    ColorSequenceKeypoint.new(0.75, Colors.Background),
+    ColorSequenceKeypoint.new(1, Colors.Primary)
+})
+
+local openStroke = Instance.new("UIStroke", openBtn)
+openStroke.Thickness = 1.5
+openStroke.Color = Colors.Primary
+
+-- QUAD GIMBALS (X, Y, Z1, Z2)
+local gimbals = {}
+for i = 1, 4 do
+    local g = Instance.new("Frame", openBtn)
+    g.AnchorPoint = Vector2.new(0.5, 0.5)
+    g.Position = UDim2.fromScale(0.5, 0.5)
+    g.BackgroundTransparency = 1
+    g.ZIndex = 102
+    Instance.new("UICorner", g).CornerRadius = UDim.new(1, 0)
+    local gs = Instance.new("UIStroke", g)
+    gs.Color = (i%2==0) and Colors.Primary or Colors.Purple
+    gs.Thickness = 1.2
+    table.insert(gimbals, {frame = g, stroke = gs})
+end
+
+-- 16-Pointed Hyper-Tesseract (Four Diamonds)
+local diamonds = {}
+for i = 1, 4 do
+    local d = Instance.new("Frame", openBtn)
+    d.Size = UDim2.fromOffset(26, 26)
+    d.Position = UDim2.fromScale(0.5, 0.5)
+    d.AnchorPoint = Vector2.new(0.5, 0.5)
+    d.BackgroundColor3 = Colors.Background
+    d.BackgroundTransparency = 0.5
+    d.ZIndex = 103
+    local ds = Instance.new("UIStroke", d)
+    ds.Color = (i%2==0) and Colors.Primary or Colors.Purple
+    ds.Thickness = 1.5
+    table.insert(diamonds, {frame = d, stroke = ds})
+end
+
+-- Inner Crosshair
+local rCrosshair = Instance.new("ImageLabel", openBtn)
+rCrosshair.Size = UDim2.fromScale(0.65, 0.65)
+rCrosshair.Position = UDim2.fromScale(0.5, 0.5)
+rCrosshair.AnchorPoint = Vector2.new(0.5, 0.5)
+rCrosshair.BackgroundTransparency = 1
+rCrosshair.Image = "rbxassetid://13110903323" 
+rCrosshair.ImageColor3 = Colors.Primary
+rCrosshair.ImageTransparency = 0.2
+rCrosshair.ZIndex = 104
+
+-- Center Pulsing Nova Core
+local rCenterCore = Instance.new("Frame", openBtn)
+rCenterCore.Size = UDim2.fromOffset(10, 10)
+rCenterCore.Position = UDim2.fromScale(0.5, 0.5)
+rCenterCore.AnchorPoint = Vector2.new(0.5, 0.5)
+rCenterCore.BackgroundColor3 = Colors.Primary
+rCenterCore.BackgroundTransparency = 0.1
+rCenterCore.ZIndex = 106
+Instance.new("UICorner", rCenterCore).CornerRadius = UDim.new(1, 0)
+local rCoreStroke = Instance.new("UIStroke", rCenterCore)
+rCoreStroke.Thickness = 2
+rCoreStroke.Color = Color3.new(1,1,1)
+
+-- 12-ORB INFINITY HELIX
+local rOrbs = {}
+for i=1, 12 do
+    local orb = Instance.new("Frame", openBtn)
+    orb.Size = UDim2.fromOffset(5, 5)
+    orb.BackgroundColor3 = Colors.Primary
+    orb.ZIndex = 105
+    Instance.new("UICorner", orb).CornerRadius = UDim.new(1, 0)
+    table.insert(rOrbs, orb)
+end
+
+local orbHovered = false
+openBtn.MouseEnter:Connect(function() orbHovered = true end)
+openBtn.MouseLeave:Connect(function() orbHovered = false end)
+
+local function spawnSonar(pulseColor)
+    if not openBtnContainer.Visible then return end
+    local ring = Instance.new("Frame", openBtn)
+    ring.Size = UDim2.fromOffset(12, 12)
+    ring.Position = UDim2.fromScale(0.5, 0.5)
+    ring.AnchorPoint = Vector2.new(0.5, 0.5)
+    ring.BackgroundTransparency = 1
+    ring.ZIndex = 101
+    Instance.new("UICorner", ring).CornerRadius = UDim.new(1, 0)
+    local rs = Instance.new("UIStroke", ring)
+    rs.Color = pulseColor
+    rs.Thickness = 2
+    rs.Transparency = 0
+    
+    local pulseSpeed = isSystemActive and 0.8 or 1.2
+    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(105, 105)}):Play()
+    TweenService:Create(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
+    task.delay(pulseSpeed, function() pcall(function() ring:Destroy() end) end)
+end
+
+-- ⚡ INTRO & RENDER ENGINE ⚡
+local isBooting = true
+local bootTime = 0
+
+local function scrambleText(targetText, color)
+    local chars = {"A","X","0","1","#","$","&","*","Q","Z","@","%"}
+    introText.TextColor3 = color or Colors.Text
+    for i = 1, 10 do
+        local scrambled = ""
+        for j = 1, #targetText do scrambled = scrambled .. chars[math.random(1, #chars)] end
+        introText.Text = "> " .. scrambled .. " _"
+        task.wait(0.02)
+    end
+    introText.Text = "> " .. targetText .. " _"
+end
+
+task.spawn(function()
+    -- INTRO SEQUENCE
+    TweenService:Create(introCore, TweenInfo.new(1, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(120, 120)}):Play()
+    TweenService:Create(introGlow, TweenInfo.new(1, Enum.EasingStyle.Sine), {ImageTransparency = 0.5}):Play()
+    TweenService:Create(introText, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
+    TweenService:Create(introBarBg, TweenInfo.new(0.5), {BackgroundTransparency = 0.5}):Play()
+    
+    task.wait(0.5)
+    scrambleText("INITIALIZING ASTRAL CORE...", Colors.SubText)
+    TweenService:Create(introBarFill, TweenInfo.new(0.5, Enum.EasingStyle.Sine), {Size = UDim2.fromScale(0.3, 1)}):Play()
+    task.wait(0.6)
+    
+    scrambleText("BYPASSING FE SECURITY...", Colors.Danger)
+    TweenService:Create(introBarFill, TweenInfo.new(0.8, Enum.EasingStyle.Sine), {Size = UDim2.fromScale(0.7, 1)}):Play()
+    task.wait(0.9)
+    
+    scrambleText("TXR OMEGA ENGAGED", Colors.Primary)
+    TweenService:Create(introBarFill, TweenInfo.new(0.2, Enum.EasingStyle.Sine), {Size = UDim2.fromScale(1, 1)}):Play()
+    task.wait(0.3)
+    
+    -- EXPLOSION TRANSITION
+    isBooting = false
+    TweenService:Create(introText, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
+    TweenService:Create(introBarBg, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(introBarFill, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+    
+    -- Safe Explosion (Fades out smoothly)
+    TweenService:Create(introCore, TweenInfo.new(0.8, Enum.EasingStyle.Exponential, Enum.EasingDirection.In), {Size = UDim2.fromOffset(2500, 2500)}):Play()
+    TweenService:Create(introGlow, TweenInfo.new(0.8), {ImageTransparency = 1}):Play()
+    whiteFlash.BackgroundTransparency = 0
+    
+    task.wait(0.2)
+    introBg:Destroy() -- Removes dark background permanently
+    
+    -- Show Main UI
+    mainFrame.Visible = true
+    aura.Visible = true
+    TweenService:Create(mainScale, TweenInfo.new(0.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(mainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play()
+    TweenService:Create(mainStroke, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.2}):Play()
+    TweenService:Create(auraScale, TweenInfo.new(0.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(aura, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
+    
+    TweenService:Create(whiteFlash, TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
+    task.wait(1.5)
+    whiteFlash:Destroy()
+end)
+
+local t = 0
+local sonarTimer = 0
+local currentSpeedMod = 1
+local currentRadiusMod = 1
+
+RunService.RenderStepped:Connect(function(dt)
+    if not gui.Parent then return end
+    
+    if isBooting then
+        bootTime = bootTime + dt
+        introScanlines.Position = UDim2.new(0, 0, (bootTime * 0.15) % 1 - 1, 0)
+        introRing1.Rotation = (bootTime * 80) % 360
+        introRing2.Rotation = -(bootTime * 120) % 360
+        return -- Skip main render during boot
+    end
+
+    t = t + dt
+    
+    if mainFrame.Visible then
+        local rot = (t * 40) % 360
+        strokeGrad.Rotation = rot
+        bgGradient.Rotation = (rot/2) - 45
+        
+        local breath = (math.sin(t * 3) + 1) / 2 
+        aura.ImageTransparency = 0.45 + (breath * 0.15)
+        mainStroke.Transparency = 0.15 + (breath * 0.2)
+        titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
+        
+        scanlines.Position = UDim2.new(0, 0, (t * 0.08) % 1 - 1, 0)
+
+        for _, pData in ipairs(dataParticles) do
+            local newY = pData.element.Position.Y.Scale - (pData.speed * dt)
+            if newY < -0.1 then 
+                newY = 1.1
+                pData.element.Position = UDim2.fromScale(math.random(), newY)
+            else
+                pData.element.Position = UDim2.new(pData.element.Position.X.Scale, 0, newY, 0)
+            end
+            pData.element.BackgroundColor3 = isSystemActive and Colors.Danger or Colors.Primary
+        end
+    end
+    
+    if openBtnContainer.Visible then
+        local targetSpeed = isSystemActive and 3 or 1
+        if orbHovered then targetSpeed = targetSpeed * 1.5 end
+        currentSpeedMod = currentSpeedMod + (targetSpeed - currentSpeedMod) * dt * 5
+        
+        local targetRadius = orbHovered and 0.6 or 1
+        currentRadiusMod = currentRadiusMod + (targetRadius - currentRadiusMod) * dt * 8
+        
+        local activeT = t * 3 * currentSpeedMod
+        local baseColor1 = isSystemActive and Colors.Danger or Colors.Primary
+        local baseColor2 = isSystemActive and Colors.Warning or Colors.Purple
+        local lerpAlpha = (math.sin(activeT * 0.8) + 1) / 2
+        
+        rCoreGlow.ImageColor3 = baseColor1:Lerp(baseColor2, lerpAlpha)
+        rCoreGlow.ImageTransparency = 0.4 + (math.sin(activeT) * 0.25)
+        rEventGlow.ImageColor3 = baseColor2:Lerp(Color3.new(1,1,1), lerpAlpha)
+        rEventGlow.ImageTransparency = 0.3 + (math.cos(activeT * 2) * 0.3)
+        
+        openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
+        goGrad.Rotation = (activeT * 50) % 360
+        goStroke.Transparency = orbHovered and 0.1 or 0.5
+        
+        -- QUAD-GIMBAL 3D PHYSICS
+        local gPulse = 40 + (math.sin(activeT * 2) * 3)
+        gimbals[1].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 0.8)), gPulse)
+        gimbals[1].frame.Rotation = (activeT * 20) % 360
+        gimbals[1].stroke.Color = baseColor1
+        
+        gimbals[2].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 0.9)))
+        gimbals[2].frame.Rotation = -(activeT * 25) % 360
+        gimbals[2].stroke.Color = baseColor2
+        
+        gimbals[3].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 1.1)), gPulse)
+        gimbals[3].frame.Rotation = 45 + (activeT * 15) % 360
+        gimbals[3].stroke.Color = baseColor1:Lerp(Color3.new(1,1,1), 0.5)
+        
+        gimbals[4].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 1.2)))
+        gimbals[4].frame.Rotation = -45 - (activeT * 15) % 360
+        gimbals[4].stroke.Color = baseColor2:Lerp(Color3.new(1,1,1), 0.5)
+        
+        -- 16-POINT HYPER-TESSERACT
+        for i, d in ipairs(diamonds) do
+            local breath = math.sin(activeT * 2 + (i * math.pi/2)) * 4
+            d.frame.Size = UDim2.fromOffset(24 + breath, 24 - breath)
+            d.frame.Rotation = (activeT * 40) * (i%2==0 and 1 or -1) + (i * 22.5)
+            d.stroke.Color = (i%2==0) and baseColor1 or baseColor2
+        end
+        
+        rCrosshair.Rotation = -(activeT * 60) % 360
+        rCrosshair.ImageColor3 = baseColor1
+        
+        rCenterCore.BackgroundColor3 = baseColor1:Lerp(Color3.new(1,1,1), lerpAlpha * 0.5)
+        rCenterCore.Size = UDim2.fromOffset(10 + (math.abs(math.sin(activeT * 2)) * 4), 10 + (math.abs(math.sin(activeT * 2)) * 4))
+        rCoreStroke.Color = baseColor2
+
+        -- 12-ORB INFINITY HELIX SYSTEM
+        local rBase = 32 * currentRadiusMod
+        for i = 1, 12 do
+            local offset = (i - 1) * (math.pi * 2 / 4)
+            local orb = rOrbs[i]
+            
+            if i <= 4 then
+                local a = activeT * 1.5 + offset
+                local depth = math.sin(a)
+                orb.Position = UDim2.new(0.5, math.cos(a) * rBase, 0.5, depth * (rBase * 0.2))
+                orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
+                orb.ZIndex = depth > 0 and 106 or 102
+                orb.BackgroundColor3 = baseColor1
+            elseif i <= 8 then
+                local a = -activeT * 1.8 + offset
+                local depth = math.cos(a)
+                orb.Position = UDim2.new(0.5, math.cos(a) * (rBase * 0.2), 0.5, math.sin(a) * rBase)
+                orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
+                orb.ZIndex = depth > 0 and 106 or 102
+                orb.BackgroundColor3 = baseColor2
+            else
+                local a = activeT * 2.5 + offset
+                local depth = math.sin(a + math.pi/4)
+                orb.Position = UDim2.new(0.5, math.sin(a) * rBase, 0.5, math.sin(a * 2) * (rBase * 0.5))
+                orb.Size = UDim2.fromOffset(4 + (depth * 2), 4 + (depth * 2))
+                orb.ZIndex = 107 
+                orb.BackgroundColor3 = Color3.new(1,1,1)
+            end
+        end
+
+        local sonarThreshold = isSystemActive and 0.3 or 0.8
+        sonarTimer = sonarTimer + dt
+        if sonarTimer >= sonarThreshold then
+            sonarTimer = 0
+            spawnSonar(baseColor1)
+        end
+    end
+end)
+
+local openBtnScale = Instance.new("UIScale", openBtnContainer)
+openBtnScale.Scale = 1
+local openPulseScale = TweenService:Create(openBtnScale, TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {Scale = 1.05})
+
+openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function() 
+    if openBtnContainer.Visible then 
+        openPulseScale:Play()
+    else 
+        openPulseScale:Cancel()
+        openBtnScale.Scale = 1
+    end 
+end)
+
+local function makeDraggable(frame, handle, ghostAura)
+    local dragging, dragStart, startPos
+    handle.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true; dragStart = input.Position; startPos = frame.Position end end)
+    handle.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end end)
+    UserInputService.InputChanged:Connect(function(input) 
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then 
+            local delta = input.Position - dragStart; local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            frame.Position = newPos; if ghostAura then ghostAura.Position = newPos end
+        end 
+    end)
+end
+makeDraggable(mainFrame, header, aura); makeDraggable(openBtnContainer, openBtn)
+
+openBtn.MouseButton1Down:Connect(function() TweenService:Create(openBtnScale, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {Scale = 0.9}):Play() end)
+openBtn.MouseButton1Up:Connect(function() TweenService:Create(openBtnScale, TweenInfo.new(0.4, Enum.EasingStyle.Elastic), {Scale = 1.05}):Play() end)
+
+closeBtn.MouseButton1Click:Connect(function() 
+    TweenService:Create(mainScale, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.In), {Scale = 0.8}):Play()
+    TweenService:Create(auraScale, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.In), {Scale = 0.8}):Play()
+    TweenService:Create(mainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {BackgroundTransparency = 1, Position = UDim2.new(0.5, 0, 0.5, 30)}):Play()
+    TweenService:Create(aura, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
+    task.wait(0.4); gui:Destroy(); activeModes = {}; isSystemActive = false 
+end)
+
+minimizeBtn.MouseButton1Click:Connect(function() 
+    TweenService:Create(mainScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play()
+    TweenService:Create(auraScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play()
+    TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(aura, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
+    task.wait(0.4); mainFrame.Visible = false; aura.Visible = false; openBtnContainer.Visible = true; openBtnScale.Scale = 0; TweenService:Create(openBtnScale, TweenInfo.new(0.6, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play() 
+end)
+
+openBtn.MouseButton1Click:Connect(function() 
+    TweenService:Create(openBtnScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play(); task.wait(0.25); openBtnContainer.Visible = false; mainFrame.Visible = true; aura.Visible = true; mainScale.Scale = 0.8; auraScale.Scale = 0.8; 
+    TweenService:Create(mainScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play(); TweenService:Create(auraScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play(); TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
+end)
+
+-- MAIN LIST
+local mainList = Instance.new("ScrollingFrame", mainFrame); mainList.Size = UDim2.new(1, -24, 1, -88); mainList.Position = UDim2.fromOffset(12, 56); mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 0; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ZIndex = 6
+local listLayout = Instance.new("UIListLayout", mainList); listLayout.Padding = UDim.new(0, 8); listLayout.SortOrder = Enum.SortOrder.LayoutOrder; listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+local mainPadding = Instance.new("UIPadding", mainList); mainPadding.PaddingLeft = UDim.new(0, 10); mainPadding.PaddingRight = UDim.new(0, 10); mainPadding.PaddingTop = UDim.new(0, 2); mainPadding.PaddingBottom = UDim.new(0, 2)
+listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() mainList.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10) end)
+local layoutIdx = 1; local function getOrder() layoutIdx = layoutIdx + 1; return layoutIdx end
+
+-- MENUS 
+local function createMenu(titleStr)
+    local menu = Instance.new("Frame", mainFrame); menu.Size = UDim2.fromScale(1, 1); menu.Position = UDim2.fromScale(1.2, 0); menu.BackgroundColor3 = Colors.Background; menu.BackgroundTransparency = 0.1; menu.ZIndex = 20; Instance.new("UICorner", menu).CornerRadius = UDim.new(0, 14)
+    local top = Instance.new("Frame", menu); top.Size = UDim2.new(1, 0, 0, 50); top.BackgroundColor3 = Colors.Background; top.BackgroundTransparency = 1; top.ZIndex = 21
+    local menuTitle = Instance.new("TextLabel", top); menuTitle.Size = UDim2.new(1, -60, 1, 0); menuTitle.Position = UDim2.fromOffset(16, 0); menuTitle.BackgroundTransparency = 1; menuTitle.Text = titleStr; menuTitle.TextColor3 = Colors.Text; menuTitle.Font = Enum.Font.GothamBlack; menuTitle.TextSize = 14; menuTitle.TextXAlignment = Enum.TextXAlignment.Left; menuTitle.ZIndex = 22; Instance.new("UIGradient", menuTitle).Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.Primary), ColorSequenceKeypoint.new(1, Colors.Purple)})
+    crispText(menuTitle)
+
+    local backBtn = Instance.new("TextButton", top); backBtn.Size = UDim2.fromOffset(40, 26); backBtn.Position = UDim2.new(1, -50, 0.5, -13); backBtn.BackgroundColor3 = Colors.Surface; backBtn.BackgroundTransparency = 0.5; backBtn.Text = "←"; backBtn.TextColor3 = Colors.Primary; backBtn.Font = Enum.Font.GothamBold; backBtn.TextSize = 15; backBtn.AutoButtonColor = false; backBtn.ZIndex = 22; Instance.new("UICorner", backBtn).CornerRadius = UDim.new(0, 6); applySmartHover(backBtn, nil)
+    local scroll = Instance.new("ScrollingFrame", menu); scroll.Size = UDim2.new(1, -24, 1, -66); scroll.Position = UDim2.fromOffset(12, 56); scroll.BackgroundTransparency = 1; scroll.ScrollBarThickness = 0; scroll.ScrollingDirection = Enum.ScrollingDirection.Y; scroll.ZIndex = 22
+    local lay = Instance.new("UIListLayout", scroll); lay.Padding = UDim.new(0, 8); lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    local scrollPad = Instance.new("UIPadding", scroll); scrollPad.PaddingLeft = UDim.new(0, 10); scrollPad.PaddingRight = UDim.new(0, 10)
+    lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 10) end)
+    
+    backBtn.MouseButton1Click:Connect(function() TweenService:Create(menu, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play(); mainList.Visible = true end)
+    return menu, scroll
+end
+
+local playerMenu, playerScroll = createMenu("👥 MATRIX TARGETS")
+local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
+
+local function refreshPlayers()
+    for _, child in ipairs(playerScroll:GetChildren()) do if child:IsA("TextButton") then child:Destroy() end end
+    for _, plr in ipairs(Players:GetPlayers()) do
+        local btn = Instance.new("TextButton", playerScroll); btn.Size = UDim2.new(1, 0, 0, 36); btn.BackgroundColor3 = selectedPlayers[plr] and Colors.ActiveTint or Colors.Surface; btn.BackgroundTransparency = 0.4; btn.Font = Enum.Font.GothamMedium; btn.TextSize = 11; btn.TextXAlignment = Enum.TextXAlignment.Left; btn.AutoButtonColor = false; btn.ZIndex = 23; Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+        
+        btn.Text = string.format("    %s | @%s", plr.DisplayName, plr.Name); 
+        btn.TextColor3 = selectedPlayers[plr] and Colors.Primary or Colors.Text; applySmartHover(btn, nil)
+        crispText(btn)
+
+        local accent = Instance.new("Frame", btn); accent.Size = selectedPlayers[plr] and UDim2.new(0, 3, 0.6, 0) or UDim2.new(0, 0, 0, 0); accent.Position = UDim2.new(0, 0, 0.5, 0); accent.AnchorPoint = Vector2.new(0, 0.5); accent.BackgroundColor3 = Colors.Primary; accent.BorderSizePixel = 0; Instance.new("UICorner", accent).CornerRadius = UDim.new(1,0)
+        btn.MouseButton1Click:Connect(function()
+            if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then triggerBanTrap() return end
+            if selectedPlayers[plr] then selectedPlayers[plr] = nil; TweenService:Create(btn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play(); TweenService:Create(accent, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 0, 0, 0)}):Play()
+            else selectedPlayers[plr] = true; TweenService:Create(btn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play(); TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Size = UDim2.new(0, 3, 0.6, 0)}):Play() end
+        end)
+    end
+end
+Players.PlayerAdded:Connect(refreshPlayers); Players.PlayerRemoving:Connect(refreshPlayers); refreshPlayers()
+
+local geometries = {"Spin", "Reverse Spin", "Bobbing Orbit", "Vertical Halo", "Atom", "Galaxy Spiral", "Crown", "DNA", "Snake Body", "Wings"}
+for _, geo in ipairs(geometries) do
+    local btn = Instance.new("TextButton", geoScroll); btn.Size = UDim2.new(1, 0, 0, 36); btn.BackgroundColor3 = Colors.Surface; btn.BackgroundTransparency = 0.4; btn.Text = "   ⚡ " .. geo; btn.TextColor3 = Colors.Text; btn.Font = Enum.Font.GothamMedium; btn.TextSize = 11; btn.TextXAlignment = Enum.TextXAlignment.Left; btn.AutoButtonColor = false; btn.ZIndex = 23; Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6); applySmartHover(btn, nil)
+    crispText(btn)
+    btn.MouseButton1Click:Connect(function() activeGeometry = geo; sendNotif("Engine", "Lock: " .. geo, 2); TweenService:Create(geoMenu, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play(); mainList.Visible = true end)
+end
+
+local function createMainBtn(text, modeKey, isMenuOpener)
+    local btn = Instance.new("TextButton", mainList); btn.Size = UDim2.new(1, 0, 0, 42); btn.BackgroundColor3 = Colors.Surface; btn.BackgroundTransparency = 0.4; btn.Text = "   " .. text; btn.TextColor3 = Colors.Text; btn.Font = Enum.Font.GothamBold; btn.TextSize = 11; btn.TextXAlignment = Enum.TextXAlignment.Left; btn.AutoButtonColor = false; btn.LayoutOrder = getOrder(); btn.ZIndex = 7; Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+    crispText(btn)
+
+    local accent = Instance.new("Frame", btn); accent.Name = "Accent"; accent.Size = UDim2.new(0, 0, 0, 0); accent.Position = UDim2.new(0, 0, 0.5, 0); accent.AnchorPoint = Vector2.new(0, 0.5); accent.BackgroundColor3 = Colors.Primary; accent.BorderSizePixel = 0; Instance.new("UICorner", accent).CornerRadius = UDim.new(1,0)
+    if isMenuOpener then local arrow = Instance.new("TextLabel", btn); arrow.Size = UDim2.new(0, 30, 1, 0); arrow.Position = UDim2.new(1, -30, 0, 0); arrow.BackgroundTransparency = 1; arrow.Text = ">"; arrow.TextColor3 = Colors.SubText; arrow.Font = Enum.Font.GothamBold; arrow.TextSize = 12 end
+    if not isMenuOpener then applySmartHover(btn, modeKey) else applySmartHover(btn, nil) end
+    return btn
+end
+
+local function createSlider(name, min, max, defaultVal, suffix)
+    local container = Instance.new("Frame", mainList); container.Size = UDim2.new(1, 0, 0, 46); container.BackgroundTransparency = 1; container.LayoutOrder = getOrder(); container.ZIndex = 7
+    
+    local titleLabel = Instance.new("TextLabel", container); titleLabel.Size = UDim2.new(0.6, 0, 0, 14); titleLabel.Position = UDim2.new(0, 6, 0, 0); titleLabel.BackgroundTransparency = 1; titleLabel.Text = name; titleLabel.TextColor3 = Colors.SubText; titleLabel.Font = Enum.Font.GothamBold; titleLabel.TextSize = 10; titleLabel.TextXAlignment = Enum.TextXAlignment.Left; titleLabel.ZIndex = 8
+    crispText(titleLabel)
+
+    local valBadge = Instance.new("Frame", container); valBadge.Size = UDim2.new(0, 48, 0, 16); valBadge.AnchorPoint = Vector2.new(1, 0); valBadge.Position = UDim2.new(1, -6, 0, -2); valBadge.BackgroundColor3 = Colors.Primary; valBadge.BackgroundTransparency = 0.85; valBadge.ZIndex = 8; Instance.new("UICorner", valBadge).CornerRadius = UDim.new(0, 4)
+    local valStroke = Instance.new("UIStroke", valBadge); valStroke.Color = Colors.Primary; valStroke.Transparency = 0.5; valStroke.Thickness = 1
+    local valLabel = Instance.new("TextLabel", valBadge); valLabel.Size = UDim2.new(1, 0, 1, 0); valLabel.BackgroundTransparency = 1; valLabel.Text = defaultVal .. (suffix or ""); valLabel.TextColor3 = Colors.Primary; valLabel.Font = Enum.Font.GothamBold; valLabel.TextSize = 10; valLabel.ZIndex = 9
+    crispText(valLabel)
+
+    local bg = Instance.new("TextButton", container); bg.Size = UDim2.new(1, -20, 0, 4); bg.Position = UDim2.new(0, 10, 0, 26); bg.BackgroundColor3 = Colors.SurfaceHover; bg.Text = ""; bg.AutoButtonColor = false; bg.ZIndex = 8; Instance.new("UICorner", bg).CornerRadius = UDim.new(1, 0)
+    local fill = Instance.new("Frame", bg); fill.Size = UDim2.new((defaultVal - min) / (max - min), 0, 1, 0); fill.BackgroundColor3 = Color3.new(1,1,1); fill.ZIndex = 9; Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
+    local fillGrad = Instance.new("UIGradient", fill); fillGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.PrimaryDark), ColorSequenceKeypoint.new(1, Colors.Primary)})
+    
+    local knob = Instance.new("Frame", fill); knob.Size = UDim2.new(0, 14, 0, 14); knob.AnchorPoint = Vector2.new(0.5, 0.5); knob.Position = UDim2.new(1, 0, 0.5, 0); knob.BackgroundColor3 = Colors.Text; knob.ZIndex = 11; Instance.new("UICorner", knob).CornerRadius = UDim.new(1,0)
+    local knobDot = Instance.new("Frame", knob); knobDot.Size = UDim2.new(0, 6, 0, 6); knobDot.AnchorPoint = Vector2.new(0.5, 0.5); knobDot.Position = UDim2.fromScale(0.5, 0.5); knobDot.BackgroundColor3 = Colors.Primary; knobDot.BorderSizePixel = 0; knobDot.ZIndex = 12; Instance.new("UICorner", knobDot).CornerRadius = UDim.new(1,0)
+    local knobStroke = Instance.new("UIStroke", knob); knobStroke.Color = Colors.Primary; knobStroke.Transparency = 0.8; knobStroke.Thickness = 2
+
+    local value = defaultVal; local dragging = false
+    local function update(input) 
+        local pos = math.clamp((input.Position.X - bg.AbsolutePosition.X) / bg.AbsoluteSize.X, 0, 1)
+        TweenService:Create(fill, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Size = UDim2.new(pos, 0, 1, 0)}):Play()
+        value = math.floor(min + (pos * (max - min))); valLabel.Text = value .. (suffix or "")
+    end
+    bg.InputBegan:Connect(function(input) 
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+            dragging = true; 
+            TweenService:Create(knob, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 18, 0, 18)}):Play(); 
+            TweenService:Create(knobDot, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 8, 0, 8)}):Play(); 
+            TweenService:Create(knobStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Transparency = 0.2, Thickness = 4}):Play(); 
+            TweenService:Create(valBadge, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.5}):Play(); 
+            TweenService:Create(valStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Transparency = 0}):Play(); 
+            update(input) 
+        end 
+    end)
+    bg.InputEnded:Connect(function(input) 
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+            dragging = false; 
+            TweenService:Create(knob, TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Size = UDim2.new(0, 14, 0, 14)}):Play(); 
+            TweenService:Create(knobDot, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 6, 0, 6)}):Play(); 
+            TweenService:Create(knobStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Transparency = 0.8, Thickness = 2}):Play(); 
+            TweenService:Create(valBadge, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.85}):Play(); 
+            TweenService:Create(valStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Transparency = 0.5}):Play()
+        end 
+    end)
+    UserInputService.InputChanged:Connect(function(input) if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then update(input) end end)
+    return function() return value end
+end
+
+local getRadius = createSlider("ORBIT RADIUS", 2, 100, 15, "")
+local getSpeedMs = createSlider("ENGINE YIELD", 10, 300, 50, " %") 
+
+local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true); openTargetBtn.MouseButton1Click:Connect(function() mainList.Visible = false; TweenService:Create(playerMenu, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play() end)
+local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true); openGeoBtn.MouseButton1Click:Connect(function() mainList.Visible = false; TweenService:Create(geoMenu, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play() end)
+
+local orbitBtn = createMainBtn("🪐 QUANTUM ORBIT", "Orbit", false)
+local robotBtn = createMainBtn("🤖 RADIAL SURROUND", "Robot", false)
+local multiBtn = createMainBtn("🤖 DUAL SYSTEM", "MultiRobot", false)
+local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false)
+local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false)
+local chairBtn = createMainBtn("🛏️ VOID CHAIR", "Chair", false)
+
+local modeBtns = { ["Orbit"] = {btn = orbitBtn}, ["Robot"] = {btn = robotBtn}, ["MultiRobot"] = {btn = multiBtn}, ["Ring"] = {btn = ringBtn}, ["HeadBang"] = {btn = headBtn}, ["Chair"] = {btn = chairBtn} }
+
+local function syncComboUI()
+    for key, data in pairs(modeBtns) do
+        local btn = data.btn; local accent = btn:FindFirstChild("Accent")
+        if activeModes[key] then 
+            TweenService:Create(btn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+            if accent then TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
+        else 
+            TweenService:Create(btn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+            if accent then TweenService:Create(accent, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 0, 0, 0)}):Play() end
+        end
+    end
+end
+
+for key, data in pairs(modeBtns) do
+    data.btn.MouseButton1Click:Connect(function()
+        if activeModes[key] then activeModes[key] = false; for i, v in ipairs(modeQueue) do if v == key then table.remove(modeQueue, i) break end end
+        else if #modeQueue >= 2 then local oldest = table.remove(modeQueue, 1); activeModes[oldest] = false end; activeModes[key] = true; table.insert(modeQueue, key) end
+        syncComboUI()
+    end)
+end
+
+local rainbowBtn = createMainBtn("🌈 Neon Pulse Glow", "Rainbow", false)
+rainbowBtn.MouseButton1Click:Connect(function() 
+    isRainbowEnabled = not isRainbowEnabled; activeModes["Rainbow"] = isRainbowEnabled; local accent = rainbowBtn:FindFirstChild("Accent")
+    if isRainbowEnabled then 
+        TweenService:Create(rainbowBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Color3.fromRGB(35, 15, 55), TextColor3 = Colors.Purple}):Play()
+        if accent then accent.BackgroundColor3 = Colors.Purple; TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
+    else 
+        TweenService:Create(rainbowBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then accent.BackgroundColor3 = Colors.Primary; TweenService:Create(accent, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 0, 0, 0)}):Play() end 
+    end
+end)
+
+local soundBtn = createMainBtn("🔊 Dynamic Audio Hook", "Sound", false)
+soundBtn.MouseButton1Click:Connect(function() 
+    isSoundEnabled = not isSoundEnabled; activeModes["Sound"] = isSoundEnabled; local accent = soundBtn:FindFirstChild("Accent")
+    if isSoundEnabled then TweenService:Create(soundBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play(); if accent then TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end; if isSystemActive then task.spawn(PlayRobotBangMusic) end
+    else TweenService:Create(soundBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play(); if accent then TweenService:Create(accent, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 0, 0, 0)}):Play() end; if isSystemActive then task.spawn(StopRobotBangMusic) end end
+end)
+
+local toggleRow = Instance.new("Frame", mainList); toggleRow.Size = UDim2.new(1, 0, 0, 42); toggleRow.BackgroundTransparency = 1; toggleRow.LayoutOrder = getOrder(); toggleRow.ZIndex = 7
+local startBtn = Instance.new("TextButton", toggleRow); startBtn.Size = UDim2.new(0.48, 0, 1, 0); startBtn.BackgroundColor3 = Colors.Primary; startBtn.Text = "▶ INJECT"; startBtn.TextColor3 = Colors.TextDark; startBtn.Font = Enum.Font.GothamBlack; startBtn.TextSize = 11; startBtn.AutoButtonColor = false; startBtn.ZIndex = 8; Instance.new("UICorner", startBtn).CornerRadius = UDim.new(0, 8); applySmartHover(startBtn, nil)
+local stopBtn = Instance.new("TextButton", toggleRow); stopBtn.Size = UDim2.new(0.48, 0, 1, 0); stopBtn.Position = UDim2.new(0.52, 0, 0, 0); stopBtn.BackgroundColor3 = Colors.Surface; stopBtn.BackgroundTransparency = 0.5; stopBtn.Text = "⏹ HALT"; stopBtn.TextColor3 = Colors.Danger; stopBtn.Font = Enum.Font.GothamBold; stopBtn.TextSize = 11; stopBtn.AutoButtonColor = false; stopBtn.ZIndex = 8; Instance.new("UICorner", stopBtn).CornerRadius = UDim.new(0, 8); applySmartHover(stopBtn, nil)
+local stopStroke = Instance.new("UIStroke", stopBtn); stopStroke.Color = Colors.Danger; stopStroke.Thickness = 1; stopStroke.Transparency = 0.5
+crispText(startBtn); crispText(stopBtn)
+
+startBtn.MouseButton1Click:Connect(function() 
+    if isSystemActive then return end 
+    isSystemActive = true; table.clear(assignedRemotes); table.clear(voidedPlayers)
+    TweenService:Create(startBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.PrimaryDark, TextColor3 = Colors.Text}):Play(); TweenService:Create(stopBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Danger, TextColor3 = Colors.TextDark}):Play(); TweenService:Create(stopStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Transparency = 1}):Play()
+    if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
+    
+    task.spawn(function() 
+        sendNotif("ENGINE CORE", "V19.0 Omega Core Activated.", 2)
+        clearProps()
+        task.wait(0.3)
+        if activeModes["Chair"] and not (activeModes["Orbit"] or activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["Ring"] or activeModes["HeadBang"]) then
+            for i = 1, 10 do spawnProp("FurnitureBleachers", "Furniture"); task.wait(0.01) end
+        else
+            if activeModes["Chair"] then spawnProp("FurnitureBleachers", "Furniture") end
+            for i = 1, 25 do spawnProp("ScreensRobotBig", "Screens"); task.wait(0.01) end 
+        end
+    end) 
+end)
+
+stopBtn.MouseButton1Click:Connect(function() 
+    if not isSystemActive then return end 
+    isSystemActive = false
+    TweenService:Create(startBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Primary, TextColor3 = Colors.TextDark}):Play(); TweenService:Create(stopBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Danger}):Play(); TweenService:Create(stopStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Transparency = 0.5}):Play()
+    task.spawn(StopRobotBangMusic); sendNotif("System Core", "All Tasks Halted.", 2) 
+end)
+
+local function getAvailableRemotes() table.clear(propsCache); local com = workspace:FindFirstChild("WorkspaceCom"); if com then for _, f in ipairs(com:GetChildren()) do for _, c in ipairs(f:GetChildren()) do if c.Name == "Prop" .. lp.Name then table.insert(propsCache, c) end end end end; local remotes = {}; for _, p in ipairs(propsCache) do local r = p:FindFirstChild("SetCurrentCFrame"); if r and r.Parent then table.insert(remotes, r) end end return remotes end
+local function isRemoteAssigned(remote) for _, assigned in pairs(assignedRemotes) do if type(assigned) == "table" then for _, sr in pairs(assigned) do if sr == remote then return true end end elseif assigned == remote then return true end end return false end
+
+-- 🔥 HYBRID DUAL-SPEED ENGINE (V19.0) 🔥
+RunService.Heartbeat:Connect(function(dt)
+    if not isSystemActive then return end 
+
+    for plr in pairs(assignedRemotes) do
+        if not selectedPlayers[plr] or not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then
+            assignedRemotes[plr] = nil 
+        end
+    end
+    for plr in pairs(voidedPlayers) do
+        if not selectedPlayers[plr] then
+            voidedPlayers[plr] = nil
+        end
+    end
+
+    local speedMultiplier = (getSpeedMs() / 20)
+    animTime = animTime + (dt * speedMultiplier)
+    angle = angle + (dt * speedMultiplier * 1.5)
+    selfAngle = selfAngle + (dt * speedMultiplier * 2.5) 
+    
+    local robotSpeedMultiplier = 90 / 20
+    robotAnimTime = robotAnimTime + (dt * robotSpeedMultiplier)
+    
+    local allRemotes = getAvailableRemotes()
+    local tCount = 0; local targetList = {}
+    
+    for plr, _ in pairs(selectedPlayers) do 
+        if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then 
+            table.insert(targetList, plr); tCount = tCount + 1 
+        end 
+    end
+
+    if tCount > 0 and #allRemotes > 0 then
+        local currentRadius = getRadius()
+        local rScale = currentRadius / 15 
+
+        for _, plr in ipairs(targetList) do
+            local tRoot = plr.Character.HumanoidRootPart
+            local tHum = plr.Character:FindFirstChildOfClass("Humanoid")
+            if type(assignedRemotes[plr]) ~= "table" then assignedRemotes[plr] = {} end
+            
+            local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
+            
+            local targetVelocity = tRoot.AssemblyLinearVelocity
+            local pingDelay = 0.05; pcall(function() pingDelay = lp:GetNetworkPing() end)
+            local predictionTime = pingDelay + 0.03
+            
+            local bodyPos = bodyPart.Position + (targetVelocity * predictionTime)
+            
+            local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
+            if flatLook.Magnitude > 0.01 then flatLook = flatLook.Unit else flatLook = Vector3.new(0, 0, -1) end
+            
+            local dynamicBaseCFrame = CFrame.lookAt(bodyPos, bodyPos + flatLook)
+            
+            local isProne = (tHum and (tHum:GetState() == Enum.HumanoidStateType.Physics or tHum.Sit))
+            local yOffset = isProne and -1.5 or -3.8
+            local tiltAngle = isProne and math.rad(-90) or 0
+
+            local centerGroundPos = bodyPos + Vector3.new(0, yOffset, 0)
+            
+            local maxBaseDist = math.max(2.5, 4.0 * rScale) 
+            local touchDist = 1.0 
+            
+            local bangCycle = math.abs(math.sin(animTime * 6))
+            local snapPower = math.pow(bangCycle, 2.5) 
+            local smoothDist = maxBaseDist - ((maxBaseDist - touchDist) * snapPower)
+            
+            local robotBangCycle = math.abs(math.sin(robotAnimTime * 6))
+            local robotSnapPower = math.pow(robotBangCycle, 2.5)
+            local robotSmoothDist = maxBaseDist - ((maxBaseDist - touchDist) * robotSnapPower)
+
+            if activeModes["HeadBang"] then
+                local slots = {"h_front", "h_back"}
+                for _, slot in ipairs(slots) do if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then for _, r in ipairs(allRemotes) do if not isRemoteAssigned(r) then assignedRemotes[plr][slot] = r; break end end end end
+                
+                local actualHead = plr.Character:FindFirstChild("Head") or tRoot
+                local headPos = actualHead.Position + (targetVelocity * predictionTime)
+                local headLockCFrame = CFrame.lookAt(headPos, headPos + flatLook)
+                
+                local headY = isProne and -0.8 or -2.4 
+                local headDist = 1.0 + (1.5 * rScale) - (((1.5 * rScale)) * snapPower)
+                
+                if assignedRemotes[plr].h_front then task.spawn(function() pcall(function() assignedRemotes[plr].h_front:InvokeServer(headLockCFrame * CFrame.new(0, headY, -headDist)) end) end) end
+                if assignedRemotes[plr].h_back then task.spawn(function() pcall(function() assignedRemotes[plr].h_back:InvokeServer(headLockCFrame * CFrame.new(0, headY, headDist) * CFrame.Angles(0, math.rad(180), 0)) end) end) end
+            end
+
+            if activeModes["Robot"] then
+                local slots = {"back", "front", "left", "right"}
+                for _, slot in ipairs(slots) do if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then for _, r in ipairs(allRemotes) do if not isRemoteAssigned(r) then assignedRemotes[plr][slot] = r; break end end end end
+                
+                local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * robotSmoothDist)
+                local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * robotSmoothDist)
+                local lPos = centerGroundPos - (dynamicBaseCFrame.RightVector * robotSmoothDist)
+                local rPos = centerGroundPos + (dynamicBaseCFrame.RightVector * robotSmoothDist)
+                
+                if assignedRemotes[plr].front then task.spawn(function() pcall(function() assignedRemotes[plr].front:InvokeServer(CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end) end) end
+                if assignedRemotes[plr].back then task.spawn(function() pcall(function() assignedRemotes[plr].back:InvokeServer(CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end) end) end
+                if assignedRemotes[plr].left then task.spawn(function() pcall(function() assignedRemotes[plr].left:InvokeServer(CFrame.lookAt(lPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end) end) end
+                if assignedRemotes[plr].right then task.spawn(function() pcall(function() assignedRemotes[plr].right:InvokeServer(CFrame.lookAt(rPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end) end) end
+            end
+
+            if activeModes["MultiRobot"] then
+                local slots = {"m_back", "m_front"}
+                for _, slot in ipairs(slots) do if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then for _, r in ipairs(allRemotes) do if not isRemoteAssigned(r) then assignedRemotes[plr][slot] = r; break end end end end
+                
+                local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * smoothDist)
+                local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * smoothDist)
+                
+                if assignedRemotes[plr].m_front then task.spawn(function() pcall(function() assignedRemotes[plr].m_front:InvokeServer(CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end) end) end
+                if assignedRemotes[plr].m_back then task.spawn(function() pcall(function() assignedRemotes[plr].m_back:InvokeServer(CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end) end) end
+            end
+
+            if activeModes["Chair"] then
+                if voidedPlayers[plr] and not tHum.Sit then voidedPlayers[plr] = nil end
+                if not voidedPlayers[plr] then
+                    if not assignedRemotes[plr].chair or not assignedRemotes[plr].chair.Parent then 
+                        for _, r in ipairs(allRemotes) do 
+                            if not isRemoteAssigned(r) then assignedRemotes[plr].chair = r; break end 
+                        end 
+                    end
+                    if assignedRemotes[plr].chair then
+                        if tHum.Sit then 
+                            pcall(function() assignedRemotes[plr].chair:InvokeServer(CFrame.new(0, -5000, 0)) end)
+                            voidedPlayers[plr] = true
+                            assignedRemotes[plr].chair = nil
+                        else
+                            pcall(function() assignedRemotes[plr].chair:InvokeServer(dynamicBaseCFrame * CFrame.new(0, -3.2, 1.5)) end)
+                        end
+                    end
+                end
+            end
+        end
+
+        local freeRemotes = {}
+        for _, r in ipairs(allRemotes) do if not isRemoteAssigned(r) then table.insert(freeRemotes, r) end end
+
+        if #freeRemotes > 0 then
+            if activeModes["Ring"] then
+                for i, remote in ipairs(freeRemotes) do
+                    local targetIdx = ((i - 1) % tCount) + 1; local plr = targetList[targetIdx]
+                    
+                    local tRoot = plr.Character.HumanoidRootPart
+                    local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
+                    
+                    local targetVelocity = tRoot.AssemblyLinearVelocity
+                    local pingDelay = 0.05; pcall(function() pingDelay = lp:GetNetworkPing() end)
+                    local predictionTime = pingDelay + 0.03
+                    local bodyPos = bodyPart.Position + (targetVelocity * predictionTime)
+                    
+                    local ringCenterPos = bodyPos + Vector3.new(0, -3.8, 0)
+                    
+                    local propsForThisTarget = 0; local myLocalIdx = 0
+                    for j = 1, #freeRemotes do if (((j - 1) % tCount) + 1) == targetIdx then if j < i then myLocalIdx = myLocalIdx + 1 end; propsForThisTarget = propsForThisTarget + 1 end end
+                    if propsForThisTarget > 0 then
+                        local angleRad = (math.pi * 2 / propsForThisTarget) * myLocalIdx
+                        
+                        local rBaseDist = math.max(3.5, 4.5 * rScale) 
+                        local rSnap = math.pow(math.abs(math.sin(animTime * 6)), 2.5)
+                        local rSmooth = rBaseDist - ((rBaseDist - 1.5) * rSnap)
+                        
+                        local propPos = ringCenterPos + Vector3.new(math.sin(angleRad) * rSmooth, 0, math.cos(angleRad) * rSmooth)
+                        
+                        local finalCFrame = CFrame.lookAt(propPos, ringCenterPos) * CFrame.Angles(0, math.rad(180), 0)
+                        task.spawn(function() pcall(function() remote:InvokeServer(finalCFrame) end) end)
+                    end
+                end
+            end
+            
+            if activeModes["Orbit"] then
+                for idx, remote in ipairs(freeRemotes) do
+                    local targetIdx = ((idx - 1) % tCount) + 1; local plr = targetList[targetIdx]
+                    
+                    local tRoot = plr.Character.HumanoidRootPart
+                    local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
+                    
+                    local targetVelocity = tRoot.AssemblyLinearVelocity
+                    local pingDelay = 0.05; pcall(function() pingDelay = lp:GetNetworkPing() end)
+                    local predictionTime = pingDelay + 0.03
+                    local bodyPos = bodyPart.Position + (targetVelocity * predictionTime)
+                    
+                    local dynamicOrbitBase = CFrame.new(bodyPos)
+                    
+                    local propsForThisTarget = math.ceil(#freeRemotes / tCount); local localIdx = idx % propsForThisTarget
+                    local x, y, z = 0, 0, 0; local radRatio = (localIdx / propsForThisTarget) * math.pi * 2; local localTime = angle
+                    
+                    if activeGeometry == "Spin" then x = math.cos(radRatio + localTime) * currentRadius; z = math.sin(radRatio + localTime) * currentRadius
+                    elseif activeGeometry == "Reverse Spin" then x = math.cos(radRatio - localTime) * currentRadius; z = math.sin(radRatio - localTime) * currentRadius
+                    elseif activeGeometry == "Bobbing Orbit" then x = math.cos(radRatio + localTime) * currentRadius; z = math.sin(radRatio + localTime) * currentRadius; y = math.sin((localTime * 2) + radRatio) * (currentRadius / 1.5)
+                    else x = math.cos(radRatio + localTime) * currentRadius; z = math.sin(radRatio + localTime) * currentRadius end
+                    
+                    local calcCFrame = dynamicOrbitBase * CFrame.new(Vector3.new(x, y, z)) * CFrame.Angles(selfAngle, selfAngle, selfAngle)
+                    task.spawn(function() pcall(function() remote:InvokeServer(calcCFrame) end) end)
+                end
+            end
+        end
+    end
+end)
+
+-- ✨ V19.0 RADIO-SYNC RAINBOW ENGINE ✨
+local hue = 0
+RunService.Heartbeat:Connect(function(dt)
+    if isRainbowEnabled then 
+        local speedMultiplier = (getSpeedMs() / 20)
+        hue = (hue + (0.5 * speedMultiplier * dt)) % 1
+        local color = Color3.fromHSV(hue, 1, 1) 
+        
+        for _, prop in ipairs(propsCache) do 
+            if prop and prop.Parent then
+                for _, desc in ipairs(prop:GetDescendants()) do 
+                    if desc:IsA("BasePart") then 
+                        pcall(function()
+                            desc.Color = color 
+                            if desc.Material ~= Enum.Material.Neon then desc.Material = Enum.Material.Neon end
+                        end)
+                    end
+                    if desc:IsA("SpecialMesh") then
+                        pcall(function() desc.TextureId = ""; desc.VertexColor = Vector3.new(color.R, color.G, color.B) end)
+                    end
+                end 
+            end
+        end
+    end
+end)
+
+task.spawn(function()
+    local RE = game:GetService("ReplicatedStorage"):WaitForChild("RE")
+    while gui.Parent do
+        if isRainbowEnabled and isSystemActive then
+            local syncColor = Color3.fromHSV(hue, 1, 1)
+            for _, remote in ipairs(RE:GetChildren()) do
+                if remote:IsA("RemoteEvent") then
+                    pcall(function()
+                        remote:FireServer("ToolColor", syncColor)
+                        remote:FireServer("Color", syncColor)
+                        remote:FireServer("PropColor", syncColor)
+                        remote:FireServer("PickingScooterColor", syncColor)
+                    end)
+                end
+            end
+        end
+        task.wait(0.25) 
+    end
+end)
