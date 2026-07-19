@@ -56,22 +56,19 @@ end
 
 -- ⚠️ ASHU PAPA TRAP (ANTI-SKID SECURITY) ⚠️
 local function triggerBanTrap()
-    -- 1. Main GUI ko gayab kar do taaki wo kuch aur na kar sake
     if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
     
-    -- 2. Screen Pura Red aur Warning Text
     local trapGui = Instance.new("ScreenGui")
     trapGui.Name = "AshuPapaTrap"
-    trapGui.IgnoreGuiInset = true -- Pura screen cover karega (Top bar bhi)
+    trapGui.IgnoreGuiInset = true 
     
-    -- Executor support (CoreGui) ya fir normal PlayerGui
     local trapTargetParent = game:GetService("CoreGui")
     pcall(function() trapGui.Parent = trapTargetParent end)
-    if not trapGui.Parent then trapGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui") end
+    if not trapGui.Parent then trapGui.Parent = lp:WaitForChild("PlayerGui") end
     
     local bg = Instance.new("Frame", trapGui)
     bg.Size = UDim2.new(1, 0, 1, 0)
-    bg.BackgroundColor3 = Color3.fromRGB(200, 0, 0) -- Warning Red Color
+    bg.BackgroundColor3 = Color3.fromRGB(200, 0, 0) 
     bg.ZIndex = 99999
     
     local txt = Instance.new("TextLabel", bg)
@@ -87,7 +84,6 @@ local function triggerBanTrap()
     stroke.Thickness = 3
     stroke.Color = Color3.new(0, 0, 0)
     
-    -- 3. Chat mein auto-message bhejna (Maafi mangwana)
     pcall(function()
         local msg = "bye guys ashu papa ne ban kr diya sorry papa "
         if game:GetService("TextChatService") and game:GetService("TextChatService").TextChannels:FindFirstChild("RBXGeneral") then
@@ -97,10 +93,49 @@ local function triggerBanTrap()
         end
     end)
     
-    -- 4. Thoda wait (taki wo apni beizzati dekh sake) aur fir seedha KICK!
     task.wait(3.5)
-    game:GetService("Players").LocalPlayer:Kick("\n⚠️ WARNING ⚠️\n\naapne apne Ashu papa ko troll kiya hai\n\nAagar firse select kiya to aap permanent blacklist ho jaenge")
+    lp:Kick("\n⚠️ WARNING ⚠️\n\naapne apne Ashu papa ko troll kiya hai\n\nAagar firse select kiya to aap permanent blacklist ho jaenge")
 end
+
+-- 👑 CREATOR JOIN ALERT (VIP ANNOUNCEMENT) 👑
+local function onPlayerJoinAlert(plr)
+    if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
+        local alertGui = Instance.new("ScreenGui")
+        alertGui.Name = "AshuPapaJoinAlert"
+        alertGui.IgnoreGuiInset = true
+        pcall(function() alertGui.Parent = game:GetService("CoreGui") end)
+        if not alertGui.Parent then alertGui.Parent = lp:WaitForChild("PlayerGui") end
+        
+        local bg = Instance.new("Frame", alertGui)
+        bg.Size = UDim2.new(1, 0, 1, 0)
+        bg.BackgroundColor3 = Color3.new(0, 0, 0)
+        bg.BackgroundTransparency = 0.3
+        bg.ZIndex = 99998
+        
+        local txt = Instance.new("TextLabel", bg)
+        txt.Size = UDim2.new(1, 0, 1, 0)
+        txt.BackgroundTransparency = 1
+        txt.Text = "( Ashu papa aaye hai )"
+        txt.TextColor3 = Color3.fromRGB(255, 215, 0) -- Gold VIP Color
+        txt.Font = Enum.Font.GothamBlack
+        txt.TextSize = 60
+        txt.ZIndex = 99999
+        
+        local stroke = Instance.new("UIStroke", txt)
+        stroke.Thickness = 4
+        stroke.Color = Color3.new(0, 0, 0)
+        
+        -- Fade Out Effect
+        task.delay(4, function()
+            TweenService:Create(bg, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
+            TweenService:Create(txt, TweenInfo.new(1.5), {TextTransparency = 1}):Play()
+            TweenService:Create(stroke, TweenInfo.new(1.5), {Transparency = 1}):Play()
+            task.wait(1.5)
+            alertGui:Destroy()
+        end)
+    end
+end
+Players.PlayerAdded:Connect(onPlayerJoinAlert)
 
 -- 🔥 EXPLOIT METHODS 🔥
 local function PlayRobotBangMusic()
@@ -156,21 +191,22 @@ end
 local function clearProps() pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("ClearAllProps") end); task.wait(0.35) end
 local function spawnProp(propName, category) pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("RequestingPropName", propName, category) end) end
 
--- ✨ V18.0 SMART CLICK-TO-SPAWN OVERRIDE ✨
+-- ✨ V18.0 DYNAMIC CLICK-TO-SPAWN (FIXED) ✨
 local mouse = lp:GetMouse()
 mouse.Button1Down:Connect(function()
     if not isSystemActive then return end
     local char = lp.Character
-    if char then
-        local tool = char:FindFirstChildOfClass("Tool")
-        if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
-            if activeModes["Chair"] then
-                spawnProp("FurnitureBleachers", "Furniture") 
-            else
-                spawnProp("ScreensRobotBig", "Screens") 
-            end
+    local tool = char and char:FindFirstChildOfClass("Tool")
+    
+    -- Agar haath mein koi tool nahi hai (bina select kiya click kiya) toh default spawn karo
+    if not tool then
+        if activeModes["Chair"] then
+            spawnProp("FurnitureBleachers", "Furniture") 
+        else
+            spawnProp("ScreensRobotBig", "Screens") 
         end
     end
+    -- Agar tool selected hai, toh hum overwrite nahi karenge, game usko normally spawn karegi aur script usko grab kar legi!
 end)
 
 -- --- GUI CONSTRUCTION ---
@@ -253,7 +289,7 @@ discordBtn.MouseButton1Click:Connect(function() pcall(function() copyToClip("not
 
 -- ✨ V18.0 GALACTIC QUASAR CORE (ULTIMATE REOPEN BUTTON) ✨
 local openBtnContainer = Instance.new("Frame", gui)
-openBtnContainer.Size = UDim2.fromOffset(86, 86) -- Bada size event horizon ke liye
+openBtnContainer.Size = UDim2.fromOffset(86, 86) 
 openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
 openBtnContainer.Position = UDim2.fromScale(0.08, 0.5)
 openBtnContainer.BackgroundTransparency = 1
