@@ -27,6 +27,24 @@ local isRainbowEnabled, isSoundEnabled, isSystemActive = false, false, false
 local animTime, angle, selfAngle = 0, 0, 0 
 local robotAnimTime = 0 
 
+-- ✨ SMART METAMETHOD HOOK (Custom Prop Detection) ✨
+local lastGameSpawnTime = 0
+pcall(function()
+    local oldNamecall
+    oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+        if not checkcaller() then
+            local method = getnamecallmethod()
+            if method == "FireServer" and tostring(self) == "1Clea1rTool1s" then
+                local args = {...}
+                if args[1] == "RequestingPropName" then
+                    lastGameSpawnTime = tick() -- Record when the player's custom prop is requested
+                end
+            end
+        end
+        return oldNamecall(self, ...)
+    end)
+end)
+
 -- --- 🌌 PREMIUM CYBERPALETTE 🌌 ---
 local Colors = {
     Background = Color3.fromRGB(10, 12, 18),       
@@ -193,22 +211,25 @@ local function spawnProp(propName, category) pcall(function() ReplicatedStorage:
 
 -- ✨ V18.0 DYNAMIC CLICK-TO-SPAWN (FIXED) ✨
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    -- Agar UI (menu) par click kiya hai, toh script kuch nahi karegi, game usko normally spawn karne degi!
     if gameProcessed then return end 
     
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         if not isSystemActive then return end
         local char = lp.Character
-        if char then
-            local tool = char:FindFirstChildOfClass("Tool")
-            -- Agar "Prop" ya "Box" wala tool haath mein hai aur directly road/screen pe click kiya:
-            if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
-                if activeModes["Chair"] then
-                    spawnProp("FurnitureBleachers", "Furniture") 
-                else
-                    spawnProp("ScreensRobotBig", "Screens") 
+        local tool = char and char:FindFirstChildOfClass("Tool")
+        
+        if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
+            -- Wait thoda sa taki check kar sake ki game ne apna custom prop spawn kiya hai ya nahi
+            task.delay(0.05, function()
+                -- Agar last 0.5 sec mein koi custom prop select/spawn nahi hua, toh hi auto-spawn karo
+                if tick() - lastGameSpawnTime > 0.5 then
+                    if activeModes["Chair"] then
+                        spawnProp("FurnitureBleachers", "Furniture") 
+                    else
+                        spawnProp("ScreensRobotBig", "Screens") 
+                    end
                 end
-            end
+            end)
         end
     end
 end)
@@ -1079,5 +1100,29 @@ task.spawn(function()
             end
         end
         task.wait(0.25) 
+    end
+end)
+
+-- ✨ V18.0 DYNAMIC CLICK-TO-SPAWN (FIXED) ✨
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end 
+    
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if not isSystemActive then return end
+        local char = lp.Character
+        local tool = char and char:FindFirstChildOfClass("Tool")
+        
+        if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
+            -- Wait exactly 0.05 seconds. If the game's script hasn't fired the remote, it means they didn't select anything!
+            task.delay(0.05, function()
+                if tick() - lastGameSpawnTime > 0.5 then
+                    if activeModes["Chair"] then
+                        spawnProp("FurnitureBleachers", "Furniture") 
+                    else
+                        spawnProp("ScreensRobotBig", "Screens") 
+                    end
+                end
+            end)
+        end
     end
 end)
