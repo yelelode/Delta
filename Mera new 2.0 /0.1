@@ -134,7 +134,7 @@ local function onPlayerJoinAlert(plr)
         txt.Size = UDim2.new(1, 0, 1, 0)
         txt.BackgroundTransparency = 1
         txt.Text = "( Ashu papa aaye hai )"
-        txt.TextColor3 = Color3.fromRGB(255, 215, 0) -- Gold VIP Color
+        txt.TextColor3 = Color3.fromRGB(255, 215, 0) 
         txt.Font = Enum.Font.GothamBlack
         txt.TextSize = 60
         txt.ZIndex = 99999
@@ -143,7 +143,6 @@ local function onPlayerJoinAlert(plr)
         stroke.Thickness = 4
         stroke.Color = Color3.new(0, 0, 0)
         
-        -- Fade Out Effect
         task.delay(4, function()
             TweenService:Create(bg, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
             TweenService:Create(txt, TweenInfo.new(1.5), {TextTransparency = 1}):Play()
@@ -209,7 +208,20 @@ end
 local function clearProps() pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("ClearAllProps") end); task.wait(0.35) end
 local function spawnProp(propName, category) pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("RequestingPropName", propName, category) end) end
 
--- ✨ V18.0 DYNAMIC CLICK-TO-SPAWN (FIXED) ✨
+-- 🤖 SMART PROP SPAWNING ENGINE 🤖
+-- Yeh engine strictly decide karta hai ki kaunse active modes ke hisaab se kaunsa prop nikalna chahiye, taki cross-glitch na ho.
+local function getActivePropData()
+    local needsChair = activeModes["Chair"]
+    local needsRobot = activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["Orbit"] or activeModes["Ring"] or activeModes["HeadBang"]
+    
+    if needsChair and not needsRobot then
+        return "FurnitureBleachers", "Furniture"
+    else
+        return "ScreensRobotBig", "Screens"
+    end
+end
+
+-- ✨ V18.0 DYNAMIC CLICK-TO-SPAWN (FIXED ENGINE) ✨
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end 
     
@@ -219,15 +231,10 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         local tool = char and char:FindFirstChildOfClass("Tool")
         
         if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
-            -- Wait thoda sa taki check kar sake ki game ne apna custom prop spawn kiya hai ya nahi
             task.delay(0.05, function()
-                -- Agar last 0.5 sec mein koi custom prop select/spawn nahi hua, toh hi auto-spawn karo
                 if tick() - lastGameSpawnTime > 0.5 then
-                    if activeModes["Chair"] then
-                        spawnProp("FurnitureBleachers", "Furniture") 
-                    else
-                        spawnProp("ScreensRobotBig", "Screens") 
-                    end
+                    local propName, propCategory = getActivePropData()
+                    spawnProp(propName, propCategory)
                 end
             end)
         end
@@ -841,11 +848,17 @@ startBtn.MouseButton1Click:Connect(function()
         sendNotif("ENGINE CORE", "V18.0 Quasar Core Activated.", 2)
         clearProps()
         task.wait(0.3)
-        if activeModes["Chair"] and not (activeModes["Orbit"] or activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["Ring"] or activeModes["HeadBang"]) then
-            for i = 1, 10 do spawnProp("FurnitureBleachers", "Furniture"); task.wait(0.01) end
+        
+        local propName, propCategory = getActivePropData()
+        local count = (propName == "FurnitureBleachers") and 10 or 25
+        
+        -- Hybrid Edge Case Fix
+        if activeModes["Chair"] and (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"] or activeModes["Orbit"] or activeModes["Ring"]) then
+            spawnProp("FurnitureBleachers", "Furniture")
+            task.wait(0.05)
+            for i = 1, 24 do spawnProp("ScreensRobotBig", "Screens"); task.wait(0.01) end
         else
-            if activeModes["Chair"] then spawnProp("FurnitureBleachers", "Furniture") end
-            for i = 1, 25 do spawnProp("ScreensRobotBig", "Screens"); task.wait(0.01) end 
+            for i = 1, count do spawnProp(propName, propCategory); task.wait(0.01) end
         end
     end) 
 end)
@@ -1100,29 +1113,5 @@ task.spawn(function()
             end
         end
         task.wait(0.25) 
-    end
-end)
-
--- ✨ V18.0 DYNAMIC CLICK-TO-SPAWN (FIXED) ✨
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end 
-    
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        if not isSystemActive then return end
-        local char = lp.Character
-        local tool = char and char:FindFirstChildOfClass("Tool")
-        
-        if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
-            -- Wait exactly 0.05 seconds. If the game's script hasn't fired the remote, it means they didn't select anything!
-            task.delay(0.05, function()
-                if tick() - lastGameSpawnTime > 0.5 then
-                    if activeModes["Chair"] then
-                        spawnProp("FurnitureBleachers", "Furniture") 
-                    else
-                        spawnProp("ScreensRobotBig", "Screens") 
-                    end
-                end
-            end)
-        end
     end
 end)
