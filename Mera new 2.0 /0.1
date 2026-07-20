@@ -1071,18 +1071,11 @@ RunService.Heartbeat:Connect(function(dt)
                         end 
                     end
                     if assignedRemotes[plr].chair then
-                        -- 🔥 SPAWN-TRAP DEATH LOOP ENGINE 🔥
-                        if tHum.Sit and not voidedPlayers[plr] then 
+                        -- ORIGINAL STICKY VOID KILL (REVERTED)
+                        if tHum.Sit then 
+                            pcall(function() assignedRemotes[plr].chair:InvokeServer(CFrame.new(0, -5000, 0)) end)
                             voidedPlayers[plr] = true
-                            task.spawn(function()
-                                -- Sky Drop (Panic moment)
-                                local skyPos = dynamicBaseCFrame * CFrame.new(0, 1500, 0)
-                                pcall(function() assignedRemotes[plr].chair:InvokeServer(skyPos) end)
-                                task.wait(1.2)
-                                -- Void Kill (Guaranteed execution)
-                                pcall(function() assignedRemotes[plr].chair:InvokeServer(CFrame.new(0, -5000, 0)) end)
-                                assignedRemotes[plr].chair = nil
-                            end)
+                            assignedRemotes[plr].chair = nil
                         else
                             local chairPredPos = bodyPart.Position + (targetVelocity * (pingDelay + 0.06))
                             local chairCFrame = CFrame.lookAt(chairPredPos, chairPredPos + flatLook)
