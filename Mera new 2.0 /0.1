@@ -30,7 +30,7 @@ end)
 local selectedPlayers, assignedRemotes, voidedPlayers, propsCache = {}, {}, {}, {}
 local activeModes, modeQueue = {}, {} 
 local activeGeometry = "Spin"
-local isRainbowEnabled, isSoundEnabled, isSystemActive = false, false, false
+local isRainbowEnabled, isSoundEnabled, isSystemActive, isGodShieldEnabled = false, false, false, false
 local animTime, angle, selfAngle = 0, 0, 0 
 local robotAnimTime = 0 
 local espObjects = {} -- 👁️ ESP TRACKING TRACKER
@@ -854,6 +854,21 @@ soundBtn.MouseButton1Click:Connect(function()
     else TweenService:Create(soundBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play(); if accent then TweenService:Create(accent, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 0, 0, 0)}):Play() end; if isSystemActive then task.spawn(StopRobotBangMusic) end end
 end)
 
+-- 🛡️ GOD SHIELD (ANTI-TOUCH/SIT) TOGGLE 🛡️
+local shieldBtn = createMainBtn("🛡️ GOD SHIELD (ANTI-TOUCH/SIT)", "Shield", false)
+shieldBtn.MouseButton1Click:Connect(function() 
+    isGodShieldEnabled = not isGodShieldEnabled; activeModes["Shield"] = isGodShieldEnabled; local accent = shieldBtn:FindFirstChild("Accent")
+    if isGodShieldEnabled then 
+        TweenService:Create(shieldBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+        if accent then TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
+        sendNotif("🛡️ SECURITY", "God Shield Activated: Full Physics Immunity.", 2)
+    else 
+        TweenService:Create(shieldBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then TweenService:Create(accent, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 0, 0, 0)}):Play() end 
+        sendNotif("🛡️ SECURITY", "God Shield Deactivated.", 2)
+    end
+end)
+
 local toggleRow = Instance.new("Frame", mainList); toggleRow.Size = UDim2.new(1, 0, 0, 42); toggleRow.BackgroundTransparency = 1; toggleRow.LayoutOrder = getOrder(); toggleRow.ZIndex = 7
 local startBtn = Instance.new("TextButton", toggleRow); startBtn.Size = UDim2.new(0.48, 0, 1, 0); startBtn.BackgroundColor3 = Colors.Primary; startBtn.Text = "▶ INJECT"; startBtn.TextColor3 = Colors.TextDark; startBtn.Font = Enum.Font.GothamBlack; startBtn.TextSize = 11; startBtn.AutoButtonColor = false; startBtn.ZIndex = 8; Instance.new("UICorner", startBtn).CornerRadius = UDim.new(0, 8); applySmartHover(startBtn, nil)
 local stopBtn = Instance.new("TextButton", toggleRow); stopBtn.Size = UDim2.new(0.48, 0, 1, 0); stopBtn.Position = UDim2.new(0.52, 0, 0, 0); stopBtn.BackgroundColor3 = Colors.Surface; stopBtn.BackgroundTransparency = 0.5; stopBtn.Text = "⏹ HALT"; stopBtn.TextColor3 = Colors.Danger; stopBtn.Font = Enum.Font.GothamBold; stopBtn.TextSize = 11; stopBtn.AutoButtonColor = false; stopBtn.ZIndex = 8; Instance.new("UICorner", stopBtn).CornerRadius = UDim.new(0, 8); applySmartHover(stopBtn, nil)
@@ -893,6 +908,48 @@ end)
 local function getAvailableRemotes() table.clear(propsCache); local com = workspace:FindFirstChild("WorkspaceCom"); if com then for _, f in ipairs(com:GetChildren()) do for _, c in ipairs(f:GetChildren()) do if c.Name == "Prop" .. lp.Name then table.insert(propsCache, c) end end end end; local remotes = {}; for _, p in ipairs(propsCache) do local r = p:FindFirstChild("SetCurrentCFrame"); if r and r.Parent then table.insert(remotes, r) end end return remotes end
 local function isRemoteAssigned(remote) for _, assigned in pairs(assignedRemotes) do if type(assigned) == "table" then for _, sr in pairs(assigned) do if sr == remote then return true end end elseif assigned == remote then return true end end return false end
 
+-- 🛡️ GOD SHIELD (PRE-PHYSICS ENGINE) 🛡️
+RunService.Stepped:Connect(function()
+    if isGodShieldEnabled and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+        local char = lp.Character
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        local root = char.HumanoidRootPart
+        
+        -- Anti-Sit Overdrive
+        if hum and hum.Sit then
+            hum.Sit = false
+            hum:ChangeState(Enum.HumanoidStateType.Running)
+        end
+        for _, v in ipairs(char:GetDescendants()) do
+            if v:IsA("Weld") or v.Name == "SeatWeld" then
+                if v.Part0 and v.Part1 then
+                    if string.match(string.lower(v.Part0.Name), "seat") or string.match(string.lower(v.Part1.Name), "seat") then
+                        pcall(function() v:Destroy() end)
+                    end
+                end
+            end
+        end
+
+        -- Anti-Touch / Ghost Physics (Cars, Balls, other players phase through you)
+        pcall(function()
+            for _, part in ipairs(workspace:GetPartBoundsInRadius(root.Position, 15)) do
+                if part:IsA("BasePart") and not part:IsDescendantOf(char) and not part.Anchored then
+                    pcall(function() part.CanCollide = false end)
+                end
+            end
+            for _, plr in ipairs(Players:GetPlayers()) do
+                if plr ~= lp and plr.Character then
+                    for _, p in ipairs(plr.Character:GetChildren()) do
+                        if p:IsA("BasePart") then
+                            pcall(function() p.CanCollide = false end)
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
 -- 🔥 HYBRID DUAL-SPEED ENGINE (V18.0) 🔥
 RunService.Heartbeat:Connect(function(dt)
     if not isSystemActive then return end 
@@ -913,7 +970,7 @@ RunService.Heartbeat:Connect(function(dt)
     angle = angle + (dt * speedMultiplier * 1.5)
     selfAngle = selfAngle + (dt * speedMultiplier * 2.5) 
     
-    local robotSpeedMultiplier = 60 / 20 -- ⚡ DOWNGRADED TO 60 AS REQUESTED ⚡
+    local robotSpeedMultiplier = 60 / 20 
     robotAnimTime = robotAnimTime + (dt * robotSpeedMultiplier)
     
     local allRemotes = getAvailableRemotes()
@@ -1014,15 +1071,22 @@ RunService.Heartbeat:Connect(function(dt)
                         end 
                     end
                     if assignedRemotes[plr].chair then
-                        if tHum.Sit then 
-                            pcall(function() assignedRemotes[plr].chair:InvokeServer(CFrame.new(0, -5000, 0)) end)
+                        -- 🔥 SPAWN-TRAP DEATH LOOP ENGINE 🔥
+                        if tHum.Sit and not voidedPlayers[plr] then 
                             voidedPlayers[plr] = true
-                            assignedRemotes[plr].chair = nil
+                            task.spawn(function()
+                                -- Sky Drop (Panic moment)
+                                local skyPos = dynamicBaseCFrame * CFrame.new(0, 1500, 0)
+                                pcall(function() assignedRemotes[plr].chair:InvokeServer(skyPos) end)
+                                task.wait(1.2)
+                                -- Void Kill (Guaranteed execution)
+                                pcall(function() assignedRemotes[plr].chair:InvokeServer(CFrame.new(0, -5000, 0)) end)
+                                assignedRemotes[plr].chair = nil
+                            end)
                         else
-                            -- 🔥 UPGRADED CHAIR TRACKING: Aggressive prediction & exact leg offset to ensure instant sit 🔥
-                            local chairPredPos = bodyPart.Position + (targetVelocity * (pingDelay + 0.06))
-                            local chairCFrame = CFrame.lookAt(chairPredPos, chairPredPos + flatLook)
-                            pcall(function() assignedRemotes[plr].chair:InvokeServer(chairCFrame * CFrame.new(0, -2.6, 0.5)) end)
+                            -- 🔥 DIRECT LOCK (NO ESCAPE) 🔥
+                            -- Removing prediction completely so it locks exactly onto their RootPart, ignoring jump spam!
+                            pcall(function() assignedRemotes[plr].chair:InvokeServer(tRoot.CFrame * CFrame.new(0, -0.5, 0)) end)
                         end
                     end
                 end
