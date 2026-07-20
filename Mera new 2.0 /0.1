@@ -19,6 +19,13 @@ if gethui then pcall(function() targetGuiParent = gethui() end) end
 
 local CREATOR_USER_ID = 9685785248
 
+-- ⚡ 90 FPS GAMING ENGINE ⚡
+pcall(function()
+    if setfpscap then
+        setfpscap(90)
+    end
+end)
+
 -- --- CORE LOGIC ---
 local selectedPlayers, assignedRemotes, voidedPlayers, propsCache = {}, {}, {}, {}
 local activeModes, modeQueue = {}, {} 
@@ -648,7 +655,7 @@ closeBtn.MouseButton1Click:Connect(function()
     TweenService:Create(mainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {BackgroundTransparency = 1, Position = UDim2.new(0.5, 0, 0.5, 30)}):Play()
     TweenService:Create(aura, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
     task.wait(0.4); gui:Destroy(); activeModes = {}; isSystemActive = false 
-    if _G.TXR_ESP_GUI then _G.TXR_ESP_GUI:Destroy() end -- Cleanup ESP on close
+    if _G.TXR_ESP_GUI then _G.TXR_ESP_GUI:Destroy() end 
 end)
 
 minimizeBtn.MouseButton1Click:Connect(function() 
@@ -906,7 +913,7 @@ RunService.Heartbeat:Connect(function(dt)
     angle = angle + (dt * speedMultiplier * 1.5)
     selfAngle = selfAngle + (dt * speedMultiplier * 2.5) 
     
-    local robotSpeedMultiplier = 90 / 20
+    local robotSpeedMultiplier = 60 / 20 -- ⚡ DOWNGRADED TO 60 AS REQUESTED ⚡
     robotAnimTime = robotAnimTime + (dt * robotSpeedMultiplier)
     
     local allRemotes = getAvailableRemotes()
