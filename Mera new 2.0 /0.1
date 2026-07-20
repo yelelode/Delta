@@ -26,6 +26,7 @@ local activeGeometry = "Spin"
 local isRainbowEnabled, isSoundEnabled, isSystemActive = false, false, false
 local animTime, angle, selfAngle = 0, 0, 0 
 local robotAnimTime = 0 
+local espObjects = {} -- 👁️ ESP TRACKING TRACKER
 
 -- ✨ SMART METAMETHOD HOOK (Custom Prop Detection) ✨
 local lastGameSpawnTime = 0
@@ -209,7 +210,6 @@ local function clearProps() pcall(function() ReplicatedStorage:WaitForChild("RE"
 local function spawnProp(propName, category) pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("RequestingPropName", propName, category) end) end
 
 -- 🤖 SMART PROP SPAWNING ENGINE 🤖
--- Yeh engine strictly decide karta hai ki kaunse active modes ke hisaab se kaunsa prop nikalna chahiye, taki cross-glitch na ho.
 local function getActivePropData()
     local needsChair = activeModes["Chair"]
     local needsRobot = activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["Orbit"] or activeModes["Ring"] or activeModes["HeadBang"]
@@ -648,6 +648,7 @@ closeBtn.MouseButton1Click:Connect(function()
     TweenService:Create(mainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {BackgroundTransparency = 1, Position = UDim2.new(0.5, 0, 0.5, 30)}):Play()
     TweenService:Create(aura, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
     task.wait(0.4); gui:Destroy(); activeModes = {}; isSystemActive = false 
+    if _G.TXR_ESP_GUI then _G.TXR_ESP_GUI:Destroy() end -- Cleanup ESP on close
 end)
 
 minimizeBtn.MouseButton1Click:Connect(function() 
@@ -813,6 +814,20 @@ for key, data in pairs(modeBtns) do
     end)
 end
 
+-- 👁️ TACTICAL ESP HUD TOGGLE 👁️
+local espBtn = createMainBtn("👁️ TACTICAL ESP (HUD)", "ESP", false)
+espBtn.MouseButton1Click:Connect(function() 
+    activeModes["ESP"] = not activeModes["ESP"] 
+    local accent = espBtn:FindFirstChild("Accent")
+    if activeModes["ESP"] then 
+        TweenService:Create(espBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+        if accent then TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
+    else 
+        TweenService:Create(espBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then TweenService:Create(accent, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 0, 0, 0)}):Play() end 
+    end
+end)
+
 local rainbowBtn = createMainBtn("🌈 Neon Pulse Glow", "Rainbow", false)
 rainbowBtn.MouseButton1Click:Connect(function() 
     isRainbowEnabled = not isRainbowEnabled; activeModes["Rainbow"] = isRainbowEnabled; local accent = rainbowBtn:FindFirstChild("Accent")
@@ -852,7 +867,6 @@ startBtn.MouseButton1Click:Connect(function()
         local propName, propCategory = getActivePropData()
         local count = (propName == "FurnitureBleachers") and 10 or 25
         
-        -- Hybrid Edge Case Fix
         if activeModes["Chair"] and (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"] or activeModes["Orbit"] or activeModes["Ring"]) then
             spawnProp("FurnitureBleachers", "Furniture")
             task.wait(0.05)
@@ -1113,5 +1127,106 @@ task.spawn(function()
             end
         end
         task.wait(0.25) 
+    end
+end)
+
+-- 👁️ TACTICAL ESP RENDER ENGINE 👁️
+local espGuiParent = game:GetService("CoreGui")
+pcall(function() if not espGuiParent then espGuiParent = lp:WaitForChild("PlayerGui") end end)
+if _G.TXR_ESP_GUI and _G.TXR_ESP_GUI.Parent then _G.TXR_ESP_GUI:Destroy() end
+
+local mainEspGui = Instance.new("ScreenGui", espGuiParent)
+mainEspGui.Name = "TXR_TacticalESP"
+mainEspGui.IgnoreGuiInset = true
+_G.TXR_ESP_GUI = mainEspGui
+
+local function getESPContainer(plr)
+    if not espObjects[plr] then
+        local container = Instance.new("Frame", mainEspGui)
+        container.BackgroundTransparency = 1
+        container.Visible = false
+        
+        local box = Instance.new("Frame", container)
+        box.Size = UDim2.new(1, 0, 1, 0)
+        box.BackgroundTransparency = 1
+        local stroke = Instance.new("UIStroke", box)
+        stroke.Color = Colors.Primary
+        stroke.Thickness = 1.5
+        stroke.Transparency = 0.2
+        
+        local nameLabel = Instance.new("TextLabel", container)
+        nameLabel.Size = UDim2.new(1, 0, 0, 15)
+        nameLabel.Position = UDim2.new(0, 0, 0, -18)
+        nameLabel.BackgroundTransparency = 1
+        nameLabel.TextColor3 = Colors.Text
+        nameLabel.Font = Enum.Font.GothamBlack
+        nameLabel.TextSize = 12
+        crispText(nameLabel)
+        
+        local detailsLabel = Instance.new("TextLabel", container)
+        detailsLabel.Size = UDim2.new(1, 0, 0, 30)
+        detailsLabel.Position = UDim2.new(0, 0, 1, 3)
+        detailsLabel.BackgroundTransparency = 1
+        detailsLabel.TextColor3 = Colors.PrimaryDark
+        detailsLabel.Font = Enum.Font.Code
+        detailsLabel.TextSize = 10
+        detailsLabel.TextYAlignment = Enum.TextYAlignment.Top
+        crispText(detailsLabel)
+        
+        espObjects[plr] = {container = container, name = nameLabel, details = detailsLabel}
+    end
+    return espObjects[plr]
+end
+
+RunService.RenderStepped:Connect(function()
+    if not mainEspGui.Parent then return end
+    local camera = workspace.CurrentCamera
+    
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= lp then
+            if activeModes["ESP"] and selectedPlayers[plr] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Head") then
+                local root = plr.Character.HumanoidRootPart
+                local head = plr.Character.Head
+                local hum = plr.Character:FindFirstChildOfClass("Humanoid")
+                
+                local topPos = head.Position + Vector3.new(0, 0.5, 0)
+                local bottomPos = root.Position - Vector3.new(0, 3, 0)
+                
+                local topViewport, onScreen1 = camera:WorldToViewportPoint(topPos)
+                local bottomViewport, onScreen2 = camera:WorldToViewportPoint(bottomPos)
+                
+                local esp = getESPContainer(plr)
+                
+                if onScreen1 or onScreen2 then
+                    esp.container.Visible = true
+                    
+                    local height = math.abs(bottomViewport.Y - topViewport.Y)
+                    local width = height * 0.55
+                    
+                    esp.container.Size = UDim2.new(0, width, 0, height)
+                    esp.container.Position = UDim2.new(0, topViewport.X - (width/2), 0, topViewport.Y)
+                    
+                    local dist = math.floor((camera.CFrame.Position - root.Position).Magnitude)
+                    local hp = hum and math.floor(hum.Health) or 0
+                    local coords = string.format("[%d, %d, %d]", math.floor(root.Position.X), math.floor(root.Position.Y), math.floor(root.Position.Z))
+                    
+                    esp.name.Text = plr.DisplayName
+                    esp.details.Text = string.format("%dm | %dHP\n%s", dist, hp, coords)
+                    esp.name.TextColor3 = isSystemActive and Colors.Danger or Colors.Primary
+                    esp.details.TextColor3 = isSystemActive and Color3.fromRGB(255, 100, 100) or Colors.PrimaryDark
+                else
+                    esp.container.Visible = false
+                end
+            else
+                if espObjects[plr] then espObjects[plr].container.Visible = false end
+            end
+        end
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(plr)
+    if espObjects[plr] then
+        espObjects[plr].container:Destroy()
+        espObjects[plr] = nil
     end
 end)
