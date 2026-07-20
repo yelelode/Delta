@@ -1019,7 +1019,10 @@ RunService.Heartbeat:Connect(function(dt)
                             voidedPlayers[plr] = true
                             assignedRemotes[plr].chair = nil
                         else
-                            pcall(function() assignedRemotes[plr].chair:InvokeServer(dynamicBaseCFrame * CFrame.new(0, -3.2, 1.5)) end)
+                            -- 🔥 UPGRADED CHAIR TRACKING: Aggressive prediction & exact leg offset to ensure instant sit 🔥
+                            local chairPredPos = bodyPart.Position + (targetVelocity * (pingDelay + 0.06))
+                            local chairCFrame = CFrame.lookAt(chairPredPos, chairPredPos + flatLook)
+                            pcall(function() assignedRemotes[plr].chair:InvokeServer(chairCFrame * CFrame.new(0, -2.6, 0.5)) end)
                         end
                     end
                 end
