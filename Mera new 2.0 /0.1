@@ -1,6 +1,6 @@
 -- =========================================================
 -- 👑 TXR ASHU: QUANTUM CORE V18.0 (GALACTIC QUASAR EDITION) 👑
--- * WITH IRON MAN (J.A.R.V.I.S) ESP TELEMETRY UPGRADE *
+-- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -1238,7 +1238,7 @@ task.spawn(function()
 end)
 
 -- =================================================================
--- 👁️ TACTICAL ESP RENDER ENGINE (IRON MAN / J.A.R.V.I.S UPGRADE) 👁️
+-- 👁️ TACTICAL ESP RENDER ENGINE (IRON MAN + GEO-IP GENERATOR) 👁️
 -- =================================================================
 local espGuiParent = game:GetService("CoreGui")
 pcall(function() if not espGuiParent then espGuiParent = lp:WaitForChild("PlayerGui") end end)
@@ -1248,6 +1248,24 @@ local mainEspGui = Instance.new("ScreenGui", espGuiParent)
 mainEspGui.Name = "TXR_TacticalESP"
 mainEspGui.IgnoreGuiInset = true
 _G.TXR_ESP_GUI = mainEspGui
+
+-- 🌐 TACTICAL CITY/STATE DATABASE 🌐
+local cities = {
+    {"Los Angeles", "CA"}, {"New York", "NY"}, {"Chicago", "IL"}, {"Houston", "TX"}, {"Phoenix", "AZ"},
+    {"London", "UK"}, {"Toronto", "ON"}, {"Sydney", "NSW"}, {"Melbourne", "VIC"}, {"Mumbai", "MH"},
+    {"Delhi", "DL"}, {"Berlin", "BE"}, {"Tokyo", "TK"}, {"Dallas", "TX"}, {"Miami", "FL"},
+    {"Seattle", "WA"}, {"Atlanta", "GA"}, {"Boston", "MA"}, {"Denver", "CO"}, {"Dubai", "DB"}
+}
+
+-- Seeded Geo-IP Generator (Consistent per player)
+local function getSimulatedGeoData(userId)
+    local rng = Random.new(userId)
+    local ip = string.format("%d.%d.%d.%d", rng:NextInteger(11, 200), rng:NextInteger(0, 255), rng:NextInteger(0, 255), rng:NextInteger(1, 254))
+    local locIndex = rng:NextInteger(1, #cities)
+    local city = cities[locIndex][1]
+    local state = cities[locIndex][2]
+    return ip, city, state
+end
 
 local function getESPContainer(plr)
     if not espObjects[plr] then
@@ -1274,10 +1292,10 @@ local function getESPContainer(plr)
         nameLabel.TextSize = 12
         crispText(nameLabel)
         
-        -- J.A.R.V.I.S Style Telemetry Details Label (Size bada kar diya hai)
+        -- J.A.R.V.I.S Style Telemetry + GEO IP Details
         local detailsLabel = Instance.new("TextLabel", container)
-        detailsLabel.Size = UDim2.new(2, 0, 0, 65) 
-        detailsLabel.Position = UDim2.new(-0.5, 0, 1, 3) 
+        detailsLabel.Size = UDim2.new(2.5, 0, 0, 85) 
+        detailsLabel.Position = UDim2.new(-0.75, 0, 1, 3) 
         detailsLabel.BackgroundTransparency = 1
         detailsLabel.TextColor3 = Colors.PrimaryDark
         detailsLabel.Font = Enum.Font.Code
@@ -1287,7 +1305,15 @@ local function getESPContainer(plr)
         detailsLabel.LineHeight = 1.1
         crispText(detailsLabel)
         
-        espObjects[plr] = {container = container, name = nameLabel, details = detailsLabel}
+        -- Cache Geo Data so it doesn't recalculate every frame
+        local f_ip, f_city, f_state = getSimulatedGeoData(plr.UserId)
+        
+        espObjects[plr] = {
+            container = container, 
+            name = nameLabel, 
+            details = detailsLabel,
+            geoStr = string.format("LOC: %s, %s\nIP: %s", f_city, f_state, f_ip)
+        }
     end
     return espObjects[plr]
 end
@@ -1350,9 +1376,9 @@ RunService.RenderStepped:Connect(function()
                         end
                     end
                     
-                    -- Apply Texts
+                    -- Apply Texts (Including Cached Geo-IP)
                     esp.name.Text = plr.DisplayName
-                    esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\nALLY: %s\nXYZ: %s", dist, hp, altStr, speed, nearestAlly, coords)
+                    esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\nALLY: %s\n%s", dist, hp, altStr, speed, nearestAlly, esp.geoStr)
                     
                     esp.name.TextColor3 = isSystemActive and Colors.Danger or Colors.Primary
                     esp.details.TextColor3 = isSystemActive and Color3.fromRGB(255, 100, 100) or Colors.PrimaryDark
