@@ -229,7 +229,6 @@ local function getActivePropData()
 end
 
 -- ✨ V18.0 DYNAMIC CLICK-TO-SPAWN (FIXED ENGINE) ✨
-local mouse = lp:GetMouse()
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end 
     
@@ -327,7 +326,7 @@ local discordBtn = Instance.new("TextButton", footer); discordBtn.Size = UDim2.f
 crispText(discordBtn)
 discordBtn.MouseButton1Click:Connect(function() pcall(function() copyToClip("not_ashu.") end); sendNotif("TXR System", "Copied to clipboard!", 2); discordBtn.Text = "⚡ Copied Core!"; discordBtn.TextColor3 = Colors.Primary; task.delay(1.5, function() if discordBtn then discordBtn.Text = "Discord: @not_ashu."; discordBtn.TextColor3 = Colors.SubText end end) end)
 
--- ✨ V18.0 GALACTIC QUASAR CORE (6D REOPEN ORB UPGRADE) ✨
+-- ✨ V18.0 GALACTIC QUASAR CORE (ULTIMATE REOPEN BUTTON) ✨
 local openBtnContainer = Instance.new("Frame", gui)
 openBtnContainer.Size = UDim2.fromOffset(86, 86) 
 openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -462,7 +461,13 @@ for i=1, 12 do
     table.insert(orbs, orb)
 end
 
+-- 6D Parallax State Variables
 local orbHovered = false
+local baseOrbScale = UDim2.fromScale(0.85, 0.85)
+local baseCenterPos = UDim2.fromScale(0.5, 0.5)
+local isDraggingOrb = false
+local dragThresholdMet = false
+
 openBtn.MouseEnter:Connect(function() orbHovered = true end)
 openBtn.MouseLeave:Connect(function() orbHovered = false end)
 
@@ -485,11 +490,6 @@ local function spawnSonar(pulseColor)
     TweenService:Create(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
     task.delay(pulseSpeed, function() pcall(function() ring:Destroy() end) end)
 end
-
--- 6D Base Positioning Variables
-local baseOrbScale = UDim2.fromScale(0.85, 0.85)
-local baseCenterPos = UDim2.fromScale(0.5, 0.5)
-local isDraggingOrb = false
 
 task.spawn(function()
     local t = 0
@@ -543,7 +543,6 @@ task.spawn(function()
             coreGlow.ImageColor3 = baseColor1:Lerp(baseColor2, lerpAlpha)
             coreGlow.ImageTransparency = 0.4 + (math.sin(activeT) * 0.25)
             eventGlow.ImageColor3 = baseColor2:Lerp(Color3.new(1,1,1), lerpAlpha)
-            eventGlow.ImageTransparency = 0.3 + (math.cos(activeT * 2) * 0.3)
             
             openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
             goGrad.Rotation = (activeT * 50) % 360
@@ -579,7 +578,6 @@ task.spawn(function()
             crosshair.ImageColor3 = baseColor1
             
             centerCore.BackgroundColor3 = baseColor1:Lerp(Color3.new(1,1,1), lerpAlpha * 0.5)
-            centerCore.Size = UDim2.fromOffset(10 + (math.abs(math.sin(activeT * 2)) * 4), 10 + (math.abs(math.sin(activeT * 2)) * 4))
             coreStroke.Color = baseColor2
 
             -- 12-ORB INFINITY HELIX SYSTEM
@@ -611,38 +609,36 @@ task.spawn(function()
                 end
             end
 
-            -- 🌟 6D MAGNETIC PARALLAX & LIQUID MORPHING 🌟
+            -- 🌟 FIXED 6D MAGNETIC PARALLAX (MOBILE & DRAG SAFE) 🌟
+            local mouseLoc = UserInputService:GetMouseLocation()
             local btnAbsCenter = openBtnContainer.AbsolutePosition + (openBtnContainer.AbsoluteSize / 2)
-            local mPos = Vector2.new(mouse.X, mouse.Y)
+            local mPos = Vector2.new(mouseLoc.X, mouseLoc.Y)
             local mDist = (mPos - btnAbsCenter).Magnitude
             local magneticRadius = 150
 
-            if mDist < magneticRadius and not isDraggingOrb then
+            -- Sirf tab parallax hoga jab orb par hover ho aur player drag NAHI kar raha ho
+            if orbHovered and mDist < magneticRadius and not isDraggingOrb then
                 local pullStr = 1 - (mDist / magneticRadius)
-                -- Liquid Squash & Stretch Math
                 local offsetX = (mPos.X - btnAbsCenter.X) * 0.25 * pullStr
                 local offsetY = (mPos.Y - btnAbsCenter.Y) * 0.25 * pullStr
                 local stretchX = 0.85 + (math.abs(offsetX) / 200)
                 local stretchY = 0.85 + (math.abs(offsetY) / 200)
 
-                -- Morph and Pull base button
                 openBtn.Size = openBtn.Size:Lerp(UDim2.fromScale(stretchX, stretchY), dt * 12)
                 openBtn.Position = openBtn.Position:Lerp(UDim2.new(0.5, offsetX, 0.5, offsetY), dt * 10)
-
-                -- Deep Parallax Depth Layering (3D effect)
                 eventGlow.Position = eventGlow.Position:Lerp(UDim2.new(0.5, offsetX * 0.4, 0.5, offsetY * 0.4), dt * 10)
                 crosshair.Position = crosshair.Position:Lerp(UDim2.new(0.5, offsetX * 0.7, 0.5, offsetY * 0.7), dt * 12)
                 centerCore.Position = centerCore.Position:Lerp(UDim2.new(0.5, offsetX * 1.2, 0.5, offsetY * 1.2), dt * 15)
                 
-                -- Subsurface Glow Reaction
                 eventGlow.ImageTransparency = 0.1 + (math.sin(activeT * 10) * 0.05)
             else
-                -- Inertia Snap-Back (Spring feel)
-                openBtn.Size = openBtn.Size:Lerp(baseOrbScale, dt * 8)
-                openBtn.Position = openBtn.Position:Lerp(baseCenterPos, dt * 8)
-                eventGlow.Position = eventGlow.Position:Lerp(baseCenterPos, dt * 8)
-                crosshair.Position = crosshair.Position:Lerp(baseCenterPos, dt * 8)
-                centerCore.Position = centerCore.Position:Lerp(baseCenterPos, dt * 8)
+                -- Agar aap drag kar rahe ho ya hover hata diya, toh inner circle instantly absolute center par LOCK rahega!
+                openBtn.Size = openBtn.Size:Lerp(baseOrbScale, dt * 12)
+                openBtn.Position = openBtn.Position:Lerp(baseCenterPos, dt * 12)
+                eventGlow.Position = eventGlow.Position:Lerp(baseCenterPos, dt * 12)
+                crosshair.Position = crosshair.Position:Lerp(baseCenterPos, dt * 12)
+                centerCore.Position = centerCore.Position:Lerp(baseCenterPos, dt * 12)
+                eventGlow.ImageTransparency = 0.3 + (math.cos(activeT * 2) * 0.3)
             end
 
             local sonarThreshold = isSystemActive and 0.3 or 0.8
@@ -673,7 +669,10 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
     handle.InputBegan:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
             dragging = true; 
-            if isOrb then isDraggingOrb = true end
+            if isOrb then 
+                isDraggingOrb = true 
+                dragThresholdMet = false -- Drag test shuru
+            end
             dragStart = input.Position; 
             startPos = frame.Position 
         end 
@@ -681,12 +680,21 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
     handle.InputEnded:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
             dragging = false; 
-            if isOrb then isDraggingOrb = false end
+            if isOrb then 
+                isDraggingOrb = false 
+                orbHovered = false -- Mobile par touch chhodne ke baad fake hover ko hatao
+            end
         end 
     end)
     UserInputService.InputChanged:Connect(function(input) 
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then 
             local delta = input.Position - dragStart; 
+            
+            -- Agar finger 5 pixel se zyada hili hai, toh ye sachhi mein Drag hai, varna Tap (Click) hai!
+            if isOrb and delta.Magnitude > 5 then
+                dragThresholdMet = true
+            end
+            
             local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
             frame.Position = newPos; 
             if ghostAura then ghostAura.Position = newPos end
@@ -716,7 +724,9 @@ minimizeBtn.MouseButton1Click:Connect(function()
 end)
 
 openBtn.MouseButton1Click:Connect(function() 
-    if isDraggingOrb then return end -- Prevent opening if user is just dragging it
+    -- 🌟 PERFECT FIX: Agar asali mein Drag kiya tha (threshold met) toh button mat kholo, varna tap karte hi box khulega!
+    if dragThresholdMet then return end 
+    
     TweenService:Create(openBtnScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play(); task.wait(0.25); openBtnContainer.Visible = false; mainFrame.Visible = true; aura.Visible = true; mainScale.Scale = 0.8; auraScale.Scale = 0.8; 
     TweenService:Create(mainScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play(); TweenService:Create(auraScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
     TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play(); TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
@@ -1126,8 +1136,10 @@ RunService.Heartbeat:Connect(function(dt)
                             voidedPlayers[plr] = true
                             assignedRemotes[plr].chair = nil
                         else
-                            -- EXACT DIRECT LOCK (IGNORE JUMPS)
-                            pcall(function() assignedRemotes[plr].chair:InvokeServer(tRoot.CFrame * CFrame.new(0, -0.5, 0)) end)
+                            local jX = math.random(-15, 15) / 10
+                            local jY = math.random(-30, 10) / 10 
+                            local jZ = math.random(-15, 15) / 10
+                            pcall(function() assignedRemotes[plr].chair:InvokeServer(tRoot.CFrame * CFrame.new(jX, jY, jZ)) end)
                         end
                     end
                 end
