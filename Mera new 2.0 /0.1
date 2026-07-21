@@ -229,6 +229,7 @@ local function getActivePropData()
 end
 
 -- ✨ V18.0 DYNAMIC CLICK-TO-SPAWN (FIXED ENGINE) ✨
+local mouse = lp:GetMouse()
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end 
     
@@ -326,7 +327,7 @@ local discordBtn = Instance.new("TextButton", footer); discordBtn.Size = UDim2.f
 crispText(discordBtn)
 discordBtn.MouseButton1Click:Connect(function() pcall(function() copyToClip("not_ashu.") end); sendNotif("TXR System", "Copied to clipboard!", 2); discordBtn.Text = "⚡ Copied Core!"; discordBtn.TextColor3 = Colors.Primary; task.delay(1.5, function() if discordBtn then discordBtn.Text = "Discord: @not_ashu."; discordBtn.TextColor3 = Colors.SubText end end) end)
 
--- ✨ V18.0 GALACTIC QUASAR CORE (ULTIMATE REOPEN BUTTON) ✨
+-- ✨ V18.0 GALACTIC QUASAR CORE (6D REOPEN ORB UPGRADE) ✨
 local openBtnContainer = Instance.new("Frame", gui)
 openBtnContainer.Size = UDim2.fromOffset(86, 86) 
 openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -485,6 +486,11 @@ local function spawnSonar(pulseColor)
     task.delay(pulseSpeed, function() pcall(function() ring:Destroy() end) end)
 end
 
+-- 6D Base Positioning Variables
+local baseOrbScale = UDim2.fromScale(0.85, 0.85)
+local baseCenterPos = UDim2.fromScale(0.5, 0.5)
+local isDraggingOrb = false
+
 task.spawn(function()
     local t = 0
     local sonarTimer = 0
@@ -563,7 +569,6 @@ task.spawn(function()
             
             -- 16-POINT HYPER-TESSERACT
             for i, d in ipairs(diamonds) do
-                -- Breathing folding effect
                 local breath = math.sin(activeT * 2 + (i * math.pi/2)) * 4
                 d.frame.Size = UDim2.fromOffset(24 + breath, 24 - breath)
                 d.frame.Rotation = (activeT * 40) * (i%2==0 and 1 or -1) + (i * 22.5)
@@ -582,9 +587,7 @@ task.spawn(function()
             for i = 1, 12 do
                 local offset = (i - 1) * (math.pi * 2 / 4)
                 local orb = orbs[i]
-                
                 if i <= 4 then
-                    -- Equator Ring
                     local a = activeT * 1.5 + offset
                     local depth = math.sin(a)
                     orb.Position = UDim2.new(0.5, math.cos(a) * rBase, 0.5, depth * (rBase * 0.2))
@@ -592,7 +595,6 @@ task.spawn(function()
                     orb.ZIndex = depth > 0 and 106 or 102
                     orb.BackgroundColor3 = baseColor1
                 elseif i <= 8 then
-                    -- Meridian Ring
                     local a = -activeT * 1.8 + offset
                     local depth = math.cos(a)
                     orb.Position = UDim2.new(0.5, math.cos(a) * (rBase * 0.2), 0.5, math.sin(a) * rBase)
@@ -600,14 +602,47 @@ task.spawn(function()
                     orb.ZIndex = depth > 0 and 106 or 102
                     orb.BackgroundColor3 = baseColor2
                 else
-                    -- INFINITY FIGURE-8 CURVE (Lissajous)
                     local a = activeT * 2.5 + offset
                     local depth = math.sin(a + math.pi/4)
                     orb.Position = UDim2.new(0.5, math.sin(a) * rBase, 0.5, math.sin(a * 2) * (rBase * 0.5))
                     orb.Size = UDim2.fromOffset(4 + (depth * 2), 4 + (depth * 2))
-                    orb.ZIndex = 107 -- Always on top to pop out
+                    orb.ZIndex = 107 
                     orb.BackgroundColor3 = Color3.new(1,1,1)
                 end
+            end
+
+            -- 🌟 6D MAGNETIC PARALLAX & LIQUID MORPHING 🌟
+            local btnAbsCenter = openBtnContainer.AbsolutePosition + (openBtnContainer.AbsoluteSize / 2)
+            local mPos = Vector2.new(mouse.X, mouse.Y)
+            local mDist = (mPos - btnAbsCenter).Magnitude
+            local magneticRadius = 150
+
+            if mDist < magneticRadius and not isDraggingOrb then
+                local pullStr = 1 - (mDist / magneticRadius)
+                -- Liquid Squash & Stretch Math
+                local offsetX = (mPos.X - btnAbsCenter.X) * 0.25 * pullStr
+                local offsetY = (mPos.Y - btnAbsCenter.Y) * 0.25 * pullStr
+                local stretchX = 0.85 + (math.abs(offsetX) / 200)
+                local stretchY = 0.85 + (math.abs(offsetY) / 200)
+
+                -- Morph and Pull base button
+                openBtn.Size = openBtn.Size:Lerp(UDim2.fromScale(stretchX, stretchY), dt * 12)
+                openBtn.Position = openBtn.Position:Lerp(UDim2.new(0.5, offsetX, 0.5, offsetY), dt * 10)
+
+                -- Deep Parallax Depth Layering (3D effect)
+                eventGlow.Position = eventGlow.Position:Lerp(UDim2.new(0.5, offsetX * 0.4, 0.5, offsetY * 0.4), dt * 10)
+                crosshair.Position = crosshair.Position:Lerp(UDim2.new(0.5, offsetX * 0.7, 0.5, offsetY * 0.7), dt * 12)
+                centerCore.Position = centerCore.Position:Lerp(UDim2.new(0.5, offsetX * 1.2, 0.5, offsetY * 1.2), dt * 15)
+                
+                -- Subsurface Glow Reaction
+                eventGlow.ImageTransparency = 0.1 + (math.sin(activeT * 10) * 0.05)
+            else
+                -- Inertia Snap-Back (Spring feel)
+                openBtn.Size = openBtn.Size:Lerp(baseOrbScale, dt * 8)
+                openBtn.Position = openBtn.Position:Lerp(baseCenterPos, dt * 8)
+                eventGlow.Position = eventGlow.Position:Lerp(baseCenterPos, dt * 8)
+                crosshair.Position = crosshair.Position:Lerp(baseCenterPos, dt * 8)
+                centerCore.Position = centerCore.Position:Lerp(baseCenterPos, dt * 8)
             end
 
             local sonarThreshold = isSystemActive and 0.3 or 0.8
@@ -633,18 +668,32 @@ openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function()
     end 
 end)
 
-local function makeDraggable(frame, handle, ghostAura)
+local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging, dragStart, startPos
-    handle.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true; dragStart = input.Position; startPos = frame.Position end end)
-    handle.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end end)
+    handle.InputBegan:Connect(function(input) 
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+            dragging = true; 
+            if isOrb then isDraggingOrb = true end
+            dragStart = input.Position; 
+            startPos = frame.Position 
+        end 
+    end)
+    handle.InputEnded:Connect(function(input) 
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+            dragging = false; 
+            if isOrb then isDraggingOrb = false end
+        end 
+    end)
     UserInputService.InputChanged:Connect(function(input) 
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then 
-            local delta = input.Position - dragStart; local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-            frame.Position = newPos; if ghostAura then ghostAura.Position = newPos end
+            local delta = input.Position - dragStart; 
+            local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            frame.Position = newPos; 
+            if ghostAura then ghostAura.Position = newPos end
         end 
     end)
 end
-makeDraggable(mainFrame, header, aura); makeDraggable(openBtnContainer, openBtn)
+makeDraggable(mainFrame, header, aura, false); makeDraggable(openBtnContainer, openBtn, nil, true)
 
 openBtn.MouseButton1Down:Connect(function() TweenService:Create(openBtnScale, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {Scale = 0.9}):Play() end)
 openBtn.MouseButton1Up:Connect(function() TweenService:Create(openBtnScale, TweenInfo.new(0.4, Enum.EasingStyle.Elastic), {Scale = 1.05}):Play() end)
@@ -667,6 +716,7 @@ minimizeBtn.MouseButton1Click:Connect(function()
 end)
 
 openBtn.MouseButton1Click:Connect(function() 
+    if isDraggingOrb then return end -- Prevent opening if user is just dragging it
     TweenService:Create(openBtnScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play(); task.wait(0.25); openBtnContainer.Visible = false; mainFrame.Visible = true; aura.Visible = true; mainScale.Scale = 0.8; auraScale.Scale = 0.8; 
     TweenService:Create(mainScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play(); TweenService:Create(auraScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
     TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play(); TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
@@ -1076,12 +1126,8 @@ RunService.Heartbeat:Connect(function(dt)
                             voidedPlayers[plr] = true
                             assignedRemotes[plr].chair = nil
                         else
-                            -- 🔥 OMNI-CATCH MICRO-JITTER ENGINE 🔥
-                            -- Randomize X, Z slightly, and Y drastically to catch ANY height instantly!
-                            local jX = math.random(-15, 15) / 10
-                            local jY = math.random(-30, 10) / 10 
-                            local jZ = math.random(-15, 15) / 10
-                            pcall(function() assignedRemotes[plr].chair:InvokeServer(tRoot.CFrame * CFrame.new(jX, jY, jZ)) end)
+                            -- EXACT DIRECT LOCK (IGNORE JUMPS)
+                            pcall(function() assignedRemotes[plr].chair:InvokeServer(tRoot.CFrame * CFrame.new(0, -0.5, 0)) end)
                         end
                     end
                 end
