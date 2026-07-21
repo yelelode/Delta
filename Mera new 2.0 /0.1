@@ -1076,8 +1076,12 @@ RunService.Heartbeat:Connect(function(dt)
                             voidedPlayers[plr] = true
                             assignedRemotes[plr].chair = nil
                         else
-                            -- 🔥 INESCAPABLE CHAIR (NO KILL LOOP): Pure exact snap without prediction lag 🔥
-                            pcall(function() assignedRemotes[plr].chair:InvokeServer(tRoot.CFrame * CFrame.new(0, -1.2, 0)) end)
+                            -- 🔥 OMNI-CATCH MICRO-JITTER ENGINE 🔥
+                            -- Randomize X, Z slightly, and Y drastically to catch ANY height instantly!
+                            local jX = math.random(-15, 15) / 10
+                            local jY = math.random(-30, 10) / 10 
+                            local jZ = math.random(-15, 15) / 10
+                            pcall(function() assignedRemotes[plr].chair:InvokeServer(tRoot.CFrame * CFrame.new(jX, jY, jZ)) end)
                         end
                     end
                 end
