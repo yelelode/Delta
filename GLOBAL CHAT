@@ -1,5 +1,12 @@
-if _G.HiddenChatV4 then return end
-_G.HiddenChatV4 = true
+-- ==========================================
+-- 🧹 SELF-CLEANING ENGINE (Ab baar-baar load hoga bina error ke!)
+-- ==========================================
+if _G.TXR_ChatConnection then 
+    _G.TXR_ChatConnection:Disconnect() 
+end
+_G.TXR_IsPolling = false
+task.wait(0.1)
+_G.TXR_IsPolling = true
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -12,6 +19,15 @@ local RunService = game:GetService("RunService")
 
 local LocalPlayer = Players.LocalPlayer
 
+-- Purana UI delete maro agar open hai taaki naya aa sake
+local targetGuiParent = (gethui and gethui()) or game:GetService("CoreGui") or LocalPlayer:WaitForChild("PlayerGui")
+for _, v in pairs(targetGuiParent:GetChildren()) do
+    if string.find(v.Name, "HiddenChatUI") then 
+        v:Destroy() 
+    end
+end
+
+-- Define your HTTP request function
 local req = request or http_request or (syn and syn.request)
 if not req then
     warn("Your executor does not support HTTP requests. This script will not work.")
@@ -23,28 +39,26 @@ end
 -- ==========================================
 local SERVER_URL = "https://my-roblox-private-chat.onrender.com"
 local lastSyncTime = 0
-local isPolling = true
 
 -- 👑 TERA PERMANENT VIP USER ID SYSTEM 👑
+local MY_VIP_ID = 9685785248 
 local Admin = { 
     ["kausarali2"] = true, 
-    ["cutie143198"] = true
+    ["cutie143198"] = true 
 }
 local Staff = {}
 
-local MY_VIP_ID = 9685785248 
-
--- Agar tu khud chala raha hai, toh instant Admin mil jayega
+-- Agar tu khud khel raha hai toh instant Daddy banega
 if LocalPlayer.UserId == MY_VIP_ID then
     Admin[string.lower(LocalPlayer.Name)] = true
 end
 
--- Doosro ki script mein tera naam ID se nikal kar Admin banayega
+-- Doosro ki script ko sikhana ki tera naam kya hai
 task.spawn(function()
     pcall(function()
         local myName = Players:GetNameFromUserIdAsync(MY_VIP_ID)
-        if myName then
-            Admin[string.lower(myName)] = true
+        if myName then 
+            Admin[string.lower(myName)] = true 
         end
     end)
 end)
@@ -57,10 +71,10 @@ local knownUsers = {} -- Cache for partial username matching
 -- UI CREATION: MAIN DRAGGABLE BOX
 -- ==========================================
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "HiddenChatUI_V4"
+ScreenGui.Name = "HiddenChatUI_TXR"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.IgnoreGuiInset = false
-ScreenGui.Parent = (gethui and gethui()) or game:GetService("CoreGui") or LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.Parent = targetGuiParent
 
 local MainFrame = Instance.new("Frame", ScreenGui)
 MainFrame.Size = UDim2.new(0, 200, 0, 30)
@@ -73,6 +87,7 @@ MainFrame.Active = true
 local UICorner = Instance.new("UICorner", MainFrame)
 UICorner.CornerRadius = UDim.new(0, 6)
 
+-- Drag Handle
 local DragHandle = Instance.new("TextButton", MainFrame)
 DragHandle.Size = UDim2.new(0, 30, 1, 0)
 DragHandle.BackgroundTransparency = 1
@@ -81,6 +96,7 @@ DragHandle.TextColor3 = Color3.fromRGB(150, 150, 150)
 DragHandle.TextSize = 16
 DragHandle.Font = Enum.Font.GothamBold
 
+-- Dynamic Private Chat Button (Beside Input)
 local PrivateBtn = Instance.new("TextButton", MainFrame)
 PrivateBtn.Size = UDim2.new(0, 0, 1, -6)
 PrivateBtn.Position = UDim2.new(0, 30, 0, 3)
@@ -93,6 +109,7 @@ PrivateBtn.AutoButtonColor = true
 local PrivateCorner = Instance.new("UICorner", PrivateBtn)
 PrivateCorner.CornerRadius = UDim.new(0, 4)
 
+-- Text Input
 local TextBox = Instance.new("TextBox", MainFrame)
 TextBox.Size = UDim2.new(1, -50, 1, 0)
 TextBox.Position = UDim2.new(0, 30, 0, 0)
@@ -108,6 +125,7 @@ TextBox.TextXAlignment = Enum.TextXAlignment.Left
 local UIPadding = Instance.new("UIPadding", TextBox)
 UIPadding.PaddingLeft = UDim.new(0, 5)
 
+-- Resize Handle
 local ResizeHandle = Instance.new("TextButton", MainFrame)
 ResizeHandle.Size = UDim2.new(0, 20, 0, 20)
 ResizeHandle.Position = UDim2.new(1, 0, 1, 0)
@@ -162,7 +180,9 @@ EmojiClose.Text = "X"
 EmojiClose.TextColor3 = Color3.fromRGB(255, 100, 100)
 EmojiClose.Font = Enum.Font.GothamBold
 EmojiClose.TextSize = 14
-EmojiClose.MouseButton1Click:Connect(function() EmojiFrame.Visible = false end)
+EmojiClose.MouseButton1Click:Connect(function() 
+    EmojiFrame.Visible = false 
+end)
 
 local EmojiScroll = Instance.new("ScrollingFrame", EmojiFrame)
 EmojiScroll.Size = UDim2.new(1, -10, 1, -40)
@@ -200,9 +220,13 @@ local function setupInteractivity()
         local dragging, dragStart, startPos
         trigger.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                dragging = true; dragStart = input.Position; startPos = target.Position
+                dragging = true
+                dragStart = input.Position
+                startPos = target.Position
                 input.Changed:Connect(function()
-                    if input.UserInputState == Enum.UserInputState.End then dragging = false end
+                    if input.UserInputState == Enum.UserInputState.End then 
+                        dragging = false 
+                    end
                 end)
             end
         end)
@@ -220,9 +244,13 @@ local function setupInteractivity()
     local resizing, resizeStart, startSize
     ResizeHandle.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            resizing = true; resizeStart = input.Position; startSize = MainFrame.Size
+            resizing = true
+            resizeStart = input.Position
+            startSize = MainFrame.Size
             input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then resizing = false end
+                if input.UserInputState == Enum.UserInputState.End then 
+                    resizing = false 
+                end
             end)
         end
     end)
@@ -237,18 +265,22 @@ local function setupInteractivity()
     UserInputService.InputBegan:Connect(function(input, gp)
         if gp and UserInputService:GetFocusedTextBox() ~= TextBox then return end
         if input.KeyCode == Enum.KeyCode.Semicolon then
-            task.delay(0.05, function() TextBox:CaptureFocus() end)
+            task.delay(0.05, function() 
+                TextBox:CaptureFocus() 
+            end)
         elseif input.KeyCode == Enum.KeyCode.One and UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
             lastExclamation = tick()
         elseif input.KeyCode == Enum.KeyCode.E then
             if tick() - lastExclamation < 1.5 and not UserInputService.TouchEnabled then
                 EmojiFrame.Visible = not EmojiFrame.Visible
                 if TextBox:IsFocused() then
-                    task.delay(0.01, function() TextBox.Text = string.gsub(TextBox.Text, "!e$", "") end)
+                    task.delay(0.01, function() 
+                        TextBox.Text = string.gsub(TextBox.Text, "!e$", "") 
+                    end)
                 end
             end
         end
-    end
+    end)
 end
 setupInteractivity()
 
@@ -291,7 +323,10 @@ local CommandList = {
         
         if not hrp or not hum then return end
         
-        if _G.AdminFlyTrack then _G.AdminFlyTrack:Stop() _G.AdminFlyTrack = nil end
+        if _G.AdminFlyTrack then 
+            _G.AdminFlyTrack:Stop() 
+            _G.AdminFlyTrack = nil 
+        end
         if hrp:FindFirstChild("AdminFlyAtt") then hrp.AdminFlyAtt:Destroy() end
         if hrp:FindFirstChild("AdminFlyLV") then hrp.AdminFlyLV:Destroy() end
         if hrp:FindFirstChild("AdminFlyAO") then hrp.AdminFlyAO:Destroy() end
@@ -307,7 +342,9 @@ local CommandList = {
         cam.CameraSubject = head or hum
 
         local speed = 50
-        if tonumber(arg) then speed = tonumber(arg) end
+        if tonumber(arg) then 
+            speed = tonumber(arg) 
+        end
         
         hrp.Anchored = false
         hum.PlatformStand = true
@@ -346,7 +383,9 @@ local CommandList = {
             
             if animator then
                 for _, t in pairs(animator:GetPlayingAnimationTracks()) do
-                    if t.Priority ~= Enum.AnimationPriority.Action4 then t:Stop(0.1) end
+                    if t.Priority ~= Enum.AnimationPriority.Action4 then 
+                        t:Stop(0.1) 
+                    end
                 end
             end
             
@@ -356,7 +395,10 @@ local CommandList = {
         end
 
         Connections["Fly"] = RunService.RenderStepped:Connect(function(dt)
-            if not LocalPlayer.Character or not hrp or not hum then disconnectConn("Fly"); return end
+            if not LocalPlayer.Character or not hrp or not hum then 
+                disconnectConn("Fly")
+                return 
+            end
             
             hum.Sit = false
             hum.PlatformStand = true
@@ -379,7 +421,9 @@ local CommandList = {
                 moveDir = moveDir + (cam.CFrame.RightVector * rightIntent)
             end
             
-            if moveDir.Magnitude > 0 then moveDir = moveDir.Unit end
+            if moveDir.Magnitude > 0 then 
+                moveDir = moveDir.Unit 
+            end
 
             lv.VectorVelocity = moveDir * speed
 
@@ -390,13 +434,17 @@ local CommandList = {
             end
 
             local lookXZ = (cam.CFrame.LookVector * Vector3.new(1, 0, 1))
-            if lookXZ.Magnitude < 0.001 then lookXZ = hrp.CFrame.LookVector end
+            if lookXZ.Magnitude < 0.001 then 
+                lookXZ = hrp.CFrame.LookVector 
+            end
             lookXZ = lookXZ.Unit
             
             ao.CFrame = CFrame.new(Vector3.zero, lookXZ)
             
             for _, part in pairs(char:GetDescendants()) do
-                if part:IsA("BasePart") then part.CanCollide = false end
+                if part:IsA("BasePart") then 
+                    part.CanCollide = false 
+                end
             end
         end)
     end,
@@ -423,7 +471,9 @@ local CommandList = {
         local hrp = char:FindFirstChild("HumanoidRootPart")
         if hrp then
             local oldSpin = hrp:FindFirstChild("AdminSpin")
-            if oldSpin then oldSpin:Destroy() end
+            if oldSpin then 
+                oldSpin:Destroy() 
+            end
             if state == false then return end
             
             local spinVel = Instance.new("BodyAngularVelocity", hrp)
@@ -489,14 +539,18 @@ local CommandList = {
                         OriginalTransparencies[part] = part.Transparency
                     end
                     part.Transparency = 1
-                    if part:IsA("ParticleEmitter") or part:IsA("Trail") then part.Enabled = false end
+                    if part:IsA("ParticleEmitter") or part:IsA("Trail") then 
+                        part.Enabled = false 
+                    end
                 else
                     if OriginalTransparencies[part] then
                         part.Transparency = OriginalTransparencies[part]
                     else
                         part.Transparency = 0
                     end
-                    if part:IsA("ParticleEmitter") or part:IsA("Trail") then part.Enabled = true end
+                    if part:IsA("ParticleEmitter") or part:IsA("Trail") then 
+                        part.Enabled = true 
+                    end
                 end
             end
         end
@@ -508,7 +562,9 @@ local CommandList = {
         Connections["Noclip"] = RunService.Stepped:Connect(function()
             if LocalPlayer.Character then
                 for _, p in pairs(LocalPlayer.Character:GetDescendants()) do
-                    if p:IsA("BasePart") then p.CanCollide = false end
+                    if p:IsA("BasePart") then 
+                        p.CanCollide = false 
+                    end
                 end
             end
         end)
@@ -519,13 +575,15 @@ local CommandList = {
         if state == false then return end
         Connections["NoSit"] = RunService.Stepped:Connect(function()
             if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-                if LocalPlayer.Character.Humanoid.Sit then LocalPlayer.Character.Humanoid.Sit = false end
+                if LocalPlayer.Character.Humanoid.Sit then 
+                    LocalPlayer.Character.Humanoid.Sit = false 
+                end
             end
         end)
     end
 }
 
--- Aliases
+-- Aliases to route to the main functions
 CommandList["unfly"] = function() CommandList["fly"](nil, false) end
 CommandList["nofly"] = function() CommandList["fly"](nil, false) end
 CommandList["unspeed"] = function() CommandList["speed"]("16") end
@@ -546,6 +604,7 @@ CommandList["clip"] = function() CommandList["noclip"](false) end
 CommandList["sit"] = function() CommandList["nosit"](false) end
 CommandList["unnosit"] = function() CommandList["nosit"](false) end
 
+-- Processes the text. Returns true if it was a command, false otherwise.
 local function processCommand(text)
     local cleanStr = text:match("^%s*[%!%;]?%s*(.-)%s*$")
     if not cleanStr or cleanStr == "" then return false end
@@ -554,16 +613,20 @@ local function processCommand(text)
     if not cmd then return false end
     
     if CommandList[cmd] then
-        pcall(function() CommandList[cmd](args) end)
+        pcall(function() 
+            CommandList[cmd](args) 
+        end)
         return true 
     end
     
     return false 
 end
 
-LocalPlayer.Chatted:Connect(function(msg)
+-- Link commands to Standard Roblox Chat
+_G.TXR_ChatConnection = LocalPlayer.Chatted:Connect(function(msg)
     processCommand(msg)
 end)
+
 
 -- ==========================================
 -- HELPER FUNCTIONS & UI BEHAVIOR
@@ -575,7 +638,9 @@ local userColors = {
 
 local function getHexColorForUser(username)
     local value = 0
-    for i = 1, #username do value = value + string.byte(username, i) end
+    for i = 1, #username do 
+        value = value + string.byte(username, i) 
+    end
     local color = userColors[(value % #userColors) + 1]
     return string.format("#%02X%02X%02X", color.R * 255, color.G * 255, color.B * 255)
 end
@@ -588,7 +653,9 @@ local function getFullUsername(partialName)
         end
     end
     for lowerName, realName in pairs(knownUsers) do
-        if string.sub(lowerName, 1, #partialName) == partialName then return realName end
+        if string.sub(lowerName, 1, #partialName) == partialName then 
+            return realName 
+        end
     end
     return nil
 end
@@ -597,7 +664,9 @@ local function updateInputLayout()
     if privateTarget then
         local dName = privateTarget
         local targetPlayer = Players:FindFirstChild(privateTarget)
-        if targetPlayer then dName = targetPlayer.DisplayName end
+        if targetPlayer then 
+            dName = targetPlayer.DisplayName 
+        end
         
         PrivateBtn.Text = " [🔐 " .. dName .. "] "
         local tagWidth = TextService:GetTextSize(PrivateBtn.Text, 12, Enum.Font.GothamBold, Vector2.new(1000, 30)).X + 10
@@ -621,13 +690,17 @@ local function setPrivateTarget(username)
     updateInputLayout()
 end
 
-PrivateBtn.MouseButton1Click:Connect(function() setPrivateTarget(nil) end)
+PrivateBtn.MouseButton1Click:Connect(function() 
+    setPrivateTarget(nil) 
+end)
 
 local function displayMessage(userName, msg, privateUserTarget, isPrivateSender)
     local displayName = userName
     local speaker = Players:FindFirstChild(userName)
 
-    if speaker then displayName = speaker.DisplayName end
+    if speaker then 
+        displayName = speaker.DisplayName 
+    end
     
     -- 👑 DARK RED DADDY TAG INJECTION 
     if Admin[userName:lower()] then 
@@ -639,7 +712,9 @@ local function displayMessage(userName, msg, privateUserTarget, isPrivateSender)
         end
     end
 
-    if Staff[userName:lower()] then displayName = "[Staff] " .. displayName end
+    if Staff[userName:lower()] then 
+        displayName = "[Staff] " .. displayName 
+    end
 
     local hexColor = getHexColorForUser(userName)
     local msgColor = "#FFFF00"
@@ -659,7 +734,9 @@ local function displayMessage(userName, msg, privateUserTarget, isPrivateSender)
     if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
         local formattedText = string.format("<font color='%s'><b>%s</b></font> <font color='%s'><b>%s</b></font>", hexColor, tagText, msgColor, msg)
         local channel = TextChatService.TextChannels:FindFirstChild("RBXSystem")
-        if channel then channel:DisplaySystemMessage(formattedText) end
+        if channel then 
+            channel:DisplaySystemMessage(formattedText) 
+        end
     else
         pcall(function()
             StarterGui:SetCore("ChatMakeSystemMessage", {
@@ -678,7 +755,9 @@ local function displayBubble(userName, msg)
             TextChatService:DisplayBubble(speaker.Character, msg)
         else
             local head = speaker.Character:FindFirstChild("Head")
-            if head then ChatService:Chat(head, msg, Enum.ChatColor.White) end
+            if head then 
+                ChatService:Chat(head, msg, Enum.ChatColor.White) 
+            end
         end
     end)
 end
@@ -690,7 +769,9 @@ TextBox:GetPropertyChangedSignal("Text"):Connect(function()
     local t = TextBox.Text
     if string.match(t, "!e$") then
         TextBox.Text = string.sub(t, 1, -3)
-        if not UserInputService.TouchEnabled then EmojiFrame.Visible = not EmojiFrame.Visible end
+        if not UserInputService.TouchEnabled then 
+            EmojiFrame.Visible = not EmojiFrame.Visible 
+        end
         return
     end
     local pMatch = string.match(t, "^!p%s+(%w+)%s+$")
@@ -755,14 +836,16 @@ local function sendPrivateMessage()
 end
 
 TextBox.FocusLost:Connect(function(enterPressed)
-    if enterPressed then sendPrivateMessage() end
+    if enterPressed then 
+        sendPrivateMessage() 
+    end
 end)
 
 -- ==========================================
 -- LOGIC: RECEIVING MESSAGES (POLLING)
 -- ==========================================
 local function pollMessages()
-    while isPolling and task.wait(0.5) do
+    while _G.TXR_IsPolling and task.wait(0.5) do
         local success, res = pcall(function()
             return req({
                 Url = SERVER_URL .. "/messages?since=" .. tostring(lastSyncTime),
@@ -817,7 +900,7 @@ end)
 task.spawn(pollMessages)
 
 task.spawn(function()
-    while task.wait(300) do
+    while _G.TXR_IsPolling and task.wait(300) do
         local sysMsg = "\n1) press ' !e ' send emojis.😁\n2) type '!p username ' for private chat ✅.\n3) ' !server ', ' !global ' switch chat type.\n4) type '!cmds' to see all commands."
         displayMessage("System", sysMsg, nil, false)
     end
