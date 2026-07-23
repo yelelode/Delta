@@ -1,0 +1,807 @@
+If _G.ScriptChatxecuted then return end
+_G.ScriptChatxecuted = true
+
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local StarterGui = game:GetService("StarterGui")
+local TextChatService = game:GetService("TextChatService")
+local TextService = game:GetService("TextService")
+local UserInputService = game:GetService("UserInputService")
+local ChatService = game:GetService("Chat")
+local RunService = game:GetService("RunService")
+
+local LocalPlayer = Players.LocalPlayer
+
+-- Define your HTTP request function
+local req = request or http_request or (syn and syn.request)
+if not req then
+    warn("Your executor does not support HTTP requests. This script will not work.")
+    return
+end
+
+-- ==========================================
+-- SERVER & STATE CONFIGURATION
+-- ==========================================
+local SERVER_URL = "https://my-roblox-private-chat.onrender.com"
+local lastSyncTime = 0
+local isPolling = true
+
+-- 👑 AUTO-ADMIN DETECTION ADDED HERE 👑
+local Admin = { 
+    kausarali2 = true, 
+    cutie143198 = true,
+    [string.lower(LocalPlayer.Name)] = true -- Tumhara account hamesha admin rahega
+}
+local Staff = {}
+
+local chatMode = "global" -- "global" or "server"
+local privateTarget = nil
+local knownUsers = {} -- Cache for partial username matching
+
+-- ==========================================
+-- UI CREATION: MAIN DRAGGABLE BOX
+-- ==========================================
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "HiddenChatUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.IgnoreGuiInset = false
+ScreenGui.Parent = (gethui and gethui()) or game:GetService("CoreGui") or LocalPlayer:WaitForChild("PlayerGui")
+
+local MainFrame = Instance.new("Frame", ScreenGui)
+MainFrame.Size = UDim2.new(0, 200, 0, 30)
+MainFrame.Position = UDim2.new(0, 15, 1, -45)
+MainFrame.AnchorPoint = Vector2.new(0, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MainFrame.BackgroundTransparency = 0.2
+MainFrame.Active = true
+
+local UICorner = Instance.new("UICorner", MainFrame)
+UICorner.CornerRadius = UDim.new(0, 6)
+
+-- Drag Handle
+local DragHandle = Instance.new("TextButton", MainFrame)
+DragHandle.Size = UDim2.new(0, 30, 1, 0)
+DragHandle.BackgroundTransparency = 1
+DragHandle.Text = "💬 :"
+DragHandle.TextColor3 = Color3.fromRGB(150, 150, 150)
+DragHandle.TextSize = 16
+DragHandle.Font = Enum.Font.GothamBold
+
+-- Dynamic Private Chat Button (Beside Input)
+local PrivateBtn = Instance.new("TextButton", MainFrame)
+PrivateBtn.Size = UDim2.new(0, 0, 1, -6)
+PrivateBtn.Position = UDim2.new(0, 30, 0, 3)
+PrivateBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+PrivateBtn.TextColor3 = Color3.fromRGB(255, 200, 50)
+PrivateBtn.Font = Enum.Font.GothamBold
+PrivateBtn.TextSize = 12
+PrivateBtn.Visible = false
+PrivateBtn.AutoButtonColor = true
+local PrivateCorner = Instance.new("UICorner", PrivateBtn)
+PrivateCorner.CornerRadius = UDim.new(0, 4)
+
+-- Text Input
+local TextBox = Instance.new("TextBox", MainFrame)
+TextBox.Size = UDim2.new(1, -50, 1, 0)
+TextBox.Position = UDim2.new(0, 30, 0, 0)
+TextBox.BackgroundTransparency = 1
+TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextBox.PlaceholderText = " press ; to type.."
+TextBox.Font = Enum.Font.GothamMedium
+TextBox.TextSize = 13
+TextBox.Text = ""
+TextBox.ClearTextOnFocus = false
+TextBox.TextXAlignment = Enum.TextXAlignment.Left
+
+local UIPadding = Instance.new("UIPadding", TextBox)
+UIPadding.PaddingLeft = UDim.new(0, 5)
+
+-- Resize Handle
+local ResizeHandle = Instance.new("TextButton", MainFrame)
+ResizeHandle.Size = UDim2.new(0, 20, 0, 20)
+ResizeHandle.Position = UDim2.new(1, 0, 1, 0)
+ResizeHandle.AnchorPoint = Vector2.new(1, 1)
+ResizeHandle.BackgroundTransparency = 1
+ResizeHandle.Text = "[◢]"
+ResizeHandle.TextColor3 = Color3.fromRGB(150, 150, 150)
+ResizeHandle.TextSize = 12
+ResizeHandle.Font = Enum.Font.Gotham
+
+-- ==========================================
+-- EMOJI MENU CREATION
+-- ==========================================
+local EmojiFrame = Instance.new("Frame", ScreenGui)
+EmojiFrame.Name = "EmojiPanel"
+EmojiFrame.Size = UDim2.new(0, 320, 0, 280)
+EmojiFrame.Position = UDim2.new(0.5, -160, 0.5, -140)
+EmojiFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+EmojiFrame.Visible = false
+EmojiFrame.Active = true
+
+local EmojiCorner = Instance.new("UICorner", EmojiFrame)
+EmojiCorner.CornerRadius = UDim.new(0, 8)
+
+local EmojiTopBar = Instance.new("Frame", EmojiFrame)
+EmojiTopBar.Size = UDim2.new(1, 0, 0, 30)
+EmojiTopBar.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+local TopBarCorner = Instance.new("UICorner", EmojiTopBar)
+TopBarCorner.CornerRadius = UDim.new(0, 8)
+
+local TopBarFix = Instance.new("Frame", EmojiTopBar)
+TopBarFix.Size = UDim2.new(1, 0, 0, 5)
+TopBarFix.Position = UDim2.new(0, 0, 1, -5)
+TopBarFix.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+TopBarFix.BorderSizePixel = 0
+
+local EmojiTitle = Instance.new("TextLabel", EmojiTopBar)
+EmojiTitle.Size = UDim2.new(1, -40, 1, 0)
+EmojiTitle.Position = UDim2.new(0, 10, 0, 0)
+EmojiTitle.BackgroundTransparency = 1
+EmojiTitle.Text = "emojis"
+EmojiTitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+EmojiTitle.Font = Enum.Font.GothamBold
+EmojiTitle.TextSize = 14
+EmojiTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+local EmojiClose = Instance.new("TextButton", EmojiTopBar)
+EmojiClose.Size = UDim2.new(0, 30, 0, 30)
+EmojiClose.Position = UDim2.new(1, -30, 0, 0)
+EmojiClose.BackgroundTransparency = 1
+EmojiClose.Text = "X"
+EmojiClose.TextColor3 = Color3.fromRGB(255, 100, 100)
+EmojiClose.Font = Enum.Font.GothamBold
+EmojiClose.TextSize = 14
+EmojiClose.MouseButton1Click:Connect(function() EmojiFrame.Visible = false end)
+
+local EmojiScroll = Instance.new("ScrollingFrame", EmojiFrame)
+EmojiScroll.Size = UDim2.new(1, -10, 1, -40)
+EmojiScroll.Position = UDim2.new(0, 5, 0, 35)
+EmojiScroll.BackgroundTransparency = 1
+EmojiScroll.ScrollBarThickness = 4
+EmojiScroll.CanvasSize = UDim2.new(0, 0, 5, 0)
+
+local EmojiGrid = Instance.new("UIGridLayout", EmojiScroll)
+EmojiGrid.CellSize = UDim2.new(0, 35, 0, 35)
+EmojiGrid.CellPadding = UDim2.new(0, 2, 0, 2)
+EmojiGrid.SortOrder = Enum.SortOrder.LayoutOrder
+
+local emojis = "😃😁😆😅🤣😭😉😗😙😚😘🥰😍🤩🥳🫠🙃🙂🥲🥹😊☺️😌😏😴😪🤤😋😛😝😜🤪🥴😔🥺😬🫥😑😐😶😶‍🌫️🤐🫡🤔🤫🫢🤭🥱🤗🫣😱🤨🧐😒🙄😮‍💨😤😠😡🤬😞😓😟😥😢☹️🙁🫤😕😰😨😧😦😮😯😲😳🤯😖😣😩😫😵😵‍💫🫨🥶🥵🤢🤮🤧🤒🤕😷🤥😇🤠🤑🤓😎🥸🤡😈👿👻🎃💩🤖👽👾🌛🌜🌚🌝🌞☠️👹👺🔥💯💫⭐🌟✨💥💨💦💤🎉🙈🙉🙊😺😸😹😻😼😽🙀😿😾❤️🖤🤍💘💝💖💗💓💞💕♥️❣️❤️‍🩹💔❤️‍🔥💋🗣️💀👀👄🫦👅💪🏻👏🏻👍🏻👎🏻🙌🏻🤝🫴🏻👋🏻✋🏻🤟🏻🫰🏻🤙🏻🤌🏻👌🏻👉🏻👈🏻🖕🏻🙏🏻💅🏻🙅🏻‍♂️🤷🏻‍♂️🤦🏻‍♂️💏💐🌹🥀🌷🏵️❄️☃️🌈🫧🌝🌚🕳️⭐🌟✨🍑🍌🍆🌽🍗🍕🌭 punches🌭🍜🍭🍼☕🥃🎊🎂🎀🎃⚽🎨📞💸💰💎👠🪓🔐❌💬❓💢⚠️"
+
+if utf8 and utf8.graphemes then
+    for p, c in utf8.graphemes(emojis) do
+        local char = string.sub(emojis, p, c)
+        local btn = Instance.new("TextButton", EmojiScroll)
+        btn.Text = char
+        btn.TextSize = 20
+        btn.BackgroundTransparency = 1
+        btn.MouseButton1Click:Connect(function()
+            TextBox.Text = TextBox.Text .. char
+            TextBox:CaptureFocus()
+        end)
+    end
+end
+
+-- ==========================================
+-- LOGIC: DRAGGING & RESIZING & SHORTCUTS
+-- ==========================================
+local function setupInteractivity()
+    local function makeDraggable(trigger, target)
+        local dragging, dragStart, startPos
+        trigger.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                dragging = true; dragStart = input.Position; startPos = target.Position
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then dragging = false end
+                end)
+            end
+        end)
+        UserInputService.InputChanged:Connect(function(input)
+            if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and dragging then
+                local delta = input.Position - dragStart
+                target.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            end
+        end)
+    end
+
+    makeDraggable(DragHandle, MainFrame)
+    makeDraggable(EmojiTopBar, EmojiFrame)
+
+    local resizing, resizeStart, startSize
+    ResizeHandle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            resizing = true; resizeStart = input.Position; startSize = MainFrame.Size
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then resizing = false end
+            end)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if resizing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - resizeStart
+            MainFrame.Size = UDim2.new(0, math.clamp(startSize.X.Offset + delta.X, 150, 500), 0, math.clamp(startSize.Y.Offset + delta.Y, 30, 150))
+        end
+    end)
+
+    local lastExclamation = 0
+    UserInputService.InputBegan:Connect(function(input, gp)
+        if gp and UserInputService:GetFocusedTextBox() ~= TextBox then return end
+        if input.KeyCode == Enum.KeyCode.Semicolon then
+            task.delay(0.05, function() TextBox:CaptureFocus() end)
+        elseif input.KeyCode == Enum.KeyCode.One and UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+            lastExclamation = tick()
+        elseif input.KeyCode == Enum.KeyCode.E then
+            if tick() - lastExclamation < 1.5 and not UserInputService.TouchEnabled then
+                EmojiFrame.Visible = not EmojiFrame.Visible
+                if TextBox:IsFocused() then
+                    task.delay(0.01, function() TextBox.Text = string.gsub(TextBox.Text, "!e$", "") end)
+                end
+            end
+        end
+    end)
+end
+setupInteractivity()
+
+-- ==========================================
+-- LOCAL ADMIN COMMANDS SYSTEM
+-- ==========================================
+local Connections = {}
+local OrbitTarget = nil
+local OriginalTransparencies = {}
+
+local function getPlayer(nameStr)
+    if not nameStr or nameStr == "" then return nil end
+    local lowerName = nameStr:lower()
+    for _, p in pairs(Players:GetPlayers()) do
+        if p.Name:lower():sub(1, #lowerName) == lowerName or p.DisplayName:lower():sub(1, #lowerName) == lowerName then
+            return p
+        end
+    end
+    return nil
+end
+
+local function getCharacter()
+    return LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+end
+
+local function disconnectConn(name)
+    if Connections[name] then
+        Connections[name]:Disconnect()
+        Connections[name] = nil
+    end
+end
+
+local CommandList = {
+    ["fly"] = function(arg, state)
+        disconnectConn("Fly")
+        local char = getCharacter()
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChild("Humanoid")
+        local head = char:FindFirstChild("Head")
+        
+        if not hrp or not hum then return end
+        
+        -- Cleanup previous states/animations
+        if _G.AdminFlyTrack then _G.AdminFlyTrack:Stop() _G.AdminFlyTrack = nil end
+        if hrp:FindFirstChild("AdminFlyAtt") then hrp.AdminFlyAtt:Destroy() end
+        if hrp:FindFirstChild("AdminFlyLV") then hrp.AdminFlyLV:Destroy() end
+        if hrp:FindFirstChild("AdminFlyAO") then hrp.AdminFlyAO:Destroy() end
+        
+        if state == false then 
+            hrp.Anchored = false
+            hum.PlatformStand = false
+            workspace.CurrentCamera.CameraSubject = hum
+            return 
+        end
+        
+        local cam = workspace.CurrentCamera
+        cam.CameraSubject = head or hum
+
+        local speed = 50
+        if tonumber(arg) then speed = tonumber(arg) end
+        
+        hrp.Anchored = false
+        hum.PlatformStand = true
+
+        local att = Instance.new("Attachment", hrp)
+        att.Name = "AdminFlyAtt"
+        
+        local lv = Instance.new("LinearVelocity", hrp)
+        lv.Name = "AdminFlyLV"
+        lv.Attachment0 = att
+        lv.MaxForce = math.huge
+        lv.VectorVelocity = Vector3.zero
+        lv.RelativeTo = Enum.ActuatorRelativeTo.World
+        
+        local ao = Instance.new("AlignOrientation", hrp)
+        ao.Name = "AdminFlyAO"
+        ao.Attachment0 = att
+        ao.Mode = Enum.OrientationAlignmentMode.OneAttachment
+        ao.MaxTorque = math.huge
+        ao.Responsiveness = 200
+
+        local currentAnimId = nil
+        local function LoadTrack(id)
+            if currentAnimId == id and _G.AdminFlyTrack and _G.AdminFlyTrack.IsPlaying then return end
+            if _G.AdminFlyTrack then _G.AdminFlyTrack:Stop(0.1) end
+            
+            local animId = "rbxassetid://" .. tostring(id)
+            local newAnim = Instance.new("Animation")
+            newAnim.AnimationId = animId
+            
+            local animator = hum:FindFirstChildOfClass("Animator")
+            local newTrack = animator and animator:LoadAnimation(newAnim) or hum:LoadAnimation(newAnim)
+            
+            newTrack.Priority = Enum.AnimationPriority.Action4
+            newTrack.Looped = true
+            
+            if animator then
+                for _, t in pairs(animator:GetPlayingAnimationTracks()) do
+                    if t.Priority ~= Enum.AnimationPriority.Action4 then t:Stop(0.1) end
+                end
+            end
+            
+            newTrack:Play(0.1, 1, 1)
+            _G.AdminFlyTrack = newTrack
+            currentAnimId = id
+        end
+
+        Connections["Fly"] = RunService.RenderStepped:Connect(function(dt)
+            if not LocalPlayer.Character or not hrp or not hum then disconnectConn("Fly"); return end
+            
+            hum.Sit = false
+            hum.PlatformStand = true
+            
+            local moveDir = Vector3.new(0, 0, 0)
+            
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + cam.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - cam.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - cam.CFrame.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + cam.CFrame.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir = moveDir + Vector3.new(0, 1, 0) end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) or UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then moveDir = moveDir - Vector3.new(0, 1, 0) end
+            
+            if moveDir.Magnitude == 0 and hum.MoveDirection.Magnitude > 0 then
+                local flatCamLook = (cam.CFrame.LookVector * Vector3.new(1, 0, 1)).Unit
+                local flatCamRight = (cam.CFrame.RightVector * Vector3.new(1, 0, 1)).Unit
+                local forwardIntent = hum.MoveDirection:Dot(flatCamLook)
+                local rightIntent = hum.MoveDirection:Dot(flatCamRight)
+                moveDir = moveDir + (cam.CFrame.LookVector * forwardIntent)
+                moveDir = moveDir + (cam.CFrame.RightVector * rightIntent)
+            end
+            
+            if moveDir.Magnitude > 0 then moveDir = moveDir.Unit end
+
+            lv.VectorVelocity = moveDir * speed
+
+            if lv.VectorVelocity.Magnitude >= 10 then
+                LoadTrack(133213375576190)
+            else
+                LoadTrack(100060942968114)
+            end
+
+            local lookXZ = (cam.CFrame.LookVector * Vector3.new(1, 0, 1))
+            if lookXZ.Magnitude < 0.001 then lookXZ = hrp.CFrame.LookVector end
+            lookXZ = lookXZ.Unit
+            
+            ao.CFrame = CFrame.new(Vector3.zero, lookXZ)
+            
+            for _, part in pairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then part.CanCollide = false end
+            end
+        end)
+    end,
+    
+    ["speed"] = function(arg)
+        local num = tonumber(arg) or 16
+        local char = getCharacter()
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = num
+        end
+    end,
+    
+    ["jumppower"] = function(arg)
+        local num = tonumber(arg) or 50
+        local char = getCharacter()
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.UseJumpPower = true
+            char.Humanoid.JumpPower = num
+        end
+    end,
+    
+    ["spin"] = function(state)
+        local char = getCharacter()
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local oldSpin = hrp:FindFirstChild("AdminSpin")
+            if oldSpin then oldSpin:Destroy() end
+            if state == false then return end
+            
+            local spinVel = Instance.new("BodyAngularVelocity", hrp)
+            spinVel.Name = "AdminSpin"
+            spinVel.AngularVelocity = Vector3.new(0, 20, 0)
+            spinVel.MaxTorque = Vector3.new(0, math.huge, 0)
+        end
+    end,
+    
+    ["orbit"] = function(arg, state)
+        disconnectConn("Orbit")
+        if state == false then return end
+        local tPlayer = getPlayer(arg)
+        if not tPlayer then return end
+        
+        OrbitTarget = tPlayer
+        local angle = 0
+        local speed = 2
+        local radius = 8
+        
+        Connections["Orbit"] = RunService.RenderStepped:Connect(function(dt)
+            local char = LocalPlayer.Character
+            if not char or not OrbitTarget or not OrbitTarget.Character then return end
+            local mHrp = char:FindFirstChild("HumanoidRootPart")
+            local tHrp = OrbitTarget.Character:FindFirstChild("HumanoidRootPart")
+            
+            if mHrp and tHrp then
+                angle = angle + speed * dt
+                local offset = Vector3.new(math.cos(angle)*radius, 0, math.sin(angle)*radius)
+                mHrp.CFrame = CFrame.new(tHrp.Position + offset, tHrp.Position)
+                mHrp.Velocity = Vector3.new(0,0,0)
+            end
+        end)
+    end,
+    
+    ["view"] = function(arg, state)
+        if state == false then
+            workspace.CurrentCamera.CameraSubject = getCharacter():FindFirstChild("Humanoid")
+            return
+        end
+        local target = getPlayer(arg)
+        if target and target.Character and target.Character:FindFirstChild("Humanoid") then
+            workspace.CurrentCamera.CameraSubject = target.Character.Humanoid
+        end
+    end,
+    
+    ["tp"] = function(arg)
+        local target = getPlayer(arg)
+        local char = getCharacter()
+        if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("HumanoidRootPart") then
+            char.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame
+        end
+    end,
+    
+    ["invisible"] = function(state)
+        local char = getCharacter()
+        if not char then return end
+        for _, part in pairs(char:GetDescendants()) do
+            if part:IsA("BasePart") or part:IsA("Decal") then
+                if part.Name == "HumanoidRootPart" then continue end
+                if state ~= false then
+                    if not OriginalTransparencies[part] then
+                        OriginalTransparencies[part] = part.Transparency
+                    end
+                    part.Transparency = 1
+                    if part:IsA("ParticleEmitter") or part:IsA("Trail") then part.Enabled = false end
+                else
+                    if OriginalTransparencies[part] then
+                        part.Transparency = OriginalTransparencies[part]
+                    else
+                        part.Transparency = 0
+                    end
+                    if part:IsA("ParticleEmitter") or part:IsA("Trail") then part.Enabled = true end
+                end
+            end
+        end
+    end,
+    
+    ["noclip"] = function(state)
+        disconnectConn("Noclip")
+        if state == false then return end
+        Connections["Noclip"] = RunService.Stepped:Connect(function()
+            if LocalPlayer.Character then
+                for _, p in pairs(LocalPlayer.Character:GetDescendants()) do
+                    if p:IsA("BasePart") then p.CanCollide = false end
+                end
+            end
+        end)
+    end,
+    
+    ["nosit"] = function(state)
+        disconnectConn("NoSit")
+        if state == false then return end
+        Connections["NoSit"] = RunService.Stepped:Connect(function()
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                if LocalPlayer.Character.Humanoid.Sit then LocalPlayer.Character.Humanoid.Sit = false end
+            end
+        end)
+    end
+}
+
+-- Aliases to route to the main functions
+CommandList["unfly"] = function() CommandList["fly"](nil, false) end
+CommandList["nofly"] = function() CommandList["fly"](nil, false) end
+CommandList["unspeed"] = function() CommandList["speed"]("16") end
+CommandList["jp"] = CommandList["jumppower"]
+CommandList["unjumppower"] = function() CommandList["jumppower"]("50") end
+CommandList["unspin"] = function() CommandList["spin"](false) end
+CommandList["nospin"] = function() CommandList["spin"](false) end
+CommandList["unorbit"] = function() CommandList["orbit"](nil, false) end
+CommandList["unview"] = function() CommandList["view"](nil, false) end
+CommandList["noview"] = function() CommandList["view"](nil, false) end
+CommandList["to"] = CommandList["tp"]
+CommandList["teleport"] = CommandList["tp"]
+CommandList["visible"] = function() CommandList["invisible"](false) end
+CommandList["vis"] = function() CommandList["invisible"](false) end
+CommandList["invis"] = CommandList["invisible"]
+CommandList["unnoclip"] = function() CommandList["noclip"](false) end
+CommandList["clip"] = function() CommandList["noclip"](false) end
+CommandList["sit"] = function() CommandList["nosit"](false) end
+CommandList["unnosit"] = function() CommandList["nosit"](false) end
+
+-- Processes the text. Returns true if it was a command, false otherwise.
+local function processCommand(text)
+    local cleanStr = text:match("^%s*[%!%;]?%s*(.-)%s*$")
+    if not cleanStr or cleanStr == "" then return false end
+    
+    local cmd, args = cleanStr:lower():match("^(%S+)%s*(.*)$")
+    if not cmd then return false end
+    
+    if CommandList[cmd] then
+        pcall(function() CommandList[cmd](args) end)
+        return true 
+    end
+    
+    return false 
+end
+
+-- Link commands to Standard Roblox Chat
+LocalPlayer.Chatted:Connect(function(msg)
+    processCommand(msg)
+end)
+
+
+-- ==========================================
+-- HELPER FUNCTIONS & UI BEHAVIOR
+-- ==========================================
+local userColors = {
+    Color3.fromRGB(255, 89, 89), Color3.fromRGB(89, 255, 89), Color3.fromRGB(89, 172, 255),
+    Color3.fromRGB(255, 89, 255), Color3.fromRGB(255, 172, 89), Color3.fromRGB(89, 255, 255), Color3.fromRGB(172, 89, 255)
+}
+
+local function getHexColorForUser(username)
+    local value = 0
+    for i = 1, #username do value = value + string.byte(username, i) end
+    local color = userColors[(value % #userColors) + 1]
+    return string.format("#%02X%02X%02X", color.R * 255, color.G * 255, color.B * 255)
+end
+
+local function getFullUsername(partialName)
+    partialName = string.lower(partialName)
+    for _, p in ipairs(Players:GetPlayers()) do
+        if string.sub(string.lower(p.Name), 1, #partialName) == partialName or string.sub(string.lower(p.DisplayName), 1, #partialName) == partialName then
+            return p.Name
+        end
+    end
+    for lowerName, realName in pairs(knownUsers) do
+        if string.sub(lowerName, 1, #partialName) == partialName then return realName end
+    end
+    return nil
+end
+
+local function updateInputLayout()
+    if privateTarget then
+        local dName = privateTarget
+        local targetPlayer = Players:FindFirstChild(privateTarget)
+        if targetPlayer then dName = targetPlayer.DisplayName end
+        
+        PrivateBtn.Text = " [🔐 " .. dName .. "] "
+        local tagWidth = TextService:GetTextSize(PrivateBtn.Text, 12, Enum.Font.GothamBold, Vector2.new(1000, 30)).X + 10
+        PrivateBtn.Size = UDim2.new(0, tagWidth, 1, -6)
+        PrivateBtn.Visible = true
+        TextBox.Position = UDim2.new(0, 30 + tagWidth + 5, 0, 0)
+        TextBox.Size = UDim2.new(1, -(30 + tagWidth + 5 + 20), 1, 0)
+    else
+        PrivateBtn.Visible = false
+        TextBox.Position = UDim2.new(0, 30, 0, 0)
+        TextBox.Size = UDim2.new(1, -50, 1, 0)
+    end
+end
+
+local function setPrivateTarget(username)
+    if username then
+        privateTarget = getFullUsername(username) or username 
+    else
+        privateTarget = nil
+    end
+    updateInputLayout()
+end
+
+PrivateBtn.MouseButton1Click:Connect(function() setPrivateTarget(nil) end)
+
+local function displayMessage(userName, msg, privateUserTarget, isPrivateSender)
+    local displayName = userName
+    local speaker = Players:FindFirstChild(userName)
+
+    if speaker then displayName = speaker.DisplayName end
+    if Admin[userName:lower()] then displayName = "[Admin] " .. displayName end
+    if Staff[userName:lower()] then displayName = "[Staff] " .. displayName end
+
+    local hexColor = getHexColorForUser(userName)
+    local msgColor = "#FFFF00"
+    local color3Msg = Color3.fromRGB(255, 255, 0)
+    
+    local tagText = "💬 " .. displayName .. ":"
+    if privateUserTarget then
+        msgColor = "#FF9632"
+        color3Msg = Color3.fromRGB(255, 150, 50)
+        if isPrivateSender then
+            tagText = "[🔐To " .. privateUserTarget .. "]:"
+        else
+            tagText = "[🔐From " .. privateUserTarget .. "]:"
+        end
+    end
+
+    if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+        local formattedText = string.format("<font color='%s'><b>%s</b></font> <font color='%s'><b>%s</b></font>", hexColor, tagText, msgColor, msg)
+        local channel = TextChatService.TextChannels:FindFirstChild("RBXSystem")
+        if channel then channel:DisplaySystemMessage(formattedText) end
+    else
+        pcall(function()
+            StarterGui:SetCore("ChatMakeSystemMessage", {
+                Text = tagText .. " " .. msg, Color = color3Msg,
+                Font = Enum.Font.SourceSansBold, FontSize = Enum.FontSize.Size18
+            })
+        end)
+    end
+end
+
+local function displayBubble(userName, msg)
+    local speaker = Players:FindFirstChild(userName)
+    if not speaker or not speaker.Character then return end
+    pcall(function()
+        if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+            TextChatService:DisplayBubble(speaker.Character, msg)
+        else
+            local head = speaker.Character:FindFirstChild("Head")
+            if head then ChatService:Chat(head, msg, Enum.ChatColor.White) end
+        end
+    end)
+end
+
+-- ==========================================
+-- COMMANDS & SEND LOGIC
+-- ==========================================
+TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local t = TextBox.Text
+    if string.match(t, "!e$") then
+        TextBox.Text = string.sub(t, 1, -3)
+        if not UserInputService.TouchEnabled then EmojiFrame.Visible = not EmojiFrame.Visible end
+        return
+    end
+    local pMatch = string.match(t, "^!p%s+(%w+)%s+$")
+    if pMatch then
+        TextBox.Text = ""
+        setPrivateTarget(pMatch)
+    end
+end)
+
+local function sendPrivateMessage()
+    local text = TextBox.Text
+    if text == "" or not text then return end
+
+    if processCommand(text) then
+        TextBox.Text = ""
+        return
+    end
+
+    local lowerText = string.lower(string.gsub(text, "%s+", ""))
+    TextBox.Text = ""
+
+    if lowerText == "!cmds" then
+        local cmdStr = "Commands:\n- fly [speed], unfly\n- speed [num], jumppower [num]\n- spin, unspin, orbit [user], unorbit\n- view [user], unview, tp [user]\n- invisible, visible, noclip, clip, sit, nosit"
+        displayMessage("System", cmdStr, nil, false)
+        return
+    elseif lowerText == "!server" then
+        chatMode = "server"
+        displayMessage("System", "Chat mode switched to SERVER only.", nil, false)
+        return
+    elseif lowerText == "!global" then
+        chatMode = "global"
+        displayMessage("System", "Chat mode switched to GLOBAL.", nil, false)
+        return
+    end
+
+    local finalMsg = text
+    if privateTarget then
+        finalMsg = "( 🔐 " .. LocalPlayer.Name .. " Private " .. privateTarget .. ") " .. text
+    end
+
+    TextBox.PlaceholderText = " Sending..."
+    task.spawn(function()
+        local payloadObj = { user = LocalPlayer.Name, msg = finalMsg, jobId = game.JobId }
+        local payload = HttpService:JSONEncode(payloadObj)
+        
+        local success, res = pcall(function()
+            return req({
+                Url = SERVER_URL .. "/send", Method = "POST",
+                Headers = { ["Content-Type"] = "application/json", ["User-Agent"] = "Roblox/WinInet" },
+                Body = payload
+            })
+        end)
+        
+        if success and res.StatusCode == 200 then
+            TextBox.PlaceholderText = " Type message..."
+        else
+            TextBox.PlaceholderText = " Failed! Server asleep?"
+            task.wait(2)
+            TextBox.PlaceholderText = " Type message..."
+        end
+    end)
+end
+
+TextBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed then sendPrivateMessage() end
+end)
+
+-- ==========================================
+-- LOGIC: RECEIVING MESSAGES (POLLING)
+-- ==========================================
+local function pollMessages()
+    while isPolling and task.wait(0.5) do
+        local success, res = pcall(function()
+            return req({
+                Url = SERVER_URL .. "/messages?since=" .. tostring(lastSyncTime),
+                Method = "GET", Headers = { ["User-Agent"] = "Roblox/WinInet" }
+            })
+        end)
+
+        if success and res and res.StatusCode == 200 then
+            local data = HttpService:JSONDecode(res.Body)
+            for _, m in ipairs(data) do
+                if m.time > lastSyncTime then
+                    lastSyncTime = m.time
+                    knownUsers[string.lower(m.user)] = m.user
+                    
+                    if m.hidden or m.msg == "Joined" then continue end
+                    if chatMode == "server" and m.jobId ~= game.JobId then continue end
+                    
+                    local pSender, pTarget, pMsg = string.match(m.msg, "^%( 🔐 ([%w_]+) Private ([%w_]+)%) (.*)$")
+                    
+                    if pSender and pTarget then
+                        if LocalPlayer.Name == pSender then
+                            displayMessage(m.user, pMsg, pTarget, true)
+                            displayBubble(m.user, pMsg)
+                        elseif LocalPlayer.Name == pTarget then
+                            displayMessage(m.user, pMsg, pSender, false)
+                            displayBubble(m.user, pMsg)
+                        end
+                        continue 
+                    end
+                    
+                    displayMessage(m.user, m.msg, nil, false)
+                    displayBubble(m.user, m.msg)
+                end
+            end
+        end
+    end
+end
+
+-- ==========================================
+-- STARTUP INITIALIZATION
+-- ==========================================
+task.spawn(function()
+    pcall(function()
+        req({
+            Url = SERVER_URL .. "/send", Method = "POST",
+            Headers = { ["Content-Type"] = "application/json", ["User-Agent"] = "Roblox/WinInet" },
+            Body = HttpService:JSONEncode({ user = LocalPlayer.Name, msg = "Joined", jobId = game.JobId, hidden = true })
+        })
+    end)
+end)
+
+task.spawn(pollMessages)
+
+task.spawn(function()
+    while task.wait(300) do
+        local sysMsg = "\n1) press ' !e ' send emojis.😁\n2) type '!p username ' for private chat ✅.\n3) ' !server ', ' !global ' switch chat type.\n4) type '!cmds' to see all commands."
+        displayMessage("System", sysMsg, nil, false)
+    end
+end)
