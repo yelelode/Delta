@@ -1,6 +1,7 @@
 -- =========================================================
 -- 👑 TXR ASHU: QUANTUM CORE V18.0 (GALACTIC QUASAR EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
+-- * [OPTIMIZED 90FPS & ULTRA-PREDICT CORE] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -201,17 +202,64 @@ local function StopRobotBangMusic()
 end
 
 local function applySmartHover(btn, modeKey)
-    local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn); btnScale.Scale = 1
-    btn.MouseEnter:Connect(function() 
-        TweenService:Create(btnScale, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1.04}):Play()
-        if not modeKey or not activeModes[modeKey] then TweenService:Create(btn, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundColor3 = Colors.SurfaceHover}):Play() end
+    local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
+    btnScale.Scale = 1
+
+    local corner = btn:FindFirstChildOfClass("UICorner")
+    if not corner then
+        corner = Instance.new("UICorner", btn)
+        corner.CornerRadius = UDim.new(0, 8)
+    end
+
+    if not btn:GetAttribute("BaseColor") then
+        btn:SetAttribute("BaseColor", btn.BackgroundColor3)
+        btn:SetAttribute("BaseTrans", btn.BackgroundTransparency)
+        btn:SetAttribute("BaseText", btn.TextColor3)
+    end
+
+    local isHovered = false
+
+    local hoverInInfo = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.1)
+    local hoverOutInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    local pressInfo = TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+    local releaseInfo = TweenInfo.new(0.65, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
+
+    btn.MouseEnter:Connect(function()
+        isHovered = true
+        TweenService:Create(btnScale, hoverInInfo, {Scale = 1.05}):Play()
+        TweenService:Create(corner, hoverInInfo, {CornerRadius = UDim.new(1, 0)}):Play() 
+        
+        if not modeKey or not activeModes[modeKey] then
+            TweenService:Create(btn, hoverInInfo, {
+                BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+                BackgroundTransparency = 0.1,
+                TextColor3 = Color3.fromRGB(255, 255, 255)
+            }):Play()
+        end
     end)
-    btn.MouseLeave:Connect(function() 
-        TweenService:Create(btnScale, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1}):Play()
-        if not modeKey or not activeModes[modeKey] then TweenService:Create(btn, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundColor3 = Colors.Surface}):Play() end
+
+    btn.MouseLeave:Connect(function()
+        isHovered = false
+        TweenService:Create(btnScale, hoverOutInfo, {Scale = 1}):Play()
+        TweenService:Create(corner, hoverOutInfo, {CornerRadius = UDim.new(0, 8)}):Play() 
+        
+        if not modeKey or not activeModes[modeKey] then
+            TweenService:Create(btn, hoverOutInfo, {
+                BackgroundColor3 = btn:GetAttribute("BaseColor"),
+                BackgroundTransparency = btn:GetAttribute("BaseTrans"),
+                TextColor3 = btn:GetAttribute("BaseText")
+            }):Play()
+        end
     end)
-    btn.MouseButton1Down:Connect(function() TweenService:Create(btnScale, TweenInfo.new(0.15, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 0.95}):Play() end)
-    btn.MouseButton1Up:Connect(function() TweenService:Create(btnScale, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1.04}):Play() end)
+
+    btn.MouseButton1Down:Connect(function()
+        TweenService:Create(btnScale, pressInfo, {Scale = 0.85}):Play() 
+    end)
+
+    btn.MouseButton1Up:Connect(function()
+        local targetScale = isHovered and 1.05 or 1
+        TweenService:Create(btnScale, releaseInfo, {Scale = targetScale}):Play() 
+    end)
 end
 
 local function clearProps() pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("ClearAllProps") end); task.wait(0.35) end
@@ -685,8 +733,12 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
 end
 makeDraggable(mainFrame, header, aura, false); makeDraggable(openBtnContainer, openBtn, nil, true)
 
-openBtn.MouseButton1Down:Connect(function() TweenService:Create(openBtnScale, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {Scale = 0.9}):Play() end)
-openBtn.MouseButton1Up:Connect(function() TweenService:Create(openBtnScale, TweenInfo.new(0.4, Enum.EasingStyle.Elastic), {Scale = 1.05}):Play() end)
+openBtn.MouseButton1Down:Connect(function() 
+    TweenService:Create(openBtnScale, TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Scale = 0.85}):Play() 
+end)
+openBtn.MouseButton1Up:Connect(function() 
+    TweenService:Create(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05}):Play() 
+end)
 
 closeBtn.MouseButton1Click:Connect(function() 
     TweenService:Create(mainScale, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.In), {Scale = 0.8}):Play()
@@ -945,8 +997,67 @@ stopBtn.MouseButton1Click:Connect(function()
     task.spawn(StopRobotBangMusic); sendNotif("System Core", "All Tasks Halted.", 2) 
 end)
 
-local function getAvailableRemotes() table.clear(propsCache); local com = workspace:FindFirstChild("WorkspaceCom"); if com then for _, f in ipairs(com:GetChildren()) do for _, c in ipairs(f:GetChildren()) do if c.Name == "Prop" .. lp.Name then table.insert(propsCache, c) end end end end; local remotes = {}; for _, p in ipairs(propsCache) do local r = p:FindFirstChild("SetCurrentCFrame"); if r and r.Parent then table.insert(remotes, r) end end return remotes end
-local function isRemoteAssigned(remote) for _, assigned in pairs(assignedRemotes) do if type(assigned) == "table" then for _, sr in pairs(assigned) do if sr == remote then return true end end elseif assigned == remote then return true end end return false end
+-- ✨ OPTIMIZED PROP SCANNER (FIXES 90 FPS LAG) ✨
+local lastRemoteScan = 0
+local cachedRemotes = {}
+
+local function getAvailableRemotes()
+    if tick() - lastRemoteScan < 0.25 then
+        local valid = {}
+        for _, r in ipairs(cachedRemotes) do
+            if r and r.Parent then table.insert(valid, r) end
+        end
+        return valid
+    end
+    lastRemoteScan = tick()
+    table.clear(propsCache)
+    
+    local com = workspace:FindFirstChild("WorkspaceCom")
+    if com then 
+        for _, f in ipairs(com:GetChildren()) do 
+            for _, c in ipairs(f:GetChildren()) do 
+                if c.Name == "Prop" .. lp.Name then 
+                    table.insert(propsCache, c) 
+                end 
+            end 
+        end 
+    end
+    
+    local remotes = {}
+    for _, p in ipairs(propsCache) do 
+        local r = p:FindFirstChild("SetCurrentCFrame")
+        if r and r.Parent then table.insert(remotes, r) end 
+    end
+    
+    cachedRemotes = remotes
+    return remotes
+end
+
+local function isRemoteAssigned(remote) 
+    for _, assigned in pairs(assignedRemotes) do 
+        if type(assigned) == "table" then 
+            for _, sr in pairs(assigned) do if sr == remote then return true end end 
+        elseif assigned == remote then 
+            return true 
+        end 
+    end 
+    return false 
+end
+
+-- ✨ ULTRA-ACCURATE PHYSICS PREDICTION ENGINE ✨
+local function getAccuratePrediction(targetPart, dt)
+    local vel = targetPart.AssemblyLinearVelocity
+    -- Limit physics vector so tracking doesn't go crazy on teleports
+    if vel.Magnitude > 150 then vel = vel.Unit * 150 end
+    
+    local ping = 0.05
+    pcall(function() ping = lp:GetNetworkPing() end)
+    ping = math.clamp(ping, 0.02, 0.15) -- Cap lag influence
+
+    -- Perfected formula for exact locking (Ping + FPS delay)
+    local predTime = ping + (dt * 1.5) + 0.015
+    return targetPart.Position + (vel * predTime)
+end
 
 -- 🛡️ GOD SHIELD (PRE-PHYSICS ENGINE) 🛡️
 RunService.Stepped:Connect(function()
@@ -972,7 +1083,7 @@ RunService.Stepped:Connect(function()
         end
         -- ✨ [NEW END] ✨
 
-        -- Anti-Touch / Ghost Physics (Cars, Balls, other players phase through you)
+        -- Anti-Touch / Ghost Physics
         pcall(function()
             for _, part in ipairs(workspace:GetPartBoundsInRadius(root.Position, 15)) do
                 if part:IsA("BasePart") and not part:IsDescendantOf(char) and not part.Anchored then
@@ -1035,11 +1146,8 @@ RunService.Heartbeat:Connect(function(dt)
             
             local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
             
-            local targetVelocity = tRoot.AssemblyLinearVelocity
-            local pingDelay = 0.05; pcall(function() pingDelay = lp:GetNetworkPing() end)
-            local predictionTime = pingDelay + 0.03
-            
-            local bodyPos = bodyPart.Position + (targetVelocity * predictionTime)
+            -- APPLIED ACCURATE PHYSICS PREDICTION HERE
+            local bodyPos = getAccuratePrediction(bodyPart, dt)
             
             local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
             if flatLook.Magnitude > 0.01 then flatLook = flatLook.Unit else flatLook = Vector3.new(0, 0, -1) end
@@ -1068,7 +1176,7 @@ RunService.Heartbeat:Connect(function(dt)
                 for _, slot in ipairs(slots) do if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then for _, r in ipairs(allRemotes) do if not isRemoteAssigned(r) then assignedRemotes[plr][slot] = r; break end end end end
                 
                 local actualHead = plr.Character:FindFirstChild("Head") or tRoot
-                local headPos = actualHead.Position + (targetVelocity * predictionTime)
+                local headPos = getAccuratePrediction(actualHead, dt)
                 local headLockCFrame = CFrame.lookAt(headPos, headPos + flatLook)
                 
                 local headY = isProne and -0.8 or -2.4 
@@ -1139,11 +1247,7 @@ RunService.Heartbeat:Connect(function(dt)
                     local tRoot = plr.Character.HumanoidRootPart
                     local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
                     
-                    local targetVelocity = tRoot.AssemblyLinearVelocity
-                    local pingDelay = 0.05; pcall(function() pingDelay = lp:GetNetworkPing() end)
-                    local predictionTime = pingDelay + 0.03
-                    local bodyPos = bodyPart.Position + (targetVelocity * predictionTime)
-                    
+                    local bodyPos = getAccuratePrediction(bodyPart, dt)
                     local ringCenterPos = bodyPos + Vector3.new(0, -3.8, 0)
                     
                     local propsForThisTarget = 0; local myLocalIdx = 0
@@ -1170,11 +1274,7 @@ RunService.Heartbeat:Connect(function(dt)
                     local tRoot = plr.Character.HumanoidRootPart
                     local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
                     
-                    local targetVelocity = tRoot.AssemblyLinearVelocity
-                    local pingDelay = 0.05; pcall(function() pingDelay = lp:GetNetworkPing() end)
-                    local predictionTime = pingDelay + 0.03
-                    local bodyPos = bodyPart.Position + (targetVelocity * predictionTime)
-                    
+                    local bodyPos = getAccuratePrediction(bodyPart, dt)
                     local dynamicOrbitBase = CFrame.new(bodyPos)
                     
                     local propsForThisTarget = math.ceil(#freeRemotes / tCount); local localIdx = idx % propsForThisTarget
