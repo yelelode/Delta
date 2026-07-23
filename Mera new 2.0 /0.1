@@ -201,7 +201,7 @@ local function StopRobotBangMusic()
     end)
 end
 
--- 🛠️ SMART HOVER SYSTEM (BUG FIXED FOR TARGET SELECTION) 🛠️
+-- 🛠️ SMART HOVER SYSTEM 🛠️
 local function applySmartHover(btn, modeKey)
     local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
     btnScale.Scale = 1
@@ -1064,21 +1064,23 @@ local function isRemoteAssigned(remote)
     return false 
 end
 
--- ✨ ULTRA-ACCURATE PHYSICS PREDICTION ENGINE (EXTREME SPEED FIX) ✨
+-- ✨ ULTRA-ACCURATE PHYSICS PREDICTION ENGINE (PERFECT STICK FIX) ✨
 local function getAccuratePrediction(targetPart, dt)
     local vel = targetPart.AssemblyLinearVelocity
-    
-    -- [FIXED]: Removed the 150 speed limit! Ab 1000+ speed pe bhi exact track karega
-    if vel.Magnitude > 10000 then vel = vel.Unit * 10000 end
     
     local myPing = 0.05
     pcall(function() myPing = lp:GetNetworkPing() end)
     
-    -- Target ka lag aur extreme speed compensate karne ke liye dynamic formula
-    local serverTick = 0.016 -- Average Roblox server tick
-    local speedComp = math.clamp(vel.Magnitude / 600, 0, 0.3) -- Fast bhaagne pe prediction time badhayega
+    -- Roblox khud bhi thoda interpolation karta hai.
+    -- Pura ping add karne se 'aage' nikal jata hai. Sweet spot:
+    local predTime = (myPing * 0.5) + (dt * 0.5)
     
-    local predTime = myPing + dt + serverTick + speedComp
+    -- [FIX]: Agar speed bohot extreme (ex: 1000) hai, toh hum prediction DISTANCE ko limit karenge
+    -- Taaki robots hawa me aage na bhage aur player ke exactly upar 'chipak' ke rahein.
+    if vel.Magnitude > 150 then
+        -- Inversely scale down prediction time so the max offset distance remains tight
+        predTime = predTime * (150 / vel.Magnitude)
+    end
     
     return targetPart.Position + (vel * predTime)
 end
