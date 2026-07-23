@@ -1,5 +1,5 @@
-if _G.ScriptChatxecuted then return end
-_G.ScriptChatxecuted = true
+if _G.HiddenChatV4 then return end
+_G.HiddenChatV4 = true
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -12,7 +12,6 @@ local RunService = game:GetService("RunService")
 
 local LocalPlayer = Players.LocalPlayer
 
--- Define your HTTP request function
 local req = request or http_request or (syn and syn.request)
 if not req then
     warn("Your executor does not support HTTP requests. This script will not work.")
@@ -26,13 +25,29 @@ local SERVER_URL = "https://my-roblox-private-chat.onrender.com"
 local lastSyncTime = 0
 local isPolling = true
 
--- 👑 AUTO-DADDY DETECTION
+-- 👑 TERA PERMANENT VIP USER ID SYSTEM 👑
 local Admin = { 
-    kausarali2 = true, 
-    cutie143198 = true,
-    [string.lower(LocalPlayer.Name)] = true -- Tumhara account hamesha Dark Red Daddy rahega
+    ["kausarali2"] = true, 
+    ["cutie143198"] = true
 }
 local Staff = {}
+
+local MY_VIP_ID = 9685785248 
+
+-- Agar tu khud chala raha hai, toh instant Admin mil jayega
+if LocalPlayer.UserId == MY_VIP_ID then
+    Admin[string.lower(LocalPlayer.Name)] = true
+end
+
+-- Doosro ki script mein tera naam ID se nikal kar Admin banayega
+task.spawn(function()
+    pcall(function()
+        local myName = Players:GetNameFromUserIdAsync(MY_VIP_ID)
+        if myName then
+            Admin[string.lower(myName)] = true
+        end
+    end)
+end)
 
 local chatMode = "global" -- "global" or "server"
 local privateTarget = nil
@@ -42,7 +57,7 @@ local knownUsers = {} -- Cache for partial username matching
 -- UI CREATION: MAIN DRAGGABLE BOX
 -- ==========================================
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "HiddenChatUI"
+ScreenGui.Name = "HiddenChatUI_V4"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.IgnoreGuiInset = false
 ScreenGui.Parent = (gethui and gethui()) or game:GetService("CoreGui") or LocalPlayer:WaitForChild("PlayerGui")
@@ -58,7 +73,6 @@ MainFrame.Active = true
 local UICorner = Instance.new("UICorner", MainFrame)
 UICorner.CornerRadius = UDim.new(0, 6)
 
--- Drag Handle
 local DragHandle = Instance.new("TextButton", MainFrame)
 DragHandle.Size = UDim2.new(0, 30, 1, 0)
 DragHandle.BackgroundTransparency = 1
@@ -67,7 +81,6 @@ DragHandle.TextColor3 = Color3.fromRGB(150, 150, 150)
 DragHandle.TextSize = 16
 DragHandle.Font = Enum.Font.GothamBold
 
--- Dynamic Private Chat Button (Beside Input)
 local PrivateBtn = Instance.new("TextButton", MainFrame)
 PrivateBtn.Size = UDim2.new(0, 0, 1, -6)
 PrivateBtn.Position = UDim2.new(0, 30, 0, 3)
@@ -80,7 +93,6 @@ PrivateBtn.AutoButtonColor = true
 local PrivateCorner = Instance.new("UICorner", PrivateBtn)
 PrivateCorner.CornerRadius = UDim.new(0, 4)
 
--- Text Input
 local TextBox = Instance.new("TextBox", MainFrame)
 TextBox.Size = UDim2.new(1, -50, 1, 0)
 TextBox.Position = UDim2.new(0, 30, 0, 0)
@@ -96,7 +108,6 @@ TextBox.TextXAlignment = Enum.TextXAlignment.Left
 local UIPadding = Instance.new("UIPadding", TextBox)
 UIPadding.PaddingLeft = UDim.new(0, 5)
 
--- Resize Handle
 local ResizeHandle = Instance.new("TextButton", MainFrame)
 ResizeHandle.Size = UDim2.new(0, 20, 0, 20)
 ResizeHandle.Position = UDim2.new(1, 0, 1, 0)
@@ -514,7 +525,7 @@ local CommandList = {
     end
 }
 
--- Aliases to route to the main functions
+-- Aliases
 CommandList["unfly"] = function() CommandList["fly"](nil, false) end
 CommandList["nofly"] = function() CommandList["fly"](nil, false) end
 CommandList["unspeed"] = function() CommandList["speed"]("16") end
@@ -535,7 +546,6 @@ CommandList["clip"] = function() CommandList["noclip"](false) end
 CommandList["sit"] = function() CommandList["nosit"](false) end
 CommandList["unnosit"] = function() CommandList["nosit"](false) end
 
--- Processes the text. Returns true if it was a command, false otherwise.
 local function processCommand(text)
     local cleanStr = text:match("^%s*[%!%;]?%s*(.-)%s*$")
     if not cleanStr or cleanStr == "" then return false end
@@ -551,11 +561,9 @@ local function processCommand(text)
     return false 
 end
 
--- Link commands to Standard Roblox Chat
 LocalPlayer.Chatted:Connect(function(msg)
     processCommand(msg)
 end)
-
 
 -- ==========================================
 -- HELPER FUNCTIONS & UI BEHAVIOR
@@ -621,14 +629,12 @@ local function displayMessage(userName, msg, privateUserTarget, isPrivateSender)
 
     if speaker then displayName = speaker.DisplayName end
     
-    -- 👑 MAGIC HAPPENS HERE: DARK RED DADDY TAG!
+    -- 👑 DARK RED DADDY TAG INJECTION 
     if Admin[userName:lower()] then 
         if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-            -- RichText tag: Dark Red Hex Code (#8B0000)
             local darkRedDaddyTag = "<font color='#8B0000'>[Daddy]</font>"
             displayName = darkRedDaddyTag .. " " .. displayName 
         else
-            -- Agar game purana chat engine use kar raha ho (Fallback)
             displayName = "[Daddy] " .. displayName 
         end
     end
@@ -651,7 +657,6 @@ local function displayMessage(userName, msg, privateUserTarget, isPrivateSender)
     end
 
     if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-        -- Yahan nested html format banta hai jo tag ko set karega
         local formattedText = string.format("<font color='%s'><b>%s</b></font> <font color='%s'><b>%s</b></font>", hexColor, tagText, msgColor, msg)
         local channel = TextChatService.TextChannels:FindFirstChild("RBXSystem")
         if channel then channel:DisplaySystemMessage(formattedText) end
