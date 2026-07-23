@@ -201,6 +201,7 @@ local function StopRobotBangMusic()
     end)
 end
 
+-- 🛠️ SMART HOVER SYSTEM (BUG FIXED FOR TARGET SELECTION) 🛠️
 local function applySmartHover(btn, modeKey)
     local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
     btnScale.Scale = 1
@@ -791,20 +792,39 @@ end
 local playerMenu, playerScroll = createMenu("👥 MATRIX TARGETS")
 local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
 
+-- 🛠️ TARGET LIST GENERATOR (BUG FIXED HERE) 🛠️
 local function refreshPlayers()
     for _, child in ipairs(playerScroll:GetChildren()) do if child:IsA("TextButton") then child:Destroy() end end
     for _, plr in ipairs(Players:GetPlayers()) do
         local btn = Instance.new("TextButton", playerScroll); btn.Size = UDim2.new(1, 0, 0, 36); btn.BackgroundColor3 = selectedPlayers[plr] and Colors.ActiveTint or Colors.Surface; btn.BackgroundTransparency = 0.4; btn.Font = Enum.Font.GothamMedium; btn.TextSize = 11; btn.TextXAlignment = Enum.TextXAlignment.Left; btn.AutoButtonColor = false; btn.ZIndex = 23; Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
         
         btn.Text = string.format("    %s | @%s", plr.DisplayName, plr.Name); 
-        btn.TextColor3 = selectedPlayers[plr] and Colors.Primary or Colors.Text; applySmartHover(btn, nil)
+        btn.TextColor3 = selectedPlayers[plr] and Colors.Primary or Colors.Text; 
+        applySmartHover(btn, nil)
         crispText(btn)
 
         local accent = Instance.new("Frame", btn); accent.Size = selectedPlayers[plr] and UDim2.new(0, 3, 0.6, 0) or UDim2.new(0, 0, 0, 0); accent.Position = UDim2.new(0, 0, 0.5, 0); accent.AnchorPoint = Vector2.new(0, 0.5); accent.BackgroundColor3 = Colors.Primary; accent.BorderSizePixel = 0; Instance.new("UICorner", accent).CornerRadius = UDim.new(1,0)
+        
         btn.MouseButton1Click:Connect(function()
             if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then triggerBanTrap() return end
-            if selectedPlayers[plr] then selectedPlayers[plr] = nil; TweenService:Create(btn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play(); TweenService:Create(accent, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 0, 0, 0)}):Play()
-            else selectedPlayers[plr] = true; TweenService:Create(btn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play(); TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Size = UDim2.new(0, 3, 0.6, 0)}):Play() end
+            
+            if selectedPlayers[plr] then 
+                selectedPlayers[plr] = nil; 
+                TweenService:Create(btn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play(); 
+                TweenService:Create(accent, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 0, 0, 0)}):Play()
+                
+                -- ✨ [BUG FIX] Update base attributes so smart hover remembers the new state
+                btn:SetAttribute("BaseColor", Colors.Surface)
+                btn:SetAttribute("BaseText", Colors.Text)
+            else 
+                selectedPlayers[plr] = true; 
+                TweenService:Create(btn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play(); 
+                TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Size = UDim2.new(0, 3, 0.6, 0)}):Play() 
+                
+                -- ✨ [BUG FIX] Update base attributes so smart hover remembers the new state
+                btn:SetAttribute("BaseColor", Colors.ActiveTint)
+                btn:SetAttribute("BaseText", Colors.Primary)
+            end
         end)
     end
 end
