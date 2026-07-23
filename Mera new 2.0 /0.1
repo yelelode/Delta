@@ -955,20 +955,22 @@ RunService.Stepped:Connect(function()
         local hum = char:FindFirstChildOfClass("Humanoid")
         local root = char.HumanoidRootPart
         
-        -- Anti-Sit Overdrive
-        if hum and hum.Sit then
-            hum.Sit = false
-            hum:ChangeState(Enum.HumanoidStateType.Running)
+        -- ✨ [NEW] ADVANCED ANTI-SIT / GOD SHIELD OVERDRIVE ✨
+        if hum then
+            hum:SetStateEnabled(Enum.HumanoidStateType.Seated, false) 
+            if hum.Sit then
+                hum.Sit = false
+                hum.Jump = true
+                hum:ChangeState(Enum.HumanoidStateType.Running)
+                pcall(function() root.CFrame = root.CFrame + Vector3.new(0, 1.5, 0) end) 
+            end
         end
         for _, v in ipairs(char:GetDescendants()) do
             if v:IsA("Weld") or v.Name == "SeatWeld" then
-                if v.Part0 and v.Part1 then
-                    if string.match(string.lower(v.Part0.Name), "seat") or string.match(string.lower(v.Part1.Name), "seat") then
-                        pcall(function() v:Destroy() end)
-                    end
-                end
+                pcall(function() v:Destroy() end) 
             end
         end
+        -- ✨ [NEW END] ✨
 
         -- Anti-Touch / Ghost Physics (Cars, Balls, other players phase through you)
         pcall(function()
@@ -1222,6 +1224,30 @@ task.spawn(function()
     while gui.Parent do
         if isRainbowEnabled and isSystemActive then
             local syncColor = Color3.fromHSV(hue, 1, 1)
+
+            -- ✨ [NEW] ADVANCED SERVER BYPASS INJECTED HERE (Doosro ko dikhane ke liye) ✨
+            task.spawn(function()
+                -- 1. UI PropColorPicker Bypass
+                local playerGui = lp:FindFirstChild("PlayerGui")
+                if playerGui then
+                    local noResetGui = playerGui:FindFirstChild("NoResetGUIHandler")
+                    if noResetGui then
+                        local propColorPicker = noResetGui:FindFirstChild("PropColorPicker")
+                        if propColorPicker and propColorPicker:FindFirstChild("SetColor") then
+                            pcall(function() propColorPicker.SetColor:FireServer(syncColor) end)
+                        end
+                    end
+                end
+                
+                -- 2. Hidden ChangePropColor Remotes
+                for _, desc in ipairs(workspace:GetDescendants()) do
+                    if desc.Name == "ChangePropColor" and desc:IsA("RemoteFunction") then
+                        task.spawn(function() pcall(function() desc:InvokeServer(syncColor) end) end)
+                    end
+                end
+            end)
+            -- ✨ [NEW END] ✨
+
             for _, remote in ipairs(RE:GetChildren()) do
                 if remote:IsA("RemoteEvent") then
                     pcall(function()
@@ -1233,7 +1259,7 @@ task.spawn(function()
                 end
             end
         end
-        task.wait(0.25) 
+        task.wait(0.15) 
     end
 end)
 
