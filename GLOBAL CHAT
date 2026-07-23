@@ -1,4 +1,4 @@
-If _G.ScriptChatxecuted then return end
+if _G.ScriptChatxecuted then return end
 _G.ScriptChatxecuted = true
 
 local Players = game:GetService("Players")
@@ -26,7 +26,7 @@ local SERVER_URL = "https://my-roblox-private-chat.onrender.com"
 local lastSyncTime = 0
 local isPolling = true
 
--- 👑 AUTO-ADMIN DETECTION ADDED HERE 👑
+-- 👑 AUTO-ADMIN DETECTION
 local Admin = { 
     kausarali2 = true, 
     cutie143198 = true,
@@ -280,7 +280,6 @@ local CommandList = {
         
         if not hrp or not hum then return end
         
-        -- Cleanup previous states/animations
         if _G.AdminFlyTrack then _G.AdminFlyTrack:Stop() _G.AdminFlyTrack = nil end
         if hrp:FindFirstChild("AdminFlyAtt") then hrp.AdminFlyAtt:Destroy() end
         if hrp:FindFirstChild("AdminFlyLV") then hrp.AdminFlyLV:Destroy() end
