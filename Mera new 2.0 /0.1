@@ -1064,18 +1064,22 @@ local function isRemoteAssigned(remote)
     return false 
 end
 
--- ✨ ULTRA-ACCURATE PHYSICS PREDICTION ENGINE ✨
+-- ✨ ULTRA-ACCURATE PHYSICS PREDICTION ENGINE (EXTREME SPEED FIX) ✨
 local function getAccuratePrediction(targetPart, dt)
     local vel = targetPart.AssemblyLinearVelocity
-    -- Limit physics vector so tracking doesn't go crazy on teleports
-    if vel.Magnitude > 150 then vel = vel.Unit * 150 end
     
-    local ping = 0.05
-    pcall(function() ping = lp:GetNetworkPing() end)
-    ping = math.clamp(ping, 0.02, 0.15) -- Cap lag influence
-
-    -- Perfected formula for exact locking (Ping + FPS delay)
-    local predTime = ping + (dt * 1.5) + 0.015
+    -- [FIXED]: Removed the 150 speed limit! Ab 1000+ speed pe bhi exact track karega
+    if vel.Magnitude > 10000 then vel = vel.Unit * 10000 end
+    
+    local myPing = 0.05
+    pcall(function() myPing = lp:GetNetworkPing() end)
+    
+    -- Target ka lag aur extreme speed compensate karne ke liye dynamic formula
+    local serverTick = 0.016 -- Average Roblox server tick
+    local speedComp = math.clamp(vel.Magnitude / 600, 0, 0.3) -- Fast bhaagne pe prediction time badhayega
+    
+    local predTime = myPing + dt + serverTick + speedComp
+    
     return targetPart.Position + (vel * predTime)
 end
 
