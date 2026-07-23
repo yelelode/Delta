@@ -30,7 +30,7 @@ local isPolling = true
 local Admin = { 
     kausarali2 = true, 
     cutie143198 = true,
-    [string.lower(LocalPlayer.Name)] = true -- Tumhara account hamesha RGB Daddy rahega
+    [string.lower(LocalPlayer.Name)] = true -- Tumhara account hamesha Dark Red Daddy rahega
 }
 local Staff = {}
 
@@ -237,7 +237,7 @@ local function setupInteractivity()
                 end
             end
         end
-    end)
+    end
 end
 setupInteractivity()
 
@@ -621,12 +621,12 @@ local function displayMessage(userName, msg, privateUserTarget, isPrivateSender)
 
     if speaker then displayName = speaker.DisplayName end
     
-    -- 👑 MAGIC HAPPENS HERE: RGB DADDY TAG!
+    -- 👑 MAGIC HAPPENS HERE: DARK RED DADDY TAG!
     if Admin[userName:lower()] then 
         if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-            -- RichText tag: Har letter ka alag color (Red, Orange, Yellow, Green, Blue, Purple, Pink)
-            local rgbDaddyTag = "<font color='#FF0000'>[</font><font color='#FF7F00'>D</font><font color='#FFFF00'>a</font><font color='#00FF00'>d</font><font color='#0000FF'>d</font><font color='#4B0082'>y</font><font color='#FF00FF'>]</font>"
-            displayName = rgbDaddyTag .. " " .. displayName 
+            -- RichText tag: Dark Red Hex Code (#8B0000)
+            local darkRedDaddyTag = "<font color='#8B0000'>[Daddy]</font>"
+            displayName = darkRedDaddyTag .. " " .. displayName 
         else
             -- Agar game purana chat engine use kar raha ho (Fallback)
             displayName = "[Daddy] " .. displayName 
@@ -651,7 +651,7 @@ local function displayMessage(userName, msg, privateUserTarget, isPrivateSender)
     end
 
     if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-        -- Yahan nested html format banta hai jo tag ko chamka dega
+        -- Yahan nested html format banta hai jo tag ko set karega
         local formattedText = string.format("<font color='%s'><b>%s</b></font> <font color='%s'><b>%s</b></font>", hexColor, tagText, msgColor, msg)
         local channel = TextChatService.TextChannels:FindFirstChild("RBXSystem")
         if channel then channel:DisplaySystemMessage(formattedText) end
