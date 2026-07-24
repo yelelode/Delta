@@ -2,7 +2,7 @@
 -- 👑 TXR ASHU: QUANTUM CORE V18.0 (GALACTIC QUASAR EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V12.2 PERFECT STICKY PREDICTION ENGINE RESTORED] *
--- * [FIXED] 1-MS EVENT-ZONE MICRO-TELEPORT EVADE ENGINE *
+-- * [FIXED] EXACT LOCATION (CARNIVAL) ANTI-BANG EVADE *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -1135,49 +1135,36 @@ RunService.Stepped:Connect(function()
 end)
 
 -- ✨ SMART EVENT CLEAR LOCATOR ✨
-local function getEventClearCFrame()
-    -- Priority 1: Brookhaven Pool Water (100% reliable for unseating and clearing)
-    local pool = workspace:FindFirstChild("Pool")
-    if pool then
-        local water = pool:FindFirstChild("Water")
-        if water then return water.CFrame * CFrame.new(0, -1, 0) end
+local function getCarnivalCFrame()
+    -- Priority 1: Summer Carnival / Any Event Zone (Location exact lock)
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("BasePart") and (string.find(string.lower(obj.Name), "carnival") or string.find(string.lower(obj.Name), "event")) then
+            return obj.CFrame + Vector3.new(0, 5, 0)
+        end
     end
-    -- Priority 2: Summer Carnival / Any Event Zone
-    for _, obj in ipairs(workspace:GetChildren()) do
-        if string.find(string.lower(obj.Name), "carnival") or string.find(string.lower(obj.Name), "event") or string.find(string.lower(obj.Name), "summer") then
-            local part = obj:IsA("BasePart") and obj or obj:FindFirstChildWhichIsA("BasePart", true)
-            if part then return part.CFrame end
+    -- Priority 2: Brookhaven Pool Water
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj.Name == "Water" and obj.Parent and obj.Parent.Name == "Pool" then
+            return obj.CFrame
         end
     end
     -- Emergency Fallback: Void
     return CFrame.new(0, -5000, 0)
 end
 
--- 🚫 ANTI-ROBOT (1-MILLISECOND AUTO-EVADE TO EVENT ZONE) 🚫
+-- 🚫 ANTI-ROBOT (AUTO-EVADE TO CARNIVAL ZONE) 🚫
 RunService.Stepped:Connect(function()
     if isAntiRobotEnabled and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") and not isEvading then
         local root = lp.Character.HumanoidRootPart
         local isDanger = false
         
-        -- High-speed and Prop radar scan
-        for _, part in ipairs(workspace:GetPartBoundsInRadius(root.Position, 12)) do
+        -- Scan strictly very close (Robot bang karna shuru kare)
+        for _, part in ipairs(workspace:GetPartBoundsInRadius(root.Position, 4)) do
             if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(lp.Character) then
-                local dist = (part.Position - root.Position).Magnitude
-                local vel = part.AssemblyLinearVelocity.Magnitude
-                
-                -- High speed projectile check
-                if vel > 40 then
+                local model = part:FindFirstAncestorWhichIsA("Model")
+                if model and (string.find(string.lower(model.Name), "prop") or string.find(string.lower(model.Name), "vehicle") or string.find(string.lower(model.Name), "segway")) then
                     isDanger = true
                     break
-                end
-                
-                -- Prop check (Fixed: Scans the actual Model name, not just the BasePart name)
-                if dist < 7 then
-                    local model = part:FindFirstAncestorWhichIsA("Model")
-                    if model and (string.find(string.lower(model.Name), "prop") or string.find(string.lower(model.Name), "vehicle") or string.find(string.lower(model.Name), "segway")) then
-                        isDanger = true
-                        break
-                    end
                 end
             end
         end
@@ -1186,27 +1173,28 @@ RunService.Stepped:Connect(function()
             isEvading = true
             task.spawn(function()
                 local safePos = root.CFrame
-                local clearCFrame = getEventClearCFrame()
+                local clearCFrame = getCarnivalCFrame()
                 
-                -- 1. Micro-Teleport to Event/Pool
+                -- Teleport to Carnival exact location
                 pcall(function()
                     root.CFrame = clearCFrame
                     root.AssemblyLinearVelocity = Vector3.zero
                 end)
                 
-                -- 2. Backup manual prop clear
+                -- Native clear + manual clear
                 pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("ClearAllProps") end)
                 
-                -- 3. Tiny wait so server processes the hit
-                task.wait(0.05)
+                -- Exactly wait for server to register zone entry
+                RunService.Heartbeat:Wait()
+                RunService.Heartbeat:Wait()
                 
-                -- 4. Micro-Teleport Back instantly
+                -- Teleport back instantly
                 if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
                     lp.Character.HumanoidRootPart.CFrame = safePos
                     lp.Character.HumanoidRootPart.AssemblyLinearVelocity = Vector3.zero
                 end
                 
-                task.wait(0.2) -- Anti-Spam Cooldown
+                task.wait(0.2)
                 isEvading = false
             end)
         end
