@@ -2,7 +2,6 @@
 -- 👑 TXR ASHU: QUANTUM CORE V18.0 (GALACTIC QUASAR EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V12.2 PERFECT STICKY PREDICTION ENGINE RESTORED] *
--- * [FIXED] EXACT LOCATION (CARNIVAL) ANTI-BANG EVADE *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -33,12 +32,11 @@ end)
 local selectedPlayers, assignedRemotes, voidedPlayers, propsCache = {}, {}, {}, {}
 local activeModes, modeQueue = {}, {} 
 local activeGeometry = "Spin"
-local isRainbowEnabled, isSoundEnabled, isSystemActive, isGodShieldEnabled, isAntiRobotEnabled = false, false, false, false, false
-local isEvading = false
+local isRainbowEnabled, isSoundEnabled, isSystemActive, isGodShieldEnabled = false, false, false, false
 local animTime, angle, selfAngle = 0, 0, 0 
 local robotAnimTime = 0 
 local espObjects = {} 
-local targetVelocities = {} 
+local targetVelocities = {} -- ✨ V12.2 Velocity Tracker Restored ✨
 
 -- ✨ SMART METAMETHOD HOOK (Custom Prop Detection) ✨
 local lastGameSpawnTime = 0
@@ -204,7 +202,7 @@ local function StopRobotBangMusic()
     end)
 end
 
--- 🛠️ SMART HOVER SYSTEM 🛠️
+-- 🛠️ SMART HOVER SYSTEM (WITH V18.0 TARGET BUG FIX) 🛠️
 local function applySmartHover(btn, modeKey)
     local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
     btnScale.Scale = 1
@@ -795,6 +793,7 @@ end
 local playerMenu, playerScroll = createMenu("👥 MATRIX TARGETS")
 local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
 
+-- 🛠️ TARGET LIST GENERATOR (BUG FIXED HERE) 🛠️
 local function refreshPlayers()
     for _, child in ipairs(playerScroll:GetChildren()) do if child:IsA("TextButton") then child:Destroy() end end
     for _, plr in ipairs(Players:GetPlayers()) do
@@ -981,22 +980,6 @@ shieldBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 🚫 ANTI-ROBOT AUTO-EVADE TOGGLE (NEW SYSTEM) 🚫
-local antiRobotBtn = createMainBtn("🚫 ANTI-ROBOT (AUTO-EVADE)", "AntiRobot", false)
-antiRobotBtn.MouseButton1Click:Connect(function() 
-    isAntiRobotEnabled = not isAntiRobotEnabled; activeModes["AntiRobot"] = isAntiRobotEnabled; local accent = antiRobotBtn:FindFirstChild("Accent")
-    if isAntiRobotEnabled then 
-        TweenService:Create(antiRobotBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Danger, TextColor3 = Colors.Text}):Play()
-        if accent then accent.BackgroundColor3 = Colors.Text; TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
-        sendNotif("🚫 SECURITY", "Anti-Robot 1ms Auto-Evade Enabled.", 2)
-    else 
-        TweenService:Create(antiRobotBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
-        if accent then accent.BackgroundColor3 = Colors.Primary; TweenService:Create(accent, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 0, 0, 0)}):Play() end 
-        sendNotif("🚫 SECURITY", "Anti-Robot Auto-Evade Disabled.", 2)
-    end
-end)
-modeBtns["AntiRobot"] = {btn = antiRobotBtn}
-
 local toggleRow = Instance.new("Frame", mainList); toggleRow.Size = UDim2.new(1, 0, 0, 42); toggleRow.BackgroundTransparency = 1; toggleRow.LayoutOrder = getOrder(); toggleRow.ZIndex = 7
 local startBtn = Instance.new("TextButton", toggleRow); startBtn.Size = UDim2.new(0.48, 0, 1, 0); startBtn.BackgroundColor3 = Colors.Primary; startBtn.Text = "▶ INJECT"; startBtn.TextColor3 = Colors.TextDark; startBtn.Font = Enum.Font.GothamBlack; startBtn.TextSize = 11; startBtn.AutoButtonColor = false; startBtn.ZIndex = 8; Instance.new("UICorner", startBtn).CornerRadius = UDim.new(0, 8); applySmartHover(startBtn, nil)
 local stopBtn = Instance.new("TextButton", toggleRow); stopBtn.Size = UDim2.new(0.48, 0, 1, 0); stopBtn.Position = UDim2.new(0.52, 0, 0, 0); stopBtn.BackgroundColor3 = Colors.Surface; stopBtn.BackgroundTransparency = 0.5; stopBtn.Text = "⏹ HALT"; stopBtn.TextColor3 = Colors.Danger; stopBtn.Font = Enum.Font.GothamBold; stopBtn.TextSize = 11; stopBtn.AutoButtonColor = false; stopBtn.ZIndex = 8; Instance.new("UICorner", stopBtn).CornerRadius = UDim.new(0, 8); applySmartHover(stopBtn, nil)
@@ -1131,73 +1114,6 @@ RunService.Stepped:Connect(function()
                 end
             end
         end)
-    end
-end)
-
--- ✨ SMART EVENT CLEAR LOCATOR ✨
-local function getCarnivalCFrame()
-    -- Priority 1: Summer Carnival / Any Event Zone (Location exact lock)
-    for _, obj in ipairs(workspace:GetDescendants()) do
-        if obj:IsA("BasePart") and (string.find(string.lower(obj.Name), "carnival") or string.find(string.lower(obj.Name), "event")) then
-            return obj.CFrame + Vector3.new(0, 5, 0)
-        end
-    end
-    -- Priority 2: Brookhaven Pool Water
-    for _, obj in ipairs(workspace:GetDescendants()) do
-        if obj.Name == "Water" and obj.Parent and obj.Parent.Name == "Pool" then
-            return obj.CFrame
-        end
-    end
-    -- Emergency Fallback: Void
-    return CFrame.new(0, -5000, 0)
-end
-
--- 🚫 ANTI-ROBOT (AUTO-EVADE TO CARNIVAL ZONE) 🚫
-RunService.Stepped:Connect(function()
-    if isAntiRobotEnabled and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") and not isEvading then
-        local root = lp.Character.HumanoidRootPart
-        local isDanger = false
-        
-        -- Scan strictly very close (Robot bang karna shuru kare)
-        for _, part in ipairs(workspace:GetPartBoundsInRadius(root.Position, 4)) do
-            if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(lp.Character) then
-                local model = part:FindFirstAncestorWhichIsA("Model")
-                if model and (string.find(string.lower(model.Name), "prop") or string.find(string.lower(model.Name), "vehicle") or string.find(string.lower(model.Name), "segway")) then
-                    isDanger = true
-                    break
-                end
-            end
-        end
-        
-        if isDanger then
-            isEvading = true
-            task.spawn(function()
-                local safePos = root.CFrame
-                local clearCFrame = getCarnivalCFrame()
-                
-                -- Teleport to Carnival exact location
-                pcall(function()
-                    root.CFrame = clearCFrame
-                    root.AssemblyLinearVelocity = Vector3.zero
-                end)
-                
-                -- Native clear + manual clear
-                pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("ClearAllProps") end)
-                
-                -- Exactly wait for server to register zone entry
-                RunService.Heartbeat:Wait()
-                RunService.Heartbeat:Wait()
-                
-                -- Teleport back instantly
-                if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
-                    lp.Character.HumanoidRootPart.CFrame = safePos
-                    lp.Character.HumanoidRootPart.AssemblyLinearVelocity = Vector3.zero
-                end
-                
-                task.wait(0.2)
-                isEvading = false
-            end)
-        end
     end
 end)
 
