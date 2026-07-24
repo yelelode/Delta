@@ -2,7 +2,7 @@
 -- 👑 TXR ASHU: QUANTUM CORE V18.0 (GALACTIC QUASAR EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V12.2 PERFECT STICKY PREDICTION ENGINE RESTORED] *
--- * [NEW] 1-MS EVENT-ZONE MICRO-TELEPORT EVADE ENGINE *
+-- * [FIXED] 1-MS EVENT-ZONE MICRO-TELEPORT EVADE ENGINE *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -38,7 +38,7 @@ local isEvading = false
 local animTime, angle, selfAngle = 0, 0, 0 
 local robotAnimTime = 0 
 local espObjects = {} 
-local targetVelocities = {} -- ✨ V12.2 Velocity Tracker Restored ✨
+local targetVelocities = {} 
 
 -- ✨ SMART METAMETHOD HOOK (Custom Prop Detection) ✨
 local lastGameSpawnTime = 0
@@ -1136,17 +1136,17 @@ end)
 
 -- ✨ SMART EVENT CLEAR LOCATOR ✨
 local function getEventClearCFrame()
-    -- Priority 1: Summer Carnival / Any Event Zone
+    -- Priority 1: Brookhaven Pool Water (100% reliable for unseating and clearing)
+    local pool = workspace:FindFirstChild("Pool")
+    if pool then
+        local water = pool:FindFirstChild("Water")
+        if water then return water.CFrame * CFrame.new(0, -1, 0) end
+    end
+    -- Priority 2: Summer Carnival / Any Event Zone
     for _, obj in ipairs(workspace:GetChildren()) do
         if string.find(string.lower(obj.Name), "carnival") or string.find(string.lower(obj.Name), "event") or string.find(string.lower(obj.Name), "summer") then
             local part = obj:IsA("BasePart") and obj or obj:FindFirstChildWhichIsA("BasePart", true)
             if part then return part.CFrame end
-        end
-    end
-    -- Priority 2: Brookhaven Pool Water (Native Prop Clear Zone)
-    for _, obj in ipairs(workspace:GetDescendants()) do
-        if obj.Name == "Water" and obj.Parent and obj.Parent.Name == "Pool" then
-            return obj.CFrame
         end
     end
     -- Emergency Fallback: Void
@@ -1159,12 +1159,25 @@ RunService.Stepped:Connect(function()
         local root = lp.Character.HumanoidRootPart
         local isDanger = false
         
-        -- High-speed radius scan
-        for _, part in ipairs(workspace:GetPartBoundsInRadius(root.Position, 10)) do
-            if part:IsA("BasePart") and not part:IsDescendantOf(lp.Character) and not part.Anchored then
-                if part.AssemblyLinearVelocity.Magnitude > 35 or string.find(string.lower(part.Name), "prop") then
+        -- High-speed and Prop radar scan
+        for _, part in ipairs(workspace:GetPartBoundsInRadius(root.Position, 12)) do
+            if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(lp.Character) then
+                local dist = (part.Position - root.Position).Magnitude
+                local vel = part.AssemblyLinearVelocity.Magnitude
+                
+                -- High speed projectile check
+                if vel > 40 then
                     isDanger = true
                     break
+                end
+                
+                -- Prop check (Fixed: Scans the actual Model name, not just the BasePart name)
+                if dist < 7 then
+                    local model = part:FindFirstAncestorWhichIsA("Model")
+                    if model and (string.find(string.lower(model.Name), "prop") or string.find(string.lower(model.Name), "vehicle") or string.find(string.lower(model.Name), "segway")) then
+                        isDanger = true
+                        break
+                    end
                 end
             end
         end
@@ -1175,7 +1188,7 @@ RunService.Stepped:Connect(function()
                 local safePos = root.CFrame
                 local clearCFrame = getEventClearCFrame()
                 
-                -- 1. Micro-Teleport to Event/Carnival (Forces Native Game Prop Clear)
+                -- 1. Micro-Teleport to Event/Pool
                 pcall(function()
                     root.CFrame = clearCFrame
                     root.AssemblyLinearVelocity = Vector3.zero
@@ -1184,11 +1197,10 @@ RunService.Stepped:Connect(function()
                 -- 2. Backup manual prop clear
                 pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("ClearAllProps") end)
                 
-                -- 3. Wait exactly 2 frames for Server Physics to process the zone collision
-                RunService.Heartbeat:Wait()
-                RunService.Heartbeat:Wait()
+                -- 3. Tiny wait so server processes the hit
+                task.wait(0.05)
                 
-                -- 4. Micro-Teleport Back instantly (Player won't even notice)
+                -- 4. Micro-Teleport Back instantly
                 if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
                     lp.Character.HumanoidRootPart.CFrame = safePos
                     lp.Character.HumanoidRootPart.AssemblyLinearVelocity = Vector3.zero
