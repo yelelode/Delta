@@ -1,7 +1,7 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.0 (GALACTIC QUASAR EDITION) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.1 (GALACTIC QUASAR EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
--- * [V12.2 PERFECT STICKY PREDICTION ENGINE RESTORED] *
+-- * [V12.2 PERFECT STICKY ENGINE + DYNAMIC CUSTOM PROPS] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -36,10 +36,14 @@ local isRainbowEnabled, isSoundEnabled, isSystemActive, isGodShieldEnabled = fal
 local animTime, angle, selfAngle = 0, 0, 0 
 local robotAnimTime = 0 
 local espObjects = {} 
-local targetVelocities = {} -- ✨ V12.2 Velocity Tracker Restored ✨
+local targetVelocities = {} 
 
--- ✨ SMART METAMETHOD HOOK (Custom Prop Detection) ✨
+-- ✨ CUSTOM PROP TRACKER ✨
+local customPropName = "ScreensRobotBig"
+local customPropCategory = "Screens"
 local lastGameSpawnTime = 0
+
+-- ✨ SMART METAMETHOD HOOK (Custom Prop Interception) ✨
 pcall(function()
     local oldNamecall
     oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
@@ -49,6 +53,11 @@ pcall(function()
                 local args = {...}
                 if args[1] == "RequestingPropName" then
                     lastGameSpawnTime = tick() 
+                    -- Save the prop the user clicked in the menu!
+                    if args[2] and args[3] then
+                        customPropName = args[2]
+                        customPropCategory = args[3]
+                    end
                 end
             end
         end
@@ -202,7 +211,7 @@ local function StopRobotBangMusic()
     end)
 end
 
--- 🛠️ SMART HOVER SYSTEM (WITH V18.0 TARGET BUG FIX) 🛠️
+-- 🛠️ SMART HOVER SYSTEM 🛠️
 local function applySmartHover(btn, modeKey)
     local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
     btnScale.Scale = 1
@@ -270,7 +279,13 @@ local function spawnProp(propName, category) pcall(function() ReplicatedStorage:
 local function getActivePropData()
     local needsChair = activeModes["Chair"]
     local needsRobot = activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["Orbit"] or activeModes["Ring"] or activeModes["HeadBang"]
-    if needsChair and not needsRobot then return "FurnitureBleachers", "Furniture" else return "ScreensRobotBig", "Screens" end
+    
+    if needsChair and not needsRobot then 
+        return "FurnitureBleachers", "Furniture" 
+    else 
+        -- Returns the prop the user last clicked in the menu!
+        return customPropName, customPropCategory 
+    end
 end
 
 local mouse = lp:GetMouse()
@@ -793,7 +808,7 @@ end
 local playerMenu, playerScroll = createMenu("👥 MATRIX TARGETS")
 local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
 
--- 🛠️ TARGET LIST GENERATOR (BUG FIXED HERE) 🛠️
+-- 🛠️ TARGET LIST GENERATOR 🛠️
 local function refreshPlayers()
     for _, child in ipairs(playerScroll:GetChildren()) do if child:IsA("TextButton") then child:Destroy() end end
     for _, plr in ipairs(Players:GetPlayers()) do
@@ -993,7 +1008,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.0 Quasar Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.1 Quasar Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
@@ -1003,12 +1018,13 @@ startBtn.MouseButton1Click:Connect(function()
         if activeModes["Chair"] and (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"] or activeModes["Orbit"] or activeModes["Ring"]) then
             spawnProp("FurnitureBleachers", "Furniture")
             task.wait(0.05)
-            for i = 1, 24 do spawnProp("ScreensRobotBig", "Screens"); task.wait(0.01) end
+            for i = 1, 24 do spawnProp(customPropName, customPropCategory); task.wait(0.01) end
         else
             for i = 1, count do spawnProp(propName, propCategory); task.wait(0.01) end
         end
     end) 
 end)
+
 stopBtn.MouseButton1Click:Connect(function() 
     if not isSystemActive then return end 
     isSystemActive = false
@@ -1063,7 +1079,7 @@ local function isRemoteAssigned(remote)
     return false 
 end
 
--- ✨ [RESTORED] V12.2 PERFECT STICKY LOCAL-DISPATCH ENGINE ✨
+-- ✨ PERFECT STICKY LOCAL-DISPATCH ENGINE ✨
 local function dispatchRemote(remote, targetCFrame)
     if not remote or not remote.Parent then return end
     pcall(function() 
@@ -1117,7 +1133,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- 🔥 ULTRA-SMOOTH ENGINE CORE (V12.2 TRACKING IN V18.0) 🔥
+-- 🔥 ULTRA-SMOOTH ENGINE CORE 🔥
 RunService.Heartbeat:Connect(function(dt)
     if not isSystemActive then return end 
 
@@ -1162,7 +1178,6 @@ RunService.Heartbeat:Connect(function(dt)
             
             local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
             
-            -- ✨ [RESTORED] V12.2 Velocity Tracking Math ✨
             local rawVelocity = tRoot.AssemblyLinearVelocity
             if not targetVelocities[plr] then targetVelocities[plr] = rawVelocity end
             targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 10)
