@@ -2,6 +2,7 @@
 -- 👑 TXR ASHU: QUANTUM CORE V18.1 (GALACTIC QUASAR EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V12.2 PERFECT STICKY ENGINE + DYNAMIC CUSTOM PROPS] *
+-- * [V18.1.1 BUG FIX: PROPS NO LONGER STOP WHEN MOVING/RUNNING] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -1008,7 +1009,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.1 Quasar Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.1.1 Quasar Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
@@ -1079,17 +1080,20 @@ local function isRemoteAssigned(remote)
     return false 
 end
 
--- ✨ PERFECT STICKY LOCAL-DISPATCH ENGINE ✨
+-- ✨ PERFECT STICKY LOCAL-DISPATCH ENGINE (UPDATED TO PREVENT LAG) ✨
 local function dispatchRemote(remote, targetCFrame)
     if not remote or not remote.Parent then return end
     pcall(function() 
-        if remote.Parent:IsA("Model") and remote.Parent.PrimaryPart then 
-            remote.Parent.PrimaryPart.CFrame = remote.Parent.PrimaryPart.CFrame:Lerp(targetCFrame, 0.45) 
-        elseif remote.Parent:IsA("BasePart") then 
-            remote.Parent.CFrame = remote.Parent.CFrame:Lerp(targetCFrame, 0.45) 
+        local parent = remote.Parent
+        if parent:IsA("Model") then 
+            local part = parent.PrimaryPart or parent:FindFirstChildWhichIsA("BasePart")
+            if part then part.CFrame = part.CFrame:Lerp(targetCFrame, 0.6) end 
+        elseif parent:IsA("BasePart") then 
+            parent.CFrame = parent.CFrame:Lerp(targetCFrame, 0.6) 
         end 
     end)
-    task.defer(function() pcall(function() remote:InvokeServer(targetCFrame) end) end)
+    -- Using task.spawn so the thread doesn't queue and lag the game
+    task.spawn(function() pcall(function() remote:InvokeServer(targetCFrame) end) end)
 end
 
 -- 🛡️ GOD SHIELD (PRE-PHYSICS ENGINE) 🛡️
@@ -1158,6 +1162,11 @@ RunService.Heartbeat:Connect(function(dt)
     local robotSpeedMultiplier = 60 / 20 
     robotAnimTime = robotAnimTime + (dt * robotSpeedMultiplier)
     
+    -- Ping is now fetched ONCE per frame to prevent extreme lag spikes
+    local currentPing = 0.05
+    pcall(function() currentPing = lp:GetNetworkPing() end)
+    local predictionTime = currentPing + 0.03
+    
     local allRemotes = getAvailableRemotes()
     local tCount = 0; local targetList = {}
     
@@ -1182,8 +1191,7 @@ RunService.Heartbeat:Connect(function(dt)
             if not targetVelocities[plr] then targetVelocities[plr] = rawVelocity end
             targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 10)
             
-            local pingDelay = 0.05; pcall(function() pingDelay = lp:GetNetworkPing() end)
-            local bodyPos = bodyPart.Position + (targetVelocities[plr] * (pingDelay + 0.03))
+            local bodyPos = bodyPart.Position + (targetVelocities[plr] * predictionTime)
             
             local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
             if flatLook.Magnitude > 0.01 then flatLook = flatLook.Unit else flatLook = Vector3.new(0, 0, -1) end
@@ -1211,7 +1219,7 @@ RunService.Heartbeat:Connect(function(dt)
                 for _, slot in ipairs(slots) do if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then for _, r in ipairs(allRemotes) do if not isRemoteAssigned(r) then assignedRemotes[plr][slot] = r; break end end end end
                 
                 local actualHead = plr.Character:FindFirstChild("Head") or tRoot
-                local headPos = actualHead.Position + (targetVelocities[plr] * (pingDelay + 0.03))
+                local headPos = actualHead.Position + (targetVelocities[plr] * predictionTime)
                 local headLockCFrame = CFrame.lookAt(headPos, headPos + flatLook)
                 
                 local headY = isProne and -0.8 or -2.4 
@@ -1260,7 +1268,8 @@ RunService.Heartbeat:Connect(function(dt)
                             pcall(function() assignedRemotes[plr].chair:InvokeServer(CFrame.new(0, -5000, 0)) end)
                             voidedPlayers[plr] = true
                             assignedRemotes[plr].chair = nil
-                        elseif tHum.MoveDirection.Magnitude < 0.1 then 
+                        else
+                            -- Bug Fix: Removed move magnitude check so it follows perfectly while walking
                             dispatchRemote(assignedRemotes[plr].chair, CFrame.new(bodyPos) * CFrame.new(0, -3.2, 0)) 
                         end
                     end
@@ -1279,8 +1288,7 @@ RunService.Heartbeat:Connect(function(dt)
                     local tRoot = plr.Character.HumanoidRootPart
                     local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
                     
-                    local pingDelay = 0.05; pcall(function() pingDelay = lp:GetNetworkPing() end)
-                    local bodyPos = bodyPart.Position + (targetVelocities[plr] * (pingDelay + 0.03))
+                    local bodyPos = bodyPart.Position + (targetVelocities[plr] * predictionTime)
                     local ringCenterPos = bodyPos + Vector3.new(0, -3.8, 0)
                     
                     local propsForThisTarget = 0; local myLocalIdx = 0
@@ -1306,8 +1314,7 @@ RunService.Heartbeat:Connect(function(dt)
                     local tRoot = plr.Character.HumanoidRootPart
                     local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
                     
-                    local pingDelay = 0.05; pcall(function() pingDelay = lp:GetNetworkPing() end)
-                    local bodyPos = bodyPart.Position + (targetVelocities[plr] * (pingDelay + 0.03))
+                    local bodyPos = bodyPart.Position + (targetVelocities[plr] * predictionTime)
                     local dynamicOrbitBase = CFrame.new(bodyPos)
                     
                     local propsForThisTarget = math.ceil(#freeRemotes / tCount); local localIdx = idx % propsForThisTarget
