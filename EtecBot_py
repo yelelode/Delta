@@ -32,7 +32,7 @@ import webbrowser
 from pyfiglet import Figlet
 from discord import Member
 
-intents = discord.Intents().all()
+intents = discord.Intents.all()
 ok = discord.Client(intents=intents)
 ok = commands.Bot(command_prefix="+", self_bot=True, intents=intents)
 
