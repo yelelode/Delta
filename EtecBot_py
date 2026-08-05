@@ -84,7 +84,7 @@ async def on_message_edit(before, after):
 
  
 ok.remove_command('help')
-token = "MTUyMjgzODYyMDIyOTIxMDE5OQ.GPMcW9.PO3IdLXbWD9x5axhepMW9ETLfhMU"
+token = "MTUyMjgzODYyMDIyOTIxMDE5OQ.GPMcW9.MTUZMjM5NjM5NjkxMTUZMDExNA.TMJSNs9-ivwtanoLeKP75Zyykwc"
 @ok.command(aliases=['gnrl'])
 async def general(ctx):
     await ctx.message.delete()
