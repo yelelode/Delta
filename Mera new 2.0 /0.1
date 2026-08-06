@@ -3,7 +3,7 @@
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V12.2 PERFECT STICKY ENGINE + DYNAMIC CUSTOM PROPS] *
 -- * [V18.1.1 BUG FIX: PROPS NO LONGER STOP WHEN MOVING/RUNNING] *
--- * [V18.5 ULTIMATE TOUCH-WIPE ANTI-KELA + DUAL-RING UI UPGRADE] *
+-- * [V18.6 GOD-TIER HOLO UI + CRIMSON REACTOR REOPEN BUTTON] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -323,16 +323,16 @@ mainFrame.BackgroundColor3 = Colors.Background; mainFrame.BackgroundTransparency
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14) 
 mainFrame:GetPropertyChangedSignal("Position"):Connect(function() aura.Position = mainFrame.Position end)
 
--- ✨ PREMIUM SLEEK DROP SHADOW ✨
+-- ✨ HOLOGRAM DROP SHADOW ✨
 local dropShadow = Instance.new("ImageLabel", mainFrame)
 dropShadow.Name = "Shadow"
 dropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
 dropShadow.Position = UDim2.fromScale(0.5, 0.5)
-dropShadow.Size = UDim2.new(1, 40, 1, 40)
+dropShadow.Size = UDim2.new(1, 60, 1, 60)
 dropShadow.BackgroundTransparency = 1
 dropShadow.Image = "rbxassetid://6015897843"
 dropShadow.ImageColor3 = Color3.new(0, 0, 0)
-dropShadow.ImageTransparency = 0.4
+dropShadow.ImageTransparency = 0.3
 dropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
 dropShadow.ScaleType = Enum.ScaleType.Slice
 dropShadow.ZIndex = 0
@@ -345,7 +345,7 @@ innerClipFrame.ZIndex = 5
 Instance.new("UICorner", innerClipFrame).CornerRadius = UDim.new(0, 14)
 
 local bgGradient = Instance.new("UIGradient", innerClipFrame)
-bgGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(16, 20, 30)), ColorSequenceKeypoint.new(0.5, Colors.Background), ColorSequenceKeypoint.new(1, Color3.fromRGB(16, 20, 30))})
+bgGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(12, 15, 22)), ColorSequenceKeypoint.new(0.5, Colors.Background), ColorSequenceKeypoint.new(1, Color3.fromRGB(12, 15, 22))})
 bgGradient.Rotation = -45
 
 -- ✨ HIGH-TECH GRID BACKGROUND OVERLAY ✨
@@ -359,9 +359,22 @@ techGrid.TileSize = UDim2.new(0, 24, 0, 24)
 techGrid.ScaleType = Enum.ScaleType.Tile
 techGrid.ZIndex = 2
 
+-- ✨ DYNAMIC HOLOGRAPHIC SCANNER BEAM ✨
+local scannerBeam = Instance.new("Frame", innerClipFrame)
+scannerBeam.Size = UDim2.new(1, 0, 0, 30)
+scannerBeam.Position = UDim2.fromScale(0, 0)
+scannerBeam.BackgroundTransparency = 0.5
+scannerBeam.BackgroundColor3 = Colors.Primary
+scannerBeam.BorderSizePixel = 0
+scannerBeam.ZIndex = 3
+local scannerGrad = Instance.new("UIGradient", scannerBeam)
+scannerGrad.Rotation = 90
+scannerGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.Primary), ColorSequenceKeypoint.new(1, Colors.Primary)})
+scannerGrad.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0.2), NumberSequenceKeypoint.new(1, 1)})
+
 -- ✨ CLEAN CYAN/PURPLE BORDER GLOW ✨
 local mainStroke = Instance.new("UIStroke", mainFrame)
-mainStroke.Thickness = 1.5 
+mainStroke.Thickness = 2
 mainStroke.Transparency = 1
 mainStroke.Color = Color3.new(1,1,1)
 local strokeGrad = Instance.new("UIGradient", mainStroke)
@@ -401,7 +414,7 @@ scanlines.TileSize = UDim2.new(0, 100, 0, 4)
 
 TweenService:Create(mainScale, TweenInfo.new(0.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
 TweenService:Create(mainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play()
-TweenService:Create(mainStroke, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.2}):Play()
+TweenService:Create(mainStroke, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.1}):Play()
 TweenService:Create(auraScale, TweenInfo.new(0.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
 TweenService:Create(aura, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.5}):Play()
 
@@ -427,18 +440,18 @@ local discordBtn = Instance.new("TextButton", footer); discordBtn.Size = UDim2.f
 crispText(discordBtn)
 discordBtn.MouseButton1Click:Connect(function() pcall(function() copyToClip("not_ashu.") end); sendNotif("TXR System", "Copied to clipboard!", 2); discordBtn.Text = "⚡ Copied Core!"; discordBtn.TextColor3 = Colors.Primary; task.delay(1.5, function() if discordBtn then discordBtn.Text = "Discord: @not_ashu."; discordBtn.TextColor3 = Colors.SubText end end) end)
 
--- ✨ V18.5 DUAL-RING SYNCED REOPEN BUTTON ✨
+-- ✨ V18.6 CRIMSON REACTOR REOPEN BUTTON (ULTIMATE UPGRADE) ✨
 local openBtnContainer = Instance.new("Frame", gui)
-openBtnContainer.Size = UDim2.fromOffset(90, 90) 
+openBtnContainer.Size = UDim2.fromOffset(95, 95) 
 openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
 openBtnContainer.Position = UDim2.fromScale(0.08, 0.5)
 openBtnContainer.BackgroundTransparency = 1
 openBtnContainer.Visible = false
 openBtnContainer.ZIndex = 100
 
--- Main Outer Spinning Ring
+-- Ring 1: Main Outer Spinning Tech Ring
 local outerSpinRing = Instance.new("ImageLabel", openBtnContainer)
-outerSpinRing.Size = UDim2.fromScale(1.4, 1.4)
+outerSpinRing.Size = UDim2.fromScale(1.45, 1.45)
 outerSpinRing.Position = UDim2.fromScale(0.5, 0.5)
 outerSpinRing.AnchorPoint = Vector2.new(0.5, 0.5)
 outerSpinRing.BackgroundTransparency = 1
@@ -447,7 +460,7 @@ outerSpinRing.ImageColor3 = Colors.Primary
 outerSpinRing.ImageTransparency = 0.1
 outerSpinRing.ZIndex = 97
 
--- Inner Counter-Spinning Ring
+-- Ring 2: Inner Counter-Spinning Tech Ring
 local innerSpinRing = Instance.new("ImageLabel", openBtnContainer)
 innerSpinRing.Size = UDim2.fromScale(1.15, 1.15)
 innerSpinRing.Position = UDim2.fromScale(0.5, 0.5)
@@ -455,19 +468,30 @@ innerSpinRing.AnchorPoint = Vector2.new(0.5, 0.5)
 innerSpinRing.BackgroundTransparency = 1
 innerSpinRing.Image = "rbxassetid://13478950159" 
 innerSpinRing.ImageColor3 = Colors.Purple
-innerSpinRing.ImageTransparency = 0.3
+innerSpinRing.ImageTransparency = 0.2
 innerSpinRing.ZIndex = 98
+
+-- Ring 3: Middle Dashed Target Ring
+local dashRing = Instance.new("ImageLabel", openBtnContainer)
+dashRing.Size = UDim2.fromScale(1.28, 1.28)
+dashRing.Position = UDim2.fromScale(0.5, 0.5)
+dashRing.AnchorPoint = Vector2.new(0.5, 0.5)
+dashRing.BackgroundTransparency = 1
+dashRing.Image = "rbxassetid://13686884323" 
+dashRing.ImageColor3 = Colors.Primary
+dashRing.ImageTransparency = 0.4
+dashRing.ZIndex = 98
 
 -- Outer Event Horizon Glow 
 local coreGlow = Instance.new("ImageLabel", openBtnContainer)
-coreGlow.Size = UDim2.fromScale(2.2, 2.2)
+coreGlow.Size = UDim2.fromScale(2.5, 2.5)
 coreGlow.Position = UDim2.fromScale(0.5, 0.5)
 coreGlow.AnchorPoint = Vector2.new(0.5, 0.5)
 coreGlow.BackgroundTransparency = 1
 coreGlow.Image = "rbxassetid://10470601783" 
 coreGlow.ImageColor3 = Colors.Primary
-coreGlow.ImageTransparency = 0.4
-coreGlow.ZIndex = 98
+coreGlow.ImageTransparency = 0.3
+coreGlow.ZIndex = 96
 Instance.new("UICorner", coreGlow).CornerRadius = UDim.new(1, 0) 
 
 local openBtn = Instance.new("TextButton", openBtnContainer)
@@ -475,7 +499,7 @@ openBtn.Size = UDim2.fromScale(0.85, 0.85)
 openBtn.Position = UDim2.fromScale(0.5, 0.5)
 openBtn.AnchorPoint = Vector2.new(0.5, 0.5)
 openBtn.BackgroundColor3 = Color3.fromRGB(12, 16, 24)
-openBtn.BackgroundTransparency = 0.15
+openBtn.BackgroundTransparency = 0.1
 openBtn.Text = "" 
 openBtn.AutoButtonColor = false
 openBtn.ClipsDescendants = false 
@@ -525,20 +549,20 @@ crosshair.AnchorPoint = Vector2.new(0.5, 0.5)
 crosshair.BackgroundTransparency = 1
 crosshair.Image = "rbxassetid://13110903323" 
 crosshair.ImageColor3 = Colors.Primary
-crosshair.ImageTransparency = 0.2
+crosshair.ImageTransparency = 0.1
 crosshair.ZIndex = 104
 
 -- Center Pulsing Nova Core
 local centerCore = Instance.new("Frame", openBtn)
-centerCore.Size = UDim2.fromOffset(10, 10)
+centerCore.Size = UDim2.fromOffset(12, 12)
 centerCore.Position = UDim2.fromScale(0.5, 0.5)
 centerCore.AnchorPoint = Vector2.new(0.5, 0.5)
 centerCore.BackgroundColor3 = Colors.Primary
-centerCore.BackgroundTransparency = 0.1
+centerCore.BackgroundTransparency = 0
 centerCore.ZIndex = 106
 Instance.new("UICorner", centerCore).CornerRadius = UDim.new(1, 0)
 local coreStroke = Instance.new("UIStroke", centerCore)
-coreStroke.Thickness = 2
+coreStroke.Thickness = 3
 coreStroke.Color = Color3.new(1,1,1)
 
 -- 12-ORB INFINITY HELIX
@@ -575,8 +599,8 @@ local function spawnSonar(pulseColor)
     rs.Thickness = 2.5
     rs.Transparency = 0
     
-    local pulseSpeed = isSystemActive and 0.6 or 1.0
-    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(125, 125)}):Play()
+    local pulseSpeed = isSystemActive and 0.5 or 1.0
+    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(135, 135)}):Play()
     TweenService:Create(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
     task.delay(pulseSpeed, function() pcall(function() ring:Destroy() end) end)
 end
@@ -592,16 +616,26 @@ task.spawn(function()
         t = t + dt
         
         if mainFrame.Visible then
-            local rot = (t * 40) % 360 
+            local rot = (t * 50) % 360 
             strokeGrad.Rotation = rot
             bgGradient.Rotation = (rot/2) - 45
             
+            -- UI Scanner Beam Logic
+            local scannerPos = (math.sin(t * 1.5) + 1) / 2
+            scannerBeam.Position = UDim2.fromScale(0, scannerPos - 0.1)
+            scannerBeam.BackgroundColor3 = isSystemActive and Color3.fromRGB(255, 15, 30) or Colors.Primary
+            scannerGrad.Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, isSystemActive and Color3.fromRGB(255, 15, 30) or Colors.Primary),
+                ColorSequenceKeypoint.new(1, isSystemActive and Color3.fromRGB(255, 15, 30) or Colors.Primary)
+            })
+
             local breath = (math.sin(t * 3) + 1) / 2 
             aura.ImageTransparency = 0.45 + (breath * 0.15)
-            mainStroke.Transparency = 0.15 + (breath * 0.2)
+            aura.ImageColor3 = isSystemActive and Color3.fromRGB(255, 0, 0) or Colors.Primary
+            mainStroke.Transparency = 0.1 + (breath * 0.2)
             titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
             
-            scanlines.Position = UDim2.new(0, 0, (t * 0.08) % 1 - 1, 0)
+            scanlines.Position = UDim2.new(0, 0, (t * 0.12) % 1 - 1, 0)
 
             for _, pData in ipairs(dataParticles) do
                 local newY = pData.element.Position.Y.Scale - (pData.speed * dt)
@@ -616,7 +650,8 @@ task.spawn(function()
         end
         
         if openBtnContainer.Visible then
-            local targetSpeed = isSystemActive and 3.5 or 1.2
+            -- Extreme rotation speed when active
+            local targetSpeed = isSystemActive and 4.5 or 1.2
             if orbHovered then targetSpeed = targetSpeed * 1.5 end
             currentSpeedMod = currentSpeedMod + (targetSpeed - currentSpeedMod) * dt * 5
             
@@ -625,23 +660,27 @@ task.spawn(function()
             
             local activeT = t * 3 * currentSpeedMod
             
-            local baseColor1 = isSystemActive and Colors.Danger or Colors.Primary
-            local baseColor2 = isSystemActive and Colors.Warning or Colors.Purple
+            -- THE CRIMSON REACTOR LOGIC (Turns fully red when started)
+            local baseColor1 = isSystemActive and Color3.fromRGB(255, 15, 30) or Colors.Primary
+            local baseColor2 = isSystemActive and Color3.fromRGB(255, 80, 0) or Colors.Purple
             local lerpAlpha = (math.sin(activeT * 0.8) + 1) / 2
             
-            -- Syncing all outer rings to turn red when active
+            -- Sync ALL rings to the exact colors
             outerSpinRing.ImageColor3 = baseColor1
             innerSpinRing.ImageColor3 = baseColor2
+            dashRing.ImageColor3 = baseColor1:Lerp(Color3.new(1,1,1), 0.5)
             
-            outerSpinRing.Rotation = (activeT * 35) % 360
-            innerSpinRing.Rotation = -(activeT * 50) % 360 -- Counter spinning
+            -- Hyper-spinning rings
+            outerSpinRing.Rotation = (activeT * 40) % 360
+            innerSpinRing.Rotation = -(activeT * 55) % 360
+            dashRing.Rotation = (activeT * 20) % 360
             
             coreGlow.ImageColor3 = baseColor1:Lerp(baseColor2, lerpAlpha)
-            coreGlow.ImageTransparency = 0.3 + (math.sin(activeT) * 0.25)
+            coreGlow.ImageTransparency = isSystemActive and 0.1 + (math.sin(activeT) * 0.15) or 0.4 + (math.sin(activeT) * 0.25)
             
             openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
             
-            local gPulse = 40 + (math.sin(activeT * 2) * 3)
+            local gPulse = 42 + (math.sin(activeT * 2) * 3)
             gimbals[1].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 0.8)), gPulse)
             gimbals[1].frame.Rotation = (activeT * 20) % 360
             gimbals[1].stroke.Color = baseColor1
@@ -660,7 +699,7 @@ task.spawn(function()
             
             for i, d in ipairs(diamonds) do
                 local breath = math.sin(activeT * 2 + (i * math.pi/2)) * 4
-                d.frame.Size = UDim2.fromOffset(24 + breath, 24 - breath)
+                d.frame.Size = UDim2.fromOffset(26 + breath, 26 - breath)
                 d.frame.Rotation = (activeT * 40) * (i%2==0 and 1 or -1) + (i * 22.5)
                 d.stroke.Color = (i%2==0) and baseColor1 or baseColor2
             end
@@ -671,7 +710,7 @@ task.spawn(function()
             centerCore.BackgroundColor3 = baseColor1:Lerp(Color3.new(1,1,1), lerpAlpha * 0.5)
             coreStroke.Color = baseColor2
 
-            local rBase = 32 * currentRadiusMod
+            local rBase = 35 * currentRadiusMod
             for i = 1, 12 do
                 local offset = (i - 1) * (math.pi * 2 / 4)
                 local orb = orbs[i]
@@ -725,7 +764,7 @@ task.spawn(function()
                 centerCore.Position = centerCore.Position:Lerp(baseCenterPos, dt * 12)
             end
 
-            local sonarThreshold = isSystemActive and 0.25 or 0.6
+            local sonarThreshold = isSystemActive and 0.15 or 0.6
             sonarTimer = sonarTimer + dt
             if sonarTimer >= sonarThreshold then
                 sonarTimer = 0
