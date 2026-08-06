@@ -3,7 +3,7 @@
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V12.2 PERFECT STICKY ENGINE + DYNAMIC CUSTOM PROPS] *
 -- * [V18.1.1 BUG FIX: PROPS NO LONGER STOP WHEN MOVING/RUNNING] *
--- * [V18.9 BUG-FREE MASTERCLASS: NO SQUARES, PERFECT CORNERS] *
+-- * [V18.10 DOCTOR STRANGE MYSTIC CIRCLE + SLEEK UI OVERHAUL] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -311,80 +311,55 @@ end)
 -- --- GUI CONSTRUCTION ---
 local gui = Instance.new("ScreenGui", targetGuiParent); gui.Name = "OrbitalCyberUI"; gui.ResetOnSpawn = false; _G.OrbitalGUI = gui
 
--- ✨ BUG FIXED: Reverted to a known reliable image to stop massive solid squares
+-- ✨ FIXED MAIN UI AURA: Sleek Dark Black/Purple Drop Shadow, No more neon boxes
 local aura = Instance.new("ImageLabel", gui)
-aura.AnchorPoint = Vector2.new(0.5, 0.5); aura.Position = UDim2.fromScale(0.5, 0.5); aura.Size = UDim2.new(0, 320, 0, 450)
-aura.BackgroundTransparency = 1; aura.Image = "rbxassetid://10470601783"; 
-aura.ImageColor3 = Colors.Primary; aura.ImageTransparency = 1; aura.ZIndex = 1
+aura.AnchorPoint = Vector2.new(0.5, 0.5); aura.Position = UDim2.fromScale(0.5, 0.5); aura.Size = UDim2.new(0, 360, 0, 480)
+aura.BackgroundTransparency = 1; aura.Image = "rbxassetid://1316045217"; 
+aura.ImageColor3 = Color3.new(0, 0, 0); aura.ImageTransparency = 0.6; aura.ZIndex = 1
 local auraScale = Instance.new("UIScale", aura); auraScale.Scale = 0.85
 
--- ✨ THE ROOT CONTAINER (No CanvasGroup bug anymore) ✨
 local mainFrame = Instance.new("Frame", gui); mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.Position = UDim2.fromScale(0.5, 0.5); mainFrame.Size = UDim2.new(0, 280, 0, 410)
-mainFrame.BackgroundTransparency = 1; mainFrame.BorderSizePixel = 0; mainFrame.ClipsDescendants = false; mainFrame.ZIndex = 5 
+mainFrame.BackgroundColor3 = Colors.Background; mainFrame.BackgroundTransparency = 0.1; mainFrame.BorderSizePixel = 0; mainFrame.ClipsDescendants = false; mainFrame.ZIndex = 5 
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14) 
 mainFrame:GetPropertyChangedSignal("Position"):Connect(function() aura.Position = mainFrame.Position end)
 
-local dropShadow = Instance.new("ImageLabel", mainFrame)
-dropShadow.Name = "Shadow"
-dropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
-dropShadow.Position = UDim2.fromScale(0.5, 0.5)
-dropShadow.Size = UDim2.new(1, 60, 1, 60)
-dropShadow.BackgroundTransparency = 1
-dropShadow.Image = "rbxassetid://6015897843"
-dropShadow.ImageColor3 = Color3.new(0, 0, 0)
-dropShadow.ImageTransparency = 0.3
-dropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
-dropShadow.ScaleType = Enum.ScaleType.Slice
-dropShadow.ZIndex = 0
-
--- ✨ REVERTED TO FRAME (Stable on Mobile) ✨
 local innerClipFrame = Instance.new("Frame", mainFrame)
 innerClipFrame.Size = UDim2.fromScale(1, 1)
-innerClipFrame.BackgroundColor3 = Colors.Background
-innerClipFrame.BackgroundTransparency = 0 -- Replaced CanvasGroup transparency with direct rendering
+innerClipFrame.BackgroundTransparency = 1 
 innerClipFrame.BorderSizePixel = 0
 innerClipFrame.ClipsDescendants = true
 innerClipFrame.ZIndex = 5
 Instance.new("UICorner", innerClipFrame).CornerRadius = UDim.new(0, 14)
 
+-- Subtle tech background
 local bgGradient = Instance.new("UIGradient", innerClipFrame)
-bgGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(12, 15, 22)), ColorSequenceKeypoint.new(0.5, Colors.Background), ColorSequenceKeypoint.new(1, Color3.fromRGB(12, 15, 22))})
+bgGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 18, 26)), ColorSequenceKeypoint.new(0.5, Colors.Background), ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 18, 26))})
 bgGradient.Rotation = -45
 
-local techGrid = Instance.new("ImageLabel", innerClipFrame)
-techGrid.Size = UDim2.fromScale(1, 1)
-techGrid.BackgroundTransparency = 1
-techGrid.Image = "rbxassetid://6500357609" 
-techGrid.ImageTransparency = 0.92
-techGrid.ImageColor3 = Colors.Primary
-techGrid.TileSize = UDim2.new(0, 24, 0, 24)
-techGrid.ScaleType = Enum.ScaleType.Tile
-techGrid.ZIndex = 2
-
--- ✨ BUG FIXED: Scanner Beam Masterclass (No sharp squares at corners) ✨
+-- ✨ SLEEK HORIZONTAL SCANNER BEAM (Perfectly Clipped)
 local scannerLayer = Instance.new("Frame", innerClipFrame)
-scannerLayer.Size = UDim2.fromScale(1, 1) -- Covers entire UI precisely
+scannerLayer.Size = UDim2.fromScale(1, 1) 
 scannerLayer.BackgroundTransparency = 0
-scannerLayer.BackgroundColor3 = Color3.new(1, 1, 1) -- Colored by UIGradient
+scannerLayer.BackgroundColor3 = Color3.new(1, 1, 1) 
 scannerLayer.BorderSizePixel = 0
 scannerLayer.ZIndex = 3
-Instance.new("UICorner", scannerLayer).CornerRadius = UDim.new(0, 14) -- Matches perfectly
+Instance.new("UICorner", scannerLayer).CornerRadius = UDim.new(0, 14) 
 
 local scannerGrad = Instance.new("UIGradient", scannerLayer)
 scannerGrad.Rotation = 90
 scannerGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.Primary), ColorSequenceKeypoint.new(1, Colors.Primary)})
--- Transparency sequence hides everything except a thin scanning band
 scannerGrad.Transparency = NumberSequence.new({
     NumberSequenceKeypoint.new(0, 1),
-    NumberSequenceKeypoint.new(0.48, 1),
-    NumberSequenceKeypoint.new(0.5, 0.4), -- The beam
-    NumberSequenceKeypoint.new(0.52, 1),
+    NumberSequenceKeypoint.new(0.49, 1),
+    NumberSequenceKeypoint.new(0.5, 0.3), -- Sleek thin beam
+    NumberSequenceKeypoint.new(0.51, 1),
     NumberSequenceKeypoint.new(1, 1)
 })
 
+-- ✨ SLEEK 1.5PX GLOWING BORDER ✨
 local mainStroke = Instance.new("UIStroke", mainFrame)
-mainStroke.Thickness = 2
+mainStroke.Thickness = 1.5
 mainStroke.Transparency = 1
 mainStroke.Color = Color3.new(1,1,1)
 local strokeGrad = Instance.new("UIGradient", mainStroke)
@@ -412,20 +387,9 @@ for i = 1, 15 do
     table.insert(dataParticles, {element = p, speed = math.random(15, 30) / 100})
 end
 
-local scanlines = Instance.new("ImageLabel", innerClipFrame)
-scanlines.Size = UDim2.new(1, 0, 2, 0) 
-scanlines.Position = UDim2.fromScale(0, -1)
-scanlines.BackgroundTransparency = 1
-scanlines.Image = "rbxassetid://7186136106" 
-scanlines.ImageColor3 = Colors.Primary
-scanlines.ImageTransparency = 0.95
-scanlines.ZIndex = 4 
-scanlines.TileSize = UDim2.new(0, 100, 0, 4)
-
 TweenService:Create(mainScale, TweenInfo.new(0.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
-TweenService:Create(mainStroke, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.1}):Play()
+TweenService:Create(mainStroke, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0}):Play()
 TweenService:Create(auraScale, TweenInfo.new(0.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
-TweenService:Create(aura, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.6}):Play()
 
 -- HEADER
 local header = Instance.new("Frame", innerClipFrame); header.Size = UDim2.new(1, 0, 0, 50); header.BackgroundColor3 = Colors.Background; header.BackgroundTransparency = 1; header.BorderSizePixel = 0; header.ZIndex = 10
@@ -449,109 +413,74 @@ local discordBtn = Instance.new("TextButton", footer); discordBtn.Size = UDim2.f
 crispText(discordBtn)
 discordBtn.MouseButton1Click:Connect(function() pcall(function() copyToClip("not_ashu.") end); sendNotif("TXR System", "Copied to clipboard!", 2); discordBtn.Text = "⚡ Copied Core!"; discordBtn.TextColor3 = Colors.Primary; task.delay(1.5, function() if discordBtn then discordBtn.Text = "Discord: @not_ashu."; discordBtn.TextColor3 = Colors.SubText end end) end)
 
--- ✨ V18.9 FLAWLESS REACTOR REOPEN BUTTON (Bug-Free Pure Strokes) ✨
+-- ✨ V18.10 DOCTOR STRANGE MYSTIC CIRCLE REOPEN BUTTON ✨
 local openBtnContainer = Instance.new("Frame", gui)
-openBtnContainer.Size = UDim2.fromOffset(95, 95) 
+openBtnContainer.Size = UDim2.fromOffset(86, 86) -- Kept compact and neat
 openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
 openBtnContainer.Position = UDim2.fromScale(0.08, 0.5)
 openBtnContainer.BackgroundTransparency = 1
 openBtnContainer.Visible = false
 openBtnContainer.ZIndex = 100
 
--- Outer Radar Frame (Pure solid stroke to avoid UIGradient bugs)
-local outerRadar = Instance.new("Frame", openBtnContainer)
-outerRadar.Size = UDim2.fromScale(1.5, 1.5)
-outerRadar.Position = UDim2.fromScale(0.5, 0.5)
-outerRadar.AnchorPoint = Vector2.new(0.5, 0.5)
-outerRadar.BackgroundTransparency = 1
-outerRadar.ZIndex = 97
-Instance.new("UICorner", outerRadar).CornerRadius = UDim.new(1, 0)
-local outerRadarStroke = Instance.new("UIStroke", outerRadar)
-outerRadarStroke.Thickness = 3
-outerRadarStroke.Color = Colors.Primary 
+-- Binding Outer Ring (Tight and sleek)
+local bindRing = Instance.new("Frame", openBtnContainer)
+bindRing.Size = UDim2.fromScale(1.15, 1.15)
+bindRing.Position = UDim2.fromScale(0.5, 0.5)
+bindRing.AnchorPoint = Vector2.new(0.5, 0.5)
+bindRing.BackgroundTransparency = 1
+bindRing.ZIndex = 98
+Instance.new("UICorner", bindRing).CornerRadius = UDim.new(1, 0)
+local bindStroke = Instance.new("UIStroke", bindRing)
+bindStroke.Thickness = 2
+bindStroke.Color = Colors.Primary
 
--- Inner Radar Frame
-local innerRadar = Instance.new("Frame", openBtnContainer)
-innerRadar.Size = UDim2.fromScale(1.2, 1.2)
-innerRadar.Position = UDim2.fromScale(0.5, 0.5)
-innerRadar.AnchorPoint = Vector2.new(0.5, 0.5)
-innerRadar.BackgroundTransparency = 1
-innerRadar.ZIndex = 98
-Instance.new("UICorner", innerRadar).CornerRadius = UDim.new(1, 0)
-local innerRadarStroke = Instance.new("UIStroke", innerRadar)
-innerRadarStroke.Thickness = 2
-innerRadarStroke.Color = Colors.Purple
+-- ✨ The Mystic Star (3 Overlapping Squares forming a 12-point star)
+local starFrames = {}
+for i = 1, 3 do
+    local sq = Instance.new("Frame", openBtnContainer)
+    sq.Size = UDim2.fromScale(1.0, 1.0)
+    sq.Position = UDim2.fromScale(0.5, 0.5)
+    sq.AnchorPoint = Vector2.new(0.5, 0.5)
+    sq.BackgroundTransparency = 1
+    sq.Rotation = (i - 1) * 30 -- Offset to create star
+    sq.ZIndex = 99
+    
+    local str = Instance.new("UIStroke", sq)
+    str.Thickness = 1.5
+    str.Color = Colors.Purple
+    
+    table.insert(starFrames, {frame = sq, stroke = str, offset = (i - 1) * 30})
+end
 
--- ✨ BUG FIXED: Reverted to stable glow asset
-local coreGlow = Instance.new("ImageLabel", openBtnContainer)
-coreGlow.Size = UDim2.fromScale(2.5, 2.5)
-coreGlow.Position = UDim2.fromScale(0.5, 0.5)
-coreGlow.AnchorPoint = Vector2.new(0.5, 0.5)
-coreGlow.BackgroundTransparency = 1
-coreGlow.Image = "rbxassetid://10470601783" 
-coreGlow.ImageColor3 = Colors.Primary
-coreGlow.ImageTransparency = 0.4
-coreGlow.ZIndex = 96
-
+-- Center Base Button
 local openBtn = Instance.new("TextButton", openBtnContainer)
 openBtn.Size = UDim2.fromScale(0.85, 0.85)
 openBtn.Position = UDim2.fromScale(0.5, 0.5)
 openBtn.AnchorPoint = Vector2.new(0.5, 0.5)
-openBtn.BackgroundColor3 = Color3.fromRGB(12, 16, 24)
+openBtn.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
 openBtn.BackgroundTransparency = 0.1
 openBtn.Text = "" 
 openBtn.AutoButtonColor = false
 openBtn.ClipsDescendants = false 
 openBtn.ZIndex = 101
 Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0)
-
 local openStroke = Instance.new("UIStroke", openBtn)
-openStroke.Thickness = 2.5
+openStroke.Thickness = 2
 openStroke.Color = Colors.Primary
 
--- QUAD GIMBALS
-local gimbals = {}
-for i = 1, 4 do
-    local g = Instance.new("Frame", openBtn)
-    g.AnchorPoint = Vector2.new(0.5, 0.5)
-    g.Position = UDim2.fromScale(0.5, 0.5)
-    g.BackgroundTransparency = 1
-    g.ZIndex = 102
-    Instance.new("UICorner", g).CornerRadius = UDim.new(1, 0)
-    local gs = Instance.new("UIStroke", g)
-    gs.Color = (i%2==0) and Colors.Primary or Colors.Purple
-    gs.Thickness = 1.5
-    table.insert(gimbals, {frame = g, stroke = gs})
-end
+-- Inner Mandala Ring
+local innerMandala = Instance.new("Frame", openBtn)
+innerMandala.Size = UDim2.fromScale(0.65, 0.65)
+innerMandala.Position = UDim2.fromScale(0.5, 0.5)
+innerMandala.AnchorPoint = Vector2.new(0.5, 0.5)
+innerMandala.BackgroundTransparency = 1
+innerMandala.ZIndex = 102
+Instance.new("UICorner", innerMandala).CornerRadius = UDim.new(1, 0)
+local imStroke = Instance.new("UIStroke", innerMandala)
+imStroke.Thickness = 1
+imStroke.Color = Colors.Purple
 
--- 16-Pointed Hyper-Tesseract
-local diamonds = {}
-for i = 1, 4 do
-    local d = Instance.new("Frame", openBtn)
-    d.Size = UDim2.fromOffset(26, 26)
-    d.Position = UDim2.fromScale(0.5, 0.5)
-    d.AnchorPoint = Vector2.new(0.5, 0.5)
-    d.BackgroundColor3 = Colors.Background
-    d.BackgroundTransparency = 0.5
-    d.ZIndex = 103
-    local ds = Instance.new("UIStroke", d)
-    ds.Color = (i%2==0) and Colors.Primary or Colors.Purple
-    ds.Thickness = 1.5
-    table.insert(diamonds, {frame = d, stroke = ds})
-end
-
--- Inner Crosshair
-local crosshair = Instance.new("ImageLabel", openBtn)
-crosshair.Size = UDim2.fromScale(0.65, 0.65)
-crosshair.Position = UDim2.fromScale(0.5, 0.5)
-crosshair.AnchorPoint = Vector2.new(0.5, 0.5)
-crosshair.BackgroundTransparency = 1
-crosshair.Image = "rbxassetid://13110903323" 
-crosshair.ImageColor3 = Colors.Primary
-crosshair.ImageTransparency = 0.1
-crosshair.ZIndex = 104
-
--- Center Pulsing Nova Core
+-- Center Glowing Rune
 local centerCore = Instance.new("Frame", openBtn)
 centerCore.Size = UDim2.fromOffset(12, 12)
 centerCore.Position = UDim2.fromScale(0.5, 0.5)
@@ -561,14 +490,14 @@ centerCore.BackgroundTransparency = 0
 centerCore.ZIndex = 106
 Instance.new("UICorner", centerCore).CornerRadius = UDim.new(1, 0)
 local coreStroke = Instance.new("UIStroke", centerCore)
-coreStroke.Thickness = 3
+coreStroke.Thickness = 2
 coreStroke.Color = Color3.new(1,1,1)
 
--- 12-ORB INFINITY HELIX
+-- Orbiting Magic Orbs
 local orbs = {}
-for i=1, 12 do
+for i=1, 8 do
     local orb = Instance.new("Frame", openBtn)
-    orb.Size = UDim2.fromOffset(5, 5)
+    orb.Size = UDim2.fromOffset(4, 4)
     orb.BackgroundColor3 = Colors.Primary
     orb.ZIndex = 105
     Instance.new("UICorner", orb).CornerRadius = UDim.new(1, 0)
@@ -587,19 +516,19 @@ openBtn.MouseLeave:Connect(function() orbHovered = false end)
 local function spawnSonar(pulseColor)
     if not openBtnContainer.Visible then return end
     local ring = Instance.new("Frame", openBtn)
-    ring.Size = UDim2.fromOffset(12, 12)
+    ring.Size = UDim2.fromOffset(20, 20)
     ring.Position = UDim2.fromScale(0.5, 0.5)
     ring.AnchorPoint = Vector2.new(0.5, 0.5)
     ring.BackgroundTransparency = 1
-    ring.ZIndex = 101
+    ring.ZIndex = 95
     Instance.new("UICorner", ring).CornerRadius = UDim.new(1, 0)
     local rs = Instance.new("UIStroke", ring)
     rs.Color = pulseColor
-    rs.Thickness = 2.5
+    rs.Thickness = 2
     rs.Transparency = 0
     
-    local pulseSpeed = isSystemActive and 0.5 or 1.0
-    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(135, 135)}):Play()
+    local pulseSpeed = isSystemActive and 0.5 or 0.8
+    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(110, 110)}):Play()
     TweenService:Create(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
     task.delay(pulseSpeed, function() pcall(function() ring:Destroy() end) end)
 end
@@ -608,34 +537,33 @@ task.spawn(function()
     local t = 0
     local sonarTimer = 0
     local currentSpeedMod = 1
-    local currentRadiusMod = 1
     
     RunService.RenderStepped:Connect(function(dt)
         if not gui.Parent then return end
         t = t + dt
         
-        -- Master Color Sync Logic for EVERY Ring & Border
-        local cDanger = Color3.fromRGB(255, 10, 20) 
-        local cDangerSecondary = Color3.fromRGB(255, 60, 0) 
-        local stateColor1 = isSystemActive and cDanger or Colors.Primary
-        local stateColor2 = isSystemActive and cDangerSecondary or Colors.Purple
+        -- ✨ DOCTOR STRANGE COLOR THEME ✨
+        local dsColor1 = Color3.fromRGB(255, 60, 0)  -- Fiery Spark Orange
+        local dsColor2 = Color3.fromRGB(220, 10, 20) -- Deep Crimson Red
+        
+        local stateColor1 = isSystemActive and dsColor1 or Colors.Primary
+        local stateColor2 = isSystemActive and dsColor2 or Colors.Purple
         
         if mainFrame.Visible then
             local rot = (t * 50) % 360 
             bgGradient.Rotation = (rot/2) - 45
             
-            -- ✨ PERFECT SCANNER BEAM MOVEMENT (No square clipping possible)
+            -- Seamless Scanner Beam Offset
             local scannerOffset = math.sin(t * 1.5) * 1.2
-            scanGrad.Offset = Vector2.new(0, scannerOffset)
+            scannerGrad.Offset = Vector2.new(0, scannerOffset)
             
             scannerGrad.Color = ColorSequence.new({
                 ColorSequenceKeypoint.new(0, stateColor1),
                 ColorSequenceKeypoint.new(1, stateColor1)
             })
 
+            -- No aura color jumping, pure sleek shadow
             local breath = (math.sin(t * 3) + 1) / 2 
-            aura.ImageTransparency = 0.45 + (breath * 0.15)
-            aura.ImageColor3 = stateColor1
             mainStroke.Transparency = 0.1 + (breath * 0.2)
             
             strokeGrad.Color = ColorSequence.new({
@@ -660,84 +588,41 @@ task.spawn(function()
         end
         
         if openBtnContainer.Visible then
-            local targetSpeed = isSystemActive and 4.5 or 1.2
+            local targetSpeed = isSystemActive and 3.5 or 1.2
             if orbHovered then targetSpeed = targetSpeed * 1.5 end
             currentSpeedMod = currentSpeedMod + (targetSpeed - currentSpeedMod) * dt * 5
-            
-            local targetRadius = orbHovered and 0.65 or 1
-            currentRadiusMod = currentRadiusMod + (targetRadius - currentRadiusMod) * dt * 8
             
             local activeT = t * 3 * currentSpeedMod
             local lerpAlpha = (math.sin(activeT * 0.8) + 1) / 2
             
-            -- Flawless Pulsing Radar Rings (No Gradients to bug out)
-            outerRadarStroke.Color = stateColor1
-            innerRadarStroke.Color = stateColor2
-            
-            outerRadarStroke.Transparency = 0.3 + (math.sin(activeT * 2) * 0.4)
-            innerRadarStroke.Transparency = 0.3 + (math.cos(activeT * 2.5) * 0.4)
-            
-            coreGlow.ImageColor3 = stateColor1:Lerp(stateColor2, lerpAlpha)
-            coreGlow.ImageTransparency = isSystemActive and 0.1 + (math.sin(activeT) * 0.15) or 0.4 + (math.sin(activeT) * 0.25)
-            
+            -- Doctor Strange Mystic Circle Logic
+            bindStroke.Color = stateColor1
             openStroke.Color = stateColor1:Lerp(stateColor2, lerpAlpha)
+            imStroke.Color = stateColor2
             
-            local gPulse = 42 + (math.sin(activeT * 2) * 3)
-            gimbals[1].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 0.8)), gPulse)
-            gimbals[1].frame.Rotation = (activeT * 20) % 360
-            gimbals[1].stroke.Color = stateColor1
-            
-            gimbals[2].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 0.9)))
-            gimbals[2].frame.Rotation = -(activeT * 25) % 360
-            gimbals[2].stroke.Color = stateColor2
-            
-            gimbals[3].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 1.1)), gPulse)
-            gimbals[3].frame.Rotation = 45 + (activeT * 15) % 360
-            gimbals[3].stroke.Color = stateColor1:Lerp(Color3.new(1,1,1), 0.5)
-            
-            gimbals[4].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 1.2)))
-            gimbals[4].frame.Rotation = -45 - (activeT * 15) % 360
-            gimbals[4].stroke.Color = stateColor2:Lerp(Color3.new(1,1,1), 0.5)
-            
-            for i, d in ipairs(diamonds) do
-                local breath = math.sin(activeT * 2 + (i * math.pi/2)) * 4
-                d.frame.Size = UDim2.fromOffset(26 + breath, 26 - breath)
-                d.frame.Rotation = (activeT * 40) * (i%2==0 and 1 or -1) + (i * 22.5)
-                d.stroke.Color = (i%2==0) and stateColor1 or stateColor2
+            -- Rotate the 12-point star frames smoothly
+            for _, sData in ipairs(starFrames) do
+                sData.frame.Rotation = (activeT * 25) + sData.offset
+                -- Pulse stroke colors individually to create a shimmering magic effect
+                local pulseColor = stateColor1:Lerp(stateColor2, math.abs(math.sin((activeT * 1.5) + math.rad(sData.offset))))
+                sData.stroke.Color = pulseColor
             end
-            
-            crosshair.Rotation = -(activeT * 60) % 360
-            crosshair.ImageColor3 = stateColor1
             
             centerCore.BackgroundColor3 = stateColor1:Lerp(Color3.new(1,1,1), lerpAlpha * 0.5)
             coreStroke.Color = stateColor2
 
-            local rBase = 35 * currentRadiusMod
-            for i = 1, 12 do
-                local offset = (i - 1) * (math.pi * 2 / 4)
+            -- Orbs orbiting the magic circle tightly
+            local rBase = 28
+            for i = 1, 8 do
+                local offset = (i - 1) * (math.pi * 2 / 8)
+                local a = (i % 2 == 0) and (activeT * 1.5 + offset) or (-activeT * 1.5 + offset)
+                
+                local depth = math.sin(a)
                 local orb = orbs[i]
-                if i <= 4 then
-                    local a = activeT * 1.5 + offset
-                    local depth = math.sin(a)
-                    orb.Position = UDim2.new(0.5, math.cos(a) * rBase, 0.5, depth * (rBase * 0.2))
-                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
-                    orb.ZIndex = depth > 0 and 106 or 102
-                    orb.BackgroundColor3 = stateColor1
-                elseif i <= 8 then
-                    local a = -activeT * 1.8 + offset
-                    local depth = math.cos(a)
-                    orb.Position = UDim2.new(0.5, math.cos(a) * (rBase * 0.2), 0.5, math.sin(a) * rBase)
-                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
-                    orb.ZIndex = depth > 0 and 106 or 102
-                    orb.BackgroundColor3 = stateColor2
-                else
-                    local a = activeT * 2.5 + offset
-                    local depth = math.sin(a + math.pi/4)
-                    orb.Position = UDim2.new(0.5, math.sin(a) * rBase, 0.5, math.sin(a * 2) * (rBase * 0.5))
-                    orb.Size = UDim2.fromOffset(4 + (depth * 2), 4 + (depth * 2))
-                    orb.ZIndex = 107 
-                    orb.BackgroundColor3 = Color3.new(1,1,1)
-                end
+                
+                orb.Position = UDim2.new(0.5, math.cos(a) * rBase, 0.5, math.sin(a) * rBase)
+                orb.BackgroundColor3 = (i % 2 == 0) and stateColor1 or stateColor2
+                orb.Size = UDim2.fromOffset(3.5 + (depth * 1.5), 3.5 + (depth * 1.5))
             end
 
             local mouseLoc = UserInputService:GetMouseLocation()
@@ -755,18 +640,14 @@ task.spawn(function()
 
                 openBtn.Size = openBtn.Size:Lerp(UDim2.fromScale(stretchX, stretchY), dt * 12)
                 openBtn.Position = openBtn.Position:Lerp(UDim2.new(0.5, offsetX, 0.5, offsetY), dt * 10)
-                
-                crosshair.Position = crosshair.Position:Lerp(UDim2.new(0.5, offsetX * 0.7, 0.5, offsetY * 0.7), dt * 12)
                 centerCore.Position = centerCore.Position:Lerp(UDim2.new(0.5, offsetX * 1.2, 0.5, offsetY * 1.2), dt * 15)
             else
                 openBtn.Size = openBtn.Size:Lerp(baseOrbScale, dt * 12)
                 openBtn.Position = openBtn.Position:Lerp(baseCenterPos, dt * 12)
-                
-                crosshair.Position = crosshair.Position:Lerp(baseCenterPos, dt * 12)
                 centerCore.Position = centerCore.Position:Lerp(baseCenterPos, dt * 12)
             end
 
-            local sonarThreshold = isSystemActive and 0.15 or 0.6
+            local sonarThreshold = isSystemActive and 0.25 or 0.7
             sonarTimer = sonarTimer + dt
             if sonarTimer >= sonarThreshold then
                 sonarTimer = 0
@@ -855,7 +736,7 @@ openBtn.MouseButton1Click:Connect(function()
     if dragThresholdMet then return end 
     TweenService:Create(openBtnScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play(); task.wait(0.25); openBtnContainer.Visible = false; mainFrame.Visible = true; aura.Visible = true; mainScale.Scale = 0.8; auraScale.Scale = 0.8; 
     TweenService:Create(mainScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play(); TweenService:Create(auraScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
-    TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play(); TweenService:Create(mainStroke, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 0.1}):Play(); TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.4}):Play()
+    TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play(); TweenService:Create(mainStroke, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 0}):Play(); TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.6}):Play()
 end)
 
 -- MAIN LIST
