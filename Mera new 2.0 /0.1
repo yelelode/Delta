@@ -3,6 +3,7 @@
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V12.2 PERFECT STICKY ENGINE + DYNAMIC CUSTOM PROPS] *
 -- * [V18.1.1 BUG FIX: PROPS NO LONGER STOP WHEN MOVING/RUNNING] *
+-- * [V18.2 UI POLISH & ANTI-BANANA (KELA) SHIELD INTEGRATED] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -318,11 +319,32 @@ local auraScale = Instance.new("UIScale", aura); auraScale.Scale = 0.85
 
 local mainFrame = Instance.new("Frame", gui); mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.Position = UDim2.fromScale(0.5, 0.5); mainFrame.Size = UDim2.new(0, 280, 0, 410)
-mainFrame.BackgroundColor3 = Colors.Background; mainFrame.BackgroundTransparency = 1; mainFrame.BorderSizePixel = 0; mainFrame.ClipsDescendants = true; mainFrame.ZIndex = 5
+mainFrame.BackgroundColor3 = Colors.Background; mainFrame.BackgroundTransparency = 1; mainFrame.BorderSizePixel = 0; mainFrame.ClipsDescendants = false; mainFrame.ZIndex = 5 -- ClipsDescendants false for drop shadow
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14) 
 mainFrame:GetPropertyChangedSignal("Position"):Connect(function() aura.Position = mainFrame.Position end)
 
-local bgGradient = Instance.new("UIGradient", mainFrame)
+-- ✨ PREMIUM UI DROP SHADOW POLISH ✨
+local dropShadow = Instance.new("ImageLabel", mainFrame)
+dropShadow.Name = "Shadow"
+dropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+dropShadow.Position = UDim2.fromScale(0.5, 0.5)
+dropShadow.Size = UDim2.new(1, 40, 1, 40)
+dropShadow.BackgroundTransparency = 1
+dropShadow.Image = "rbxassetid://6015897843"
+dropShadow.ImageColor3 = Color3.new(0, 0, 0)
+dropShadow.ImageTransparency = 0.4
+dropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
+dropShadow.ScaleType = Enum.ScaleType.Slice
+dropShadow.ZIndex = 0
+
+local innerClipFrame = Instance.new("Frame", mainFrame)
+innerClipFrame.Size = UDim2.new(1, 0, 1, 0)
+innerClipFrame.BackgroundTransparency = 1
+innerClipFrame.ClipsDescendants = true
+innerClipFrame.ZIndex = 5
+Instance.new("UICorner", innerClipFrame).CornerRadius = UDim.new(0, 14)
+
+local bgGradient = Instance.new("UIGradient", innerClipFrame)
 bgGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(16, 20, 30)), ColorSequenceKeypoint.new(0.5, Colors.Background), ColorSequenceKeypoint.new(1, Color3.fromRGB(16, 20, 30))})
 bgGradient.Rotation = -45
 
@@ -331,7 +353,7 @@ local strokeGrad = Instance.new("UIGradient", mainStroke); strokeGrad.Color = Co
 
 local mainScale = Instance.new("UIScale", mainFrame); mainScale.Scale = 0.85; 
 
-local particleContainer = Instance.new("Frame", mainFrame)
+local particleContainer = Instance.new("Frame", innerClipFrame)
 particleContainer.Size = UDim2.fromScale(1, 1)
 particleContainer.BackgroundTransparency = 1
 particleContainer.ZIndex = 3
@@ -347,7 +369,7 @@ for i = 1, 15 do
     table.insert(dataParticles, {element = p, speed = math.random(15, 30) / 100})
 end
 
-local scanlines = Instance.new("ImageLabel", mainFrame)
+local scanlines = Instance.new("ImageLabel", innerClipFrame)
 scanlines.Size = UDim2.new(1, 0, 2, 0) 
 scanlines.Position = UDim2.fromScale(0, -1)
 scanlines.BackgroundTransparency = 1
@@ -364,7 +386,7 @@ TweenService:Create(auraScale, TweenInfo.new(0.85, Enum.EasingStyle.Back, Enum.E
 TweenService:Create(aura, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.5}):Play()
 
 -- HEADER
-local header = Instance.new("Frame", mainFrame); header.Size = UDim2.new(1, 0, 0, 50); header.BackgroundColor3 = Colors.Background; header.BackgroundTransparency = 1; header.BorderSizePixel = 0; header.ZIndex = 10
+local header = Instance.new("Frame", innerClipFrame); header.Size = UDim2.new(1, 0, 0, 50); header.BackgroundColor3 = Colors.Background; header.BackgroundTransparency = 1; header.BorderSizePixel = 0; header.ZIndex = 10
 local headerTitle = Instance.new("TextLabel", header); headerTitle.Size = UDim2.new(1, -90, 1, 0); headerTitle.Position = UDim2.fromOffset(16, 0); headerTitle.BackgroundTransparency = 1; headerTitle.Text = "TXR ASHU"; headerTitle.TextColor3 = Color3.new(1,1,1); headerTitle.Font = Enum.Font.GothamBlack; headerTitle.TextSize = 16; headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.ZIndex = 11
 local titleGrad = Instance.new("UIGradient", headerTitle); titleGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.Primary), ColorSequenceKeypoint.new(1, Colors.Purple)})
 crispText(headerTitle)
@@ -380,12 +402,12 @@ local minimizeBtn = Instance.new("TextButton", header); minimizeBtn.Size = UDim2
 local closeBtn = Instance.new("TextButton", header); closeBtn.Size = UDim2.fromOffset(28, 28); closeBtn.Position = UDim2.new(1, -36, 0.5, -14); closeBtn.BackgroundColor3 = Colors.Surface; closeBtn.BackgroundTransparency = 0.5; closeBtn.Text = "×"; closeBtn.TextColor3 = Colors.Danger; closeBtn.Font = Enum.Font.GothamBold; closeBtn.TextSize = 16; closeBtn.AutoButtonColor = false; closeBtn.ZIndex = 15; Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8); applySmartHover(closeBtn, nil)
 
 -- FOOTER
-local footer = Instance.new("Frame", mainFrame); footer.Size = UDim2.new(1, 0, 0, 32); footer.Position = UDim2.new(0, 0, 1, -32); footer.BackgroundColor3 = Colors.Background; footer.BackgroundTransparency = 1; footer.BorderSizePixel = 0; footer.ZIndex = 15
+local footer = Instance.new("Frame", innerClipFrame); footer.Size = UDim2.new(1, 0, 0, 32); footer.Position = UDim2.new(0, 0, 1, -32); footer.BackgroundColor3 = Colors.Background; footer.BackgroundTransparency = 1; footer.BorderSizePixel = 0; footer.ZIndex = 15
 local discordBtn = Instance.new("TextButton", footer); discordBtn.Size = UDim2.fromScale(1, 1); discordBtn.BackgroundTransparency = 1; discordBtn.Text = "Discord: @not_ashu."; discordBtn.TextColor3 = Colors.SubText; discordBtn.Font = Enum.Font.GothamMedium; discordBtn.TextSize = 10; discordBtn.AutoButtonColor = false; discordBtn.ZIndex = 16
 crispText(discordBtn)
 discordBtn.MouseButton1Click:Connect(function() pcall(function() copyToClip("not_ashu.") end); sendNotif("TXR System", "Copied to clipboard!", 2); discordBtn.Text = "⚡ Copied Core!"; discordBtn.TextColor3 = Colors.Primary; task.delay(1.5, function() if discordBtn then discordBtn.Text = "Discord: @not_ashu."; discordBtn.TextColor3 = Colors.SubText end end) end)
 
--- ✨ V18.0 GALACTIC QUASAR CORE ✨
+-- ✨ V18.2 GALACTIC QUASAR CORE (POLISHED REOPEN BUTTON) ✨
 local openBtnContainer = Instance.new("Frame", gui)
 openBtnContainer.Size = UDim2.fromOffset(86, 86) 
 openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -394,27 +416,27 @@ openBtnContainer.BackgroundTransparency = 1
 openBtnContainer.Visible = false
 openBtnContainer.ZIndex = 100
 
--- Outer Event Horizon Glow
+-- Outer Event Horizon Glow (Polished Size & Transparency)
 local coreGlow = Instance.new("ImageLabel", openBtnContainer)
-coreGlow.Size = UDim2.fromScale(1.8, 1.8)
+coreGlow.Size = UDim2.fromScale(2.1, 2.1)
 coreGlow.Position = UDim2.fromScale(0.5, 0.5)
 coreGlow.AnchorPoint = Vector2.new(0.5, 0.5)
 coreGlow.BackgroundTransparency = 1
 coreGlow.Image = "rbxassetid://10470601783" 
 coreGlow.ImageColor3 = Colors.Primary
-coreGlow.ImageTransparency = 0.6
+coreGlow.ImageTransparency = 0.4
 coreGlow.ZIndex = 98
 Instance.new("UICorner", coreGlow).CornerRadius = UDim.new(1, 0) 
 
 -- Inner Singularity Glow (Intense)
 local eventGlow = Instance.new("ImageLabel", openBtnContainer)
-eventGlow.Size = UDim2.fromScale(1.2, 1.2)
+eventGlow.Size = UDim2.fromScale(1.4, 1.4)
 eventGlow.Position = UDim2.fromScale(0.5, 0.5)
 eventGlow.AnchorPoint = Vector2.new(0.5, 0.5)
 eventGlow.BackgroundTransparency = 1
 eventGlow.Image = "rbxassetid://10470601783" 
 eventGlow.ImageColor3 = Colors.Purple
-eventGlow.ImageTransparency = 0.4
+eventGlow.ImageTransparency = 0.2
 eventGlow.ZIndex = 98
 Instance.new("UICorner", eventGlow).CornerRadius = UDim.new(1, 0) 
 
@@ -451,7 +473,7 @@ goGrad.Color = ColorSequence.new({
 })
 
 local openStroke = Instance.new("UIStroke", openBtn)
-openStroke.Thickness = 1.5
+openStroke.Thickness = 2
 openStroke.Color = Colors.Primary
 
 -- QUAD GIMBALS
@@ -465,7 +487,7 @@ for i = 1, 4 do
     Instance.new("UICorner", g).CornerRadius = UDim.new(1, 0)
     local gs = Instance.new("UIStroke", g)
     gs.Color = (i%2==0) and Colors.Primary or Colors.Purple
-    gs.Thickness = 1.2
+    gs.Thickness = 1.5
     table.insert(gimbals, {frame = g, stroke = gs})
 end
 
@@ -543,8 +565,8 @@ local function spawnSonar(pulseColor)
     rs.Thickness = 2
     rs.Transparency = 0
     
-    local pulseSpeed = isSystemActive and 0.8 or 1.2
-    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(105, 105)}):Play()
+    local pulseSpeed = isSystemActive and 0.6 or 1.0
+    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(115, 115)}):Play()
     TweenService:Create(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
     task.delay(pulseSpeed, function() pcall(function() ring:Destroy() end) end)
 end
@@ -584,11 +606,11 @@ task.spawn(function()
         end
         
         if openBtnContainer.Visible then
-            local targetSpeed = isSystemActive and 3 or 1
+            local targetSpeed = isSystemActive and 3.5 or 1.2 -- Snappier
             if orbHovered then targetSpeed = targetSpeed * 1.5 end
             currentSpeedMod = currentSpeedMod + (targetSpeed - currentSpeedMod) * dt * 5
             
-            local targetRadius = orbHovered and 0.6 or 1
+            local targetRadius = orbHovered and 0.65 or 1
             currentRadiusMod = currentRadiusMod + (targetRadius - currentRadiusMod) * dt * 8
             
             local activeT = t * 3 * currentSpeedMod
@@ -598,7 +620,7 @@ task.spawn(function()
             local lerpAlpha = (math.sin(activeT * 0.8) + 1) / 2
             
             coreGlow.ImageColor3 = baseColor1:Lerp(baseColor2, lerpAlpha)
-            coreGlow.ImageTransparency = 0.4 + (math.sin(activeT) * 0.25)
+            coreGlow.ImageTransparency = 0.3 + (math.sin(activeT) * 0.3) -- More pronounced pulsing
             eventGlow.ImageColor3 = baseColor2:Lerp(Color3.new(1,1,1), lerpAlpha)
             
             openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
@@ -692,7 +714,7 @@ task.spawn(function()
                 eventGlow.ImageTransparency = 0.3 + (math.cos(activeT * 2) * 0.3)
             end
 
-            local sonarThreshold = isSystemActive and 0.3 or 0.8
+            local sonarThreshold = isSystemActive and 0.25 or 0.6
             sonarTimer = sonarTimer + dt
             if sonarTimer >= sonarThreshold then
                 sonarTimer = 0
@@ -783,7 +805,7 @@ openBtn.MouseButton1Click:Connect(function()
 end)
 
 -- MAIN LIST
-local mainList = Instance.new("ScrollingFrame", mainFrame); mainList.Size = UDim2.new(1, -24, 1, -88); mainList.Position = UDim2.fromOffset(12, 56); mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 0; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ZIndex = 6
+local mainList = Instance.new("ScrollingFrame", innerClipFrame); mainList.Size = UDim2.new(1, -24, 1, -88); mainList.Position = UDim2.fromOffset(12, 56); mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 0; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ZIndex = 6
 local listLayout = Instance.new("UIListLayout", mainList); listLayout.Padding = UDim.new(0, 8); listLayout.SortOrder = Enum.SortOrder.LayoutOrder; listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 local mainPadding = Instance.new("UIPadding", mainList); mainPadding.PaddingLeft = UDim.new(0, 10); mainPadding.PaddingRight = UDim.new(0, 10); mainPadding.PaddingTop = UDim.new(0, 2); mainPadding.PaddingBottom = UDim.new(0, 2)
 listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() mainList.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10) end)
@@ -791,7 +813,7 @@ local layoutIdx = 1; local function getOrder() layoutIdx = layoutIdx + 1; return
 
 -- MENUS 
 local function createMenu(titleStr)
-    local menu = Instance.new("Frame", mainFrame); menu.Size = UDim2.fromScale(1, 1); menu.Position = UDim2.fromScale(1.2, 0); menu.BackgroundColor3 = Colors.Background; menu.BackgroundTransparency = 0.1; menu.ZIndex = 20; Instance.new("UICorner", menu).CornerRadius = UDim.new(0, 14)
+    local menu = Instance.new("Frame", innerClipFrame); menu.Size = UDim2.fromScale(1, 1); menu.Position = UDim2.fromScale(1.2, 0); menu.BackgroundColor3 = Colors.Background; menu.BackgroundTransparency = 0.1; menu.ZIndex = 20; Instance.new("UICorner", menu).CornerRadius = UDim.new(0, 14)
     local top = Instance.new("Frame", menu); top.Size = UDim2.new(1, 0, 0, 50); top.BackgroundColor3 = Colors.Background; top.BackgroundTransparency = 1; top.ZIndex = 21
     local menuTitle = Instance.new("TextLabel", top); menuTitle.Size = UDim2.new(1, -60, 1, 0); menuTitle.Position = UDim2.fromOffset(16, 0); menuTitle.BackgroundTransparency = 1; menuTitle.Text = titleStr; menuTitle.TextColor3 = Colors.Text; menuTitle.Font = Enum.Font.GothamBlack; menuTitle.TextSize = 14; menuTitle.TextXAlignment = Enum.TextXAlignment.Left; menuTitle.ZIndex = 22; Instance.new("UIGradient", menuTitle).Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.Primary), ColorSequenceKeypoint.new(1, Colors.Purple)})
     crispText(menuTitle)
@@ -988,7 +1010,7 @@ shieldBtn.MouseButton1Click:Connect(function()
     if isGodShieldEnabled then 
         TweenService:Create(shieldBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
         if accent then TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
-        sendNotif("🛡️ SECURITY", "God Shield Activated: Full Physics Immunity.", 2)
+        sendNotif("🛡️ SECURITY", "God Shield Activated: Full Physics & Anti-Kela Immunity.", 2)
     else 
         TweenService:Create(shieldBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then TweenService:Create(accent, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 0, 0, 0)}):Play() end 
@@ -1096,7 +1118,7 @@ local function dispatchRemote(remote, targetCFrame)
     task.spawn(function() pcall(function() remote:InvokeServer(targetCFrame) end) end)
 end
 
--- 🛡️ GOD SHIELD (PRE-PHYSICS ENGINE) 🛡️
+-- ✨ 🛡️ GOD SHIELD (PRE-PHYSICS ENGINE & ANTI-KELA) 🛡️ ✨
 RunService.Stepped:Connect(function()
     if isGodShieldEnabled and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
         local char = lp.Character
@@ -1104,7 +1126,10 @@ RunService.Stepped:Connect(function()
         local root = char.HumanoidRootPart
         
         if hum then
-            hum:SetStateEnabled(Enum.HumanoidStateType.Seated, false) 
+            hum:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+            hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false) -- 🍌 ANTI-BANANA (KELA)
+            hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)     -- 🍌 ANTI-TRIP
+            hum.PlatformStand = false
             if hum.Sit then
                 hum.Sit = false
                 hum.Jump = true
@@ -1122,6 +1147,12 @@ RunService.Stepped:Connect(function()
             for _, part in ipairs(workspace:GetPartBoundsInRadius(root.Position, 15)) do
                 if part:IsA("BasePart") and not part:IsDescendantOf(char) and not part.Anchored then
                     pcall(function() part.CanCollide = false end)
+                    
+                    -- 🍌 DESTROY BANANAS/TRIP PARTS IN RADIUS
+                    local pName = string.lower(part.Name)
+                    if string.find(pName, "banana") or string.find(pName, "peel") then
+                        pcall(function() part:Destroy() end)
+                    end
                 end
             end
             for _, plr in ipairs(Players:GetPlayers()) do
