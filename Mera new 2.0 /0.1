@@ -3,7 +3,7 @@
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V12.2 PERFECT STICKY ENGINE + DYNAMIC CUSTOM PROPS] *
 -- * [V18.1.1 BUG FIX: PROPS NO LONGER STOP WHEN MOVING/RUNNING] *
--- * [V18.4 SLEEK PREMIUM UI + NUCLEAR ANTI-KELA SHIELD] *
+-- * [V18.5 ULTIMATE TOUCH-WIPE ANTI-KELA + DUAL-RING UI UPGRADE] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -348,7 +348,18 @@ local bgGradient = Instance.new("UIGradient", innerClipFrame)
 bgGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(16, 20, 30)), ColorSequenceKeypoint.new(0.5, Colors.Background), ColorSequenceKeypoint.new(1, Color3.fromRGB(16, 20, 30))})
 bgGradient.Rotation = -45
 
--- ✨ CLEAN CYAN/PURPLE BORDER GLOW (Removed tacky RGB) ✨
+-- ✨ HIGH-TECH GRID BACKGROUND OVERLAY ✨
+local techGrid = Instance.new("ImageLabel", innerClipFrame)
+techGrid.Size = UDim2.fromScale(1, 1)
+techGrid.BackgroundTransparency = 1
+techGrid.Image = "rbxassetid://6500357609" 
+techGrid.ImageTransparency = 0.92
+techGrid.ImageColor3 = Colors.Primary
+techGrid.TileSize = UDim2.new(0, 24, 0, 24)
+techGrid.ScaleType = Enum.ScaleType.Tile
+techGrid.ZIndex = 2
+
+-- ✨ CLEAN CYAN/PURPLE BORDER GLOW ✨
 local mainStroke = Instance.new("UIStroke", mainFrame)
 mainStroke.Thickness = 1.5 
 mainStroke.Transparency = 1
@@ -416,44 +427,54 @@ local discordBtn = Instance.new("TextButton", footer); discordBtn.Size = UDim2.f
 crispText(discordBtn)
 discordBtn.MouseButton1Click:Connect(function() pcall(function() copyToClip("not_ashu.") end); sendNotif("TXR System", "Copied to clipboard!", 2); discordBtn.Text = "⚡ Copied Core!"; discordBtn.TextColor3 = Colors.Primary; task.delay(1.5, function() if discordBtn then discordBtn.Text = "Discord: @not_ashu."; discordBtn.TextColor3 = Colors.SubText end end) end)
 
--- ✨ V18.4 CLEAN PREMIUM REOPEN BUTTON (No RGB Vomit, Sleek Cyan & Purple) ✨
+-- ✨ V18.5 DUAL-RING SYNCED REOPEN BUTTON ✨
 local openBtnContainer = Instance.new("Frame", gui)
-openBtnContainer.Size = UDim2.fromOffset(86, 86) 
+openBtnContainer.Size = UDim2.fromOffset(90, 90) 
 openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
 openBtnContainer.Position = UDim2.fromScale(0.08, 0.5)
 openBtnContainer.BackgroundTransparency = 1
 openBtnContainer.Visible = false
 openBtnContainer.ZIndex = 100
 
--- Outer Event Horizon Glow (Cleaned up)
+-- Main Outer Spinning Ring
+local outerSpinRing = Instance.new("ImageLabel", openBtnContainer)
+outerSpinRing.Size = UDim2.fromScale(1.4, 1.4)
+outerSpinRing.Position = UDim2.fromScale(0.5, 0.5)
+outerSpinRing.AnchorPoint = Vector2.new(0.5, 0.5)
+outerSpinRing.BackgroundTransparency = 1
+outerSpinRing.Image = "rbxassetid://13478950159" 
+outerSpinRing.ImageColor3 = Colors.Primary
+outerSpinRing.ImageTransparency = 0.1
+outerSpinRing.ZIndex = 97
+
+-- Inner Counter-Spinning Ring
+local innerSpinRing = Instance.new("ImageLabel", openBtnContainer)
+innerSpinRing.Size = UDim2.fromScale(1.15, 1.15)
+innerSpinRing.Position = UDim2.fromScale(0.5, 0.5)
+innerSpinRing.AnchorPoint = Vector2.new(0.5, 0.5)
+innerSpinRing.BackgroundTransparency = 1
+innerSpinRing.Image = "rbxassetid://13478950159" 
+innerSpinRing.ImageColor3 = Colors.Purple
+innerSpinRing.ImageTransparency = 0.3
+innerSpinRing.ZIndex = 98
+
+-- Outer Event Horizon Glow 
 local coreGlow = Instance.new("ImageLabel", openBtnContainer)
-coreGlow.Size = UDim2.fromScale(1.8, 1.8)
+coreGlow.Size = UDim2.fromScale(2.2, 2.2)
 coreGlow.Position = UDim2.fromScale(0.5, 0.5)
 coreGlow.AnchorPoint = Vector2.new(0.5, 0.5)
 coreGlow.BackgroundTransparency = 1
 coreGlow.Image = "rbxassetid://10470601783" 
 coreGlow.ImageColor3 = Colors.Primary
-coreGlow.ImageTransparency = 0.5
+coreGlow.ImageTransparency = 0.4
 coreGlow.ZIndex = 98
 Instance.new("UICorner", coreGlow).CornerRadius = UDim.new(1, 0) 
-
--- Inner Singularity Glow (Intense Purple)
-local eventGlow = Instance.new("ImageLabel", openBtnContainer)
-eventGlow.Size = UDim2.fromScale(1.2, 1.2)
-eventGlow.Position = UDim2.fromScale(0.5, 0.5)
-eventGlow.AnchorPoint = Vector2.new(0.5, 0.5)
-eventGlow.BackgroundTransparency = 1
-eventGlow.Image = "rbxassetid://10470601783" 
-eventGlow.ImageColor3 = Colors.Purple
-eventGlow.ImageTransparency = 0.3
-eventGlow.ZIndex = 98
-Instance.new("UICorner", eventGlow).CornerRadius = UDim.new(1, 0) 
 
 local openBtn = Instance.new("TextButton", openBtnContainer)
 openBtn.Size = UDim2.fromScale(0.85, 0.85)
 openBtn.Position = UDim2.fromScale(0.5, 0.5)
 openBtn.AnchorPoint = Vector2.new(0.5, 0.5)
-openBtn.BackgroundColor3 = Colors.Surface
+openBtn.BackgroundColor3 = Color3.fromRGB(12, 16, 24)
 openBtn.BackgroundTransparency = 0.15
 openBtn.Text = "" 
 openBtn.AutoButtonColor = false
@@ -461,26 +482,8 @@ openBtn.ClipsDescendants = false
 openBtn.ZIndex = 101
 Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0)
 
--- Outer Energy Bezel
-local gimbalOuter = Instance.new("Frame", openBtnContainer)
-gimbalOuter.Size = UDim2.fromScale(1.05, 1.05)
-gimbalOuter.Position = UDim2.fromScale(0.5, 0.5)
-gimbalOuter.AnchorPoint = Vector2.new(0.5, 0.5)
-gimbalOuter.BackgroundTransparency = 1
-gimbalOuter.ZIndex = 99
-Instance.new("UICorner", gimbalOuter).CornerRadius = UDim.new(1, 0)
-local goStroke = Instance.new("UIStroke", gimbalOuter)
-goStroke.Thickness = 2
-goStroke.Color = Color3.new(1,1,1)
-local goGrad = Instance.new("UIGradient", goStroke)
-goGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Colors.Primary),
-    ColorSequenceKeypoint.new(0.5, Colors.Purple),
-    ColorSequenceKeypoint.new(1, Colors.Primary)
-})
-
 local openStroke = Instance.new("UIStroke", openBtn)
-openStroke.Thickness = 1.5
+openStroke.Thickness = 2.5
 openStroke.Color = Colors.Primary
 
 -- QUAD GIMBALS
@@ -494,7 +497,7 @@ for i = 1, 4 do
     Instance.new("UICorner", g).CornerRadius = UDim.new(1, 0)
     local gs = Instance.new("UIStroke", g)
     gs.Color = (i%2==0) and Colors.Primary or Colors.Purple
-    gs.Thickness = 1.2
+    gs.Thickness = 1.5
     table.insert(gimbals, {frame = g, stroke = gs})
 end
 
@@ -569,11 +572,11 @@ local function spawnSonar(pulseColor)
     Instance.new("UICorner", ring).CornerRadius = UDim.new(1, 0)
     local rs = Instance.new("UIStroke", ring)
     rs.Color = pulseColor
-    rs.Thickness = 2
+    rs.Thickness = 2.5
     rs.Transparency = 0
     
-    local pulseSpeed = isSystemActive and 0.8 or 1.2
-    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(105, 105)}):Play()
+    local pulseSpeed = isSystemActive and 0.6 or 1.0
+    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(125, 125)}):Play()
     TweenService:Create(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
     task.delay(pulseSpeed, function() pcall(function() ring:Destroy() end) end)
 end
@@ -589,7 +592,7 @@ task.spawn(function()
         t = t + dt
         
         if mainFrame.Visible then
-            local rot = (t * 30) % 360 
+            local rot = (t * 40) % 360 
             strokeGrad.Rotation = rot
             bgGradient.Rotation = (rot/2) - 45
             
@@ -613,11 +616,11 @@ task.spawn(function()
         end
         
         if openBtnContainer.Visible then
-            local targetSpeed = isSystemActive and 3 or 1
+            local targetSpeed = isSystemActive and 3.5 or 1.2
             if orbHovered then targetSpeed = targetSpeed * 1.5 end
             currentSpeedMod = currentSpeedMod + (targetSpeed - currentSpeedMod) * dt * 5
             
-            local targetRadius = orbHovered and 0.6 or 1
+            local targetRadius = orbHovered and 0.65 or 1
             currentRadiusMod = currentRadiusMod + (targetRadius - currentRadiusMod) * dt * 8
             
             local activeT = t * 3 * currentSpeedMod
@@ -626,13 +629,17 @@ task.spawn(function()
             local baseColor2 = isSystemActive and Colors.Warning or Colors.Purple
             local lerpAlpha = (math.sin(activeT * 0.8) + 1) / 2
             
+            -- Syncing all outer rings to turn red when active
+            outerSpinRing.ImageColor3 = baseColor1
+            innerSpinRing.ImageColor3 = baseColor2
+            
+            outerSpinRing.Rotation = (activeT * 35) % 360
+            innerSpinRing.Rotation = -(activeT * 50) % 360 -- Counter spinning
+            
             coreGlow.ImageColor3 = baseColor1:Lerp(baseColor2, lerpAlpha)
-            coreGlow.ImageTransparency = 0.4 + (math.sin(activeT) * 0.25)
-            eventGlow.ImageColor3 = baseColor2:Lerp(Color3.new(1,1,1), lerpAlpha)
+            coreGlow.ImageTransparency = 0.3 + (math.sin(activeT) * 0.25)
             
             openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
-            goGrad.Rotation = (activeT * 50) % 360
-            goStroke.Transparency = orbHovered and 0.1 or 0.5
             
             local gPulse = 40 + (math.sin(activeT * 2) * 3)
             gimbals[1].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 0.8)), gPulse)
@@ -707,21 +714,18 @@ task.spawn(function()
 
                 openBtn.Size = openBtn.Size:Lerp(UDim2.fromScale(stretchX, stretchY), dt * 12)
                 openBtn.Position = openBtn.Position:Lerp(UDim2.new(0.5, offsetX, 0.5, offsetY), dt * 10)
-                eventGlow.Position = eventGlow.Position:Lerp(UDim2.new(0.5, offsetX * 0.4, 0.5, offsetY * 0.4), dt * 10)
+                
                 crosshair.Position = crosshair.Position:Lerp(UDim2.new(0.5, offsetX * 0.7, 0.5, offsetY * 0.7), dt * 12)
                 centerCore.Position = centerCore.Position:Lerp(UDim2.new(0.5, offsetX * 1.2, 0.5, offsetY * 1.2), dt * 15)
-                
-                eventGlow.ImageTransparency = 0.1 + (math.sin(activeT * 10) * 0.05)
             else
                 openBtn.Size = openBtn.Size:Lerp(baseOrbScale, dt * 12)
                 openBtn.Position = openBtn.Position:Lerp(baseCenterPos, dt * 12)
-                eventGlow.Position = eventGlow.Position:Lerp(baseCenterPos, dt * 12)
+                
                 crosshair.Position = crosshair.Position:Lerp(baseCenterPos, dt * 12)
                 centerCore.Position = centerCore.Position:Lerp(baseCenterPos, dt * 12)
-                eventGlow.ImageTransparency = 0.3 + (math.cos(activeT * 2) * 0.3)
             end
 
-            local sonarThreshold = isSystemActive and 0.3 or 0.8
+            local sonarThreshold = isSystemActive and 0.25 or 0.6
             sonarTimer = sonarTimer + dt
             if sonarTimer >= sonarThreshold then
                 sonarTimer = 0
@@ -1019,7 +1023,7 @@ shieldBtn.MouseButton1Click:Connect(function()
     if isGodShieldEnabled then 
         TweenService:Create(shieldBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
         if accent then TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
-        sendNotif("🛡️ SECURITY", "God Shield: Aggressive Anti-Kela Active.", 2)
+        sendNotif("🛡️ SECURITY", "God Shield: Touch-Wipe Anti-Kela Active.", 2)
     else 
         TweenService:Create(shieldBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then TweenService:Create(accent, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 0, 0, 0)}):Play() end 
@@ -1127,7 +1131,7 @@ local function dispatchRemote(remote, targetCFrame)
     task.spawn(function() pcall(function() remote:InvokeServer(targetCFrame) end) end)
 end
 
--- ✨ 🛡️ GOD SHIELD (NUCLEAR ANTI-KELA / WIPE SHIELD) 🛡️ ✨
+-- ✨ 🛡️ GOD SHIELD (ULTIMATE TOUCH-WIPE ANTI-KELA SHIELD) 🛡️ ✨
 RunService.Stepped:Connect(function()
     if isGodShieldEnabled and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
         local char = lp.Character
@@ -1153,14 +1157,24 @@ RunService.Stepped:Connect(function()
         end
 
         pcall(function()
-            -- Nuclear Area Wipeout for Hazards (Destroys any loose unanchored part near your feet)
-            for _, part in ipairs(workspace:GetPartBoundsInRadius(root.Position, 10)) do
-                if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(char) then
-                    -- If the part doesn't belong to another player's character, IT IS VAPORIZED
-                    if not part.Parent:FindFirstChildWhichIsA("Humanoid") and not part.Parent.Parent:FindFirstChildWhichIsA("Humanoid") then
+            -- THE ULTIMATE ANTI-KELA BYPASS (Destroys the TouchTransmitter itself)
+            for _, part in ipairs(workspace:GetPartBoundsInRadius(root.Position, 15)) do
+                if part:IsA("BasePart") and not part:IsDescendantOf(char) then
+                    local name = string.lower(part.Name)
+                    local pName = part.Parent and string.lower(part.Parent.Name) or ""
+                    
+                    -- If it's a known hazard name, delete the part outright
+                    if string.find(name, "banana") or string.find(name, "peel") or string.find(pName, "banana") or string.find(pName, "peel") then
                         pcall(function() part:Destroy() end)
                     else
-                        pcall(function() part.CanCollide = false end)
+                        -- Otherwise, if it's unanchored and NOT part of a player, destroy its touch ability
+                        if not part.Anchored and not part.Parent:FindFirstChildWhichIsA("Humanoid") then
+                            local touchEvent = part:FindFirstChildWhichIsA("TouchTransmitter")
+                            if touchEvent then
+                                pcall(function() touchEvent:Destroy() end) -- Kills the trip trigger!
+                            end
+                            pcall(function() part.CanCollide = false end)
+                        end
                     end
                 end
             end
