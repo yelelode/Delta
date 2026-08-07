@@ -13,22 +13,29 @@ import string
 import sys
 import logging
 
+# ==================== LOGGING ====================
 logging.basicConfig(level=logging.INFO)
 
+# ==================== OWNER CONFIG ====================
 OWNER_ID = "722351377157980170"
 
+# ==================== TOKENS ====================
 TOKENS = [
     "MTUxOTY0OTE3NzgxMjk5MjA0Mg.G4iPik.oPkZnZgEgIIYNAoQc-58FjmXigYkMFTyPOO7oA",
 ]
+
 TOKENS = [t for t in TOKENS if t and t.strip() and not t.startswith('.')]
 
+# ==================== FILES ====================
 SUDO_FILE = "sudo_users.json"
 TOKENS_FILE = "tokens2.txt"
 GCNAME_FILE = "gcname.txt"
 AUTOREPLY_FILE = "auto_responses.json"
 
+# ==================== PREFIX ====================
 PREFIX = "$"
 
+# ==================== FLAGS ====================
 ACTIVE_NC_CHANNELS = {}
 ACTIVE_SPAM_CHANNELS = {}
 AUTOREPLY_TARGETS = {}
@@ -41,11 +48,13 @@ counter_running = False
 spammingss = False
 START_TIME = time.time()
 
+# ==================== CONFIGS ====================
 NC_DELAY = 0.005
 SPAM_DELAY = 0.05
 PARALLEL_SPAM = 5
 PARALLEL_NC = 3
 
+# ==================== NC LIST ====================
 NC_LIST = [
     "𝘼𝙨𝙝𝙪 𝑻𝑴𝑲𝑪 𝑴𝑬𝑰-->-ᥬ🌵᭄",
     "𝘼𝙨𝙝𝙪 𝑻𝑴𝑲𝑪 𝑴𝑬𝑰-->-ᥬ🍈᭄",
@@ -59,11 +68,13 @@ NC_LIST = [
     "𝘼𝙨𝙝𝙪 𝑻𝑴𝑲𝑪 𝑴𝑬𝑰-->-ᥬ🍇᭄"
 ]
 
+# ==================== SPAM MESSAGES ====================
 SPAM_MESSAGES = [
     "# 𓆩 🔸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴ𝗗l⃠𝗖ᴇ #𝗟ᴀ𝗗ᴄ𝗘 #ɪ𝗦 #s𝗘 #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝗧ɪ #𝗛ᴀ𝗜I⃠",
     "# 𓆩🈸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴ𝗗l⃠𝗖ᴇ #𝗟ᴀ𝗗ᴄ𝗘 #ɪ𝗦 #s𝗘 #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝗧ɪ #𝗛ᴀ𝗜I⃠",
 ]
 
+# ==================== REPLY TEXTS ====================
 REPLY_TEXTS = [
     "𝐖ᴏ ʙʜɪ ᴋʏᴀ ᴅɪɴ ᴛʜᴇ ᴊᴀʙ ᴛʀʏ ᴍᴀᴀ ᴍᴜᴊʜᴇ 𝐀ᴘɴᴀ 𝐂ʜᴜᴛ 𝐃ᴇᴛɪ ᴛʜɪ 💔",
     "𝐀ᴡᴀᴢ 𝐍ɪᴄʜᴇ 𝐆ᴜʟᴀᴀᴍ 🤢",
@@ -72,6 +83,7 @@ REPLY_TEXTS = [
     "𝐁ʜᴏꜱᴀᴅɪᴋᴇ 𝐀ᴘɴɪ 𝐁ᴇʜᴇɴ 𝐂ʜᴜᴅᴀ 🖕",
 ]
 
+# ==================== LONG SPAM TEMPLATES ====================
 LONG_SPAM_TEMPLATES = [
     "{target} 𝘼𝙨𝙝𝙪 𝐑𝐔𝐍𝐒 𝐘𝐎𝐔 " * 150,
     "{target} 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐀 𝐁𝐇𝐎𝐒𝐃𝐀 " * 150,
@@ -97,6 +109,7 @@ def get_long_spam(target_mention):
         base = base[:1997] + "..."
     return base
 
+# ==================== DROWN LISTS ====================
 hindi_drown = [
     "तू बेकार है {mention} 💀",
     "तेरी माँ का भोसड़ा {mention}",
@@ -162,6 +175,7 @@ urdu_lines = [
     "چپ ہو جا اب {mention} 🌊",
 ]
 
+# ==================== ZALGO CHARACTERS ====================
 ZALGO_CHARS = [
     '\u0300','\u0301','\u0302','\u0303','\u0304','\u0305','\u0306','\u0307',
     '\u0308','\u0309','\u030a','\u030b','\u030c','\u030d','\u030e','\u030f',
@@ -180,6 +194,7 @@ def zalgo_text(text, intensity=8):
             out += random.choice(ZALGO_CHARS)
     return out
 
+# ==================== LOAD FUNCTIONS ====================
 def load_tokens():
     try:
         with open(TOKENS_FILE, "r") as f:
@@ -222,6 +237,7 @@ def save_autoreplies(data):
 
 auto_responses = load_autoreplies()
 
+# ==================== HELPERS ====================
 def send_msg(c_id, text, reply_to=None, token=None):
     if not token:
         return None
@@ -284,6 +300,7 @@ def extract_user_id_from_mention(mention):
         return match.group()
     return None
 
+# ==================== WORKERS ====================
 def nc_worker(g_id, target_mention, token=None):
     key = f"{g_id}_{token[:10] if token else ''}"
     while ACTIVE_NC_CHANNELS.get(key, False):
@@ -316,6 +333,7 @@ def spam_worker(c_id, target_mention, token=None):
                 logging.info(f"📤 {count} messages sent")
             time.sleep(SPAM_DELAY)
 
+# ==================== DISCORD SELF-BOT CLIENT ====================
 class DiscordSelfBot:
     def __init__(self, token, bot_index):
         self.token = token
@@ -325,7 +343,7 @@ class DiscordSelfBot:
         self.user_id = None
 
     def on_message(self, ws, message):
-        global ACTIVE_NC_CHANNELS, ACTIVE_SPAM_CHANNELS, AUTOREPLY_TARGETS, AUTOREACT_EMOJIS, START_TIME, SUDO_USERS, multi_running, drown_running, pack_running, repeat_running, counter_running, auto_responses, spammingss, PREFIX
+        global ACTIVE_NC_CHANNELS, ACTIVE_SPAM_CHANNELS, AUTOREPLY_TARGETS, AUTOREACT_EMOJIS, START_TIME, SUDO_USERS, multi_running, drown_running, pack_running, repeat_running, counter_running, auto_responses, spammingss
         try:
             data = json.loads(message)
         except:
@@ -361,20 +379,24 @@ class DiscordSelfBot:
             m_id = msg["id"]
             key_suffix = f"{c_id}_{self.token[:10]}"
 
+            # --- AUTOREPLY (JSON based) ---
             if content in auto_responses:
                 send_msg(c_id, auto_responses[content], token=self.token)
 
+            # --- AUTOREPLY TARGET ---
             if c_id in AUTOREPLY_TARGETS:
                 if auth_id in AUTOREPLY_TARGETS[c_id]:
                     if self.user_id and auth_id != self.user_id:
                         reply_text = random.choice(REPLY_TEXTS)
                         send_msg(c_id, reply_text, reply_to=m_id, token=self.token)
 
+            # --- AUTOREACT ---
             if c_id in AUTOREACT_EMOJIS:
                 emoji = AUTOREACT_EMOJIS[c_id]
                 if self.user_id and auth_id != self.user_id:
                     threading.Thread(target=add_reaction, args=(c_id, m_id, emoji, self.token), daemon=True).start()
 
+            # --- COMMANDS ---
             if auth_id != OWNER_ID and auth_id not in SUDO_USERS:
                 return
             if not content.startswith(PREFIX):
@@ -627,6 +649,7 @@ class DiscordSelfBot:
                 send_msg(c_id, "✅ Spam stopped", token=self.token)
                 return
 
+            # ========== SPAMMM (FAST SPAM) ==========
             if cmd_lower.startswith("spammm "):
                 spammingss = True
                 msg_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
@@ -660,6 +683,7 @@ class DiscordSelfBot:
                 send_msg(c_id, "✅ NC stopped", token=self.token)
                 return
 
+            # ========== SPAMALL ==========
             if cmd_lower.startswith("spamall "):
                 msg_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
                 try:
@@ -675,6 +699,7 @@ class DiscordSelfBot:
                     send_msg(c_id, "❌ Not in a server", token=self.token)
                 return
 
+            # ========== LONG SPAM ==========
             if cmd_lower.startswith("longspam "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
@@ -690,6 +715,7 @@ class DiscordSelfBot:
                 send_msg(c_id, f"✅ Long spam x{count} sent", token=self.token)
                 return
 
+            # ========== WORDWALL ==========
             if cmd_lower.startswith("wordwall "):
                 parts = cmd_part.split()
                 word = " ".join(parts[1:]) if len(parts) > 1 else "𝘼𝙨𝙝𝙪"
@@ -697,6 +723,7 @@ class DiscordSelfBot:
                 send_msg(c_id, wall[:2000], token=self.token)
                 return
 
+            # ========== ZALGO SPAM ==========
             if cmd_lower.startswith("zalgo "):
                 parts = cmd_part.split()
                 count = int(parts[1]) if len(parts) > 1 else 5
@@ -706,6 +733,7 @@ class DiscordSelfBot:
                     time.sleep(0.3)
                 return
 
+            # ========== REPEAT SPAM ==========
             if cmd_lower.startswith("repeat_spam "):
                 msg_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
                 repeat_running = True
@@ -722,6 +750,7 @@ class DiscordSelfBot:
                 send_msg(c_id, "✅ Repeat spam stopped.", token=self.token)
                 return
 
+            # ========== COUNTER SPAM ==========
             if cmd_lower.startswith("counter_spam "):
                 prefix_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪"
                 counter_running = True
@@ -740,6 +769,7 @@ class DiscordSelfBot:
                 send_msg(c_id, "✅ Counter spam stopped.", token=self.token)
                 return
 
+            # ========== EDIT SPAM ==========
             if cmd_lower.startswith("edit_spam "):
                 msg_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
                 phrases = [
@@ -760,6 +790,7 @@ class DiscordSelfBot:
                             break
                 return
 
+            # ========== INVISIBLE SPAM ==========
             if cmd_lower.startswith("invis "):
                 parts = cmd_part.split()
                 count = int(parts[1]) if len(parts) > 1 else 20
@@ -769,6 +800,7 @@ class DiscordSelfBot:
                     time.sleep(0.2)
                 return
 
+            # ========== NITRO SPAM ==========
             if cmd_lower.startswith("nitro_spam "):
                 parts = cmd_part.split()
                 count = int(parts[1]) if len(parts) > 1 else 10
@@ -779,6 +811,7 @@ class DiscordSelfBot:
                     time.sleep(0.4)
                 return
 
+            # ========== DROWN COMMANDS ==========
             if cmd_lower.startswith("drown_hindi "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
@@ -846,6 +879,7 @@ class DiscordSelfBot:
                 send_msg(c_id, "✅ Drown stopped.", token=self.token)
                 return
 
+            # ========== PACK COMMANDS ==========
             if cmd_lower.startswith("hindi_pack "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
@@ -950,6 +984,7 @@ class DiscordSelfBot:
                 send_msg(c_id, "✅ Continuous pack stopped.", token=self.token)
                 return
 
+            # ========== TROLL / FAKE COMMANDS ==========
             if cmd_lower.startswith("fake_ban "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
@@ -1002,6 +1037,7 @@ class DiscordSelfBot:
                 user_id = extract_user_id_from_mention(parts[1])
                 bomb = ("\u200b" * 1990) + "𝘼𝙨𝙝𝙪 🔥"
                 send_msg(c_id, f"💣 DM crash sent to <@{user_id}>", token=self.token)
+                # DM send karne ka attempt
                 dm_url = f"https://discord.com/api/v9/users/@me/channels"
                 dm_payload = {"recipient_id": user_id}
                 dm_resp = requests.post(dm_url, headers={"Authorization": self.token, "Content-Type": "application/json"}, json=dm_payload)
@@ -1044,6 +1080,7 @@ class DiscordSelfBot:
                     time.sleep(5)
                 return
 
+            # ========== AUTO-REPLY (TARGET BASED) ==========
             if cmd_lower.startswith("autoreply "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
@@ -1092,6 +1129,7 @@ class DiscordSelfBot:
                     send_msg(c_id, "ℹ️ No autoreply", token=self.token)
                 return
 
+            # ========== AUTO-REPLY (JSON TRIGGER BASED) ==========
             if cmd_lower.startswith("addar "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
@@ -1131,6 +1169,7 @@ class DiscordSelfBot:
                 send_msg(c_id, f"**📋 AUTO-RESPONSES:**\n{lines}", token=self.token)
                 return
 
+            # ========== AUTOREACT ==========
             if cmd_lower.startswith("autoreact "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
@@ -1149,6 +1188,7 @@ class DiscordSelfBot:
                     send_msg(c_id, "ℹ️ No autoreact", token=self.token)
                 return
 
+            # ========== GC COMMANDS ==========
             if cmd_lower.startswith("gcstart "):
                 parts = cmd_part.split()
                 interval = float(parts[1]) if len(parts) > 1 else 0.5
@@ -1168,6 +1208,7 @@ class DiscordSelfBot:
                         except:
                             time.sleep(2)
                 threading.Thread(target=_gc_rename, daemon=True).start()
+                # Store flag
                 if not hasattr(self, 'gc_running'):
                     self.gc_running = {}
                 self.gc_running[c_id] = True
@@ -1181,6 +1222,7 @@ class DiscordSelfBot:
                     send_msg(c_id, "ℹ️ No active GC rename", token=self.token)
                 return
 
+            # ========== MULTI COMMANDS ==========
             if cmd_lower.startswith("multispam "):
                 message_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
                 tokens = load_tokens()
@@ -1347,6 +1389,7 @@ class DiscordSelfBot:
                 asyncio.run_coroutine_threadsafe(asyncio.gather(*[_everyone(t) for t in tokens]), asyncio.get_event_loop())
                 return
 
+            # ========== MULTI DM ==========
             if cmd_lower.startswith("multidm "):
                 parts = cmd_part.split()
                 if len(parts) < 3:
@@ -1413,6 +1456,7 @@ class DiscordSelfBot:
                     send_msg(c_id, "❌ Not in a server", token=self.token)
                 return
 
+            # ========== MULTI FRIEND / BLOCK ==========
             if cmd_lower.startswith("multifriend "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
@@ -1499,6 +1543,7 @@ class DiscordSelfBot:
                 asyncio.run_coroutine_threadsafe(asyncio.gather(*[_delfr(t) for t in tokens]), asyncio.get_event_loop())
                 return
 
+            # ========== MULTI JOIN / LEAVE ==========
             if cmd_lower.startswith("multijoin "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
@@ -1562,6 +1607,7 @@ class DiscordSelfBot:
                 asyncio.run_coroutine_threadsafe(asyncio.gather(*[_leaveall(t) for t in tokens]), asyncio.get_event_loop())
                 return
 
+            # ========== MULTI SET NICK / AVATAR / USERNAME ==========
             if cmd_lower.startswith("multi_setnick "):
                 nickname = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪"
                 tokens = load_tokens()
@@ -1677,6 +1723,7 @@ class DiscordSelfBot:
                 asyncio.run_coroutine_threadsafe(asyncio.gather(*[_delmsgs(t) for t in tokens]), asyncio.get_event_loop())
                 return
 
+            # ========== MULTI REACT ==========
             if cmd_lower.startswith("multireact "):
                 parts = cmd_part.split()
                 if len(parts) < 3:
@@ -1725,6 +1772,7 @@ class DiscordSelfBot:
                 asyncio.run_coroutine_threadsafe(asyncio.gather(*[_reactall(t) for t in tokens]), asyncio.get_event_loop())
                 return
 
+            # ========== MULTI GHOST PING ==========
             if cmd_lower.startswith("multi_ghost_ping "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
@@ -1754,6 +1802,7 @@ class DiscordSelfBot:
                 asyncio.run_coroutine_threadsafe(asyncio.gather(*[_ghost(t) for t in tokens]), asyncio.get_event_loop())
                 return
 
+            # ========== MULTI PACK ==========
             if cmd_lower.startswith("multi_pack "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
@@ -1790,6 +1839,7 @@ class DiscordSelfBot:
                 asyncio.run_coroutine_threadsafe(asyncio.gather(*[_pack(t) for t in tokens]), asyncio.get_event_loop())
                 return
 
+            # ========== MULTI DROWN ==========
             if cmd_lower.startswith("multi_drown "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
@@ -1824,6 +1874,7 @@ class DiscordSelfBot:
                 asyncio.run_coroutine_threadsafe(asyncio.gather(*[_drown(t) for t in tokens]), asyncio.get_event_loop())
                 return
 
+            # ========== MULTI TYPING ==========
             if cmd_lower.startswith("multi_typing "):
                 parts = cmd_part.split()
                 seconds = int(parts[1]) if len(parts) > 1 else 30
@@ -1844,6 +1895,7 @@ class DiscordSelfBot:
                 asyncio.run_coroutine_threadsafe(asyncio.gather(*[_typing(t) for t in tokens]), asyncio.get_event_loop())
                 return
 
+            # ========== MULTI NUKE ==========
             if cmd_lower.startswith("multinuke "):
                 message_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
                 tokens = load_tokens()
@@ -1879,12 +1931,14 @@ class DiscordSelfBot:
                     send_msg(c_id, "❌ Not in a server", token=self.token)
                 return
 
+            # ========== STOP MULTI ==========
             if cmd_lower == "stopmulti":
                 for key in list(multi_running.keys()):
                     multi_running[key] = False
                 send_msg(c_id, "✅ All multi commands stopped.", token=self.token)
                 return
 
+            # ========== PING ==========
             if cmd_lower == "ping":
                 start = time.time()
                 requests.get("https://discord.com/api/v9/users/@me", headers={"Authorization": self.token})
@@ -1892,6 +1946,7 @@ class DiscordSelfBot:
                 send_msg(c_id, f"🏓 Pong! {latency}ms", token=self.token)
                 return
 
+            # ========== STATUS ==========
             if cmd_lower == "status":
                 uptime = round(time.time() - START_TIME, 1)
                 status_msg = (
@@ -1906,6 +1961,7 @@ class DiscordSelfBot:
                 send_msg(c_id, status_msg, token=self.token)
                 return
 
+            # ========== ACCESS / SUDO ==========
             if cmd_lower.startswith("access "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
@@ -1942,11 +1998,13 @@ class DiscordSelfBot:
                     send_msg(c_id, "ℹ️ No access", token=self.token)
                 return
 
+            # ========== RESTART ==========
             if cmd_lower == "restart":
                 send_msg(c_id, "🔄 Restarting...", token=self.token)
                 os.execl(sys.executable, sys.executable, *sys.argv)
                 return
 
+            # ========== PREFIX ==========
             if cmd_lower.startswith("prefix "):
                 global PREFIX
                 parts = cmd_part.split()
@@ -1962,10 +2020,11 @@ class DiscordSelfBot:
             try:
                 self.ws = websocket.WebSocketApp("wss://gateway.discord.gg/?v=9&encoding=json", on_message=self.on_message)
                 self.ws.run_forever()
-            except Exception as e:
+            except Exception as e:self.ws = websocket.WebSocketApp(\"wss://gateway.discord.gg/?v=9&encoding=json\", on_message=self.on_message)
                 logging.error(f"Bot {self.bot_index + 1} error: {e}")
                 time.sleep(5)
 
+# ==================== LAUNCH ====================
 def run_all_bots():
     print("=" * 55)
     print("      𝘼𝙨𝙝𝙪 SELFBOT — ULTIMATE EDITION")
