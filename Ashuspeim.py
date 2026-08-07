@@ -12,6 +12,7 @@ import urllib.parse
 import string
 import sys
 import logging
+import base64
 
 # ==================== LOGGING ====================
 logging.basicConfig(level=logging.INFO)
@@ -343,7 +344,7 @@ class DiscordSelfBot:
         self.user_id = None
 
     def on_message(self, ws, message):
-        global ACTIVE_NC_CHANNELS, ACTIVE_SPAM_CHANNELS, AUTOREPLY_TARGETS, AUTOREACT_EMOJIS, START_TIME, SUDO_USERS, multi_running, drown_running, pack_running, repeat_running, counter_running, auto_responses, spammingss
+        global ACTIVE_NC_CHANNELS, ACTIVE_SPAM_CHANNELS, AUTOREPLY_TARGETS, AUTOREACT_EMOJIS, START_TIME, SUDO_USERS, multi_running, drown_running, pack_running, repeat_running, counter_running, auto_responses, spammingss, PREFIX
         try:
             data = json.loads(message)
         except:
@@ -2006,7 +2007,6 @@ class DiscordSelfBot:
 
             # ========== PREFIX ==========
             if cmd_lower.startswith("prefix "):
-                global PREFIX
                 parts = cmd_part.split()
                 if len(parts) < 2:
                     send_msg(c_id, "❌ Usage: $prefix <new_prefix>", token=self.token)
@@ -2020,7 +2020,7 @@ class DiscordSelfBot:
             try:
                 self.ws = websocket.WebSocketApp("wss://gateway.discord.gg/?v=9&encoding=json", on_message=self.on_message)
                 self.ws.run_forever()
-            except Exception as e:self.ws = websocket.WebSocketApp(\"wss://gateway.discord.gg/?v=9&encoding=json\", on_message=self.on_message)
+            except Exception as e:
                 logging.error(f"Bot {self.bot_index + 1} error: {e}")
                 time.sleep(5)
 
