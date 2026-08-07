@@ -45,7 +45,7 @@ drown_running = False
 pack_running = False
 repeat_running = False
 counter_running = False
-spammingss = False          # ✅ FIXED — LINE 60
+spammingss = False
 START_TIME = time.time()
 
 # ==================== CONFIGS ====================
@@ -2006,11 +2006,11 @@ class DiscordSelfBot:
 
             # ========== PREFIX ==========
             if cmd_lower.startswith("prefix "):
+                global PREFIX
                 parts = cmd_part.split()
                 if len(parts) < 2:
                     send_msg(c_id, "❌ Usage: $prefix <new_prefix>", token=self.token)
                     return
-                global PREFIX
                 PREFIX = parts[1]
                 send_msg(c_id, f"✅ Prefix changed to `{PREFIX}`", token=self.token)
                 return
