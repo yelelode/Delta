@@ -22,7 +22,7 @@ OWNER_ID = "722351377157980170"
 
 # ==================== TOKENS ====================
 TOKENS = [
-    "MTUxOTY0OTE",
+    "MTUxOTY0OTE3NzgxMjk5MjA0Mg.G4iPik.oPkZnZgEgIIYNAoQc-58FjmXigYkMFTyPOO7oA",
 ]
 
 TOKENS = [t for t in TOKENS if t and t.strip() and not t.startswith('.')]
