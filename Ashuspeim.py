@@ -49,6 +49,15 @@ counter_running = False
 spammingss = False
 START_TIME = time.time()
 
+# ==================== ASYNC BACKGROUND ENGINE ====================
+bg_loop = asyncio.new_event_loop()
+
+def start_bg_loop(loop):
+    asyncio.set_event_loop(loop)
+    loop.run_forever()
+
+threading.Thread(target=start_bg_loop, args=(bg_loop,), daemon=True).start()
+
 # ==================== CONFIGS ====================
 NC_DELAY = 0.005
 SPAM_DELAY = 0.05
@@ -79,7 +88,7 @@ SPAM_MESSAGES = [
 REPLY_TEXTS = [
     "𝐖ᴏ ʙʜɪ ᴋʏᴀ ᴅɪɴ ᴛʜᴇ ᴊᴀʙ ᴛʀʏ ᴍᴀᴀ ᴍᴜᴊʜᴇ 𝐀ᴘɴᴀ 𝐂ʜᴜᴛ 𝐃ᴇᴛɪ ᴛʜɪ 💔",
     "𝐀ᴡᴀᴢ 𝐍ɪᴄʜᴇ 𝐆ᴜʟᴀᴀᴍ 🤢",
-    "𝐓ʀʏ 𝐌ᴀᴀ ɴᴇ 𝐂ʜᴜᴅɴᴇ 𝐌ᴀɪ ɢᴏʟᴅ 𝐌ᴇᴅᴀʟ 𝐉ᴇᴇᴛᴀ 👑",
+    "𝐓ʀʏ 𝐌ᴀᴀ ɴᴇ 𝐂ʜUDɴᴇ 𝐌ᴀɪ ɢᴏʟᴅ 𝐌ᴇᴅᴀʟ 𝐉ᴇᴇᴛᴀ 👑",
     "𝐓ᴇʀɪ 𝐌ᴀᴀ ᴋɪ 𝐂ʜᴜᴛ 𝐌ᴇ 𝐌ᴇʀᴀ 𝐋ᴜɴᴅ 🖕",
     "𝐁ʜᴏꜱᴀᴅɪᴋᴇ 𝐀ᴘɴɪ 𝐁ᴇʜᴇɴ 𝐂ʜᴜᴅᴀ 🖕",
 ]
@@ -254,6 +263,20 @@ def send_msg(c_id, text, reply_to=None, token=None):
         return response
     except:
         return None
+
+def fetch_guild_channels(channel_id, token):
+    headers = {"Authorization": token}
+    try:
+        r = requests.get(f"https://discord.com/api/v9/channels/{channel_id}", headers=headers, timeout=10)
+        if r.status_code == 200:
+            guild_id = r.json().get("guild_id")
+            if guild_id:
+                gr = requests.get(f"https://discord.com/api/v9/guilds/{guild_id}/channels", headers=headers, timeout=10)
+                if gr.status_code == 200:
+                    return guild_id, [ch["id"] for ch in gr.json() if ch.get("type") == 0]
+    except:
+        pass
+    return None, []
 
 def change_gc_name(g_id, name, token=None):
     if not token:
@@ -699,6 +722,7 @@ ________________________________
 
             # ========== SPAMMM (FAST SPAM) — ONLY CHANGE HERE ==========
             if cmd_lower.startswith("spammm "):
+                global spammingss
                 spammingss = True
                 # If user provides custom message, use that, else use the default long spam
                 if len(cmd_part.split()) > 1:
@@ -707,6 +731,7 @@ ________________________________
                     msg_text = "(Target)ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʀᴀᴘᴇ ᴋʀʀᴀ ʜᴜ-𒐫𒐫𒐫𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋"
                 send_msg(c_id, f"✅ Spammm started. Use $spamoff to stop.", token=self.token)
                 def _spam_fast():
+                    global spammingss
                     while spammingss:
                         send_msg(c_id, msg_text, token=self.token)
                         time.sleep(0.05)
@@ -714,6 +739,7 @@ ________________________________
                 return
 
             if cmd_lower == "spamoff":
+                global spammingss
                 spammingss = False
                 send_msg(c_id, "✅ Spammm stopped.", token=self.token)
                 return
@@ -739,12 +765,12 @@ ________________________________
             if cmd_lower.startswith("spamall "):
                 msg_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
                 try:
-                    channels = [ch for ch in c_id.guild.text_channels]
+                    guild_id, channels = fetch_guild_channels(c_id, self.token)
                     if not channels:
-                        send_msg(c_id, "❌ Not in a server", token=self.token)
+                        send_msg(c_id, "❌ Not in a server or fetch failed", token=self.token)
                         return
                     for ch in channels:
-                        send_msg(ch.id, msg_text, token=self.token)
+                        send_msg(ch, msg_text, token=self.token)
                         time.sleep(0.1)
                     send_msg(c_id, f"✅ Spamall sent to {len(channels)} channels", token=self.token)
                 except:
@@ -787,10 +813,12 @@ ________________________________
 
             # ========== REPEAT SPAM ==========
             if cmd_lower.startswith("repeat_spam "):
+                global repeat_running
                 msg_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
                 repeat_running = True
                 send_msg(c_id, f"✅ Repeat spam started. Use $stoprepeat to stop.", token=self.token)
                 def _repeat():
+                    global repeat_running
                     while repeat_running:
                         send_msg(c_id, msg_text, token=self.token)
                         time.sleep(0.2)
@@ -798,16 +826,19 @@ ________________________________
                 return
 
             if cmd_lower == "stoprepeat":
+                global repeat_running
                 repeat_running = False
                 send_msg(c_id, "✅ Repeat spam stopped.", token=self.token)
                 return
 
             # ========== COUNTER SPAM ==========
             if cmd_lower.startswith("counter_spam "):
+                global counter_running
                 prefix_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪"
                 counter_running = True
                 send_msg(c_id, f"✅ Counter spam started. Use $stopcounter to stop.", token=self.token)
                 def _counter():
+                    global counter_running
                     i = 1
                     while counter_running:
                         send_msg(c_id, f"{prefix_text} `#{i}`", token=self.token)
@@ -817,6 +848,7 @@ ________________________________
                 return
 
             if cmd_lower == "stopcounter":
+                global counter_running
                 counter_running = False
                 send_msg(c_id, "✅ Counter spam stopped.", token=self.token)
                 return
@@ -865,6 +897,7 @@ ________________________________
 
             # ========== DROWN COMMANDS ==========
             if cmd_lower.startswith("drown_hindi "):
+                global drown_running
                 parts = cmd_part.split()
                 if len(parts) < 2:
                     send_msg(c_id, "❌ Usage: $drown_hindi @user [count]", token=self.token)
@@ -880,6 +913,7 @@ ________________________________
                 return
 
             if cmd_lower.startswith("drown_hinglish "):
+                global drown_running
                 parts = cmd_part.split()
                 if len(parts) < 2:
                     send_msg(c_id, "❌ Usage: $drown_hinglish @user [count]", token=self.token)
@@ -895,6 +929,7 @@ ________________________________
                 return
 
             if cmd_lower.startswith("drown_english "):
+                global drown_running
                 parts = cmd_part.split()
                 if len(parts) < 2:
                     send_msg(c_id, "❌ Usage: $drown_english @user [count]", token=self.token)
@@ -910,6 +945,7 @@ ________________________________
                 return
 
             if cmd_lower.startswith("drown_mix "):
+                global drown_running
                 parts = cmd_part.split()
                 if len(parts) < 2:
                     send_msg(c_id, "❌ Usage: $drown_mix @user [count]", token=self.token)
@@ -927,6 +963,7 @@ ________________________________
                 return
 
             if cmd_lower == "stopdrown":
+                global drown_running
                 drown_running = False
                 send_msg(c_id, "✅ Drown stopped.", token=self.token)
                 return
@@ -1007,6 +1044,7 @@ ________________________________
                 return
 
             if cmd_lower.startswith("continuous_pack "):
+                global pack_running
                 parts = cmd_part.split()
                 if len(parts) < 2:
                     send_msg(c_id, "❌ Usage: $continuous_pack @user [lang]", token=self.token)
@@ -1024,6 +1062,7 @@ ________________________________
                 pack_running = True
                 send_msg(c_id, f"✅ Continuous pack started. Use $stoppack to stop.", token=self.token)
                 def _pack():
+                    global pack_running
                     while pack_running:
                         line = random.choice(pool).replace("{mention}", f"<@{user_id}>")
                         send_msg(c_id, line, token=self.token)
@@ -1032,6 +1071,7 @@ ________________________________
                 return
 
             if cmd_lower == "stoppack":
+                global pack_running
                 pack_running = False
                 send_msg(c_id, "✅ Continuous pack stopped.", token=self.token)
                 return
@@ -1249,10 +1289,13 @@ ________________________________
                     send_msg(c_id, "❌ gcname.txt is empty", token=self.token)
                     return
                 send_msg(c_id, f"✅ GC rename started with {len(names)} names. Use $gcstop to stop.", token=self.token)
-                gc_running = True
+                
+                if not hasattr(self, 'gc_running'):
+                    self.gc_running = {}
+                self.gc_running[c_id] = True
                 def _gc_rename():
                     i = 0
-                    while gc_running:
+                    while self.gc_running.get(c_id, False):
                         try:
                             change_gc_name(c_id, names[i % len(names)], token=self.token)
                             i += 1
@@ -1260,10 +1303,6 @@ ________________________________
                         except:
                             time.sleep(2)
                 threading.Thread(target=_gc_rename, daemon=True).start()
-                # Store flag
-                if not hasattr(self, 'gc_running'):
-                    self.gc_running = {}
-                self.gc_running[c_id] = True
                 return
 
             if cmd_lower == "gcstop":
@@ -1297,7 +1336,8 @@ ________________________________
                             except:
                                 await asyncio.sleep(1)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_spam(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_spam(t), bg_loop)
                 return
 
             if cmd_lower.startswith("multispamall "):
@@ -1307,9 +1347,9 @@ ________________________________
                     send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
                     return
                 try:
-                    channels = [ch for ch in c_id.guild.text_channels]
+                    guild_id, channels = fetch_guild_channels(c_id, self.token)
                     if not channels:
-                        send_msg(c_id, "❌ Not in a server", token=self.token)
+                        send_msg(c_id, "❌ Not in a server or failed to fetch channels", token=self.token)
                         return
                     send_msg(c_id, f"✅ {len(tokens)} tokens × {len(channels)} channels. Use $stopmulti to stop.", token=self.token)
                     multi_running["multispamall"] = True
@@ -1322,7 +1362,7 @@ ________________________________
                                     if not multi_running.get("multispamall", False):
                                         return
                                     try:
-                                        async with sess.post(f"https://discord.com/api/v9/channels/{ch.id}/messages", headers=headers, json={"content": message_text}) as r:
+                                        async with sess.post(f"https://discord.com/api/v9/channels/{ch}/messages", headers=headers, json={"content": message_text}) as r:
                                             if r.status == 429:
                                                 data = await r.json()
                                                 await asyncio.sleep(data.get("retry_after", 2))
@@ -1330,7 +1370,8 @@ ________________________________
                                     except:
                                         pass
 
-                    asyncio.run_coroutine_threadsafe(asyncio.gather(*[_spamall(t) for t in tokens]), asyncio.get_event_loop())
+                    for t in tokens:
+                        asyncio.run_coroutine_threadsafe(_spamall(t), bg_loop)
                 except:
                     send_msg(c_id, "❌ Not in a server", token=self.token)
                 return
@@ -1363,7 +1404,8 @@ ________________________________
                             except:
                                 pass
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_longspam(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_longspam(t), bg_loop)
                 return
 
             if cmd_lower.startswith("multiwordwall "):
@@ -1387,7 +1429,8 @@ ________________________________
                         except:
                             pass
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_wall(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_wall(t), bg_loop)
                 return
 
             if cmd_lower.startswith("multizalgo "):
@@ -1413,7 +1456,8 @@ ________________________________
                             except:
                                 pass
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_zalgo(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_zalgo(t), bg_loop)
                 return
 
             if cmd_lower.startswith("multieveryone "):
@@ -1438,7 +1482,8 @@ ________________________________
                             except:
                                 pass
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_everyone(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_everyone(t), bg_loop)
                 return
 
             # ========== MULTI DM ==========
@@ -1468,7 +1513,8 @@ ________________________________
                         except:
                             pass
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_dm(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_dm(t), bg_loop)
                 return
 
             if cmd_lower.startswith("multi_massdm "):
@@ -1478,32 +1524,34 @@ ________________________________
                     send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
                     return
                 try:
-                    members = [m for m in c_id.guild.members if not m.bot]
-                    if not members:
+                    guild_id, channels = fetch_guild_channels(c_id, self.token)
+                    if not guild_id:
                         send_msg(c_id, "❌ Not in a server", token=self.token)
                         return
-                    send_msg(c_id, f"✅ {len(tokens)} tokens DMing {len(members)} members...", token=self.token)
-
-                    chunk_size = max(1, len(members) // max(len(tokens), 1))
-                    chunks = [members[i:i+chunk_size] for i in range(0, len(members), chunk_size)]
-
-                    async def _dm_chunk(tok, member_chunk):
+                    
+                    send_msg(c_id, f"✅ {len(tokens)} tokens initiating Mass DM...", token=self.token)
+                    
+                    async def _massdm(tok):
                         headers = {"Authorization": tok, "Content-Type": "application/json"}
                         async with aiohttp.ClientSession() as sess:
-                            for m in member_chunk:
-                                try:
-                                    async with sess.post("https://discord.com/api/v9/users/@me/channels", headers=headers, json={"recipient_id": str(m.id)}) as r:
-                                        if r.status not in [200, 201]:
-                                            continue
-                                        ch = (await r.json()).get("id")
-                                    if ch:
-                                        await sess.post(f"https://discord.com/api/v9/channels/{ch}/messages", headers=headers, json={"content": message_text})
-                                    await asyncio.sleep(1.2)
-                                except:
-                                    pass
+                            try:
+                                async with sess.get(f"https://discord.com/api/v9/guilds/{guild_id}/members?limit=1000", headers=headers) as r:
+                                    if r.status == 200:
+                                        members = await r.json()
+                                        for m in members:
+                                            m_id = m.get("user", {}).get("id")
+                                            if m_id and not m.get("user", {}).get("bot"):
+                                                async with sess.post("https://discord.com/api/v9/users/@me/channels", headers=headers, json={"recipient_id": str(m_id)}) as dmr:
+                                                    if dmr.status in [200, 201]:
+                                                        ch = (await dmr.json()).get("id")
+                                                        if ch:
+                                                            await sess.post(f"https://discord.com/api/v9/channels/{ch}/messages", headers=headers, json={"content": message_text})
+                                                await asyncio.sleep(1.5)
+                            except:
+                                pass
 
-                    tasks = [_dm_chunk(tokens[i % len(tokens)], chunk) for i, chunk in enumerate(chunks)]
-                    asyncio.run_coroutine_threadsafe(asyncio.gather(*tasks), asyncio.get_event_loop())
+                    for t in tokens:
+                        asyncio.run_coroutine_threadsafe(_massdm(t), bg_loop)
                 except:
                     send_msg(c_id, "❌ Not in a server", token=self.token)
                 return
@@ -1527,7 +1575,8 @@ ________________________________
                         await sess.put(f"https://discord.com/api/v9/users/@me/relationships/{user_id}", headers=headers, json={"type": 1})
                         await asyncio.sleep(0.3)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_fr(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_fr(t), bg_loop)
                 return
 
             if cmd_lower.startswith("multiblock "):
@@ -1548,7 +1597,8 @@ ________________________________
                         await sess.put(f"https://discord.com/api/v9/users/@me/relationships/{user_id}", headers=headers, json={"type": 2})
                         await asyncio.sleep(0.3)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_block(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_block(t), bg_loop)
                 return
 
             if cmd_lower == "multi_accept_friends":
@@ -1570,7 +1620,8 @@ ________________________________
                                 await sess.put(f"https://discord.com/api/v9/users/@me/relationships/{rel['id']}", headers={**headers, "Content-Type": "application/json"}, json={})
                                 await asyncio.sleep(0.3)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_accept(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_accept(t), bg_loop)
                 return
 
             if cmd_lower == "multi_del_friends":
@@ -1592,7 +1643,8 @@ ________________________________
                                 await sess.delete(f"https://discord.com/api/v9/users/@me/relationships/{rel['id']}", headers=headers)
                                 await asyncio.sleep(0.3)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_delfr(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_delfr(t), bg_loop)
                 return
 
             # ========== MULTI JOIN / LEAVE ==========
@@ -1614,7 +1666,8 @@ ________________________________
                         await sess.post(f"https://discord.com/api/v9/invites/{invite}", headers=headers, json={})
                         await asyncio.sleep(0.5)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_join(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_join(t), bg_loop)
                 return
 
             if cmd_lower.startswith("multileave "):
@@ -1635,7 +1688,8 @@ ________________________________
                         await sess.delete(f"https://discord.com/api/v9/users/@me/guilds/{guild_id}", headers=headers)
                         await asyncio.sleep(0.4)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_leave(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_leave(t), bg_loop)
                 return
 
             if cmd_lower == "multi_leaveall":
@@ -1656,7 +1710,8 @@ ________________________________
                             await sess.delete(f"https://discord.com/api/v9/users/@me/guilds/{g['id']}", headers=headers)
                             await asyncio.sleep(0.4)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_leaveall(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_leaveall(t), bg_loop)
                 return
 
             # ========== MULTI SET NICK / AVATAR / USERNAME ==========
@@ -1667,7 +1722,11 @@ ________________________________
                     send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
                     return
                 try:
-                    guild_id = c_id.guild.id
+                    guild_id, _ = fetch_guild_channels(c_id, self.token)
+                    if not guild_id:
+                        send_msg(c_id, "❌ Not in a server", token=self.token)
+                        return
+                    
                     send_msg(c_id, f"✅ {len(tokens)} tokens setting nick '{nickname}'...", token=self.token)
 
                     async def _nick(tok):
@@ -1676,7 +1735,8 @@ ________________________________
                             await sess.patch(f"https://discord.com/api/v9/guilds/{guild_id}/members/@me", headers=headers, json={"nick": nickname})
                             await asyncio.sleep(0.3)
 
-                    asyncio.run_coroutine_threadsafe(asyncio.gather(*[_nick(t) for t in tokens]), asyncio.get_event_loop())
+                    for t in tokens:
+                        asyncio.run_coroutine_threadsafe(_nick(t), bg_loop)
                 except:
                     send_msg(c_id, "❌ Not in a server", token=self.token)
                 return
@@ -1704,7 +1764,8 @@ ________________________________
                         await sess.patch("https://discord.com/api/v9/users/@me", headers=headers, json={"avatar": data_uri})
                         await asyncio.sleep(1)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_avatar(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_avatar(t), bg_loop)
                 return
 
             if cmd_lower.startswith("multi_set_username "):
@@ -1722,7 +1783,7 @@ ________________________________
                         await asyncio.sleep(2)
 
                 for tok in tokens:
-                    asyncio.run_coroutine_threadsafe(_rename(tok), asyncio.get_event_loop())
+                    asyncio.run_coroutine_threadsafe(_rename(tok), bg_loop)
                 return
 
             if cmd_lower.startswith("multi_status_set "):
@@ -1740,7 +1801,8 @@ ________________________________
                         await sess.patch("https://discord.com/api/v9/users/@me/settings", headers=headers, json=payload)
                         await asyncio.sleep(0.5)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_status(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_status(t), bg_loop)
                 return
 
             if cmd_lower.startswith("multi_delete_msgs "):
@@ -1772,7 +1834,8 @@ ________________________________
                                 if deleted >= limit:
                                     break
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_delmsgs(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_delmsgs(t), bg_loop)
                 return
 
             # ========== MULTI REACT ==========
@@ -1796,7 +1859,8 @@ ________________________________
                         await sess.put(f"https://discord.com/api/v9/channels/{c_id}/messages/{msg_id}/reactions/{encoded}/@me", headers=headers)
                         await asyncio.sleep(0.2)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_react(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_react(t), bg_loop)
                 return
 
             if cmd_lower.startswith("multi_reactall "):
@@ -1821,7 +1885,8 @@ ________________________________
                             await sess.put(f"https://discord.com/api/v9/channels/{c_id}/messages/{msg['id']}/reactions/{encoded}/@me", headers=headers)
                             await asyncio.sleep(0.25)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_reactall(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_reactall(t), bg_loop)
                 return
 
             # ========== MULTI GHOST PING ==========
@@ -1851,7 +1916,8 @@ ________________________________
                                     await asyncio.sleep(0.3)
                                     await sess.delete(f"https://discord.com/api/v9/channels/{c_id}/messages/{msg_id}", headers=headers)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_ghost(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_ghost(t), bg_loop)
                 return
 
             # ========== MULTI PACK ==========
@@ -1888,7 +1954,8 @@ ________________________________
                             await sess.post(f"https://discord.com/api/v9/channels/{c_id}/messages", headers=headers, json={"content": line})
                             await asyncio.sleep(0.5)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_pack(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_pack(t), bg_loop)
                 return
 
             # ========== MULTI DROWN ==========
@@ -1923,7 +1990,8 @@ ________________________________
                             await sess.post(f"https://discord.com/api/v9/channels/{c_id}/messages", headers=headers, json={"content": line})
                             await asyncio.sleep(0.3)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_drown(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_drown(t), bg_loop)
                 return
 
             # ========== MULTI TYPING ==========
@@ -1944,7 +2012,8 @@ ________________________________
                             await sess.post(f"https://discord.com/api/v9/channels/{c_id}/typing", headers=headers)
                             await asyncio.sleep(5)
 
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_typing(t) for t in tokens]), asyncio.get_event_loop())
+                for t in tokens:
+                    asyncio.run_coroutine_threadsafe(_typing(t), bg_loop)
                 return
 
             # ========== MULTI NUKE ==========
@@ -1955,10 +2024,11 @@ ________________________________
                     send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
                     return
                 try:
-                    channels = [ch for ch in c_id.guild.text_channels]
+                    guild_id, channels = fetch_guild_channels(c_id, self.token)
                     if not channels:
-                        send_msg(c_id, "❌ Not in a server", token=self.token)
+                        send_msg(c_id, "❌ Not in a server or fetch failed", token=self.token)
                         return
+                    
                     send_msg(c_id, f"✅ MULTINUKE — {len(tokens)} tokens × {len(channels)} channels. Use $stopmulti to stop.", token=self.token)
                     multi_running["multinuke"] = True
 
@@ -1970,7 +2040,7 @@ ________________________________
                                     if not multi_running.get("multinuke", False):
                                         return
                                     try:
-                                        async with sess.post(f"https://discord.com/api/v9/channels/{ch.id}/messages", headers=headers, json={"content": f"@everyone {message_text}"}) as r:
+                                        async with sess.post(f"https://discord.com/api/v9/channels/{ch}/messages", headers=headers, json={"content": f"@everyone {message_text}"}) as r:
                                             if r.status == 429:
                                                 data = await r.json()
                                                 await asyncio.sleep(data.get("retry_after", 2))
@@ -1978,7 +2048,8 @@ ________________________________
                                     except:
                                         pass
 
-                    asyncio.run_coroutine_threadsafe(asyncio.gather(*[_nuke(t) for t in tokens]), asyncio.get_event_loop())
+                    for t in tokens:
+                        asyncio.run_coroutine_threadsafe(_nuke(t), bg_loop)
                 except:
                     send_msg(c_id, "❌ Not in a server", token=self.token)
                 return
