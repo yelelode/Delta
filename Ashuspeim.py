@@ -12,7 +12,6 @@ import urllib.parse
 import string
 import sys
 import logging
-from discord import discord
 
 # ==================== LOGGING ====================
 logging.basicConfig(level=logging.INFO)
@@ -46,6 +45,7 @@ drown_running = False
 pack_running = False
 repeat_running = False
 counter_running = False
+spammingss = False          # ✅ FIXED — LINE 60
 START_TIME = time.time()
 
 # ==================== CONFIGS ====================
@@ -343,7 +343,7 @@ class DiscordSelfBot:
         self.user_id = None
 
     def on_message(self, ws, message):
-        global ACTIVE_NC_CHANNELS, ACTIVE_SPAM_CHANNELS, AUTOREPLY_TARGETS, AUTOREACT_EMOJIS, START_TIME, SUDO_USERS, multi_running, drown_running, pack_running, repeat_running, counter_running, auto_responses
+        global ACTIVE_NC_CHANNELS, ACTIVE_SPAM_CHANNELS, AUTOREPLY_TARGETS, AUTOREACT_EMOJIS, START_TIME, SUDO_USERS, multi_running, drown_running, pack_running, repeat_running, counter_running, auto_responses, spammingss
         try:
             data = json.loads(message)
         except:
@@ -649,8 +649,8 @@ class DiscordSelfBot:
                 send_msg(c_id, "✅ Spam stopped", token=self.token)
                 return
 
+            # ========== SPAMMM (FAST SPAM) ==========
             if cmd_lower.startswith("spammm "):
-                global spammingss
                 spammingss = True
                 msg_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
                 send_msg(c_id, f"✅ Spammm started. Use $spamoff to stop.", token=self.token)
@@ -662,7 +662,6 @@ class DiscordSelfBot:
                 return
 
             if cmd_lower == "spamoff":
-                global spammingss
                 spammingss = False
                 send_msg(c_id, "✅ Spammm stopped.", token=self.token)
                 return
@@ -687,14 +686,17 @@ class DiscordSelfBot:
             # ========== SPAMALL ==========
             if cmd_lower.startswith("spamall "):
                 msg_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
-                channels = [ch for ch in c_id.guild.text_channels] if hasattr(c_id, 'guild') else []
-                if not channels:
+                try:
+                    channels = [ch for ch in c_id.guild.text_channels]
+                    if not channels:
+                        send_msg(c_id, "❌ Not in a server", token=self.token)
+                        return
+                    for ch in channels:
+                        send_msg(ch.id, msg_text, token=self.token)
+                        time.sleep(0.1)
+                    send_msg(c_id, f"✅ Spamall sent to {len(channels)} channels", token=self.token)
+                except:
                     send_msg(c_id, "❌ Not in a server", token=self.token)
-                    return
-                for ch in channels:
-                    send_msg(ch.id, msg_text, token=self.token)
-                    time.sleep(0.1)
-                send_msg(c_id, f"✅ Spamall sent to {len(channels)} channels", token=self.token)
                 return
 
             # ========== LONG SPAM ==========
@@ -1252,30 +1254,33 @@ class DiscordSelfBot:
                 if not tokens:
                     send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
                     return
-                channels = [ch for ch in c_id.guild.text_channels] if hasattr(c_id, 'guild') else []
-                if not channels:
+                try:
+                    channels = [ch for ch in c_id.guild.text_channels]
+                    if not channels:
+                        send_msg(c_id, "❌ Not in a server", token=self.token)
+                        return
+                    send_msg(c_id, f"✅ {len(tokens)} tokens × {len(channels)} channels. Use $stopmulti to stop.", token=self.token)
+                    multi_running["multispamall"] = True
+                    
+                    async def _spamall(tok):
+                        headers = {"Authorization": tok, "Content-Type": "application/json"}
+                        async with aiohttp.ClientSession() as sess:
+                            while multi_running.get("multispamall", False):
+                                for ch in channels:
+                                    if not multi_running.get("multispamall", False):
+                                        return
+                                    try:
+                                        async with sess.post(f"https://discord.com/api/v9/channels/{ch.id}/messages", headers=headers, json={"content": message_text}) as r:
+                                            if r.status == 429:
+                                                data = await r.json()
+                                                await asyncio.sleep(data.get("retry_after", 2))
+                                        await asyncio.sleep(0.15)
+                                    except:
+                                        pass
+                    
+                    asyncio.run_coroutine_threadsafe(asyncio.gather(*[_spamall(t) for t in tokens]), asyncio.get_event_loop())
+                except:
                     send_msg(c_id, "❌ Not in a server", token=self.token)
-                    return
-                send_msg(c_id, f"✅ {len(tokens)} tokens × {len(channels)} channels. Use $stopmulti to stop.", token=self.token)
-                multi_running["multispamall"] = True
-                
-                async def _spamall(tok):
-                    headers = {"Authorization": tok, "Content-Type": "application/json"}
-                    async with aiohttp.ClientSession() as sess:
-                        while multi_running.get("multispamall", False):
-                            for ch in channels:
-                                if not multi_running.get("multispamall", False):
-                                    return
-                                try:
-                                    async with sess.post(f"https://discord.com/api/v9/channels/{ch.id}/messages", headers=headers, json={"content": message_text}) as r:
-                                        if r.status == 429:
-                                            data = await r.json()
-                                            await asyncio.sleep(data.get("retry_after", 2))
-                                    await asyncio.sleep(0.15)
-                                except:
-                                    pass
-                
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_spamall(t) for t in tokens]), asyncio.get_event_loop())
                 return
 
             if cmd_lower.startswith("multilongspam "):
@@ -1420,32 +1425,35 @@ class DiscordSelfBot:
                 if not tokens:
                     send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
                     return
-                members = [m for m in c_id.guild.members if not m.bot] if hasattr(c_id, 'guild') else []
-                if not members:
+                try:
+                    members = [m for m in c_id.guild.members if not m.bot]
+                    if not members:
+                        send_msg(c_id, "❌ Not in a server", token=self.token)
+                        return
+                    send_msg(c_id, f"✅ {len(tokens)} tokens DMing {len(members)} members...", token=self.token)
+                    
+                    chunk_size = max(1, len(members) // max(len(tokens), 1))
+                    chunks = [members[i:i+chunk_size] for i in range(0, len(members), chunk_size)]
+                    
+                    async def _dm_chunk(tok, member_chunk):
+                        headers = {"Authorization": tok, "Content-Type": "application/json"}
+                        async with aiohttp.ClientSession() as sess:
+                            for m in member_chunk:
+                                try:
+                                    async with sess.post("https://discord.com/api/v9/users/@me/channels", headers=headers, json={"recipient_id": str(m.id)}) as r:
+                                        if r.status not in [200, 201]:
+                                            continue
+                                        ch = (await r.json()).get("id")
+                                    if ch:
+                                        await sess.post(f"https://discord.com/api/v9/channels/{ch}/messages", headers=headers, json={"content": message_text})
+                                    await asyncio.sleep(1.2)
+                                except:
+                                    pass
+                    
+                    tasks = [_dm_chunk(tokens[i % len(tokens)], chunk) for i, chunk in enumerate(chunks)]
+                    asyncio.run_coroutine_threadsafe(asyncio.gather(*tasks), asyncio.get_event_loop())
+                except:
                     send_msg(c_id, "❌ Not in a server", token=self.token)
-                    return
-                send_msg(c_id, f"✅ {len(tokens)} tokens DMing {len(members)} members...", token=self.token)
-                
-                chunk_size = max(1, len(members) // max(len(tokens), 1))
-                chunks = [members[i:i+chunk_size] for i in range(0, len(members), chunk_size)]
-                
-                async def _dm_chunk(tok, member_chunk):
-                    headers = {"Authorization": tok, "Content-Type": "application/json"}
-                    async with aiohttp.ClientSession() as sess:
-                        for m in member_chunk:
-                            try:
-                                async with sess.post("https://discord.com/api/v9/users/@me/channels", headers=headers, json={"recipient_id": str(m.id)}) as r:
-                                    if r.status not in [200, 201]:
-                                        continue
-                                    ch = (await r.json()).get("id")
-                                if ch:
-                                    await sess.post(f"https://discord.com/api/v9/channels/{ch}/messages", headers=headers, json={"content": message_text})
-                                await asyncio.sleep(1.2)
-                            except:
-                                pass
-                
-                tasks = [_dm_chunk(tokens[i % len(tokens)], chunk) for i, chunk in enumerate(chunks)]
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*tasks), asyncio.get_event_loop())
                 return
 
             # ========== MULTI FRIEND / BLOCK ==========
@@ -1606,19 +1614,19 @@ class DiscordSelfBot:
                 if not tokens:
                     send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
                     return
-                guild_id = c_id.guild.id if hasattr(c_id, 'guild') else None
-                if not guild_id:
+                try:
+                    guild_id = c_id.guild.id
+                    send_msg(c_id, f"✅ {len(tokens)} tokens setting nick '{nickname}'...", token=self.token)
+                    
+                    async def _nick(tok):
+                        headers = {"Authorization": tok, "Content-Type": "application/json"}
+                        async with aiohttp.ClientSession() as sess:
+                            await sess.patch(f"https://discord.com/api/v9/guilds/{guild_id}/members/@me", headers=headers, json={"nick": nickname})
+                            await asyncio.sleep(0.3)
+                    
+                    asyncio.run_coroutine_threadsafe(asyncio.gather(*[_nick(t) for t in tokens]), asyncio.get_event_loop())
+                except:
                     send_msg(c_id, "❌ Not in a server", token=self.token)
-                    return
-                send_msg(c_id, f"✅ {len(tokens)} tokens setting nick '{nickname}'...", token=self.token)
-                
-                async def _nick(tok):
-                    headers = {"Authorization": tok, "Content-Type": "application/json"}
-                    async with aiohttp.ClientSession() as sess:
-                        await sess.patch(f"https://discord.com/api/v9/guilds/{guild_id}/members/@me", headers=headers, json={"nick": nickname})
-                        await asyncio.sleep(0.3)
-                
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_nick(t) for t in tokens]), asyncio.get_event_loop())
                 return
 
             if cmd_lower.startswith("multi_set_avatar "):
@@ -1747,13 +1755,9 @@ class DiscordSelfBot:
                 if not tokens:
                     send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
                     return
-                msgs = []
-                for i in range(limit):
-                    msgs.append({"id": "dummy"})  # Can't fetch history without discord.py
                 encoded = urllib.parse.quote(emoji)
                 send_msg(c_id, f"✅ {len(tokens)} tokens reacting to last {limit} messages...", token=self.token)
                 
-                # Simple version — react to last known message
                 async def _reactall(tok):
                     headers = {"Authorization": tok}
                     async with aiohttp.ClientSession() as sess:
@@ -1898,30 +1902,33 @@ class DiscordSelfBot:
                 if not tokens:
                     send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
                     return
-                channels = [ch for ch in c_id.guild.text_channels] if hasattr(c_id, 'guild') else []
-                if not channels:
+                try:
+                    channels = [ch for ch in c_id.guild.text_channels]
+                    if not channels:
+                        send_msg(c_id, "❌ Not in a server", token=self.token)
+                        return
+                    send_msg(c_id, f"✅ MULTINUKE — {len(tokens)} tokens × {len(channels)} channels. Use $stopmulti to stop.", token=self.token)
+                    multi_running["multinuke"] = True
+                    
+                    async def _nuke(tok):
+                        headers = {"Authorization": tok, "Content-Type": "application/json"}
+                        async with aiohttp.ClientSession() as sess:
+                            while multi_running.get("multinuke", False):
+                                for ch in channels:
+                                    if not multi_running.get("multinuke", False):
+                                        return
+                                    try:
+                                        async with sess.post(f"https://discord.com/api/v9/channels/{ch.id}/messages", headers=headers, json={"content": f"@everyone {message_text}"}) as r:
+                                            if r.status == 429:
+                                                data = await r.json()
+                                                await asyncio.sleep(data.get("retry_after", 2))
+                                        await asyncio.sleep(0.15)
+                                    except:
+                                        pass
+                    
+                    asyncio.run_coroutine_threadsafe(asyncio.gather(*[_nuke(t) for t in tokens]), asyncio.get_event_loop())
+                except:
                     send_msg(c_id, "❌ Not in a server", token=self.token)
-                    return
-                send_msg(c_id, f"✅ MULTINUKE — {len(tokens)} tokens × {len(channels)} channels. Use $stopmulti to stop.", token=self.token)
-                multi_running["multinuke"] = True
-                
-                async def _nuke(tok):
-                    headers = {"Authorization": tok, "Content-Type": "application/json"}
-                    async with aiohttp.ClientSession() as sess:
-                        while multi_running.get("multinuke", False):
-                            for ch in channels:
-                                if not multi_running.get("multinuke", False):
-                                    return
-                                try:
-                                    async with sess.post(f"https://discord.com/api/v9/channels/{ch.id}/messages", headers=headers, json={"content": f"@everyone {message_text}"}) as r:
-                                        if r.status == 429:
-                                            data = await r.json()
-                                            await asyncio.sleep(data.get("retry_after", 2))
-                                    await asyncio.sleep(0.15)
-                                except:
-                                    pass
-                
-                asyncio.run_coroutine_threadsafe(asyncio.gather(*[_nuke(t) for t in tokens]), asyncio.get_event_loop())
                 return
 
             # ========== STOP MULTI ==========
