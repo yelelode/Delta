@@ -22,7 +22,7 @@ OWNER_ID = "722351377157980170"
 
 # ==================== TOKENS ====================
 TOKENS = [
-    "MTUzMjM5NjM5NjkxMTUzMDExNA.GsxOOQ.pbtBYDdYBbm5rFmfCorHWu1QFhcA-RcVNgFRm0",
+    "MTUxOTY0OTE3NzgxMjk5MjA0Mg.G4iPik.oPkZnZgEgIIYNAoQc-58FjmXigYkMFTyPOO7oA",
 ]
 
 TOKENS = [t for t in TOKENS if t and t.strip() and not t.startswith('.')]
@@ -407,156 +407,245 @@ class DiscordSelfBot:
             cmd_lower = cmd_part.lower()
             args = cmd_part.split()
 
-            # ========== HELP MENUS (MOBILE OPTIMIZED) ==========
+            # ========== HELP MENUS ==========
             if cmd_lower == "help" or cmd_lower == "h":
                 send_msg(c_id, """**```fix
-==[ 🚀 𝘼𝙨𝙝𝙪 | HELP ]==
-• h    : This menu
-• gnrl : General cmds
-• sh   : Spam cmds
-• mh   : Multi cmds
-• dh   : Drown/pack
-• th   : Troll/fake
-• arh  : Auto-reply
-• gch  : Group chat
-- - - - - - - - - - -
-• ping   : Latency
-• status : Bot status
-• prefix : Set prefix
-• restart: Reboot bot
-=[ ☠️ 𝘼𝙨𝙝𝙪 On Top ☠️ ]=
+╔════════════════════════════════════════════════╗
+║                                                ║
+║            🚀 𝘼𝙨𝙝𝙪 SELFBOTS v2 🚀            ║
+║                                                ║
+║             ⚡ Dominate your chats ⚡          ║
+║                                                ║
+╚════════════════════════════════════════════════╝
+
+ 🛠️  COMMANDS:
+──────────────────────────────────────────────────
+ $nc @user            → Name change spam
+ $stopnc              → Stop name spam
+ $spam @user          → Start spam in channel
+ $stopspam            → Stop all spam threads
+ $spammm <msg>        → Fast 0.05s delay spam
+ $spamoff             → Stop fast spam
+ $repeat_spam <msg>   → Infinite repeat spam
+ $stoprepeat          → Stop repeat spam
+ $longspam @u <n>     → Send long multi-line msg
+ $spamall <msg>       → Spam in all channels
+ $multispam <msg>     → Multi-token spam
+ $multinuke <msg>     → Nuke server (all tokens)
+ $stopmulti           → Stop all multi commands
+ $drown_mix @u        → Mixed abuse flood
+ $continuous_pack @u  → Endless abuse pack
+ $stoppack            → Stop continuous pack
+ $crash_dm @user      → Invisible char DM bomb
+ $fake_ban @user      → Fake ban announcement
+ $autoreply @user     → Target auto-reply
+ $gcstart <int>       → Auto-rename GC
+ $ping                → Check bot latency
+ $prefix <p>          → Change command prefix
+
+ ℹ️ Type $gnrl, $sh,$mh, $dh,$th for more categories!
+──────────────────────────────────────────────────
+          ☠️  𝘼𝙨𝙝𝙪 On Top  ☠️
 ```**""", token=self.token)
                 return
 
             if cmd_lower == "general" or cmd_lower == "gnrl":
                 send_msg(c_id, """**```fix
-==[ ⚙️ 𝘼𝙨𝙝𝙪 | GENERAL ]==
-• help    : Full index
-• gnrl    : This menu
-• ping    : Latency
-• status  : Bot status
-• restart : Reboot bot
-• prefix  : Set prefix
-• access  : Give sudo
-• remaccess: Rem sudo
-=[ ☠️ 𝘼𝙨𝙝𝙪 On Top ☠️ ]=
+╔══════════════════════════════════════════╗
+   ⚙️  𝘼𝙨𝙝𝙪  |  GENERAL COMMANDS
+╚══════════════════════════════════════════╝
+  • help / h           — Full help index
+  • general / gnrl     — This menu
+  • spamhelp / sh      — Spam commands menu
+  • multihelp / mh     — Multi-token menu
+  • drownhelp / dh     — Drown/pack menu
+  • trollhelp / th     — Troll/fake menu
+  • autoreplyhelp / arh — Auto-reply menu
+  • gchelp / gch       — Group chat menu
+
+  • ping               — Check latency
+  • status             — Bot status
+  • restart            — Restart bot
+  • prefix <p>         — Change prefix
+  • access @user       — Give sudo access
+  • removeaccess @user — Remove sudo access
+
+  ─────────────────────────────────────
+        ☠️  𝘼𝙨𝙝𝙪 On Top  ☠️
 ```**""", token=self.token)
                 return
 
             if cmd_lower == "spamhelp" or cmd_lower == "sh":
                 send_msg(c_id, """**```fix
-==[ 💥 𝘼𝙨𝙝𝙪 | SPAM ]==
-• spam @u   : Start spam
-• stopspam  : Stop spam
-• nc @u     : Name spam
-• stopnc    : Stop name
-• spamall   : All channels
-• invis <n> : Invis spam
-• nitro_spam: Fake nitro
-• zalgo <n> : Zalgo text
-• repeat_spam: Inf repeat
-• counter_spam: Auto count
-• longspam  : 2k char spam
-• wordwall  : Word wall
-• edit_spam : Edit bypass
-• spammm    : Fast 0.05s
-• spamoff   : Stop fast
-=[ ☠️ 𝘼𝙨𝙝𝙪 On Top ☠️ ]=
+╔══════════════════════════════════════════╗
+   💥  𝘼𝙨𝙝𝙪  |  SPAM COMMANDS
+╚══════════════════════════════════════════╝
+  SINGLE TOKEN SPAM
+  • spam @user          — Start spam in channel
+  • stopspam            — Stop spam
+  • nc @user            — Nickname change spam
+  • stopnc              — Stop NC spam
+  • spamall <msg>       — Spam in all channels
+  • invis <count>       — Invisible character spam
+  • nitro_spam <count>  — Fake nitro links spam
+  • zalgo <count> <t>   — Zalgo corrupted text
+  • repeat_spam <msg>   — Infinite repeat spam (+stoprepeat)
+  • stoprepeat          — Stop repeat spam
+  • counter_spam <pre>  — Auto-counter spam (+stopcounter)
+  • stopcounter         — Stop counter spam
+  • channelspam <id>    — Spam specific channel
+  • flood_channel <msg> — Flood current channel
+  • longspam @u <cnt>   — 2000-char long abuse spam
+  • wordwall <word>     — 2000-char word wall
+  • edit_spam <msg>     — Edit-spam bypass filter
+  • spammm <msg>        — Fast 0.05s delay spam (+spamoff)
+  • spamoff             — Stop spammm
+
+  ─────────────────────────────────────
+        ☠️  𝘼𝙨𝙝𝙪 On Top  ☠️
 ```**""", token=self.token)
                 return
 
             if cmd_lower == "multihelp" or cmd_lower == "mh":
                 send_msg(c_id, """**```fix
-==[ 🌐 𝘼𝙨𝙝𝙪 | MULTI ]==
-[Spam]
-• multispam : All spam ch
-• multispamall: All servers
-• multilongspam: All 2k
-• multiwordwall: All wall
-• multizalgo: All zalgo
-• multieveryone: All @evry
-[Social]
-• multidm   : All DM
-• multi_massdm: Mass DM
-• multifriend: Add friend
-• multiblock: Block user
-[Server]
-• multijoin : Join server
-• multileave: Leave server
-• multi_leaveall: Lve ALL
-[Account]
-• multi_setnick: Set nick
-• multi_set_avatar: Avatar
-• multi_set_username: Name
-• multi_status_set: Status
-[Other]
-• multireact: All react
-• multinuke : Nuke server
-• stopmulti : STOP ALL
-=[ ☠️ 𝘼𝙨𝙝𝙪 On Top ☠️ ]=
+╔══════════════════════════════════════════╗
+   🌐  𝘼𝙨𝙝𝙪  |  MULTI-TOKEN COMMANDS
+╚══════════════════════════════════════════╝
+  SPAM
+  • multispam <msg>      — All tokens spam channel
+  • multispamall <msg>   — All tokens spam all channels
+  • multilongspam <id>   — All tokens long spam
+  • multiwordwall <word> — All tokens word wall
+  • multizalgo <cnt> <t> — All tokens zalgo spam
+  • multieveryone <cnt>  — All tokens @everyone
+
+  DM / FRIENDS
+  • multidm <id> <msg>   — All tokens DM user
+  • multi_massdm <msg>   — All tokens DM all members
+  • multifriend <id>     — All tokens friend request
+  • multiblock <id>      — All tokens block user
+  • multi_accept_friends — All tokens accept friend reqs
+  • multi_del_friends    — All tokens remove friends
+
+  SERVER
+  • multijoin <invite>   — All tokens join server
+  • multileave <gid>     — All tokens leave server
+  • multi_leaveall       — All tokens leave ALL servers
+  • multi_setnick <name> — All tokens set nickname
+  • multi_set_avatar <f> — All tokens set avatar
+  • multi_set_username <n> — All tokens set username
+  • multi_status_set <t> — All tokens set status
+  • multi_delete_msgs <n> — All tokens delete own msgs
+
+  OTHER
+  • multireact <id> <e>  — All tokens react
+  • multi_reactall <e>   — All tokens react last 10 msgs
+  • multi_ghost_ping @u  — All tokens ghost ping
+  • multi_pack @u <l>    — All tokens abuse pack
+  • multi_drown <id> <l> — All tokens drown
+  • multi_typing <secs>  — All tokens typing indicator
+  • multinuke <msg>      — All tokens nuke server
+
+  • stopmulti            — Stop all multi commands
+
+  ─────────────────────────────────────
+        ☠️  𝘼𝙨𝙝𝙪 On Top  ☠️
 ```**""", token=self.token)
                 return
 
             if cmd_lower == "drownhelp" or cmd_lower == "dh":
                 send_msg(c_id, """**```fix
-==[ 💀 𝘼𝙨𝙝𝙪 | DROWN ]==
-• drown_hindi   : Hindi
-• drown_hinglish: Hinglish
-• drown_english : English
-• drown_mix     : Mix
-• hindi_pack    : Pack HN
-• hinglish_pack : Pack HING
-• punjabi_pack  : Pack PB
-• urdu_pack     : Pack UR
-• god_pack      : All Mix
-• continuous_pack: Inf pack
-• stoppack      : Stop pack
-• stopdrown     : Stop drwn
-• multi_pack    : Multi pck
-• multi_drown   : Multi drn
-=[ ☠️ 𝘼𝙨𝙝𝙪 On Top ☠️ ]=
+╔══════════════════════════════════════════╗
+   💀  𝘼𝙨𝙝𝙪  |  DROWN / PACK COMMANDS
+╚══════════════════════════════════════════╝
+  SINGLE TOKEN
+  • drown_hindi @u [n]   — Hindi abuse flood
+  • drown_hinglish @u [n] — Hinglish abuse flood
+  • drown_english @u [n]  — English abuse flood
+  • drown_mix @u [n]      — Mixed language flood
+  • hindi_pack @u [n]     — Hindi pack
+  • hinglish_pack @u [n]  — Hinglish pack
+  • punjabi_pack @u [n]   — Punjabi pack
+  • urdu_pack @u [n]      — Urdu pack
+  • mix_all_pack @u       — All languages mix
+  • god_pack @u           — All languages combined
+  • continuous_pack @u    — Endless pack (+stoppack)
+  • stoppack              — Stop continuous pack
+  • stopdrown             — Stop any drown
+
+  MULTI TOKEN
+  • multi_pack @u <lang>  — All tokens pack
+  • multi_drown <id>      — All tokens drown
+
+  ─────────────────────────────────────
+        ☠️  𝘼𝙨𝙝𝙪 On Top  ☠️
 ```**""", token=self.token)
                 return
 
             if cmd_lower == "trollhelp" or cmd_lower == "th":
                 send_msg(c_id, """**```fix
-==[ 🎭 𝘼𝙨𝙝𝙪 | TROLL ]==
-• fake_ban  : Fake ban msg
-• fake_mute : Fake mute msg
-• fake_kick : Fake kick msg
-• fake_warn : Fake warn msg
-• rick_roll : Fake nitro
-• crash_dm  : Crash bomb
-• ip_logger : Fake IP log
-• countdown : 10s counter
-• typing_spam: Keep typing
-=[ ☠️ 𝘼𝙨𝙝𝙪 On Top ☠️ ]=
+╔══════════════════════════════════════════╗
+   🎭  𝘼𝙨𝙝𝙪  |  TROLL / FAKE COMMANDS
+╚══════════════════════════════════════════╝
+  FAKE ACTIONS
+  • fake_ban @u          — Fake ban announcement
+  • fake_mute @u         — Fake mute announcement
+  • fake_kick @u         — Fake kick announcement
+  • fake_warn @u         — Fake warning DM
+  • fake_user @m [msg]   — Webhook impersonation
+
+  TROLL CONTENT
+  • rick_roll @u         — Disguised rick roll
+  • troll_pasta [style]  — Copypasta
+  • crash_dm @u          — Invisible char DM bomb
+  • ip_logger @u         — Fake IP logger
+  • fake_nitro_dm @u     — Fake nitro DM
+  • countdown [n] [msg]  — Countdown then message
+  • typing_spam [secs]   — Keep typing indicator
+  • mimic @user          — Echo user msgs 60s
+
+  ─────────────────────────────────────
+        ☠️  𝘼𝙨𝙝𝙪 On Top  ☠️
 ```**""", token=self.token)
                 return
 
             if cmd_lower == "autoreplyhelp" or cmd_lower == "arh":
                 send_msg(c_id, """**```fix
-==[ 🔄 𝘼𝙨𝙝𝙪 | AUTOREPLY ]==
-• autoreply @u : AR to user
-• remautoreply : Remove user
-• stopautoreply: Clear all
-• addar <t,r>  : Add trigger
-• removear <t> : Rem trigger
-• lister       : List triggers
-• autoreact <e>: Auto emoji
-• stopautoreact: Stop emoji
-=[ ☠️ 𝘼𝙨𝙝𝙪 On Top ☠️ ]=
+╔══════════════════════════════════════════╗
+   🔄  𝘼𝙨𝙝𝙪  |  AUTO-REPLY COMMANDS
+╚══════════════════════════════════════════╝
+  TARGET BASED
+  • autoreply @user      — Auto-reply to user
+  • removeautoreply @user — Remove auto-reply
+  • stopautoreply        — Clear all auto-replies
+
+  TRIGGER BASED (JSON file)
+  • addar trigger,resp   — Add auto-response
+  • removear <trigger>   — Remove auto-response
+  • lister               — List all auto-responses
+
+  REACTIONS
+  • autoreact <emoji>    — Auto-react with emoji
+  • stopautoreact        — Stop auto-react
+
+  ─────────────────────────────────────
+        ☠️  𝘼𝙨𝙝𝙪 On Top  ☠️
 ```**""", token=self.token)
                 return
 
             if cmd_lower == "gchelp" or cmd_lower == "gch":
                 send_msg(c_id, """**```fix
-==[ 💬 𝘼𝙨𝙝𝙪 | GC CMDS ]==
-• gcstart [int]: GC name spam
-• gcstop       : Stop GC spam
-• gc_mass_add  : Add friends
-• gc_invite_spam: GC spam
-=[ ☠️ 𝘼𝙨𝙝𝙪 On Top ☠️ ]=
+╔══════════════════════════════════════════╗
+   💬  𝘼𝙨𝙝𝙪  |  GROUP CHAT COMMANDS
+╚══════════════════════════════════════════╝
+  • gcstart [interval]   — Auto-rename GC (gcname.txt)
+  • gcstop               — Stop auto-rename
+  • gc_mass_add          — Add all friends to GC
+  • gc_invite_spam [n]   — Spam in GC
+  • set_gc_icon [file]   — Change GC icon
+
+  ─────────────────────────────────────
+        ☠️  𝘼𝙨𝙝𝙪 On Top  ☠️
 ```**""", token=self.token)
                 return
 
