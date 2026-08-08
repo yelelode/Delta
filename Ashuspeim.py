@@ -22,7 +22,7 @@ OWNER_ID = "722351377157980170"
 
 # ==================== TOKENS ====================
 TOKENS = [
-    "MTQyOTc2NjUyMzUyNjA1ODA2NA.GkMJAa.F3ZuUErdvrOPZQA-FRcffnF5dN3CMIqpXjnWac",
+    "MTUxOTY0OTE3NzgxMjk5MjA0Mg.G4iPik.oPkZnZgEgIIYNAoQc-58FjmXigYkMFTyPOO7oA",
 ]
 
 TOKENS = [t for t in TOKENS if t and t.strip() and not t.startswith('.')]
@@ -417,9 +417,9 @@ class DiscordSelfBot:
             cmd_lower = cmd_part.lower()
             args = cmd_part.split()
 
-            # ========== GIANT STYLISH HELP MENU ==========
+            # ========== SPLIT GIANT STYLISH HELP MENU ==========
             if cmd_lower == "help" or cmd_lower == "h":
-                send_msg(c_id, """**```fix
+                help_part1 = """**```fix
 ________𝒙𝘼𝙨𝙝𝙪_𝙎𝙚𝙡𝙛𝙗𝙤𝙩_𝙑𝟮𝒙_________
 ❄️ ☠️ Tʜᴇʏ Cᴀʟʟ Mᴇ 𝘼𝙨𝙝𝙪 ☠️ ❄️
 ________________________________
@@ -449,6 +449,9 @@ ________________________________
    » $multinuke <msg>     • NUKE SERVER WITH ALL BOTS
    » $multidm <id> <m>    • All bots DM user
    » $multi_massdm <m>    • Mass DM server members
+```**"""
+                
+                help_part2 = """**```fix
    » $multijoin <code>    • All bots join server
    » $multileave <id>     • All bots leave server
    » $multi_leaveall      • All bots leave all servers
@@ -473,10 +476,13 @@ ________________________________
    » $autoreact <e>    • ON: Auto emoji \vert{} OFF: $stopautoreact
    » $gcstart <delay>  • ON: Rename GC  \vert{} OFF: $gcstop
  🧸❄️━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━❄️🧸
-```**""", token=self.token)
+```**"""
+                send_msg(c_id, help_part1, token=self.token)
+                time.sleep(0.5)
+                send_msg(c_id, help_part2, token=self.token)
                 return
 
-            # ========== OTHER HELP MENUS (Left intact as per instructions) ==========
+            # ========== OTHER HELP MENUS ==========
             if cmd_lower == "general" or cmd_lower == "gnrl":
                 send_msg(c_id, """**```fix
 ╔══════════════════════════════════════════╗
