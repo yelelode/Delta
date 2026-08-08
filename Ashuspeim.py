@@ -49,15 +49,6 @@ counter_running = False
 spammingss = False
 START_TIME = time.time()
 
-# ==================== ASYNC BACKGROUND ENGINE ====================
-bg_loop = asyncio.new_event_loop()
-
-def start_bg_loop(loop):
-    asyncio.set_event_loop(loop)
-    loop.run_forever()
-
-threading.Thread(target=start_bg_loop, args=(bg_loop,), daemon=True).start()
-
 # ==================== CONFIGS ====================
 NC_DELAY = 0.005
 SPAM_DELAY = 0.05
@@ -88,7 +79,7 @@ SPAM_MESSAGES = [
 REPLY_TEXTS = [
     "𝐖ᴏ ʙʜɪ ᴋʏᴀ ᴅɪɴ ᴛʜᴇ ᴊᴀʙ ᴛʀʏ ᴍᴀᴀ ᴍᴜᴊʜᴇ 𝐀ᴘɴᴀ 𝐂ʜᴜᴛ 𝐃ᴇᴛɪ ᴛʜɪ 💔",
     "𝐀ᴡᴀᴢ 𝐍ɪᴄʜᴇ 𝐆ᴜʟᴀᴀᴍ 🤢",
-    "𝐓ʀʏ 𝐌ᴀᴀ ɴᴇ 𝐂ʜUDɴᴇ 𝐌ᴀɪ ɢᴏʟᴅ 𝐌ᴇᴅᴀʟ 𝐉ᴇᴇᴛᴀ 👑",
+    "𝐓ʀʏ 𝐌ᴀᴀ ɴᴇ 𝐂ʜᴜᴅɴᴇ 𝐌ᴀɪ ɢᴏʟᴅ 𝐌ᴇᴅᴀʟ 𝐉ᴇᴇᴛᴀ 👑",
     "𝐓ᴇʀɪ 𝐌ᴀᴀ ᴋɪ 𝐂ʜᴜᴛ 𝐌ᴇ 𝐌ᴇʀᴀ 𝐋ᴜɴᴅ 🖕",
     "𝐁ʜᴏꜱᴀᴅɪᴋᴇ 𝐀ᴘɴɪ 𝐁ᴇʜᴇɴ 𝐂ʜᴜᴅᴀ 🖕",
 ]
@@ -254,7 +245,7 @@ def send_msg(c_id, text, reply_to=None, token=None):
     headers = {"Authorization": token, "Content-Type": "application/json"}
     payload = {"content": text}
     if reply_to:
-        payload["message_reference"] = {"channel_id": c_id, "message_id": reply_to}
+        payload["message_reference"] = {"channel_id": str(c_id), "message_id": str(reply_to)}
     try:
         response = requests.post(f"https://discord.com/api/v9/channels/{c_id}/messages", headers=headers, json=payload)
         if response.status_code == 429:
@@ -263,20 +254,6 @@ def send_msg(c_id, text, reply_to=None, token=None):
         return response
     except:
         return None
-
-def fetch_guild_channels(channel_id, token):
-    headers = {"Authorization": token}
-    try:
-        r = requests.get(f"https://discord.com/api/v9/channels/{channel_id}", headers=headers, timeout=10)
-        if r.status_code == 200:
-            guild_id = r.json().get("guild_id")
-            if guild_id:
-                gr = requests.get(f"https://discord.com/api/v9/guilds/{guild_id}/channels", headers=headers, timeout=10)
-                if gr.status_code == 200:
-                    return guild_id, [ch["id"] for ch in gr.json() if ch.get("type") == 0]
-    except:
-        pass
-    return None, []
 
 def change_gc_name(g_id, name, token=None):
     if not token:
@@ -323,6 +300,14 @@ def extract_user_id_from_mention(mention):
     if match:
         return match.group()
     return None
+
+def run_async_tasks(tasks):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(asyncio.gather(*tasks))
+    finally:
+        loop.close()
 
 # ==================== WORKERS ====================
 def nc_worker(g_id, target_mention, token=None):
@@ -397,10 +382,12 @@ class DiscordSelfBot:
 
         if data.get("t") == "MESSAGE_CREATE":
             msg = data["d"]
-            auth_id = msg["author"]["id"]
-            content = msg["content"].strip()
-            c_id = msg["channel_id"]
-            m_id = msg["id"]
+            auth_id = msg.get("author", {}).get("id")
+            if not auth_id: return
+            content = msg.get("content", "").strip()
+            c_id = msg.get("channel_id")
+            m_id = msg.get("id")
+            guild_id = msg.get("guild_id")
             key_suffix = f"{c_id}_{self.token[:10]}"
 
             # --- AUTOREPLY (JSON based) ---
@@ -430,7 +417,7 @@ class DiscordSelfBot:
             cmd_lower = cmd_part.lower()
             args = cmd_part.split()
 
-            # ========== GIANT HELP MENU (MIMICKING SCREENSHOT) ==========
+            # ========== GIANT STYLISH HELP MENU ==========
             if cmd_lower == "help" or cmd_lower == "h":
                 send_msg(c_id, """**```fix
 ________𝒙𝘼𝙨𝙝𝙪_𝙎𝙚𝙡𝙛𝙗𝙤𝙩_𝙑𝟮𝒙_________
@@ -444,13 +431,13 @@ ________________________________
    » $repeat_spam <m>  • ON: Inf repeat \vert{} OFF: $stoprepeat
    » $counter_spam <m> • ON: Auto count \vert{} OFF: $stopcounter
    » $nc @user         • ON: Name spam  \vert{} OFF: $stopnc
-   » $longspam @u <n>  • 2000-char spam | One-time
-   » $spamall <msg>    • Spam in all channels
-   » $invis <count>    • Invisible ghost spam
-   » $nitro_spam <n>   • Fake nitro spam generator
-   » $zalgo <n> <txt>  • Zalgo corrupted text spam
-   » $wordwall <word>  • 2000-char word wall
-   » $edit_spam <msg>  • Edit bypass spam
+   » $longspam @u <n>  • ON: 2k spam    \vert{} OFF: $stoplongspam
+   » $spamall <msg>    • ON: Spam in all| OFF: $stopspamall
+   » $invis <count>    • ON: Invis spam \vert{} OFF: $stopinvis
+   » $nitro_spam <n>   • ON: Fake nitro \vert{} OFF: $stopnitro
+   » $zalgo <n> <txt>  • ON: Zalgo text \vert{} OFF: $stopzalgo
+   » $wordwall <word>  • ON: Word wall  \vert{} OFF: $stopwordwall
+   » $edit_spam <msg>  • ON: Edit bypass\vert{} OFF: $stopeditspam
  
  ❄️ MULTI-TOKEN (STOP ALL WITH: $stopmulti):
    » $multispam <msg>     • All bots spam channel
@@ -479,24 +466,12 @@ ________________________________
    » $drown_english @u • ON: English     \vert{} OFF: $stopdrown
    » $drown_mix @u     • ON: Mix Flood   \vert{} OFF: $stopdrown
    » $continuous_pack @u• ON: Endless Pack\vert{} OFF: $stoppack
-   » $hindi_pack @u    • One-time Hindi pack
-   » $god_pack @u      • Ultimate mixed pack
- 
- ❄️ TROLLING & FAKE ACTIONS:
-   » $fake_ban @u      • Fake ban announcement
-   » $fake_mute @u     • Fake mute announcement
-   » $fake_kick @u     • Fake kick announcement
-   » $crash_dm @user   • Invis-char DM crasher
-   » $rick_roll @u     • Disguised rick roll
-   » $ip_logger @u     • Fake IP grabber
-   » $countdown <n> <m>• Countdown to message
  
  ❄️ AUTO-REPLY & SYSTEM:
    » $autoreply @u     • ON: Auto-reply \vert{} OFF: $removeautoreply
    » $addar <t>,<r>    • Add custom trigger,response
    » $autoreact <e>    • ON: Auto emoji \vert{} OFF: $stopautoreact
    » $gcstart <delay>  • ON: Rename GC  \vert{} OFF: $gcstop
-   » $ping / $status   • Check bot latency & status
  🧸❄️━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━❄️🧸
 ```**""", token=self.token)
                 return
@@ -534,25 +509,18 @@ ________________________________
    💥  𝘼𝙨𝙝𝙪  |  SPAM COMMANDS
 ╚══════════════════════════════════════════╝
   SINGLE TOKEN SPAM
-  • spam @user          — Start spam in channel
-  • stopspam            — Stop spam
-  • nc @user            — Nickname change spam
-  • stopnc              — Stop NC spam
-  • spamall <msg>       — Spam in all channels
-  • invis <count>       — Invisible character spam
-  • nitro_spam <count>  — Fake nitro links spam
-  • zalgo <count> <t>   — Zalgo corrupted text
+  • spam @user          — Start spam in channel (+stopspam)
+  • nc @user            — Nickname change spam (+stopnc)
+  • spamall <msg>       — Spam in all channels (+stopspamall)
+  • invis <count>       — Invisible char spam (+stopinvis)
+  • nitro_spam <count>  — Fake nitro links spam (+stopnitro)
+  • zalgo <count> <t>   — Zalgo text (+stopzalgo)
   • repeat_spam <msg>   — Infinite repeat spam (+stoprepeat)
-  • stoprepeat          — Stop repeat spam
   • counter_spam <pre>  — Auto-counter spam (+stopcounter)
-  • stopcounter         — Stop counter spam
-  • channelspam <id>    — Spam specific channel
-  • flood_channel <msg> — Flood current channel
-  • longspam @u <cnt>   — 2000-char long abuse spam
-  • wordwall <word>     — 2000-char word wall
-  • edit_spam <msg>     — Edit-spam bypass filter
-  • spammm <msg>        — Fast 0.05s delay spam (+spamoff)
-  • spamoff             — Stop spammm
+  • longspam @u <cnt>   — 2000-char spam (+stoplongspam)
+  • wordwall <word>     — 2000-char word wall (+stopwordwall)
+  • edit_spam <msg>     — Edit-spam bypass (+stopeditspam)
+  • spammm <msg>        — Fast 0.05s spam (+spamoff)
 
   ─────────────────────────────────────
         ☠️  𝘼𝙨𝙝𝙪 On Top  ☠️
@@ -612,19 +580,19 @@ ________________________________
    💀  𝘼𝙨𝙝𝙪  |  DROWN / PACK COMMANDS
 ╚══════════════════════════════════════════╝
   SINGLE TOKEN
-  • drown_hindi @u [n]   — Hindi abuse flood
-  • drown_hinglish @u [n] — Hinglish abuse flood
-  • drown_english @u [n]  — English abuse flood
-  • drown_mix @u [n]      — Mixed language flood
-  • hindi_pack @u [n]     — Hindi pack
-  • hinglish_pack @u [n]  — Hinglish pack
-  • punjabi_pack @u [n]   — Punjabi pack
-  • urdu_pack @u [n]      — Urdu pack
-  • mix_all_pack @u       — All languages mix
-  • god_pack @u           — All languages combined
-  • continuous_pack @u    — Endless pack (+stoppack)
-  • stoppack              — Stop continuous pack
-  • stopdrown             — Stop any drown
+  • drown_hindi @u       — Hindi abuse flood
+  • drown_hinglish @u    — Hinglish abuse flood
+  • drown_english @u     — English abuse flood
+  • drown_mix @u         — Mixed language flood
+  • hindi_pack @u        — Hindi pack
+  • hinglish_pack @u     — Hinglish pack
+  • punjabi_pack @u      — Punjabi pack
+  • urdu_pack @u         — Urdu pack
+  • mix_all_pack @u      — All languages mix
+  • god_pack @u          — All languages combined
+  • continuous_pack @u   — Endless pack (+stoppack)
+  • stoppack             — Stop continuous pack
+  • stopdrown            — Stop any drown
 
   MULTI TOKEN
   • multi_pack @u <lang>  — All tokens pack
@@ -645,17 +613,13 @@ ________________________________
   • fake_mute @u         — Fake mute announcement
   • fake_kick @u         — Fake kick announcement
   • fake_warn @u         — Fake warning DM
-  • fake_user @m [msg]   — Webhook impersonation
 
   TROLL CONTENT
   • rick_roll @u         — Disguised rick roll
-  • troll_pasta [style]  — Copypasta
   • crash_dm @u          — Invisible char DM bomb
   • ip_logger @u         — Fake IP logger
-  • fake_nitro_dm @u     — Fake nitro DM
   • countdown [n] [msg]  — Countdown then message
   • typing_spam [secs]   — Keep typing indicator
-  • mimic @user          — Echo user msgs 60s
 
   ─────────────────────────────────────
         ☠️  𝘼𝙨𝙝𝙪 On Top  ☠️
@@ -720,18 +684,15 @@ ________________________________
                 send_msg(c_id, "✅ Spam stopped", token=self.token)
                 return
 
-            # ========== SPAMMM (FAST SPAM) — ONLY CHANGE HERE ==========
+            # ========== SPAMMM (FAST SPAM) ==========
             if cmd_lower.startswith("spammm "):
-                global spammingss
                 spammingss = True
-                # If user provides custom message, use that, else use the default long spam
                 if len(cmd_part.split()) > 1:
                     msg_text = " ".join(cmd_part.split()[1:])
                 else:
                     msg_text = "(Target)ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʀᴀᴘᴇ ᴋʀʀᴀ ʜᴜ-𒐫𒐫𒐫𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋"
                 send_msg(c_id, f"✅ Spammm started. Use $spamoff to stop.", token=self.token)
                 def _spam_fast():
-                    global spammingss
                     while spammingss:
                         send_msg(c_id, msg_text, token=self.token)
                         time.sleep(0.05)
@@ -739,7 +700,6 @@ ________________________________
                 return
 
             if cmd_lower == "spamoff":
-                global spammingss
                 spammingss = False
                 send_msg(c_id, "✅ Spammm stopped.", token=self.token)
                 return
@@ -761,86 +721,113 @@ ________________________________
                 send_msg(c_id, "✅ NC stopped", token=self.token)
                 return
 
-            # ========== SPAMALL ==========
+            # ========== UNLIMITED SPAMALL ==========
             if cmd_lower.startswith("spamall "):
+                multi_running[f"spamall_{key_suffix}"] = True
                 msg_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
-                try:
-                    guild_id, channels = fetch_guild_channels(c_id, self.token)
-                    if not channels:
-                        send_msg(c_id, "❌ Not in a server or fetch failed", token=self.token)
-                        return
-                    for ch in channels:
-                        send_msg(ch, msg_text, token=self.token)
-                        time.sleep(0.1)
-                    send_msg(c_id, f"✅ Spamall sent to {len(channels)} channels", token=self.token)
-                except:
-                    send_msg(c_id, "❌ Not in a server", token=self.token)
+                if not guild_id:
+                    send_msg(c_id, "❌ Run this in a server!", token=self.token)
+                    return
+                r = requests.get(f"https://discord.com/api/v9/guilds/{guild_id}/channels", headers={"Authorization": self.token})
+                if r.status_code == 200:
+                    channels = [ch['id'] for ch in r.json() if ch['type'] == 0]
+                    send_msg(c_id, f"✅ Endless Spamall across {len(channels)} channels. Use $stopspamall to end.", token=self.token)
+                    def _spamall():
+                        while multi_running.get(f"spamall_{key_suffix}", False):
+                            for ch in channels:
+                                if not multi_running.get(f"spamall_{key_suffix}", False): break
+                                send_msg(ch, msg_text, token=self.token)
+                                time.sleep(0.1)
+                    threading.Thread(target=_spamall, daemon=True).start()
                 return
 
-            # ========== LONG SPAM ==========
+            if cmd_lower == "stopspamall":
+                multi_running[f"spamall_{key_suffix}"] = False
+                send_msg(c_id, "✅ Spamall stopped", token=self.token)
+                return
+
+            # ========== UNLIMITED LONG SPAM ==========
             if cmd_lower.startswith("longspam "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $longspam @user [count]", token=self.token)
-                    return
+                if len(parts) < 2: return
                 mention = parts[1]
-                count = int(parts[2]) if len(parts) > 2 else 5
-                count = min(count, 20)
-                for _ in range(count):
-                    msg = get_long_spam(mention)
-                    send_msg(c_id, msg, token=self.token)
-                    time.sleep(0.5)
-                send_msg(c_id, f"✅ Long spam x{count} sent", token=self.token)
+                multi_running[f"longspam_{key_suffix}"] = True
+                send_msg(c_id, f"✅ Endless Longspam started. Use $stoplongspam to end.", token=self.token)
+                def _longspam_loop():
+                    while multi_running.get(f"longspam_{key_suffix}", False):
+                        msg = get_long_spam(mention)
+                        send_msg(c_id, msg, token=self.token)
+                        time.sleep(0.5)
+                threading.Thread(target=_longspam_loop, daemon=True).start()
                 return
 
-            # ========== WORDWALL ==========
+            if cmd_lower == "stoplongspam":
+                multi_running[f"longspam_{key_suffix}"] = False
+                send_msg(c_id, "✅ Longspam stopped.", token=self.token)
+                return
+
+            # ========== UNLIMITED WORDWALL ==========
             if cmd_lower.startswith("wordwall "):
                 parts = cmd_part.split()
                 word = " ".join(parts[1:]) if len(parts) > 1 else "𝘼𝙨𝙝𝙪"
                 wall = (word + " ") * (2000 // (len(word) + 1))
-                send_msg(c_id, wall[:2000], token=self.token)
+                multi_running[f"wordwall_{key_suffix}"] = True
+                send_msg(c_id, f"✅ Endless Wordwall started. Use $stopwordwall to end.", token=self.token)
+                def _ww_loop():
+                    while multi_running.get(f"wordwall_{key_suffix}", False):
+                        send_msg(c_id, wall[:2000], token=self.token)
+                        time.sleep(0.5)
+                threading.Thread(target=_ww_loop, daemon=True).start()
                 return
 
-            # ========== ZALGO SPAM ==========
+            if cmd_lower == "stopwordwall":
+                multi_running[f"wordwall_{key_suffix}"] = False
+                send_msg(c_id, "✅ Wordwall stopped.", token=self.token)
+                return
+
+            # ========== UNLIMITED ZALGO SPAM ==========
             if cmd_lower.startswith("zalgo "):
                 parts = cmd_part.split()
-                count = int(parts[1]) if len(parts) > 1 else 5
-                text = " ".join(parts[2:]) if len(parts) > 2 else "𝘼𝙨𝙝𝙪 On Top"
-                for _ in range(count):
-                    send_msg(c_id, zalgo_text(text), token=self.token)
-                    time.sleep(0.3)
+                text = " ".join(parts[1:]) if len(parts) > 1 else "𝘼𝙨𝙝𝙪 On Top"
+                multi_running[f"zalgo_{key_suffix}"] = True
+                send_msg(c_id, f"✅ Endless Zalgo started. Use $stopzalgo to end.", token=self.token)
+                def _zalgo_loop():
+                    while multi_running.get(f"zalgo_{key_suffix}", False):
+                        send_msg(c_id, zalgo_text(text), token=self.token)
+                        time.sleep(0.5)
+                threading.Thread(target=_zalgo_loop, daemon=True).start()
+                return
+
+            if cmd_lower == "stopzalgo":
+                multi_running[f"zalgo_{key_suffix}"] = False
+                send_msg(c_id, "✅ Zalgo spam stopped.", token=self.token)
                 return
 
             # ========== REPEAT SPAM ==========
             if cmd_lower.startswith("repeat_spam "):
-                global repeat_running
                 msg_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
-                repeat_running = True
+                multi_running[f"repeat_{key_suffix}"] = True
                 send_msg(c_id, f"✅ Repeat spam started. Use $stoprepeat to stop.", token=self.token)
                 def _repeat():
-                    global repeat_running
-                    while repeat_running:
+                    while multi_running.get(f"repeat_{key_suffix}", False):
                         send_msg(c_id, msg_text, token=self.token)
                         time.sleep(0.2)
                 threading.Thread(target=_repeat, daemon=True).start()
                 return
 
             if cmd_lower == "stoprepeat":
-                global repeat_running
-                repeat_running = False
+                multi_running[f"repeat_{key_suffix}"] = False
                 send_msg(c_id, "✅ Repeat spam stopped.", token=self.token)
                 return
 
             # ========== COUNTER SPAM ==========
             if cmd_lower.startswith("counter_spam "):
-                global counter_running
                 prefix_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪"
-                counter_running = True
+                multi_running[f"counter_{key_suffix}"] = True
                 send_msg(c_id, f"✅ Counter spam started. Use $stopcounter to stop.", token=self.token)
                 def _counter():
-                    global counter_running
                     i = 1
-                    while counter_running:
+                    while multi_running.get(f"counter_{key_suffix}", False):
                         send_msg(c_id, f"{prefix_text} `#{i}`", token=self.token)
                         i += 1
                         time.sleep(0.15)
@@ -848,8 +835,7 @@ ________________________________
                 return
 
             if cmd_lower == "stopcounter":
-                global counter_running
-                counter_running = False
+                multi_running[f"counter_{key_suffix}"] = False
                 send_msg(c_id, "✅ Counter spam stopped.", token=self.token)
                 return
 
@@ -862,166 +848,135 @@ ________________________________
                     "𝐍𝐨𝐛𝐨𝐝𝐲 𝐂𝐚𝐧 𝐒𝐭𝐨𝐩 𝐔𝐬",
                     "𝘼𝙨𝙝𝙪 𝐆𝐚𝐧𝐠 💀",
                 ]
-                msg = send_msg(c_id, phrases[0], token=self.token)
-                if msg:
-                    i = 1
-                    for _ in range(50):
-                        try:
-                            msg = send_msg(c_id, phrases[i % len(phrases)], token=self.token)
-                            i += 1
-                            time.sleep(0.3)
-                        except:
-                            break
+                multi_running[f"edit_{key_suffix}"] = True
+                send_msg(c_id, f"✅ Edit spam started. Use $stopeditspam to stop.", token=self.token)
+                def _edit_loop():
+                    while multi_running.get(f"edit_{key_suffix}", False):
+                        msg = send_msg(c_id, phrases[0], token=self.token)
+                        if msg:
+                            i = 1
+                            for _ in range(10):
+                                if not multi_running.get(f"edit_{key_suffix}", False): break
+                                try:
+                                    msg_id = msg.json().get("id")
+                                    requests.patch(f"https://discord.com/api/v9/channels/{c_id}/messages/{msg_id}", headers={"Authorization": self.token, "Content-Type": "application/json"}, json={"content": phrases[i % len(phrases)]})
+                                    i += 1
+                                    time.sleep(0.3)
+                                except: pass
+                threading.Thread(target=_edit_loop, daemon=True).start()
+                return
+
+            if cmd_lower == "stopeditspam":
+                multi_running[f"edit_{key_suffix}"] = False
+                send_msg(c_id, "✅ Edit spam stopped.", token=self.token)
                 return
 
             # ========== INVISIBLE SPAM ==========
-            if cmd_lower.startswith("invis "):
-                parts = cmd_part.split()
-                count = int(parts[1]) if len(parts) > 1 else 20
+            if cmd_lower == "invis":
                 invis = "\u200b" * 500
-                for _ in range(count):
-                    send_msg(c_id, invis, token=self.token)
-                    time.sleep(0.2)
+                multi_running[f"invis_{key_suffix}"] = True
+                send_msg(c_id, f"✅ Endless Invis started. Use $stopinvis to end.", token=self.token)
+                def _invis_loop():
+                    while multi_running.get(f"invis_{key_suffix}", False):
+                        send_msg(c_id, invis, token=self.token)
+                        time.sleep(0.3)
+                threading.Thread(target=_invis_loop, daemon=True).start()
+                return
+
+            if cmd_lower == "stopinvis":
+                multi_running[f"invis_{key_suffix}"] = False
+                send_msg(c_id, "✅ Invis spam stopped.", token=self.token)
                 return
 
             # ========== NITRO SPAM ==========
-            if cmd_lower.startswith("nitro_spam "):
-                parts = cmd_part.split()
-                count = int(parts[1]) if len(parts) > 1 else 10
+            if cmd_lower == "nitro_spam":
                 chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-                for _ in range(count):
-                    code = ''.join(random.choices(chars, k=16))
-                    send_msg(c_id, f"🎉 **FREE NITRO** https://discord.gift/{code}", token=self.token)
-                    time.sleep(0.4)
+                multi_running[f"nitro_{key_suffix}"] = True
+                send_msg(c_id, f"✅ Endless Fake Nitro started. Use $stopnitro to end.", token=self.token)
+                def _nitro_loop():
+                    while multi_running.get(f"nitro_{key_suffix}", False):
+                        code = ''.join(random.choices(chars, k=16))
+                        send_msg(c_id, f"🎉 **FREE NITRO** https://discord.gift/{code}", token=self.token)
+                        time.sleep(0.5)
+                threading.Thread(target=_nitro_loop, daemon=True).start()
+                return
+                
+            if cmd_lower == "stopnitro":
+                multi_running[f"nitro_{key_suffix}"] = False
+                send_msg(c_id, "✅ Nitro spam stopped.", token=self.token)
                 return
 
             # ========== DROWN COMMANDS ==========
+            def start_drown(pool, user_id):
+                multi_running[f"drown_{key_suffix}"] = True
+                send_msg(c_id, f"✅ Endless Drown started. Use $stopdrown to stop.", token=self.token)
+                def _drown_loop():
+                    while multi_running.get(f"drown_{key_suffix}", False):
+                        line = random.choice(pool).replace("{mention}", f"<@{user_id}>")
+                        send_msg(c_id, line, token=self.token)
+                        time.sleep(0.3)
+                threading.Thread(target=_drown_loop, daemon=True).start()
+
             if cmd_lower.startswith("drown_hindi "):
-                global drown_running
-                parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $drown_hindi @user [count]", token=self.token)
-                    return
-                user_id = extract_user_id_from_mention(parts[1])
-                count = int(parts[2]) if len(parts) > 2 else 10
-                drown_running = True
-                for line in hindi_drown[:count]:
-                    if not drown_running:
-                        break
-                    send_msg(c_id, line.replace("{mention}", f"<@{user_id}>"), token=self.token)
-                    time.sleep(0.3)
+                user_id = extract_user_id_from_mention(cmd_part.split()[1])
+                if user_id: start_drown(hindi_drown, user_id)
                 return
 
             if cmd_lower.startswith("drown_hinglish "):
-                global drown_running
-                parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $drown_hinglish @user [count]", token=self.token)
-                    return
-                user_id = extract_user_id_from_mention(parts[1])
-                count = int(parts[2]) if len(parts) > 2 else 10
-                drown_running = True
-                for line in hinglish_drown[:count]:
-                    if not drown_running:
-                        break
-                    send_msg(c_id, line.replace("{mention}", f"<@{user_id}>"), token=self.token)
-                    time.sleep(0.3)
+                user_id = extract_user_id_from_mention(cmd_part.split()[1])
+                if user_id: start_drown(hinglish_drown, user_id)
                 return
 
             if cmd_lower.startswith("drown_english "):
-                global drown_running
-                parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $drown_english @user [count]", token=self.token)
-                    return
-                user_id = extract_user_id_from_mention(parts[1])
-                count = int(parts[2]) if len(parts) > 2 else 10
-                drown_running = True
-                for line in english_drown[:count]:
-                    if not drown_running:
-                        break
-                    send_msg(c_id, line.replace("{mention}", f"<@{user_id}>"), token=self.token)
-                    time.sleep(0.3)
+                user_id = extract_user_id_from_mention(cmd_part.split()[1])
+                if user_id: start_drown(english_drown, user_id)
                 return
 
             if cmd_lower.startswith("drown_mix "):
-                global drown_running
-                parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $drown_mix @user [count]", token=self.token)
-                    return
-                user_id = extract_user_id_from_mention(parts[1])
-                count = int(parts[2]) if len(parts) > 2 else 15
-                drown_running = True
-                all_lines = hindi_drown + hinglish_drown + english_drown
-                random.shuffle(all_lines)
-                for line in all_lines[:count]:
-                    if not drown_running:
-                        break
-                    send_msg(c_id, line.replace("{mention}", f"<@{user_id}>"), token=self.token)
-                    time.sleep(0.3)
+                user_id = extract_user_id_from_mention(cmd_part.split()[1])
+                if user_id: start_drown(hindi_drown + hinglish_drown + english_drown, user_id)
                 return
 
             if cmd_lower == "stopdrown":
-                global drown_running
-                drown_running = False
+                multi_running[f"drown_{key_suffix}"] = False
                 send_msg(c_id, "✅ Drown stopped.", token=self.token)
                 return
 
             # ========== PACK COMMANDS ==========
             if cmd_lower.startswith("hindi_pack "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $hindi_pack @user [count]", token=self.token)
-                    return
                 user_id = extract_user_id_from_mention(parts[1])
-                count = int(parts[2]) if len(parts) > 2 else 10
-                for line in hindi_drown[:count]:
+                for line in hindi_drown[:10]:
                     send_msg(c_id, line.replace("{mention}", f"<@{user_id}>"), token=self.token)
                     time.sleep(0.3)
                 return
 
             if cmd_lower.startswith("hinglish_pack "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $hinglish_pack @user [count]", token=self.token)
-                    return
                 user_id = extract_user_id_from_mention(parts[1])
-                count = int(parts[2]) if len(parts) > 2 else 10
-                for line in hinglish_drown[:count]:
+                for line in hinglish_drown[:10]:
                     send_msg(c_id, line.replace("{mention}", f"<@{user_id}>"), token=self.token)
                     time.sleep(0.3)
                 return
 
             if cmd_lower.startswith("punjabi_pack "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $punjabi_pack @user [count]", token=self.token)
-                    return
                 user_id = extract_user_id_from_mention(parts[1])
-                count = int(parts[2]) if len(parts) > 2 else 10
-                for line in punjabi_lines[:count]:
+                for line in punjabi_lines[:10]:
                     send_msg(c_id, line.replace("{mention}", f"<@{user_id}>"), token=self.token)
                     time.sleep(0.3)
                 return
 
             if cmd_lower.startswith("urdu_pack "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $urdu_pack @user [count]", token=self.token)
-                    return
                 user_id = extract_user_id_from_mention(parts[1])
-                count = int(parts[2]) if len(parts) > 2 else 10
-                for line in urdu_lines[:count]:
+                for line in urdu_lines[:10]:
                     send_msg(c_id, line.replace("{mention}", f"<@{user_id}>"), token=self.token)
                     time.sleep(0.3)
                 return
 
             if cmd_lower.startswith("mix_all_pack "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $mix_all_pack @user", token=self.token)
-                    return
                 user_id = extract_user_id_from_mention(parts[1])
                 all_lines = hindi_drown + hinglish_drown + english_drown + punjabi_lines + urdu_lines
                 random.shuffle(all_lines)
@@ -1032,9 +987,6 @@ ________________________________
 
             if cmd_lower.startswith("god_pack "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $god_pack @user", token=self.token)
-                    return
                 user_id = extract_user_id_from_mention(parts[1])
                 all_lines = hindi_drown + hinglish_drown + english_drown + punjabi_lines + urdu_lines
                 random.shuffle(all_lines)
@@ -1044,26 +996,16 @@ ________________________________
                 return
 
             if cmd_lower.startswith("continuous_pack "):
-                global pack_running
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $continuous_pack @user [lang]", token=self.token)
-                    return
+                if len(parts) < 2: return
                 user_id = extract_user_id_from_mention(parts[1])
                 lang = parts[2] if len(parts) > 2 else "mix"
-                banks = {
-                    "hindi": hindi_drown,
-                    "hinglish": hinglish_drown,
-                    "english": english_drown,
-                    "punjabi": punjabi_lines,
-                    "urdu": urdu_lines,
-                }
+                banks = {"hindi": hindi_drown, "hinglish": hinglish_drown, "english": english_drown, "punjabi": punjabi_lines, "urdu": urdu_lines}
                 pool = banks.get(lang, hindi_drown + hinglish_drown + english_drown + punjabi_lines + urdu_lines)
-                pack_running = True
+                multi_running[f"pack_{key_suffix}"] = True
                 send_msg(c_id, f"✅ Continuous pack started. Use $stoppack to stop.", token=self.token)
                 def _pack():
-                    global pack_running
-                    while pack_running:
+                    while multi_running.get(f"pack_{key_suffix}", False):
                         line = random.choice(pool).replace("{mention}", f"<@{user_id}>")
                         send_msg(c_id, line, token=self.token)
                         time.sleep(0.3)
@@ -1071,8 +1013,7 @@ ________________________________
                 return
 
             if cmd_lower == "stoppack":
-                global pack_running
-                pack_running = False
+                multi_running[f"pack_{key_suffix}"] = False
                 send_msg(c_id, "✅ Continuous pack stopped.", token=self.token)
                 return
 
@@ -1129,7 +1070,6 @@ ________________________________
                 user_id = extract_user_id_from_mention(parts[1])
                 bomb = ("\u200b" * 1990) + "𝘼𝙨𝙝𝙪 🔥"
                 send_msg(c_id, f"💣 DM crash sent to <@{user_id}>", token=self.token)
-                # DM send karne ka attempt
                 dm_url = f"https://discord.com/api/v9/users/@me/channels"
                 dm_payload = {"recipient_id": user_id}
                 dm_resp = requests.post(dm_url, headers={"Authorization": self.token, "Content-Type": "application/json"}, json=dm_payload)
@@ -1289,13 +1229,10 @@ ________________________________
                     send_msg(c_id, "❌ gcname.txt is empty", token=self.token)
                     return
                 send_msg(c_id, f"✅ GC rename started with {len(names)} names. Use $gcstop to stop.", token=self.token)
-                
-                if not hasattr(self, 'gc_running'):
-                    self.gc_running = {}
-                self.gc_running[c_id] = True
+                gc_running = True
                 def _gc_rename():
                     i = 0
-                    while self.gc_running.get(c_id, False):
+                    while gc_running:
                         try:
                             change_gc_name(c_id, names[i % len(names)], token=self.token)
                             i += 1
@@ -1303,6 +1240,9 @@ ________________________________
                         except:
                             time.sleep(2)
                 threading.Thread(target=_gc_rename, daemon=True).start()
+                if not hasattr(self, 'gc_running'):
+                    self.gc_running = {}
+                self.gc_running[c_id] = True
                 return
 
             if cmd_lower == "gcstop":
@@ -1313,191 +1253,155 @@ ________________________________
                     send_msg(c_id, "ℹ️ No active GC rename", token=self.token)
                 return
 
-            # ========== MULTI COMMANDS ==========
+            # ========== MULTI COMMANDS (FIXED ASYNC & LIMITS) ==========
             if cmd_lower.startswith("multispam "):
                 message_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 multi_running["multispam"] = True
-                send_msg(c_id, f"✅ Multispam started with {len(tokens)} tokens. Use $stopmulti to stop.", token=self.token)
-
+                send_msg(c_id, f"✅ Endless Multispam started. Use $stopmulti to stop.", token=self.token)
                 async def _spam(tok):
                     headers = {"Authorization": tok, "Content-Type": "application/json"}
                     async with aiohttp.ClientSession() as sess:
                         while multi_running.get("multispam", False):
                             try:
                                 async with sess.post(f"https://discord.com/api/v9/channels/{c_id}/messages", headers=headers, json={"content": message_text}) as r:
-                                    if r.status == 429:
-                                        data = await r.json()
-                                        await asyncio.sleep(data.get("retry_after", 2))
-                                    await asyncio.sleep(0.1)
-                            except:
-                                await asyncio.sleep(1)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_spam(t), bg_loop)
+                                    if r.status == 429: await asyncio.sleep((await r.json()).get("retry_after", 2))
+                                await asyncio.sleep(0.1)
+                            except: await asyncio.sleep(1)
+                threading.Thread(target=run_async_tasks, args=([_spam(t) for t in tokens],), daemon=True).start()
                 return
 
             if cmd_lower.startswith("multispamall "):
                 message_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
+                if not guild_id:
+                    send_msg(c_id, "❌ Run this in a server!", token=self.token)
                     return
-                try:
-                    guild_id, channels = fetch_guild_channels(c_id, self.token)
-                    if not channels:
-                        send_msg(c_id, "❌ Not in a server or failed to fetch channels", token=self.token)
-                        return
-                    send_msg(c_id, f"✅ {len(tokens)} tokens × {len(channels)} channels. Use $stopmulti to stop.", token=self.token)
+                r = requests.get(f"https://discord.com/api/v9/guilds/{guild_id}/channels", headers={"Authorization": self.token})
+                if r.status_code == 200:
+                    channels = [ch['id'] for ch in r.json() if ch['type'] == 0]
+                    send_msg(c_id, f"✅ Endless Multispamall across {len(channels)} channels. Use $stopmulti to stop.", token=self.token)
                     multi_running["multispamall"] = True
-
                     async def _spamall(tok):
                         headers = {"Authorization": tok, "Content-Type": "application/json"}
                         async with aiohttp.ClientSession() as sess:
                             while multi_running.get("multispamall", False):
                                 for ch in channels:
-                                    if not multi_running.get("multispamall", False):
-                                        return
+                                    if not multi_running.get("multispamall", False): return
                                     try:
                                         async with sess.post(f"https://discord.com/api/v9/channels/{ch}/messages", headers=headers, json={"content": message_text}) as r:
-                                            if r.status == 429:
-                                                data = await r.json()
-                                                await asyncio.sleep(data.get("retry_after", 2))
+                                            if r.status == 429: await asyncio.sleep((await r.json()).get("retry_after", 2))
                                         await asyncio.sleep(0.15)
-                                    except:
-                                        pass
-
-                    for t in tokens:
-                        asyncio.run_coroutine_threadsafe(_spamall(t), bg_loop)
-                except:
-                    send_msg(c_id, "❌ Not in a server", token=self.token)
+                                    except: pass
+                    threading.Thread(target=run_async_tasks, args=([_spamall(t) for t in tokens],), daemon=True).start()
                 return
 
             if cmd_lower.startswith("multilongspam "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $multilongspam <user_id> [count]", token=self.token)
-                    return
+                if len(parts) < 2: return
                 user_id = parts[1]
-                count = int(parts[2]) if len(parts) > 2 else 3
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 mention = f"<@{user_id}>"
-                send_msg(c_id, f"✅ {len(tokens)} tokens sending long spam x{count}...", token=self.token)
-
+                multi_running["multilongspam"] = True
+                send_msg(c_id, f"✅ Endless Multi Long Spam started. Use $stopmulti to stop.", token=self.token)
                 async def _longspam(tok):
                     headers = {"Authorization": tok, "Content-Type": "application/json"}
                     async with aiohttp.ClientSession() as sess:
-                        for _ in range(count):
+                        while multi_running.get("multilongspam", False):
                             msg = get_long_spam(mention)
                             try:
                                 async with sess.post(f"https://discord.com/api/v9/channels/{c_id}/messages", headers=headers, json={"content": msg}) as r:
-                                    if r.status == 429:
-                                        data = await r.json()
-                                        await asyncio.sleep(data.get("retry_after", 2))
-                                    await asyncio.sleep(0.5)
-                            except:
-                                pass
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_longspam(t), bg_loop)
+                                    if r.status == 429: await asyncio.sleep((await r.json()).get("retry_after", 2))
+                                await asyncio.sleep(0.5)
+                            except: pass
+                threading.Thread(target=run_async_tasks, args=([_longspam(t) for t in tokens],), daemon=True).start()
                 return
 
             if cmd_lower.startswith("multiwordwall "):
                 parts = cmd_part.split()
                 word = " ".join(parts[1:]) if len(parts) > 1 else "𝘼𝙨𝙝𝙪"
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 wall = (word + " ") * (2000 // (len(word) + 1))
-                send_msg(c_id, f"✅ {len(tokens)} tokens sending word wall...", token=self.token)
-
+                multi_running["multiww"] = True
+                send_msg(c_id, f"✅ Endless Multi Wordwall started. Use $stopmulti to stop.", token=self.token)
                 async def _wall(tok):
                     headers = {"Authorization": tok, "Content-Type": "application/json"}
                     async with aiohttp.ClientSession() as sess:
-                        try:
-                            async with sess.post(f"https://discord.com/api/v9/channels/{c_id}/messages", headers=headers, json={"content": wall[:2000]}) as r:
-                                if r.status == 429:
-                                    data = await r.json()
-                                    await asyncio.sleep(data.get("retry_after", 2))
-                        except:
-                            pass
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_wall(t), bg_loop)
+                        while multi_running.get("multiww", False):
+                            try:
+                                async with sess.post(f"https://discord.com/api/v9/channels/{c_id}/messages", headers=headers, json={"content": wall[:2000]}) as r:
+                                    if r.status == 429: await asyncio.sleep((await r.json()).get("retry_after", 2))
+                                await asyncio.sleep(0.5)
+                            except: pass
+                threading.Thread(target=run_async_tasks, args=([_wall(t) for t in tokens],), daemon=True).start()
                 return
 
             if cmd_lower.startswith("multizalgo "):
                 parts = cmd_part.split()
-                count = int(parts[1]) if len(parts) > 1 else 3
-                text = " ".join(parts[2:]) if len(parts) > 2 else "𝘼𝙨𝙝𝙪 On Top"
+                text = " ".join(parts[1:]) if len(parts) > 1 else "𝘼𝙨𝙝𝙪 On Top"
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
-                send_msg(c_id, f"✅ {len(tokens)} tokens sending zalgo x{count}...", token=self.token)
-
+                multi_running["multizalgo"] = True
+                send_msg(c_id, f"✅ Endless Multi Zalgo started. Use $stopmulti to stop.", token=self.token)
                 async def _zalgo(tok):
                     headers = {"Authorization": tok, "Content-Type": "application/json"}
                     async with aiohttp.ClientSession() as sess:
-                        for _ in range(count):
+                        while multi_running.get("multizalgo", False):
                             try:
                                 async with sess.post(f"https://discord.com/api/v9/channels/{c_id}/messages", headers=headers, json={"content": zalgo_text(text)}) as r:
-                                    if r.status == 429:
-                                        data = await r.json()
-                                        await asyncio.sleep(data.get("retry_after", 2))
-                                    await asyncio.sleep(0.3)
-                            except:
-                                pass
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_zalgo(t), bg_loop)
+                                    if r.status == 429: await asyncio.sleep((await r.json()).get("retry_after", 2))
+                                await asyncio.sleep(0.5)
+                            except: pass
+                threading.Thread(target=run_async_tasks, args=([_zalgo(t) for t in tokens],), daemon=True).start()
                 return
 
-            if cmd_lower.startswith("multieveryone "):
-                parts = cmd_part.split()
-                count = int(parts[1]) if len(parts) > 1 else 3
+            if cmd_lower.startswith("multieveryone"):
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
-                send_msg(c_id, f"✅ {len(tokens)} tokens sending @everyone x{count}...", token=self.token)
-
+                multi_running["multieveryone"] = True
+                send_msg(c_id, f"✅ Endless Multi @everyone started. Use $stopmulti to stop.", token=self.token)
                 async def _everyone(tok):
                     headers = {"Authorization": tok, "Content-Type": "application/json"}
                     async with aiohttp.ClientSession() as sess:
-                        for _ in range(count):
+                        while multi_running.get("multieveryone", False):
                             try:
                                 async with sess.post(f"https://discord.com/api/v9/channels/{c_id}/messages", headers=headers, json={"content": "@everyone 𝘼𝙨𝙝𝙪 On Top 🔥"}) as r:
-                                    if r.status == 429:
-                                        data = await r.json()
-                                        await asyncio.sleep(data.get("retry_after", 2))
-                                    await asyncio.sleep(0.4)
-                            except:
-                                pass
+                                    if r.status == 429: await asyncio.sleep((await r.json()).get("retry_after", 2))
+                                await asyncio.sleep(0.4)
+                            except: pass
+                threading.Thread(target=run_async_tasks, args=([_everyone(t) for t in tokens],), daemon=True).start()
+                return
 
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_everyone(t), bg_loop)
+            if cmd_lower.startswith("multinuke "):
+                message_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
+                tokens = load_tokens()
+                if not guild_id:
+                    send_msg(c_id, "❌ Run this in a server!", token=self.token)
+                    return
+                r = requests.get(f"https://discord.com/api/v9/guilds/{guild_id}/channels", headers={"Authorization": self.token})
+                if r.status_code == 200:
+                    channels = [ch['id'] for ch in r.json() if ch['type'] == 0]
+                    send_msg(c_id, f"✅ ENDLESS MULTINUKE STARTED! Use $stopmulti to stop.", token=self.token)
+                    multi_running["multinuke"] = True
+                    async def _nuke(tok):
+                        headers = {"Authorization": tok, "Content-Type": "application/json"}
+                        async with aiohttp.ClientSession() as sess:
+                            while multi_running.get("multinuke", False):
+                                for ch in channels:
+                                    if not multi_running.get("multinuke", False): return
+                                    try:
+                                        async with sess.post(f"https://discord.com/api/v9/channels/{ch}/messages", headers=headers, json={"content": f"@everyone {message_text}"}) as r:
+                                            if r.status == 429: await asyncio.sleep((await r.json()).get("retry_after", 2))
+                                        await asyncio.sleep(0.1)
+                                    except: pass
+                    threading.Thread(target=run_async_tasks, args=([_nuke(t) for t in tokens],), daemon=True).start()
                 return
 
             # ========== MULTI DM ==========
             if cmd_lower.startswith("multidm "):
                 parts = cmd_part.split()
-                if len(parts) < 3:
-                    send_msg(c_id, "❌ Usage: $multidm <user_id> <message>", token=self.token)
-                    return
+                if len(parts) < 3: return
                 user_id = parts[1]
                 message_text = " ".join(parts[2:])
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 send_msg(c_id, f"✅ {len(tokens)} tokens DMing {user_id}...", token=self.token)
 
                 async def _dm(tok):
@@ -1505,362 +1409,230 @@ ________________________________
                     async with aiohttp.ClientSession() as sess:
                         try:
                             async with sess.post("https://discord.com/api/v9/users/@me/channels", headers=headers, json={"recipient_id": str(user_id)}) as r:
-                                if r.status not in [200, 201]:
-                                    return
+                                if r.status not in [200, 201]: return
                                 ch = (await r.json()).get("id")
-                            if ch:
-                                await sess.post(f"https://discord.com/api/v9/channels/{ch}/messages", headers=headers, json={"content": message_text})
-                        except:
-                            pass
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_dm(t), bg_loop)
+                            if ch: await sess.post(f"https://discord.com/api/v9/channels/{ch}/messages", headers=headers, json={"content": message_text})
+                        except: pass
+                threading.Thread(target=run_async_tasks, args=([_dm(t) for t in tokens],), daemon=True).start()
                 return
 
             if cmd_lower.startswith("multi_massdm "):
                 message_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
+                if not guild_id:
+                    send_msg(c_id, "❌ Run this in a server!", token=self.token)
                     return
-                try:
-                    guild_id, channels = fetch_guild_channels(c_id, self.token)
-                    if not guild_id:
-                        send_msg(c_id, "❌ Not in a server", token=self.token)
-                        return
-                    
-                    send_msg(c_id, f"✅ {len(tokens)} tokens initiating Mass DM...", token=self.token)
-                    
-                    async def _massdm(tok):
+                r = requests.get(f"https://discord.com/api/v9/guilds/{guild_id}/members?limit=1000", headers={"Authorization": self.token})
+                if r.status_code == 200:
+                    members = [m['user']['id'] for m in r.json() if not m.get('user', {}).get('bot', False)]
+                    send_msg(c_id, f"✅ Mass DMing {len(members)} members... (Background Process)", token=self.token)
+                    chunk_size = max(1, len(members) // max(len(tokens), 1))
+                    chunks = [members[i:i+chunk_size] for i in range(0, len(members), chunk_size)]
+                    async def _dm_chunk(tok, member_chunk):
                         headers = {"Authorization": tok, "Content-Type": "application/json"}
                         async with aiohttp.ClientSession() as sess:
-                            try:
-                                async with sess.get(f"https://discord.com/api/v9/guilds/{guild_id}/members?limit=1000", headers=headers) as r:
-                                    if r.status == 200:
-                                        members = await r.json()
-                                        for m in members:
-                                            m_id = m.get("user", {}).get("id")
-                                            if m_id and not m.get("user", {}).get("bot"):
-                                                async with sess.post("https://discord.com/api/v9/users/@me/channels", headers=headers, json={"recipient_id": str(m_id)}) as dmr:
-                                                    if dmr.status in [200, 201]:
-                                                        ch = (await dmr.json()).get("id")
-                                                        if ch:
-                                                            await sess.post(f"https://discord.com/api/v9/channels/{ch}/messages", headers=headers, json={"content": message_text})
-                                                await asyncio.sleep(1.5)
-                            except:
-                                pass
-
-                    for t in tokens:
-                        asyncio.run_coroutine_threadsafe(_massdm(t), bg_loop)
-                except:
-                    send_msg(c_id, "❌ Not in a server", token=self.token)
+                            for mid in member_chunk:
+                                try:
+                                    async with sess.post("https://discord.com/api/v9/users/@me/channels", headers=headers, json={"recipient_id": str(mid)}) as r:
+                                        if r.status not in [200, 201]: continue
+                                        ch = (await r.json()).get("id")
+                                    if ch: await sess.post(f"https://discord.com/api/v9/channels/{ch}/messages", headers=headers, json={"content": message_text})
+                                    await asyncio.sleep(1.2)
+                                except: pass
+                    tasks = [_dm_chunk(tokens[i % len(tokens)], chunk) for i, chunk in enumerate(chunks)]
+                    threading.Thread(target=run_async_tasks, args=(tasks,), daemon=True).start()
                 return
 
             # ========== MULTI FRIEND / BLOCK ==========
             if cmd_lower.startswith("multifriend "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $multifriend <user_id>", token=self.token)
-                    return
+                if len(parts) < 2: return
                 user_id = parts[1]
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 send_msg(c_id, f"✅ {len(tokens)} tokens sending friend request to {user_id}...", token=self.token)
-
                 async def _fr(tok):
                     headers = {"Authorization": tok, "Content-Type": "application/json"}
                     async with aiohttp.ClientSession() as sess:
                         await sess.put(f"https://discord.com/api/v9/users/@me/relationships/{user_id}", headers=headers, json={"type": 1})
-                        await asyncio.sleep(0.3)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_fr(t), bg_loop)
+                threading.Thread(target=run_async_tasks, args=([_fr(t) for t in tokens],), daemon=True).start()
                 return
 
             if cmd_lower.startswith("multiblock "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $multiblock <user_id>", token=self.token)
-                    return
+                if len(parts) < 2: return
                 user_id = parts[1]
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 send_msg(c_id, f"✅ {len(tokens)} tokens blocking {user_id}...", token=self.token)
-
                 async def _block(tok):
                     headers = {"Authorization": tok, "Content-Type": "application/json"}
                     async with aiohttp.ClientSession() as sess:
                         await sess.put(f"https://discord.com/api/v9/users/@me/relationships/{user_id}", headers=headers, json={"type": 2})
-                        await asyncio.sleep(0.3)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_block(t), bg_loop)
+                threading.Thread(target=run_async_tasks, args=([_block(t) for t in tokens],), daemon=True).start()
                 return
 
             if cmd_lower == "multi_accept_friends":
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 send_msg(c_id, f"✅ {len(tokens)} tokens accepting friend requests...", token=self.token)
-
                 async def _accept(tok):
                     headers = {"Authorization": tok}
                     async with aiohttp.ClientSession() as sess:
                         async with sess.get("https://discord.com/api/v9/users/@me/relationships", headers=headers) as r:
-                            if r.status != 200:
-                                return
+                            if r.status != 200: return
                             rels = await r.json()
                         for rel in rels:
                             if rel.get("type") == 3:
                                 await sess.put(f"https://discord.com/api/v9/users/@me/relationships/{rel['id']}", headers={**headers, "Content-Type": "application/json"}, json={})
-                                await asyncio.sleep(0.3)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_accept(t), bg_loop)
+                threading.Thread(target=run_async_tasks, args=([_accept(t) for t in tokens],), daemon=True).start()
                 return
 
             if cmd_lower == "multi_del_friends":
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 send_msg(c_id, f"✅ {len(tokens)} tokens removing friends...", token=self.token)
-
                 async def _delfr(tok):
                     headers = {"Authorization": tok}
                     async with aiohttp.ClientSession() as sess:
                         async with sess.get("https://discord.com/api/v9/users/@me/relationships", headers=headers) as r:
-                            if r.status != 200:
-                                return
+                            if r.status != 200: return
                             rels = await r.json()
                         for rel in rels:
                             if rel.get("type") == 1:
                                 await sess.delete(f"https://discord.com/api/v9/users/@me/relationships/{rel['id']}", headers=headers)
-                                await asyncio.sleep(0.3)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_delfr(t), bg_loop)
+                threading.Thread(target=run_async_tasks, args=([_delfr(t) for t in tokens],), daemon=True).start()
                 return
 
             # ========== MULTI JOIN / LEAVE ==========
             if cmd_lower.startswith("multijoin "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $multijoin <invite_code>", token=self.token)
-                    return
+                if len(parts) < 2: return
                 invite = parts[1].split("/")[-1]
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 send_msg(c_id, f"✅ {len(tokens)} tokens joining {invite}...", token=self.token)
-
                 async def _join(tok):
                     headers = {"Authorization": tok, "Content-Type": "application/json"}
                     async with aiohttp.ClientSession() as sess:
                         await sess.post(f"https://discord.com/api/v9/invites/{invite}", headers=headers, json={})
-                        await asyncio.sleep(0.5)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_join(t), bg_loop)
+                threading.Thread(target=run_async_tasks, args=([_join(t) for t in tokens],), daemon=True).start()
                 return
 
             if cmd_lower.startswith("multileave "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $multileave <guild_id>", token=self.token)
-                    return
+                if len(parts) < 2: return
                 guild_id = parts[1]
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 send_msg(c_id, f"✅ {len(tokens)} tokens leaving {guild_id}...", token=self.token)
-
                 async def _leave(tok):
                     headers = {"Authorization": tok}
                     async with aiohttp.ClientSession() as sess:
                         await sess.delete(f"https://discord.com/api/v9/users/@me/guilds/{guild_id}", headers=headers)
-                        await asyncio.sleep(0.4)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_leave(t), bg_loop)
+                threading.Thread(target=run_async_tasks, args=([_leave(t) for t in tokens],), daemon=True).start()
                 return
 
             if cmd_lower == "multi_leaveall":
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 send_msg(c_id, f"✅ {len(tokens)} tokens leaving ALL servers...", token=self.token)
-
                 async def _leaveall(tok):
                     headers = {"Authorization": tok}
                     async with aiohttp.ClientSession() as sess:
                         async with sess.get("https://discord.com/api/v9/users/@me/guilds", headers=headers) as r:
-                            if r.status != 200:
-                                return
+                            if r.status != 200: return
                             guilds = await r.json()
                         for g in guilds:
                             await sess.delete(f"https://discord.com/api/v9/users/@me/guilds/{g['id']}", headers=headers)
-                            await asyncio.sleep(0.4)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_leaveall(t), bg_loop)
+                threading.Thread(target=run_async_tasks, args=([_leaveall(t) for t in tokens],), daemon=True).start()
                 return
 
             # ========== MULTI SET NICK / AVATAR / USERNAME ==========
             if cmd_lower.startswith("multi_setnick "):
                 nickname = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪"
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
+                if not guild_id:
+                    send_msg(c_id, "❌ Run this in a server!", token=self.token)
                     return
-                try:
-                    guild_id, _ = fetch_guild_channels(c_id, self.token)
-                    if not guild_id:
-                        send_msg(c_id, "❌ Not in a server", token=self.token)
-                        return
-                    
-                    send_msg(c_id, f"✅ {len(tokens)} tokens setting nick '{nickname}'...", token=self.token)
-
-                    async def _nick(tok):
-                        headers = {"Authorization": tok, "Content-Type": "application/json"}
-                        async with aiohttp.ClientSession() as sess:
-                            await sess.patch(f"https://discord.com/api/v9/guilds/{guild_id}/members/@me", headers=headers, json={"nick": nickname})
-                            await asyncio.sleep(0.3)
-
-                    for t in tokens:
-                        asyncio.run_coroutine_threadsafe(_nick(t), bg_loop)
-                except:
-                    send_msg(c_id, "❌ Not in a server", token=self.token)
+                send_msg(c_id, f"✅ {len(tokens)} tokens setting nick '{nickname}'...", token=self.token)
+                async def _nick(tok):
+                    headers = {"Authorization": tok, "Content-Type": "application/json"}
+                    async with aiohttp.ClientSession() as sess:
+                        await sess.patch(f"https://discord.com/api/v9/guilds/{guild_id}/members/@me", headers=headers, json={"nick": nickname})
+                threading.Thread(target=run_async_tasks, args=([_nick(t) for t in tokens],), daemon=True).start()
                 return
 
             if cmd_lower.startswith("multi_set_avatar "):
                 parts = cmd_part.split()
                 filename = parts[1] if len(parts) > 1 else "avatar.png"
-                if not os.path.isfile(filename):
-                    send_msg(c_id, f"❌ File '{filename}' not found", token=self.token)
-                    return
+                if not os.path.isfile(filename): return
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
-                with open(filename, "rb") as f:
-                    raw = f.read()
+                with open(filename, "rb") as f: raw = f.read()
                 ext = filename.rsplit(".", 1)[-1].lower()
                 mime = "image/png" if ext == "png" else "image/jpeg"
                 data_uri = f"data:{mime};base64,{base64.b64encode(raw).decode()}"
                 send_msg(c_id, f"✅ {len(tokens)} tokens setting avatar...", token=self.token)
-
                 async def _avatar(tok):
                     headers = {"Authorization": tok, "Content-Type": "application/json"}
                     async with aiohttp.ClientSession() as sess:
                         await sess.patch("https://discord.com/api/v9/users/@me", headers=headers, json={"avatar": data_uri})
-                        await asyncio.sleep(1)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_avatar(t), bg_loop)
+                threading.Thread(target=run_async_tasks, args=([_avatar(t) for t in tokens],), daemon=True).start()
                 return
 
             if cmd_lower.startswith("multi_set_username "):
                 username = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪"
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 send_msg(c_id, f"✅ {len(tokens)} tokens setting username...", token=self.token)
-
                 async def _rename(tok):
                     headers = {"Authorization": tok, "Content-Type": "application/json"}
                     async with aiohttp.ClientSession() as sess:
                         await sess.patch("https://discord.com/api/v9/users/@me", headers=headers, json={"username": username})
-                        await asyncio.sleep(2)
-
-                for tok in tokens:
-                    asyncio.run_coroutine_threadsafe(_rename(tok), bg_loop)
+                threading.Thread(target=run_async_tasks, args=([_rename(t) for t in tokens],), daemon=True).start()
                 return
 
             if cmd_lower.startswith("multi_status_set "):
                 status_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 send_msg(c_id, f"✅ {len(tokens)} tokens setting status...", token=self.token)
-
                 async def _status(tok):
                     headers = {"Authorization": tok, "Content-Type": "application/json"}
                     payload = {"custom_status": {"text": status_text, "emoji_name": "🔥"}}
                     async with aiohttp.ClientSession() as sess:
                         await sess.patch("https://discord.com/api/v9/users/@me/settings", headers=headers, json=payload)
-                        await asyncio.sleep(0.5)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_status(t), bg_loop)
+                threading.Thread(target=run_async_tasks, args=([_status(t) for t in tokens],), daemon=True).start()
                 return
 
             if cmd_lower.startswith("multi_delete_msgs "):
                 parts = cmd_part.split()
                 limit = int(parts[1]) if len(parts) > 1 else 10
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 send_msg(c_id, f"✅ {len(tokens)} tokens deleting last {limit} messages...", token=self.token)
-
                 async def _delmsgs(tok):
                     headers = {"Authorization": tok}
                     async with aiohttp.ClientSession() as sess:
                         async with sess.get("https://discord.com/api/v9/users/@me", headers=headers) as r:
-                            if r.status != 200:
-                                return
+                            if r.status != 200: return
                             me_id = (await r.json()).get("id")
                         async with sess.get(f"https://discord.com/api/v9/channels/{c_id}/messages?limit=100", headers=headers) as r:
-                            if r.status != 200:
-                                return
+                            if r.status != 200: return
                             msgs = await r.json()
                         deleted = 0
                         for msg in msgs:
                             if str(msg.get("author", {}).get("id")) == str(me_id):
                                 await sess.delete(f"https://discord.com/api/v9/channels/{c_id}/messages/{msg['id']}", headers=headers)
                                 deleted += 1
-                                await asyncio.sleep(0.4)
-                                if deleted >= limit:
-                                    break
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_delmsgs(t), bg_loop)
+                                if deleted >= limit: break
+                threading.Thread(target=run_async_tasks, args=([_delmsgs(t) for t in tokens],), daemon=True).start()
                 return
 
             # ========== MULTI REACT ==========
             if cmd_lower.startswith("multireact "):
                 parts = cmd_part.split()
-                if len(parts) < 3:
-                    send_msg(c_id, "❌ Usage: $multireact <message_id> <emoji>", token=self.token)
-                    return
+                if len(parts) < 3: return
                 msg_id = parts[1]
                 emoji = parts[2]
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 encoded = urllib.parse.quote(emoji)
                 send_msg(c_id, f"✅ {len(tokens)} tokens reacting...", token=self.token)
-
                 async def _react(tok):
                     headers = {"Authorization": tok}
                     async with aiohttp.ClientSession() as sess:
                         await sess.put(f"https://discord.com/api/v9/channels/{c_id}/messages/{msg_id}/reactions/{encoded}/@me", headers=headers)
-                        await asyncio.sleep(0.2)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_react(t), bg_loop)
+                threading.Thread(target=run_async_tasks, args=([_react(t) for t in tokens],), daemon=True).start()
                 return
 
             if cmd_lower.startswith("multi_reactall "):
@@ -1868,130 +1640,55 @@ ________________________________
                 emoji = parts[1] if len(parts) > 1 else "🔥"
                 limit = int(parts[2]) if len(parts) > 2 else 10
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 encoded = urllib.parse.quote(emoji)
                 send_msg(c_id, f"✅ {len(tokens)} tokens reacting to last {limit} messages...", token=self.token)
-
                 async def _reactall(tok):
                     headers = {"Authorization": tok}
                     async with aiohttp.ClientSession() as sess:
                         async with sess.get(f"https://discord.com/api/v9/channels/{c_id}/messages?limit={limit}", headers=headers) as r:
-                            if r.status != 200:
-                                return
+                            if r.status != 200: return
                             msgs_data = await r.json()
                         for msg in msgs_data:
                             await sess.put(f"https://discord.com/api/v9/channels/{c_id}/messages/{msg['id']}/reactions/{encoded}/@me", headers=headers)
-                            await asyncio.sleep(0.25)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_reactall(t), bg_loop)
+                threading.Thread(target=run_async_tasks, args=([_reactall(t) for t in tokens],), daemon=True).start()
                 return
 
             # ========== MULTI GHOST PING ==========
             if cmd_lower.startswith("multi_ghost_ping "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $multi_ghost_ping @user", token=self.token)
-                    return
+                if len(parts) < 2: return
                 user_id = extract_user_id_from_mention(parts[1])
-                if not user_id:
-                    send_msg(c_id, "❌ Invalid user", token=self.token)
-                    return
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 send_msg(c_id, f"✅ {len(tokens)} tokens ghost pinging...", token=self.token)
-
                 async def _ghost(tok):
                     headers = {"Authorization": tok, "Content-Type": "application/json"}
                     async with aiohttp.ClientSession() as sess:
                         async with sess.post(f"https://discord.com/api/v9/channels/{c_id}/messages", headers=headers, json={"content": f"<@{user_id}>"}) as r:
                             if r.status in [200, 201]:
-                                data = await r.json()
-                                msg_id = data.get("id")
-                                if msg_id:
-                                    await asyncio.sleep(0.3)
-                                    await sess.delete(f"https://discord.com/api/v9/channels/{c_id}/messages/{msg_id}", headers=headers)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_ghost(t), bg_loop)
+                                msg_id = (await r.json()).get("id")
+                                if msg_id: await sess.delete(f"https://discord.com/api/v9/channels/{c_id}/messages/{msg_id}", headers=headers)
+                threading.Thread(target=run_async_tasks, args=([_ghost(t) for t in tokens],), daemon=True).start()
                 return
 
-            # ========== MULTI PACK ==========
-            if cmd_lower.startswith("multi_pack "):
+            # ========== MULTI PACK & DROWN (ENDLESS) ==========
+            if cmd_lower.startswith("multi_pack ") or cmd_lower.startswith("multi_drown "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $multi_pack @user [lang] [count]", token=self.token)
-                    return
+                if len(parts) < 2: return
                 user_id = extract_user_id_from_mention(parts[1])
-                if not user_id:
-                    send_msg(c_id, "❌ Invalid user", token=self.token)
-                    return
                 lang = parts[2] if len(parts) > 2 else "mix"
-                count = int(parts[3]) if len(parts) > 3 else 5
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
-                banks = {
-                    "hindi": hindi_drown,
-                    "hinglish": hinglish_drown,
-                    "english": english_drown,
-                    "punjabi": punjabi_lines,
-                    "urdu": urdu_lines,
-                }
+                banks = {"hindi": hindi_drown, "hinglish": hinglish_drown, "english": english_drown, "punjabi": punjabi_lines, "urdu": urdu_lines}
                 pool = banks.get(lang, hindi_drown + hinglish_drown + english_drown + punjabi_lines + urdu_lines)
-                send_msg(c_id, f"✅ {len(tokens)} tokens packing {user_id} x{count}...", token=self.token)
-
-                async def _pack(tok):
+                multi_running["multipack_drown"] = True
+                send_msg(c_id, f"✅ Endless Multi Pack/Drown started. Use $stopmulti to stop.", token=self.token)
+                async def _multipd(tok):
                     headers = {"Authorization": tok, "Content-Type": "application/json"}
                     async with aiohttp.ClientSession() as sess:
-                        for _ in range(count):
+                        while multi_running.get("multipack_drown", False):
                             line = random.choice(pool).replace("{mention}", f"<@{user_id}>")
                             await sess.post(f"https://discord.com/api/v9/channels/{c_id}/messages", headers=headers, json={"content": line})
                             await asyncio.sleep(0.5)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_pack(t), bg_loop)
-                return
-
-            # ========== MULTI DROWN ==========
-            if cmd_lower.startswith("multi_drown "):
-                parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $multi_drown <user_id> [lang] [count]", token=self.token)
-                    return
-                user_id = parts[1]
-                lang = parts[2] if len(parts) > 2 else "mix"
-                count = int(parts[3]) if len(parts) > 3 else 10
-                tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
-                banks = {
-                    "hindi": hindi_drown,
-                    "hinglish": hinglish_drown,
-                    "english": english_drown,
-                    "punjabi": punjabi_lines,
-                    "urdu": urdu_lines,
-                    "mix": hindi_drown + hinglish_drown + english_drown + punjabi_lines + urdu_lines,
-                }
-                pool = banks.get(lang, hindi_drown + hinglish_drown + english_drown)
-                send_msg(c_id, f"✅ {len(tokens)} tokens drowning {user_id} x{count}...", token=self.token)
-
-                async def _drown(tok):
-                    headers = {"Authorization": tok, "Content-Type": "application/json"}
-                    async with aiohttp.ClientSession() as sess:
-                        for _ in range(count):
-                            line = random.choice(pool).replace("{mention}", f"<@{user_id}>")
-                            await sess.post(f"https://discord.com/api/v9/channels/{c_id}/messages", headers=headers, json={"content": line})
-                            await asyncio.sleep(0.3)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_drown(t), bg_loop)
+                threading.Thread(target=run_async_tasks, args=([_multipd(t) for t in tokens],), daemon=True).start()
                 return
 
             # ========== MULTI TYPING ==========
@@ -1999,11 +1696,7 @@ ________________________________
                 parts = cmd_part.split()
                 seconds = int(parts[1]) if len(parts) > 1 else 30
                 tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
                 send_msg(c_id, f"✅ {len(tokens)} tokens typing for {seconds}s...", token=self.token)
-
                 async def _typing(tok):
                     headers = {"Authorization": tok}
                     end = time.time() + seconds
@@ -2011,57 +1704,17 @@ ________________________________
                         while time.time() < end:
                             await sess.post(f"https://discord.com/api/v9/channels/{c_id}/typing", headers=headers)
                             await asyncio.sleep(5)
-
-                for t in tokens:
-                    asyncio.run_coroutine_threadsafe(_typing(t), bg_loop)
-                return
-
-            # ========== MULTI NUKE ==========
-            if cmd_lower.startswith("multinuke "):
-                message_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
-                tokens = load_tokens()
-                if not tokens:
-                    send_msg(c_id, "❌ No tokens in tokens2.txt", token=self.token)
-                    return
-                try:
-                    guild_id, channels = fetch_guild_channels(c_id, self.token)
-                    if not channels:
-                        send_msg(c_id, "❌ Not in a server or fetch failed", token=self.token)
-                        return
-                    
-                    send_msg(c_id, f"✅ MULTINUKE — {len(tokens)} tokens × {len(channels)} channels. Use $stopmulti to stop.", token=self.token)
-                    multi_running["multinuke"] = True
-
-                    async def _nuke(tok):
-                        headers = {"Authorization": tok, "Content-Type": "application/json"}
-                        async with aiohttp.ClientSession() as sess:
-                            while multi_running.get("multinuke", False):
-                                for ch in channels:
-                                    if not multi_running.get("multinuke", False):
-                                        return
-                                    try:
-                                        async with sess.post(f"https://discord.com/api/v9/channels/{ch}/messages", headers=headers, json={"content": f"@everyone {message_text}"}) as r:
-                                            if r.status == 429:
-                                                data = await r.json()
-                                                await asyncio.sleep(data.get("retry_after", 2))
-                                        await asyncio.sleep(0.15)
-                                    except:
-                                        pass
-
-                    for t in tokens:
-                        asyncio.run_coroutine_threadsafe(_nuke(t), bg_loop)
-                except:
-                    send_msg(c_id, "❌ Not in a server", token=self.token)
+                threading.Thread(target=run_async_tasks, args=([_typing(t) for t in tokens],), daemon=True).start()
                 return
 
             # ========== STOP MULTI ==========
             if cmd_lower == "stopmulti":
                 for key in list(multi_running.keys()):
                     multi_running[key] = False
-                send_msg(c_id, "✅ All multi commands stopped.", token=self.token)
+                send_msg(c_id, "✅ All endless multi commands stopped.", token=self.token)
                 return
 
-            # ========== PING ==========
+            # ========== PING / STATUS ==========
             if cmd_lower == "ping":
                 start = time.time()
                 requests.get("https://discord.com/api/v9/users/@me", headers={"Authorization": self.token})
@@ -2069,7 +1722,6 @@ ________________________________
                 send_msg(c_id, f"🏓 Pong! {latency}ms", token=self.token)
                 return
 
-            # ========== STATUS ==========
             if cmd_lower == "status":
                 uptime = round(time.time() - START_TIME, 1)
                 status_msg = (
@@ -2087,17 +1739,10 @@ ________________________________
             # ========== ACCESS / SUDO ==========
             if cmd_lower.startswith("access "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $access @user", token=self.token)
-                    return
+                if len(parts) < 2: return
                 mention = parts[1]
                 user_id = extract_user_id_from_mention(mention)
-                if not user_id:
-                    send_msg(c_id, "❌ Invalid user", token=self.token)
-                    return
-                if user_id in SUDO_USERS:
-                    send_msg(c_id, "ℹ️ Already has access", token=self.token)
-                else:
+                if user_id not in SUDO_USERS:
                     SUDO_USERS.append(user_id)
                     save_sudo(SUDO_USERS)
                     send_msg(c_id, f"✅ {mention} granted access", token=self.token)
@@ -2105,34 +1750,24 @@ ________________________________
 
             if cmd_lower.startswith("removeaccess "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $removeaccess @user", token=self.token)
-                    return
+                if len(parts) < 2: return
                 mention = parts[1]
                 user_id = extract_user_id_from_mention(mention)
-                if not user_id:
-                    send_msg(c_id, "❌ Invalid user", token=self.token)
-                    return
                 if user_id in SUDO_USERS:
                     SUDO_USERS.remove(user_id)
                     save_sudo(SUDO_USERS)
                     send_msg(c_id, f"✅ {mention} removed", token=self.token)
-                else:
-                    send_msg(c_id, "ℹ️ No access", token=self.token)
                 return
 
-            # ========== RESTART ==========
+            # ========== RESTART / PREFIX ==========
             if cmd_lower == "restart":
                 send_msg(c_id, "🔄 Restarting...", token=self.token)
                 os.execl(sys.executable, sys.executable, *sys.argv)
                 return
 
-            # ========== PREFIX ==========
             if cmd_lower.startswith("prefix "):
                 parts = cmd_part.split()
-                if len(parts) < 2:
-                    send_msg(c_id, "❌ Usage: $prefix <new_prefix>", token=self.token)
-                    return
+                if len(parts) < 2: return
                 PREFIX = parts[1]
                 send_msg(c_id, f"✅ Prefix changed to `{PREFIX}`", token=self.token)
                 return
@@ -2149,7 +1784,7 @@ ________________________________
 # ==================== LAUNCH ====================
 def run_all_bots():
     print("=" * 55)
-    print("      𝘼𝙨𝙝𝙪 SELFBOT — ULTIMATE EDITION")
+    print("      𝘼𝙨𝙝𝙪 SELFBOT — ULTIMATE EDITION (LIMITLESS)")
     print("=" * 55)
 
     if not TOKENS:
@@ -2174,15 +1809,10 @@ def run_all_bots():
         print("No valid tokens. Exiting...")
         return
 
-    print(f"\n✅ {len(valid_tokens)} valid tokens!")
+    print(f"\n✅ {len(valid_tokens)} valid tokens! ALL LIMITS REMOVED ⚡")
     print(f"⚡ SPAM_DELAY: {SPAM_DELAY}s")
     print(f"⚡ PARALLEL_SPAM: {PARALLEL_SPAM}")
     print(f"⚡ PARALLEL_NC: {PARALLEL_NC}\n")
-    print("📁 Files required:")
-    print("  • tokens2.txt — Multi-token commands")
-    print("  • gcname.txt — GC name spam")
-    print("  • auto_responses.json — Auto-reply triggers")
-    print("  • sudo_users.json — Sudo users")
 
     bots = []
     for i, token in enumerate(valid_tokens):
@@ -2193,18 +1823,6 @@ def run_all_bots():
         time.sleep(1)
 
     print("✅ All bots running!")
-    print("\n📋 COMMANDS:")
-    print("  $help — Full help")
-    print("  $spam @user — Start spam")
-    print("  $nc @user — Nickname spam")
-    print("  $multispam <msg> — Multi-token spam")
-    print("  $drown_hindi @user — Hindi abuse")
-    print("  $multinuke — All tokens nuke")
-    print("  $stopmulti — Stop all multi commands")
-    print("  $addar trigger,resp — Add auto-reply")
-    print("  $gcstart — GC name spam")
-    print("Press Ctrl+C to stop")
-
     try:
         while True:
             time.sleep(1)
