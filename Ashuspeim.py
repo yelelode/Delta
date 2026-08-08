@@ -49,13 +49,16 @@ counter_running = False
 spammingss = False
 START_TIME = time.time()
 
-# ==================== HIGH-SPEED CONFIGS ====================
-NC_DELAY = 0.001
-SPAM_DELAY = 0.001
-PARALLEL_SPAM = 15
-PARALLEL_NC = 15
+# ==================== NON-STOP SMOOTH CONFIGS ====================
+NC_DELAY = 0.7       # 0.6s - 0.8s optimal non-stop delay
+SPAM_DELAY = 0.05
+PARALLEL_SPAM = 5
+PARALLEL_NC = 2      # Balanced parallel workers to avoid Rate Limit freeze
 
-# ==================== SAFE UNICODE ENCODED NC PATTERNS ====================
+# Global Persistent Session for HTTP Requests
+http_session = None
+
+# ==================== EXACT FAVORITE NC LIST (UNICODE ENCODED FOR TERMUX SAFETY) ====================
 _FIRE = "\U0001f525"
 _ZALGO = "\u0e47\u200b" * 3
 
@@ -306,7 +309,7 @@ def run_async_tasks(tasks):
     finally:
         loop.close()
 
-# ==================== HIGH-SPEED ASYNC WORKERS ====================
+# ==================== NON-STOP ASYNC WORKERS ====================
 async def async_nc_worker(g_id, target_mention, token):
     key = f"{g_id}_{token[:10]}"
     headers = {"Authorization": token, "Content-Type": "application/json"}
@@ -318,9 +321,12 @@ async def async_nc_worker(g_id, target_mention, token):
                 async with session.patch(f"https://discord.com/api/v9/channels/{g_id}", headers=headers, json={"name": new_text}) as resp:
                     if resp.status == 429:
                         data = await resp.json()
-                        await asyncio.sleep(data.get("retry_after", 0.1))
+                        retry = data.get("retry_after", 0.5)
+                        await asyncio.sleep(retry)
+                    else:
+                        await asyncio.sleep(NC_DELAY)
             except:
-                await asyncio.sleep(0.01)
+                await asyncio.sleep(0.5)
 
 def nc_thread_launcher(g_id, target_mention, token):
     loop = asyncio.new_event_loop()
@@ -340,9 +346,11 @@ async def async_spam_worker(c_id, target_mention, token):
                     async with session.post(f"https://discord.com/api/v9/channels/{c_id}/messages", headers=headers, json={"content": msg}) as resp:
                         if resp.status == 429:
                             data = await resp.json()
-                            await asyncio.sleep(data.get("retry_after", 0.1))
+                            await asyncio.sleep(data.get("retry_after", 0.2))
+                        else:
+                            await asyncio.sleep(SPAM_DELAY)
                 except:
-                    await asyncio.sleep(0.01)
+                    await asyncio.sleep(0.1)
 
 def spam_thread_launcher(c_id, target_mention, token):
     loop = asyncio.new_event_loop()
@@ -863,7 +871,7 @@ class DiscordSelfBot:
                 send_msg(c_id, "✅ Spammm stopped.", token=self.token)
                 return
 
-            # ========== NC (HIGH-SPEED ASYNC BATCH) ==========
+            # ========== NC (HIGH-SPEED ASYNC BATCH WITH NON-STOP LOGIC) ==========
             if cmd_lower.startswith("nc "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
@@ -1953,7 +1961,7 @@ class DiscordSelfBot:
                 logging.error(f"Bot {self.bot_index + 1} error: {e}")
                 time.sleep(5)
 
-# ==================== LAUNCH ====================
+# ==================== LAUNCH PROCESSES ====================
 def run_all_bots():
     print("=" * 55)
     print("      𝘼𝙨𝙝𝙪 SELFBOT — ULTIMATE EDITION (LIMITLESS)")
