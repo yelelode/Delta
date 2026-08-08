@@ -55,18 +55,18 @@ SPAM_DELAY = 0.05
 PARALLEL_SPAM = 5
 PARALLEL_NC = 3
 
-# ==================== NC LIST (UNCHANGED) ====================
+# ==================== NC LIST (UPDATED 4 PATTERNS) ====================
 NC_LIST = [
     "{target} ᴛᴇʀɪ ᴍᴋᴄ ʟᴡᴅᴇ ᴄʜxᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
     "{target} ᴛᴇʀɪ ᴍᴀᴀ ᴋᴀ ʙʜᴏsᴅᴀ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
-    "{target} ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʟᴜɴᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
-    "{target} ᴛᴇʀɪ ʙᴇʜᴇɴ ᴋɪ ᴀɴᴋʜ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
+    "{target} ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʟᴜɴᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥",
+    "{target} ᴛᴇʀɪ ʙᴇʜᴇɴ ᴋɪ ᴀɴᴋʜ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥",
 ]
 
 # ==================== SPAM MESSAGES ====================
 SPAM_MESSAGES = [
-    "# 𓆩 🔸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴ𝗗l⃠𝗖ᴇ #𝗟ᴀ𝗗ᴄ𝗘 #ɪ𝗦 #s𝗘 #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝗧ɪ #𝗛ᴀ𝗜I⃠",
-    "# 𓆩🈸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴ𝗗l⃠𝗖ᴇ #𝗟ᴀ𝗗ᴄ𝗘 #ɪ𝗦 #s𝗘 #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝗧ɪ #𝗛ᴀ𝗜I⃠",
+    "# 𓆩 🔸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴ𝗗l⃠𝗖ᴇ #𝗟ᴀ𝗗ᴄᴇ #ɪ𝗦 #s𝗘 #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝗧ɪ #𝗛ᴀ𝗜I⃠",
+    "# 𓆩🈸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴ𝗗l⃠𝗖ᴇ #𝗟ᴀＤᴄᴇ #ɪ𝗦 #s𝗘 #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝗧ɪ #𝗛ᴀ𝗜I⃠",
 ]
 
 # ==================== REPLY TEXTS ====================
@@ -249,6 +249,31 @@ def send_msg(c_id, text, reply_to=None, token=None):
     except:
         return None
 
+def send_long_menu(c_id, text, token):
+    """
+    Auto-Chunking Logic: Agat Help menu 2000 characters se lamba ho, 
+    to ye use safely split karke sequential messages mein send kar deta hai.
+    """
+    max_len = 1900
+    lines = text.split("\n")
+    chunks = []
+    current_chunk = ""
+
+    for line in lines:
+        if len(current_chunk) + len(line) + 1 > max_len:
+            chunks.append(current_chunk)
+            current_chunk = line + "\n"
+        else:
+            current_chunk += line + "\n"
+    
+    if current_chunk:
+        chunks.append(current_chunk)
+
+    for chunk in chunks:
+        formatted_msg = f"```fix\n{chunk.strip()}\n```"
+        send_msg(c_id, formatted_msg, token=token)
+        time.sleep(0.4)
+
 def change_gc_name(g_id, name, token=None):
     if not token:
         return None
@@ -408,72 +433,197 @@ class DiscordSelfBot:
             cmd_lower = cmd_part.lower()
             args = cmd_part.split()
 
-            # ========== SPLIT GIANT STYLISH HELP MENU ==========
+            # ========== ULTIMATE DETAILED & STYLISH HELP MENU ==========
             if cmd_lower == "help" or cmd_lower == "h":
-                help_part1 = """**```fix
-________𝒙𝘼𝙨𝙝𝙪_𝙎𝙚𝙡𝙛𝙗𝙤𝙩_𝙑𝟮𝒙_________
-❄️ ☠️ Tʜᴇʏ Cᴀʟʟ Mᴇ 𝘼𝙨𝙝𝙪 ☠️ ❄️
-________________________________
- 𝘿𝙚𝙫 - ⟨ 𝘼𝙨𝙝𝙪 ⟩
- 🧸❄️━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━❄️🧸
- ❄️ SPAM MODES:
-   » $spam @user       • ON: Spams user \vert{} OFF: $stopspam
-   » $spammm <msg>     • ON: Fast spam  \vert{} OFF: $spamoff
-   » $repeat_spam <m>  • ON: Inf repeat \vert{} OFF: $stoprepeat
-   » $counter_spam <m> • ON: Auto count \vert{} OFF: $stopcounter
-   » $nc @user         • ON: Name spam  \vert{} OFF: $stopnc
-   » $longspam @u <n>  • ON: 2k spam    \vert{} OFF: $stoplongspam
-   » $spamall <msg>    • ON: Spam in all| OFF: $stopspamall
-   » $invis <count>    • ON: Invis spam \vert{} OFF: $stopinvis
-   » $nitro_spam <n>   • ON: Fake nitro \vert{} OFF: $stopnitro
-   » $zalgo <n> <txt>  • ON: Zalgo text \vert{} OFF: $stopzalgo
-   » $wordwall <word>  • ON: Word wall  \vert{} OFF: $stopwordwall
-   » $edit_spam <msg>  • ON: Edit bypass\vert{} OFF: $stopeditspam
- 
- ❄️ MULTI-TOKEN (STOP ALL WITH: $stopmulti):
-   » $multispam <msg>     • All bots spam channel
-   » $multispamall <m>    • All bots spam all channels
-   » $multilongspam <id>  • All bots 2k spam
-   » $multiwordwall <w>   • All bots word wall
-   » $multizalgo <c> <t>  • All bots zalgo
-   » $multieveryone <c>   • All bots @everyone
-   » $multinuke <msg>     • NUKE SERVER WITH ALL BOTS
-   » $multidm <id> <m>    • All bots DM user
-   » $multi_massdm <m>    • Mass DM server members
-```**"""
-                
-                help_part2 = """**```fix
-   » $multijoin <code>    • All bots join server
-   » $multileave <id>     • All bots leave server
-   » $multi_leaveall      • All bots leave all servers
-   » $multifriend <id>    • Mass friend request
-   » $multiblock <id>     • Mass block
-   » $multi_setnick <n>   • Set nickname for all
-   » $multi_set_avatar <f>• Set avatar (file)
-   » $multi_status_set <t>• Set custom status
-   » $multireact <id> <e> • Mass react
-   » $multi_ghost_ping @u • Mass ghost ping
- 
- ❄️ DROWN & PACK MODES:
-   » $drown_hindi @u   • ON: Hindi Flood \vert{} OFF: $stopdrown
-   » $drown_hinglish @u• ON: Hinglish    \vert{} OFF: $stopdrown
-   » $drown_english @u • ON: English     \vert{} OFF: $stopdrown
-   » $drown_mix @u     • ON: Mix Flood   \vert{} OFF: $stopdrown
-   » $continuous_pack @u• ON: Endless Pack\vert{} OFF: $stoppack
- 
- ❄️ AUTO-REPLY & SYSTEM:
-   » $autoreply @u     • ON: Auto-reply \vert{} OFF: $removeautoreply
-   » $addar <t>,<r>    • Add custom trigger,response
-   » $autoreact <e>    • ON: Auto emoji \vert{} OFF: $stopautoreact
-   » $gcstart <delay>  • ON: Rename GC  \vert{} OFF: $gcstop
- 🧸❄️━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━❄️🧸
-```**"""
-                send_msg(c_id, help_part1, token=self.token)
-                time.sleep(0.5)
-                send_msg(c_id, help_part2, token=self.token)
+                full_help = """
+⚡ ══════════════════════════════════════════════════ ⚡
+               𝘼𝙨𝙝𝙪  𝙎𝙚𝙡𝙛𝙗𝙤𝙩  𝙑𝟮  —  𝙐𝙡𝙩𝙞𝙢𝙖𝙩𝙚  𝙈𝙚𝙣𝙪
+       👑 Owner: Ashu | System Status: Active 👑
+⚡ ══════════════════════════════════════════════════ ⚡
+
+[ 1. SPAM MODES — SINGLE TOKEN ]
+───────────────────────────────────────────────────────
+• $spam @user
+  └─ Kaam: Specific user ko mention karke fast parallel spam karta hai.
+  └─ Chalu: $spam @user
+  └─ Roke: $stopspam
+
+• $spammm <text>
+  └─ Kaam: Unstoppable ultra-fast 0.05s delay wala delayless spam.
+  └─ Chalu: $spammm Tera Naam
+  └─ Roke: $spamoff
+
+• $nc @user
+  └─ Kaam: Group Chat / Channel ka naam fast rename karke user ko spam karta hai.
+  └─ Chalu: $nc @user
+  └─ Roke: $stopnc
+
+• $spamall <msg>
+  └─ Kaam: Server ke saare text channels mein ek sath spam karta hai.
+  └─ Chalu: $spamall Ashu On Top
+  └─ Roke: $stopspamall
+
+• $longspam @user
+  └─ Kaam: 2000 character lambe heavy text paragraphs bhej kar channel flood karta hai.
+  └─ Chalu: $longspam @user
+  └─ Roke: $stoplongspam
+
+• $wordwall <word>
+  └─ Kaam: Ek hi lafz/word ka 2000-char lamba wall bana kar spam karta hai.
+  └─ Chalu: $wordwall ASHU
+  └─ Roke: $stopwordwall
+
+• $zalgo <text>
+  └─ Kaam: Corrupted Zalgo/Glitchy fonts ka use karke spam karta hai.
+  └─ Chalu: $zalgo Hello World
+  └─ Roke: $stopzalgo
+
+• $repeat_spam <text>
+  └─ Kaam: Infinite loop mein same message repeat bhejta rehta hai.
+  └─ Chalu: $repeat_spam Hello
+  └─ Roke: $stoprepeat
+
+• $counter_spam <prefix>
+  └─ Kaam: Message ke aage 1, 2, 3 numbers count karke spam karta hai.
+  └─ Chalu: $counter_spam Count
+  └─ Roke: $stopcounter
+
+• $edit_spam <msg>
+  └─ Kaam: Pehle msg bhejta hai fir use baar-baar edit karke spam bypass karta hai.
+  └─ Chalu: $edit_spam Bypass
+  └─ Roke: $stopeditspam
+
+• $invis
+  └─ Kaam: Complete invisible/blank characters ka spam karta hai.
+  └─ Chalu: $invis
+  └─ Roke: $stopinvis
+
+• $nitro_spam
+  └─ Kaam: Fake Nitro gift links generate karke continuous flood karta hai.
+  └─ Chalu: $nitro_spam
+  └─ Roke: $stopnitro
+
+
+[ 2. MULTI-TOKEN COMMANDS — ALL BOTS ]
+───────────────────────────────────────────────────────
+• $multispam <msg>
+  └─ Kaam: Saare added tokens ek saath current channel mein spam karenge.
+  └─ Chalu: $multispam Ashu Gang
+  └─ Roke: $stopmulti
+
+• $multispamall <msg>
+  └─ Kaam: Saare tokens server ke saare channels mein spam karte hain.
+  └─ Chalu: $multispamall Ashu Multi
+  └─ Roke: $stopmulti
+
+• $multinuke <msg>
+  └─ Kaam: Saare tokens @everyone tag ke sath saare channels mein nuke spam karenge.
+  └─ Chalu: $multinuke Server Down
+  └─ Roke: $stopmulti
+
+• $multidm <user_id> <msg>
+  └─ Kaam: Saare tokens target user ke Personal DM mein message bhejenge.
+  └─ Chalu: $multidm 123456789 Hi
+  └─ Roke: Automatic (Task Complete hone par)
+
+• $multi_massdm <msg>
+  └─ Kaam: Server ke har ek member ko saare tokens se DM spam karta hai.
+  └─ Chalu: $multi_massdm Check this
+  └─ Roke: Automatic
+
+• $multijoin <invite_code>
+  └─ Kaam: Saare tokens ek saath server join karenge.
+  └─ Chalu: $multijoin discord.gg/xyz
+  └─ Roke: Automatic
+
+• $multileave <guild_id>
+  └─ Kaam: Saare tokens specified server se leave kar denge.
+  └─ Chalu: $multileave 987654321
+  └─ Roke: Automatic
+
+• $multi_leaveall
+  └─ Kaam: Saare tokens unke saare joined servers se leave ho jayenge.
+  └─ Chalu: $multi_leaveall
+  └─ Roke: Automatic
+
+• $multifriend / $multiblock <user_id>
+  └─ Kaam: Target ID ko saare tokens se Mass Friend Request / Block bhejta hai.
+  └─ Chalu: $multifriend ID / $multiblock ID
+  └─ Roke: Automatic
+
+• $multi_setnick <name>
+  └─ Kaam: Server mein saare tokens ka Nickname change kar deta hai.
+  └─ Chalu: $multi_setnick Ashu
+  └─ Roke: Automatic
+
+• $multireact <msg_id> <emoji>
+  └─ Kaam: Ek specific message par saare tokens se emoji reaction dilwata hai.
+  └─ Chalu: $multireact 11223344 🔥
+  └─ Roke: Automatic
+
+
+[ 3. DROWN & PACK MODES — FLOODING ]
+───────────────────────────────────────────────────────
+• $drown_hindi / $drown_hinglish / $drown_english / $drown_mix @user
+  └─ Kaam: Selected bhasha (Language) mein targeted non-stop abuse flood karta hai.
+  └─ Chalu: $drown_hinglish @user
+  └─ Roke: $stopdrown
+
+• $continuous_pack @user <lang>
+  └─ Kaam: Continuous loop mein heavy pack/abuse dialogue lines bhejta hai.
+  └─ Chalu: $continuous_pack @user hindi
+  └─ Roke: $stoppack
+
+• $hindi_pack / $hinglish_pack / $punjabi_pack / $urdu_pack / $god_pack @user
+  └─ Kaam: Pre-defined 10-20 heavy regional pack lines single shot mein send karta hai.
+  └─ Chalu: $god_pack @user
+  └─ Roke: Automatic (Lines complete hone par)
+
+
+[ 4. AUTO-REPLY & SYSTEM SETTINGS ]
+───────────────────────────────────────────────────────
+• $autoreply @user
+  └─ Kaam: Targeted user jab bhi message karega, bot use automatic roast/reply dega.
+  └─ Chalu: $autoreply @user
+  └─ Roke: $removeautoreply @user  YA  $stopautoreply
+
+• $addar <trigger>,<response>
+  └─ Kaam: Custom word trigger par auto-response set karta hai (e.g. hi -> hello).
+  └─ Chalu: $addar hi,hello
+  └─ Roke: $removear hi
+
+• $autoreact <emoji>
+  └─ Kaam: Channel ke saare aane wale new messages par automatic emoji react karega.
+  └─ Chalu: $autoreact 🔥
+  └─ Roke: $stopautoreact
+
+• $gcstart <delay>
+  └─ Kaam: Group Chat ka name gcname.txt se padh kar continuous fast rename karega.
+  └─ Chalu: $gcstart 0.5
+  └─ Roke: $gcstop
+
+• $prefix <new_prefix>
+  └─ Kaam: Self-bot ka command prefix change karta hai.
+  └─ Chalu: $prefix !
+  └─ Roke: Automatic
+
+• $access @user / $removeaccess @user
+  └─ Kaam: Dusre user ko bot commands chalane ki Sudo permission deta/hata-ta hai.
+  └─ Chalu: $access @user
+  └─ Roke: $removeaccess @user
+
+• $ping / $status / $restart
+  └─ Kaam: Bot ki latency (speed), active status, ya bot ko restart karne ke liye.
+  └─ Chalu: $ping / $status / $restart
+
+⚡ ══════════════════════════════════════════════════ ⚡
+             🔥  𝘼𝙨𝙝𝙪  𝙊𝙣  𝙏𝙤𝙥  —  𝙁𝙪𝙡𝙡  𝘾𝙤𝙣𝙩𝙧𝙤𝙡  🔥
+⚡ ══════════════════════════════════════════════════ ⚡
+"""
+                send_long_menu(c_id, full_help, token=self.token)
                 return
 
-            # ========== OTHER HELP MENUS (UNCHANGED) ==========
+            # ========== OTHER HELP MENUS ==========
             if cmd_lower == "general" or cmd_lower == "gnrl":
                 send_msg(c_id, """**```fix
 ╔══════════════════════════════════════════╗
@@ -681,23 +831,14 @@ ________________________________
                 send_msg(c_id, "✅ Spam stopped", token=self.token)
                 return
 
-            # ========== $SPAMMM — MULTI-LINE REPEAT SPAM (CHANGED) ==========
+            # ========== SPAMMM (FAST SPAM) ==========
             if cmd_lower.startswith("spammm "):
                 spammingss = True
                 if len(cmd_part.split()) > 1:
-                    base_text = " ".join(cmd_part.split()[1:])
+                    msg_text = " ".join(cmd_part.split()[1:])
                 else:
-                    base_text = "Garv tmkb me lun daalke fyter bnadunga usko 🤣🔥"
-                # Repeat 40 times with newline, but ensure total length <= 2000
-                # Each line length ~ len(base_text)+1 (newline)
-                max_lines = min(40, 2000 // (len(base_text) + 1))
-                if max_lines < 1:
-                    max_lines = 1
-                msg_text = (base_text + "\n") * max_lines
-                # Trim if still exceeds 2000 (just in case)
-                if len(msg_text) > 2000:
-                    msg_text = msg_text[:1997] + "..."
-                send_msg(c_id, f"✅ Spammm started ({max_lines} lines/msg). Use $spamoff to stop.", token=self.token)
+                    msg_text = "(Target)ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʀᴀᴘᴇ ᴋʀʀᴀ ʜᴜ-𒐫𒐫𒐫𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋"
+                send_msg(c_id, f"✅ Spammm started. Use $spamoff to stop.", token=self.token)
                 def _spam_fast():
                     while spammingss:
                         send_msg(c_id, msg_text, token=self.token)
@@ -710,7 +851,7 @@ ________________________________
                 send_msg(c_id, "✅ Spammm stopped.", token=self.token)
                 return
 
-            # ========== NC (UNCHANGED) ==========
+            # ========== NC (UPDATED WITH NEW PATTERNS) ==========
             if cmd_lower.startswith("nc "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
