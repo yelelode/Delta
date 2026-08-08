@@ -55,53 +55,43 @@ SPAM_DELAY = 0.001
 PARALLEL_SPAM = 15
 PARALLEL_NC = 15
 
-# Global Persistent Session for HTTP Requests
-http_session = None
+# ==================== SAFE UNICODE ENCODED NC PATTERNS ====================
+_FIRE = "\U0001f525"
+_ZALGO = "\u0e47\u200b" * 3
 
-# ==================== NC LIST (FIXED TRIPLE QUOTES FOR TERMUX) ====================
 NC_LIST = [
-    """{target} ᴛᴇʀɪ ᴍᴋᴄ ʟᴡᴅᴇ ᴄʜxᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥""",
-    """{target} ᴛᴇʀɪ ᴍᴀᴀ ᴋᴀ ʙʜᴏsᴅᴀ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥""",
-    """{target} ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʟᴜɴᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥""",
-    """{target} ᴛᴇʀɪ ʙᴇʜᴇɴ ᴋɪ ᴀɴᴋʜ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥""",
+    f"{{target}} ᴛᴇʀɪ ᴍᴋᴄ ʟᴡᴅᴇ ᴄʜxᴅ-{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}",
+    f"{{target}} ᴛᴇʀɪ ᴍᴀᴀ ᴋᴀ ʙʜᴏsᴅᴀ-{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}",
+    f"{{target}} ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʟᴜɴᴅ-{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}",
+    f"{{target}} ᴛᴇʀɪ ʙᴇʜᴇɴ ᴋɪ ᴀɴᴋʜ-{_ZALGO}{_FIRE}",
 ]
 
 # ==================== SPAM MESSAGES ====================
 SPAM_MESSAGES = [
-    "# 𓆩 🔸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴＤl⃠𝗖ᴇ #𝗟ᴀＤᴄᴇ #ɪ𝗦 #sＥ #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝑇ɪ #𝗛ᴀ𝗜I⃠",
-    "# 𓆩🈸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴＤl⃠𝗖ᴇ #𝗟ᴀＤᴄᴇ #ɪ𝗦 #sＥ #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝑇ɪ #𝗛ᴀ𝗜I⃠",
+    "# \u0f39 \ud83d\udd38\u0f3a ##\ud835\ude08\ud835\ude34\ud835\ude29\ud835\ude36#\ud835\ude12\ud835\ude2f \ud835\ude1b\ud835\ude30\ud835\ude31 #\ud835\ude19\u1d07\ud835\ude15\ud835\ude0e\u20e0\ud835\ude00\u1d07 #\ud835\ude13\u1d00\ud835\ude0e\u1d03\u1d07 #\u026a\ud835\ude00 #s\ud835\ude00\u1d07 #\ud835\ude1b\u1d07\u029d #\ud835\ude1b\u1d0f #\u1d0b\u1d0f #\ud835\ude08\u1d0d\u1d0d\u1d00 #\ud835\ude00\u029c\ud835\ude1c\u1d03\ud835\ude1b\u026a #\ud835\ude08\u1d00\u026aI\u20e0",
+    "# \u0f39\ud838\ude38\u0f3a ##\ud835\ude08\ud835\ude34\ud835\ude29\ud835\ude36#\ud835\ude12\ud835\ude2f \ud835\ude1b\ud835\ude30\ud835\ude31 #\ud835\ude19\u1d07\ud835\ude15\ud835\ude0e\u20e0\ud835\ude00\u1d07 #\ud835\ude13\u1d00\ud835\ude0e\u1d03\u1d07 #\u026a\ud835\ude00 #s\ud835\ude00\u1d07 #\ud835\ude1b\u1d07\u029d #\ud835\ude1b\u1d0f #\u1d0b\u1d0f #\ud835\ude08\u1d0d\u1d0d\u1d00 #\ud835\ude00\u029c\ud835\ude1c\u1d03\ud835\ude1b\u026a #\ud835\ude08\u1d00\u026aI\u20e0",
 ]
 
 # ==================== REPLY TEXTS ====================
 REPLY_TEXTS = [
-    "𝐖ᴏ ʙʜɪ ᴋʏᴀ ᴅɪɴ ᴛʜᴇ ᴊᴀʙ ᴛʀʏ ᴍᴀᴀ ᴍᴜᴊʜᴇ 𝐀ᴘɴᴀ 𝐂ʜᴜᴛ 𝐃ᴇᴛɪ ᴛʜɪ 💔",
-    "𝐀ᴡᴀᴢ 𝐍ɪᴄʜᴇ 𝐆ᴜʟᴀᴀᴍ 🤢",
-    "𝐓ʀʏ 𝐌ᴀᴀ ɴᴇ 𝐂ʜᴜᴅɴᴇ 𝐌ᴀɪ ɢᴏʟᴅ 𝐌ᴇᴅᴀʟ 𝐉ᴇᴇᴛᴀ 👑",
-    "𝐓ᴇʀɪ 𝐌ᴀᴀ ᴋɪ 𝐂ʜᴜᴛ 𝐌ᴇ 𝐌ᴇʀᴀ 𝐋ᴜɴᴅ 🖕",
-    "𝐁ʜᴏꜱᴀᴅɪᴋᴇ 𝐀ᴘɴɪ 𝐁ᴇʜᴇɴ 𝐂ʜᴜᴅᴀ 🖕",
-    "𝘾𝙝𝙖𝙡𝙩𝙞 𝙝𝙖𝙞 𝙜𝙖𝙙𝙞 𝙘𝙝𝙖𝙡𝙩𝙖 𝙝𝙖𝙞 𝙜𝙝𝙤𝙙𝙖 𝙙𝙖𝙡𝙙𝙪 𝙠𝙮𝙖 𝙖𝙖𝙥𝙠𝙚 𝙜𝙖𝙣𝙙 𝙢𝙚 𝙡𝙖𝙬𝙙𝙖",
-    "𝘼𝙖𝙠𝙝 𝙠𝙮𝙖 𝙢𝙖𝙧𝙩𝙞 𝙝𝙖𝙞 𝙢𝙖𝙧 𝙙𝙚 𝙩𝙖𝙡𝙬𝙖𝙧 𝙖𝙖𝙜𝙖𝙧 𝙠𝙖𝙧𝙩𝙞 𝙝𝙖𝙞 𝙨𝙖𝙘𝙘𝙝𝙖 𝙥𝙮𝙖𝙧 𝙩𝙤 𝙠𝙝𝙤𝙡 𝙙𝙚 𝙨𝙖𝙡𝙫𝙖𝙧",
-    "𝘼𝙖𝙤 𝙠𝙪𝙘𝙝 𝙠𝙝𝙚𝙡𝙩𝙚 𝙝𝙖𝙞 𝙖𝙖𝙥 𝙩𝙖𝙣𝙜 𝙪𝙩𝙝𝙖𝙤 𝙝𝙖𝙢 𝙥𝙚𝙡𝙩𝙚 𝙝𝙖𝙞",
-    "𝙩𝙚𝙧𝙞 𝙢𝙖𝙖 𝙠 𝙗𝙝𝙤𝙨𝙙𝙚 𝙢𝙖𝙞 𝙈𝘿𝙃 𝘾𝙃𝘼𝙉𝘼 𝙈𝘼𝙎𝘼𝙇𝘼 𝙙𝙖𝙖𝙡 𝙠 𝙩𝙚𝙧𝙚 𝙗𝙖𝙖𝙥 𝙠𝙤 𝙫𝙤 𝙨𝙥𝙞𝙘𝙮 𝙗𝙝𝙤𝙨𝙙𝙖 𝙠𝙝𝙞𝙡𝙖 𝙙𝙪𝙣𝙜𝙖 🥵🤮",
+    "\ud835\ude1e\u1d0f \u029d\u029c\u026a \u1d0b\u028f\u1d00 \u1d05\u026a\u0274 \u1d1b\u028c\u1d07 \u1d0a\u1d00\u029d \u1d1b\u0280\u028f \u1d0d\u1d00\u1d00 \u1d0d\u1d1b\u029c\u1d0a\u1d07 \ud835\ude08\u1d18\u0274\u1d00 \ud835\ude00\u029c\u1d0b\u1d1b \ud835\ude05\u1d07\u1d1b\u026a \u1d1b\u029c\u026a \ud83d\udc94",
+    "\ud835\ude08\u1d18\u1d00\u1d1a \ud835\ude15\u026a\u1d03\u029c\u1d07 \ud835\ude0e\u1d07\u029d\u1d00\u1d00\u1d0d \ud83e\udd22",
+    "\ud835\ude1b\u0280\u028f \ud835\ude0d\u1d00\u1d00 \u0274\u1d07 \ud835\ude00\u029c\u1d0b\u1d1b\u0274\u1d07 \ud835\ude0d\u1d00\u026a \u0262\u1d0f\u029f\u1d05 \ud835\ude0d\u1d07\u1d05\u1d00\u029f \ud835\ude00\u1d07\u1d07\u1d1b\u1d00 \ud83d\udc51",
+    "\ud835\ude1b\u1d07\u0280\u026a \ud835\ude0d\u1d00\u1d00 \u1d0b\u026a \ud835\ude00\u029c\u1d0b\u1d1b \ud835\ude0d\u1d07 \ud835\ude0d\u1d07\u0280\u1d00 \ud835\ude13\u1d01\u0274\u1d05 \ud83d\udd95",
+    "\ud835\ude09\u029c\u1d0f\ua731\u1d00\u1d18\u026a\u1d0b\u1d07 \ud835\ude08\u1d18\u0274\u026a \ud835\ude09\u1d07\u029c\u1d07\u0274 \ud835\ude00\u029c\u1d1b\u1d00 \ud83d\udd95",
+    "Chalti hai gadi chalta hai ghoda daldu kya aapke gand me lawda",
+    "Aakh kya marti hai mar de talwar aagar karti hai saccha pyar to khol de salvar",
+    "Aao kuch khelte hai aap tang uthao ham pelte hai",
+    "teri maa k bhosde mai MDH CHANA MASALA daal k tere baap ko vo spicy bhosda khila dunga \ud83e\udd75\ud83e\udd22",
 ]
 
 # ==================== LONG SPAM TEMPLATES ====================
 LONG_SPAM_TEMPLATES = [
-    "{target} 𝘼𝙨𝙝𝙪 𝐑𝐔𝐍𝐒 𝐘𝐎𝐔 " * 150,
-    "{target} 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐀 𝐁𝐇𝐎𝐒𝐃𝐀 " * 150,
-    "{target} 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐋𝐀𝐔𝐃𝐄 " * 150,
-    "{target} 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃 " * 150,
-    "{target} 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 " * 150,
-    "{target} 𝐂𝐇𝐔𝐓𝐈𝐘𝐀 " * 150,
-    "{target} 𝐆𝐀𝐍𝐃𝐔 " * 150,
-    "{target} 𝐊𝐔𝐓𝐓𝐄 𝐊𝐈 𝐀𝐔𝐋𝐀𝐃 " * 150,
-    "{target} 𝐓𝐄𝐑𝐈 𝐌𝐔𝐌𝐌𝐘 𝐃𝐈 𝐅𝐔𝐃𝐃𝐈 " * 150,
-    "{target} 𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐃𝐈 𝐀𝐍𝐊𝐇 " * 150,
-    "{target} 𝐋 + 𝐑𝐀𝐓𝐈𝐎 + 𝐌𝐀𝐋𝐃 + 𝐂𝐎𝐏𝐄 " * 100,
-    "{target} 𝐆𝐄𝐓 𝐃𝐔𝐁𝐀𝐘𝐀 𝐁𝐘 𝘼𝙨𝙝𝙪 " * 120,
-    "{target} 𝐓𝐔 𝐇𝐀𝐑 𝐂𝐇𝐔𝐊𝐀 𝐇𝐀𝐈 " * 140,
-    "{target} 𝐀𝐔𝐊𝐀𝐓 𝐌𝐄𝐈𝐍 𝐑𝐄𝐇 " * 150,
-    "{target} 𝘼𝙨𝙝𝙪 𝐎𝐍 𝐓𝐎𝐏 " * 150,
+    "{target} \ud835\ude08\ud835\ude34\ud835\ude29\ud835\ude36 \ud835\udc11\ud835\udc2b\ud835\udc21\ud835\udc2c \ud835\udc32\ud835\udc2d\ud835\udc2e " * 150,
+    "{target} \ud835\udc13\ud835\udc1e\ud835\udc2b\ud835\udc22 \ud835\udc0d\ud835\udc1a\ud835\udc1a \ud835\udc0a\ud835\udc1a \ud835\udc01\ud835\udc21\ud835\udc2d\ud835\udc2c\ud835\udc1d\ud835\udc1a " * 150,
+    "{target} \ud835\udc01\ud835\udc1e\ud835\udc21\ud835\udc1e\ud835\udc27 \ud835\udc0a\ud835\udc1e \ud835\udc0b\ud835\udc1a\ud835\udc2e\ud835\udc1d\ud835\udc1e " * 150,
+    "{target} \ud835\udc0d\ud835\udc1a\ud835\udc1d\ud835\udc1a\ud835\udc2b\ud835\udc0c\ud835\udc21\ud835\udc2d " * 150,
+    "{target} \ud835\udc01\ud835\udc21\ud835\udc2d\ud835\udc2c\ud835\udc1d\ud835\udc22\ud835\udc2a\ud835\udc1e " * 150,
 ]
 
 def get_long_spam(target_mention):
@@ -113,68 +103,53 @@ def get_long_spam(target_mention):
 
 # ==================== DROWN LISTS ====================
 hindi_drown = [
-    "तू बेकार है {mention} 💀",
+    "तू बेकार है {mention} \ud83d\udc80",
     "तेरी माँ का भोसड़ा {mention}",
-    "तू गधा है {mention} 🫏",
+    "तू गधा है {mention} \ud83e\udecf",
     "तेरी बहन की आँख {mention}",
     "तू पैदा ही नहीं होना चाहिए था {mention}",
-    "तेरी औकात नहीं है {mention} ☠️",
-    "तू हार चुका है {mention} 🔥",
-    "बंद कर मुँह अपना {mention} 🗑️",
-    "तू एक निकम्मा है {mention} 😂",
-    "𝘼𝙨𝙝𝙪 runs you {mention} 💯",
+    "तेरी औकात नहीं है {mention} \u2620\ufe0f",
+    "तू हार चुका है {mention} \ud83d\udd25",
+    "बंद कर मुँह अपना {mention} \ud83d\uddd1\ufe0f",
+    "तू एक निकम्मा है {mention} \ud83d\ude02",
+    "\ud835\ude08\ud835\ude34\ud835\ude29\ud835\ude36 runs you {mention} \ud83d\udcaf",
 ]
 
 hinglish_drown = [
-    "Teri maa ka bhosda {mention} 💀",
+    "Teri maa ka bhosda {mention} \ud83d\udc80",
     "Madarchod {mention}",
-    "Bhosdike {mention} 🫏",
+    "Bhosdike {mention} \ud83e\udecf",
     "Chutiya hai tu {mention}",
     "Behen ke laude {mention}",
-    "Aukaat mein reh {mention} 🔥",
-    "𝘼𝙨𝙝𝙪 runs you {mention} 💯",
-    "Loser hai tu {mention} 😂",
-    "Band kar apna munh {mention} 🗑️",
-    "Kutta saala {mention} ☠️",
+    "Aukaat mein reh {mention} \ud83d\udd25",
+    "\ud835\ude08\ud835\ude34\ud835\ude29\ud835\ude36 runs you {mention} \ud83d\udcaf",
+    "Loser hai tu {mention} \ud83d\ude02",
+    "Band kar apna munh {mention} \ud83d\uddd1\ufe0f",
+    "Kutta saala {mention} \u2620\ufe0f",
 ]
 
 english_drown = [
-    "You're trash {mention} 💀",
+    "You're trash {mention} \ud83d\udc80",
     "You're a loser {mention}",
-    "𝘼𝙨𝙝𝙪 runs you {mention} 🔥",
-    "You're worthless {mention} 🗑️",
-    "Stay mad {mention} 😂",
-    "Get ratio'd {mention} 💯",
-    "You lost {mention} ☠️",
+    "\ud835\ude08\ud835\ude34\ud835\ude29\ud835\ude36 runs you {mention} \ud83d\udd25",
+    "You're worthless {mention} \ud83d\uddd1\ufe0f",
+    "Stay mad {mention} \ud83d\ude02",
+    "Get ratio'd {mention} \ud83d\udcaf",
+    "You lost {mention} \u2620\ufe0f",
     "Nobody likes you {mention}",
-    "Cope harder {mention} 😈",
-    "L + ratio + mald {mention} 🫏",
+    "Cope harder {mention} \ud83d\ude08",
+    "L + ratio + mald {mention} \ud83e\udecf",
 ]
 
 punjabi_lines = [
-    "ਬੇ ਚੁੱਪ ਕਰ ਜਾ ਓਇ {mention} 💀",
-    "ਤੈਨੂੰ ਕੋਈ ਨਹੀਂ ਪੁੱਛਦਾ {mention} 🗑️",
-    "ਤੂੰ ਜਿੱਤ ਨਹੀਂ ਸਕਦਾ ਸਾਡੇ ਤੋਂ {mention} 🔥",
-    "ਪਾਗਲ ਜਿਹਾ ਬੰਦਾ ਹੈਂ ਤੂੰ {mention} 😂",
-    "ਈਟਰਨਲ ਨੇ ਤੈਨੂੰ ਡੁਬੋਇਆ {mention} ☠️",
-    "ਜਾਹ ਓਥੇ ਨੱਸ {mention} 😈",
-    "ਤੇਰੀ ਕੋਈ ਔਕਾਤ ਨਹੀਂ {mention} 💯",
-    "ਰੋਣਾ ਬੰਦ ਕਰ {mention} 🤡",
-    "ਮਾਂ ਨੂੰ ਪੁੱਛ ਕੇ ਆ {mention}",
-    "ਘਰ ਚਲਾ ਜਾ ਚੁੱਪਚਾਪ {mention} 🌊",
+    "\u0a2c\u0a47 \u0a1a\u0a41\u0a2a \u0a15\u0a30 \u0a1c\u0a3e \u0a13\u0a02 {mention} \ud83d\udc80",
+    "\u0a24\u0a42\u0a28\u0a42\u0a02 \u0a15\u0a4b\u0a08 \u0a28\u0a39\u0a40\u0a02 \u0a2a\u0a41\u0a0b\u0a26\u0a3e {mention} \ud83d\uddd1\ufe0f",
+    "\u0a24\u0a42\u0a02 \u0a1c\u0a3f\u0a24 \u0a28\u0a39\u0a40\u0a02 \u0a38\u0a15\u0a26\u0a3e \u0a38\u0a3e\u0a21\u0a47 \u0a24\u0a4b\u0a02 {mention} \ud83d\udd25",
 ]
 
 urdu_lines = [
-    "بے غائب ہو جا یہاں سے {mention} 💀",
-    "تجھ سے کوئی نہیں ڈرتا {mention} 😂",
-    "ایٹرنل نے تجھے ختم کر دیا {mention} 🔥",
-    "تو ہمیشہ ہارتا ہے {mention} ☠️",
-    "بکواس بند کر {mention} 🗑️",
-    "تیری ماں رو رہی ہے تیری وجہ سے {mention} 💀",
-    "نکل جا یہاں سے {mention} 🤡",
-    "تجھ میں کوئی دم نہیں {mention} 😈",
-    "ایٹرنل پر آنے کی جرأت ہے تجھے {mention} 💯",
-    "چپ ہو جا اب {mention} 🌊",
+    "\u0628\u06d2 \u063a\u0627\u0624\u0628 \u06c1\u0648 \u062c\u0627 \u06c1\u06cc\u0627\u06ba \u0633\u06d2 {mention} \ud83d\udc80",
+    "\u062a\u062c\u06be \u0633\u06d2 \u06a9\u0648\u0624\u06cc \u0628\u06c1\u06cc\u06ba \u0688\u0631\u062a\u0627 {mention} \ud83d\ude02",
 ]
 
 # ==================== ZALGO CHARACTERS ====================
@@ -1041,7 +1016,7 @@ class DiscordSelfBot:
                 msg_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
                 phrases = [
                     msg_text,
-                    "𝐄𝐭𝐞𝐫𝐧𝐚𝐥 𝐑𝐮𝐧𝐬 𝐔 🔥",
+                    "𝐄𝐭𝐞𝐫𝐧𝐚𝐥 𝐑uu𝐧𝐬 𝐔 🔥",
                     "𝐍𝐨𝐛𝐨𝐝𝐲 𝐂𝐚𝐧 𝐒𝐭𝐨𝐩 𝐔𝐬",
                     "𝘼𝙨𝙝𝙪 𝐆𝐚𝐧𝐠 💀",
                 ]
