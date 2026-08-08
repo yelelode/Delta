@@ -58,15 +58,12 @@ PARALLEL_NC = 2      # Balanced parallel workers to avoid Rate Limit freeze
 # Global Persistent Session for HTTP Requests
 http_session = None
 
-# ==================== EXACT FAVORITE NC LIST (UNICODE ENCODED FOR TERMUX SAFETY) ====================
-_FIRE = "\U0001f525"
-_ZALGO = "\u0e47\u200b" * 3
-
+# ==================== EXACT UPDATED NC LIST (USING USER-PROVIDED PATTERN) ====================
 NC_LIST = [
-    f"{{target}} ᴛᴇʀɪ ᴍᴋᴄ ʟᴡᴅᴇ ᴄʜxᴅ-{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}",
-    f"{{target}} ᴛᴇʀɪ ᴍᴀᴀ ᴋᴀ ʙʜᴏsᴅᴀ-{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}",
-    f"{{target}} ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʟᴜɴᴅ-{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}{_ZALGO}{_FIRE}",
-    f"{{target}} ᴛᴇʀɪ ʙᴇʜᴇɴ ᴋɪ ᴀɴᴋʜ-{_ZALGO}{_FIRE}",
+    f"{{target}} ᴛᴇʀɪ ᴍᴋᴄ ʟᴡᴅᴇ ᴄʜxᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
+    f"{{target}} ᴛᴇʀɪ ᴍᴀᴀ ᴋᴀ ʙʜᴏsᴅᴀ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
+    f"{{target}} ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʟᴜɴᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
+    f"{{target}} ᴛᴇʀɪ ʙᴇʜᴇɴ ᴋɪ ᴀɴᴋʜ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
 ]
 
 # ==================== SPAM MESSAGES ====================
