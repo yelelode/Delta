@@ -1,4 +1,3 @@
-import multiprocessing
 import requests
 import json
 import os
@@ -59,18 +58,18 @@ PARALLEL_NC = 15
 # Global Persistent Session for HTTP Requests
 http_session = None
 
-# ==================== NC LIST (TRIPLE QUOTES FIXED FOR PARSER SAFETY) ====================
+# ==================== EXACT NC LIST (CLEANED & RESTORED) ====================
 NC_LIST = [
-    """{target} ᴛᴇʀɪ ᴍᴋᴄ ʟᴡᴅᴇ ᴄʜxᴅ-[span_0](start_span)[span_0](end_span)""",
-    """{target} ᴛᴇʀɪ ᴍᴀᴀ ᴋᴀ ʙʜᴏsᴅᴀ-[span_1](start_span)[span_1](end_span)""",
-    """{target} ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʟᴜɴᴅ-[span_2](start_span)[span_2](end_span)""",
-    """{target} ᴛᴇʀɪ ʙᴇʜᴇɴ ᴋɪ ᴀɴᴋʜ-[span_3](start_span)[span_3](end_span)""",
+    """{target} ᴛᴇʀɪ ᴍᴋᴄ ʟᴡᴅᴇ ᴄʜxᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥,
+    """{target} ᴛᴇʀɪ ᴍᴀᴀ ᴋᴀ ʙʜᴏsᴅᴀ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥,
+    """{target} ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʟᴜɴᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥,
+    """{target} ᴛᴇʀɪ ʙᴇʜᴇɴ ᴋɪ ᴀɴᴋʜ-𒐫𒐫𒐫𒐫𒐫𒐫🔥,
 ]
 
 # ==================== SPAM MESSAGES ====================
 SPAM_MESSAGES = [
-    "# 𓆩 🔸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴＤl⃠𝗖ᴇ #𝗟ᴀＤᴄᴇ #ɪ𝗦 #sＥ #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜＵᴅ𝑇ɪ #𝗛ᴀＩI⃠",
-    "# 𓆩🈸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴＤl⃠𝗖ᴇ ##𝗟ᴀＤᴄᴇ #ɪ𝗦 #sＥ #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝑇ɪ #𝗛ᴀI⃠",
+    "# 𓆩 🔸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴＤl⃠𝗖ᴇ #𝗟ᴀＤᴄᴇ #ɪ𝗦 #sＥ #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝑇ɪ #𝗛ᴀ𝗜I⃠",
+    "# 𓆩🈸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴＤl⃠𝗖ᴇ #𝗟ᴀＤᴄᴇ #ɪ𝗦 #sＥ #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝑇ɪ #𝗛ᴀI⃠",
 ]
 
 # ==================== REPLY TEXTS ====================
@@ -1042,7 +1041,7 @@ class DiscordSelfBot:
                 msg_text = " ".join(cmd_part.split()[1:]) if len(cmd_part.split()) > 1 else "𝘼𝙨𝙝𝙪 On Top 🔥"
                 phrases = [
                     msg_text,
-                    "𝐄𝐭𝐞𝐫𝐧𝐚𝐥 𝐑𝐮𝐧𝐬 𝐔 🔥",
+                    "𝐄𝐭𝐞𝐫𝐧𝐚𝐥 𝐑uu𝐧𝐬 𝐔 🔥",
                     "𝐍𝐨𝐛𝐨𝐝𝐲 𝐂𝐚𝐧 𝐒𝐭𝐨𝐩 𝐔𝐬",
                     "𝘼𝙨𝙝𝙪 𝐆𝐚𝐧𝐠 💀",
                 ]
@@ -1979,7 +1978,7 @@ class DiscordSelfBot:
                 logging.error(f"Bot {self.bot_index + 1} error: {e}")
                 time.sleep(5)
 
-# ==================== LAUNCH ====================
+# ==================== LAUNCH PROCESSES ====================
 def run_all_bots():
     print("=" * 55)
     print("      𝘼𝙨𝙝𝙪 SELFBOT — ULTIMATE EDITION (LIMITLESS)")
