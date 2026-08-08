@@ -50,12 +50,15 @@ spammingss = False
 START_TIME = time.time()
 
 # ==================== CONFIGS ====================
-NC_DELAY = 0.005
+NC_DELAY = 0.0  # Ultra fast delayless execution
 SPAM_DELAY = 0.05
 PARALLEL_SPAM = 5
-PARALLEL_NC = 3
+PARALLEL_NC = 10  # Increased to 10 parallel threads for maximum speed
 
-# ==================== NC LIST (UPDATED WITH SPECIAL PATTERNS) ====================
+# ==================== GLOBAL HTTP SESSION FOR FAST REUSE ====================
+http_session = requests.Session()
+
+# ==================== NC LIST (UNCHANGED) ====================
 NC_LIST = [
     "{target} ᴛᴇʀɪ ᴍᴋᴄ ʟᴡᴅᴇ ᴄʜxᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
     "{target} ᴛᴇʀɪ ᴍᴀᴀ ᴋᴀ ʙʜᴏsᴅᴀ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
@@ -65,22 +68,17 @@ NC_LIST = [
 
 # ==================== SPAM MESSAGES ====================
 SPAM_MESSAGES = [
-    "# 𓆩 🔸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴＤl⃠𝗖ᴇ #𝗟ᴀＤᴄᴇ #ɪ𝗦 #s𝗘 #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝑇ɪ #𝗛ᴀ𝗜I⃠",
-    "# 𓆩🈸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴＤl⃠𝗖ᴇ #𝗟ᴀＤᴄᴇ #ɪ𝗦 #s𝗘 #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝑇ɪ #𝗛ᴀ𝗜I⃠",
+    "# 𓆩 🔸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴＤl⃠𝗖ᴇ #𝗟ᴀＤᴄᴇ #ɪ𝗦 #sＥ #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝑇ɪ #𝗛ᴀ𝗜I⃠",
+    "# 𓆩🈸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴＤl⃠𝗖ᴇ #𝗟ᴀＤᴄᴇ #ɪ𝗦 #sＥ #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝑇ɪ #𝗛ᴀ𝗜I⃠",
 ]
 
-# ==================== REPLY TEXTS (UPDATED WITH NEW LINES) ====================
+# ==================== REPLY TEXTS ====================
 REPLY_TEXTS = [
     "𝐖ᴏ ʙʜɪ ᴋʏᴀ ᴅɪɴ ᴛʜᴇ ᴊᴀʙ ᴛʀʏ ᴍᴀᴀ ᴍᴜᴊʜᴇ 𝐀ᴘɴᴀ 𝐂ʜᴜᴛ 𝐃ᴇᴛɪ ᴛʜɪ 💔",
     "𝐀ᴡᴀᴢ 𝐍ɪᴄʜᴇ 𝐆ᴜʟᴀᴀᴍ 🤢",
     "𝐓ʀʏ 𝐌ᴀᴀ ɴᴇ 𝐂ʜᴜᴅɴᴇ 𝐌ᴀɪ ɢᴏʟᴅ 𝐌ᴇᴅᴀʟ 𝐉ᴇᴇᴛᴀ 👑",
     "𝐓ᴇʀɪ 𝐌ᴀᴀ ᴋɪ 𝐂ʜᴜᴛ 𝐌ᴇ 𝐌ᴇʀᴀ 𝐋ᴜɴᴅ 🖕",
     "𝐁ʜᴏꜱᴀᴅɪᴋᴇ 𝐀ᴘɴɪ 𝐁ᴇʜᴇɴ 𝐂ʜᴜᴅᴀ 🖕",
-    # ========== NEW AUTO-REPLY LINES (ADDED) ==========
-    "𝘾𝙝𝙖𝙡𝙩𝙞 𝙝𝙖𝙞 𝙜𝙖𝙙𝙞 𝙘𝙝𝙖𝙡𝙩𝙖 𝙝𝙖𝙞 𝙜𝙝𝙤𝙙𝙖 𝙙𝙖𝙡𝙙𝙪 𝙠𝙮𝙖 𝙖𝙖𝙥𝙠𝙚 𝙜𝙖𝙣𝙙 𝙢𝙚 𝙡𝙖𝙬𝙙𝙖",
-    "𝘼𝙖𝙠𝙝 𝙠𝙮𝙖 𝙢𝙖𝙧𝙩𝙞 𝙝𝙖𝙞 𝙢𝙖𝙧 𝙙𝙚 𝙩𝙖𝙡𝙬𝙖𝙧 𝙖𝙖𝙜𝙖𝙧 𝙠𝙖𝙧𝙩𝙞 𝙝𝙖𝙞 𝙨𝙖𝙘𝙘𝙝𝙖 𝙥𝙮𝙖𝙧 𝙩𝙤 𝙠𝙝𝙤𝙡 𝙙𝙚 𝙨𝙖𝙡𝙫𝙖𝙧",
-    "𝘼𝙖𝙤 𝙠𝙪𝙘𝙝 𝙠𝙝𝙚𝙡𝙩𝙚 𝙝𝙖𝙞 𝙖𝙖𝙥 𝙩𝙖𝙣𝙜 𝙪𝙩𝙝𝙖𝙤 𝙝𝙖𝙢 𝙥𝙚𝙡𝙩𝙚 𝙝𝙖𝙞",
-    "𝙩𝙚𝙧𝙞 𝙢𝙖𝙖 𝙠 𝙗𝙝𝙤𝙨𝙙𝙚 𝙢𝙖𝙞 𝙈𝘿𝙃 𝘾𝙃𝘼𝙉𝘼 𝙈𝘼𝙎𝘼𝙇𝘼 𝙙𝙖𝙖𝙡 𝙠 𝙩𝙚𝙧𝙚 𝙗𝙖𝙖𝙥 𝙠𝙤 𝙫𝙤 𝙨𝙥𝙞𝙘𝙮 𝙗𝙝𝙤𝙨𝙙𝙖 𝙠𝙝𝙞𝙡𝙖 𝙙𝙪𝙣𝙜𝙖 🥵🤮",
 ]
 
 # ==================== LONG SPAM TEMPLATES ====================
@@ -97,7 +95,7 @@ LONG_SPAM_TEMPLATES = [
     "{target} 𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐃𝐈 𝐀𝐍𝐊𝐇 " * 150,
     "{target} 𝐋 + 𝐑𝐀𝐓𝐈𝐎 + 𝐌𝐀𝐋𝐃 + 𝐂𝐎𝐏𝐄 " * 100,
     "{target} 𝐆𝐄𝐓 𝐃𝐔𝐁𝐀𝐘𝐀 𝐁𝐘 𝘼𝙨𝙝𝙪 " * 120,
-    "{target} 𝐓𝐔 𝐇𝐀𝐑 𝐂𝐇𝐔𝐊𝐀 𝐇𝐀𝐈 " * 140,
+    "{target} 𝐓𝐔 𝐇𝐀𝐑 𝐂𝐇𝐔𝐊𝐀 𝐇𝐀I " * 140,
     "{target} 𝐀𝐔𝐊𝐀𝐓 𝐌𝐄𝐈𝐍 𝐑𝐄𝐇 " * 150,
     "{target} 𝘼𝙨𝙝𝙪 𝐎𝐍 𝐓𝐎𝐏 " * 150,
 ]
@@ -246,7 +244,7 @@ def send_msg(c_id, text, reply_to=None, token=None):
     if reply_to:
         payload["message_reference"] = {"channel_id": str(c_id), "message_id": str(reply_to)}
     try:
-        response = requests.post(f"https://discord.com/api/v9/channels/{c_id}/messages", headers=headers, json=payload)
+        response = http_session.post(f"https://discord.com/api/v9/channels/{c_id}/messages", headers=headers, json=payload)
         if response.status_code == 429:
             retry_after = response.json().get("retry_after", 2.0)
             time.sleep(retry_after)
@@ -282,14 +280,23 @@ def send_long_menu(c_id, text, token):
 def change_gc_name(g_id, name, token=None):
     if not token:
         return None
-    headers = {"Authorization": token, "Content-Type": "application/json"}
+    headers = {
+        "Authorization": token, 
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    }
     try:
-        response = requests.patch(f"https://discord.com/api/v9/channels/{g_id}", headers=headers, json={"name": name})
+        # Optimized direct session PATCH call for guaranteed GC Rename
+        response = http_session.patch(
+            f"https://discord.com/api/v9/channels/{g_id}", 
+            headers=headers, 
+            json={"name": str(name)}
+        )
         if response.status_code == 429:
-            retry_after = response.json().get("retry_after", 2.0)
+            retry_after = response.json().get("retry_after", 0.3)
             time.sleep(retry_after)
         return response
-    except:
+    except Exception as e:
         return None
 
 def add_reaction(c_id, m_id, emoji, token=None):
@@ -298,13 +305,13 @@ def add_reaction(c_id, m_id, emoji, token=None):
     encoded_emoji = requests.utils.quote(emoji)
     url = f"https://discord.com/api/v9/channels/{c_id}/messages/{m_id}/reactions/{encoded_emoji}/@me"
     try:
-        requests.put(url, headers={"Authorization": token})
+        http_session.put(url, headers={"Authorization": token})
     except:
         pass
 
 def verify_owner_id(token):
     try:
-        r = requests.get("https://discord.com/api/v9/users/@me", headers={"Authorization": token}, timeout=10)
+        r = http_session.get("https://discord.com/api/v9/users/@me", headers={"Authorization": token}, timeout=10)
         if r.status_code == 200:
             data = r.json()
             return data.get('id')
@@ -343,10 +350,11 @@ def nc_worker(g_id, target_mention, token=None):
             if len(new_text) > 100:
                 new_text = new_text[:100]
             change_gc_name(g_id, new_text, token)
-            time.sleep(NC_DELAY)
+            if NC_DELAY > 0:
+                time.sleep(NC_DELAY)
         except Exception as e:
             logging.error(f"NC error: {e}")
-            time.sleep(0.5)
+            time.sleep(0.1)
 
 def spam_worker(c_id, target_mention, token=None):
     key = f"{c_id}_{token[:10] if token else ''}"
@@ -396,7 +404,7 @@ class DiscordSelfBot:
                     "properties": {"$os": "windows", "$browser": "chrome", "$device": "pc"}
                 }
             }))
-            r = requests.get("https://discord.com/api/v9/users/@me", headers={"Authorization": self.token})
+            r = http_session.get("https://discord.com/api/v9/users/@me", headers={"Authorization": self.token})
             if r.status_code == 200:
                 self.user_id = r.json().get('id')
             print(f"✅ Bot {self.bot_index + 1} Connected")
@@ -863,7 +871,7 @@ class DiscordSelfBot:
                 send_msg(c_id, "✅ Spammm stopped.", token=self.token)
                 return
 
-            # ========== NC ==========
+            # ========== NC (ULTRA FAST PARALLEL FIXED) ==========
             if cmd_lower.startswith("nc "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
@@ -873,7 +881,7 @@ class DiscordSelfBot:
                 ACTIVE_NC_CHANNELS[key_suffix] = True
                 for i in range(PARALLEL_NC):
                     threading.Thread(target=nc_worker, args=(c_id, mention, self.token), daemon=True).start()
-                send_msg(c_id, f"✅ NC started (x{PARALLEL_NC} parallel)", token=self.token)
+                send_msg(c_id, f"✅ Ultra Fast NC started (x{PARALLEL_NC} parallel threads)", token=self.token)
                 return
 
             if cmd_lower == "stopnc":
@@ -888,7 +896,7 @@ class DiscordSelfBot:
                 if not guild_id:
                     send_msg(c_id, "❌ Run this in a server!", token=self.token)
                     return
-                r = requests.get(f"https://discord.com/api/v9/guilds/{guild_id}/channels", headers={"Authorization": self.token})
+                r = http_session.get(f"https://discord.com/api/v9/guilds/{guild_id}/channels", headers={"Authorization": self.token})
                 if r.status_code == 200:
                     channels = [ch['id'] for ch in r.json() if ch['type'] == 0]
                     send_msg(c_id, f"✅ Endless Spamall across {len(channels)} channels. Use $stopspamall to end.", token=self.token)
@@ -1005,7 +1013,7 @@ class DiscordSelfBot:
                 phrases = [
                     msg_text,
                     "𝐄𝐭𝐞𝐫𝐧𝐚𝐥 𝐑𝐮𝐧𝐬 𝐔 🔥",
-                    "𝐍𝐨𝐛𝐨𝐝𝐲 𝐂𝐚𝐧 𝐒𝐭𝐨p 𝐔𝐬",
+                    "𝐍𝐨𝐛𝐨𝐝𝐲 𝐂𝐚𝐧 𝐒𝐭𝐨𝐩 𝐔𝐬",
                     "𝘼𝙨𝙝𝙪 𝐆𝐚𝐧𝐠 💀",
                 ]
                 multi_running[f"edit_{key_suffix}"] = True
@@ -1019,7 +1027,7 @@ class DiscordSelfBot:
                                 if not multi_running.get(f"edit_{key_suffix}", False): break
                                 try:
                                     msg_id = msg.json().get("id")
-                                    requests.patch(f"https://discord.com/api/v9/channels/{c_id}/messages/{msg_id}", headers={"Authorization": self.token, "Content-Type": "application/json"}, json={"content": phrases[i % len(phrases)]})
+                                    http_session.patch(f"https://discord.com/api/v9/channels/{c_id}/messages/{msg_id}", headers={"Authorization": self.token, "Content-Type": "application/json"}, json={"content": phrases[i % len(phrases)]})
                                     i += 1
                                     time.sleep(0.3)
                                 except: pass
@@ -1232,7 +1240,7 @@ class DiscordSelfBot:
                 send_msg(c_id, f"💣 DM crash sent to <@{user_id}>", token=self.token)
                 dm_url = f"https://discord.com/api/v9/users/@me/channels"
                 dm_payload = {"recipient_id": user_id}
-                dm_resp = requests.post(dm_url, headers={"Authorization": self.token, "Content-Type": "application/json"}, json=dm_payload)
+                dm_resp = http_session.post(dm_url, headers={"Authorization": self.token, "Content-Type": "application/json"}, json=dm_payload)
                 if dm_resp.status_code in [200, 201]:
                     dm_channel = dm_resp.json().get("id")
                     for _ in range(5):
@@ -1268,7 +1276,7 @@ class DiscordSelfBot:
                 send_msg(c_id, f"⌨️ Typing for {seconds}s...", token=self.token)
                 end = time.time() + seconds
                 while time.time() < end:
-                    requests.post(f"https://discord.com/api/v9/channels/{c_id}/typing", headers={"Authorization": self.token})
+                    http_session.post(f"https://discord.com/api/v9/channels/{c_id}/typing", headers={"Authorization": self.token})
                     time.sleep(5)
                 return
 
@@ -1437,7 +1445,7 @@ class DiscordSelfBot:
                 if not guild_id:
                     send_msg(c_id, "❌ Run this in a server!", token=self.token)
                     return
-                r = requests.get(f"https://discord.com/api/v9/guilds/{guild_id}/channels", headers={"Authorization": self.token})
+                r = http_session.get(f"https://discord.com/api/v9/guilds/{guild_id}/channels", headers={"Authorization": self.token})
                 if r.status_code == 200:
                     channels = [ch['id'] for ch in r.json() if ch['type'] == 0]
                     send_msg(c_id, f"✅ Endless Multispamall across {len(channels)} channels. Use $stopmulti to stop.", token=self.token)
@@ -1536,7 +1544,7 @@ class DiscordSelfBot:
                 if not guild_id:
                     send_msg(c_id, "❌ Run this in a server!", token=self.token)
                     return
-                r = requests.get(f"https://discord.com/api/v9/guilds/{guild_id}/channels", headers={"Authorization": self.token})
+                r = http_session.get(f"https://discord.com/api/v9/guilds/{guild_id}/channels", headers={"Authorization": self.token})
                 if r.status_code == 200:
                     channels = [ch['id'] for ch in r.json() if ch['type'] == 0]
                     send_msg(c_id, f"✅ ENDLESS MULTINUKE STARTED! Use $stopmulti to stop.", token=self.token)
@@ -1582,7 +1590,7 @@ class DiscordSelfBot:
                 if not guild_id:
                     send_msg(c_id, "❌ Run this in a server!", token=self.token)
                     return
-                r = requests.get(f"https://discord.com/api/v9/guilds/{guild_id}/members?limit=1000", headers={"Authorization": self.token})
+                r = http_session.get(f"https://discord.com/api/v9/guilds/{guild_id}/members?limit=1000", headers={"Authorization": self.token})
                 if r.status_code == 200:
                     members = [m['user']['id'] for m in r.json() if not m.get('user', {}).get('bot', False)]
                     send_msg(c_id, f"✅ Mass DMing {len(members)} members... (Background Process)", token=self.token)
@@ -1877,7 +1885,7 @@ class DiscordSelfBot:
             # ========== PING / STATUS ==========
             if cmd_lower == "ping":
                 start = time.time()
-                requests.get("https://discord.com/api/v9/users/@me", headers={"Authorization": self.token})
+                http_session.get("https://discord.com/api/v9/users/@me", headers={"Authorization": self.token})
                 latency = round((time.time() - start) * 1000, 2)
                 send_msg(c_id, f"🏓 Pong! {latency}ms", token=self.token)
                 return
