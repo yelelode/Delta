@@ -55,18 +55,12 @@ SPAM_DELAY = 0.05
 PARALLEL_SPAM = 5
 PARALLEL_NC = 3
 
-# ==================== NC LIST ====================
+# ==================== NC LIST (UPDATED 4 PATTERNS) ====================
 NC_LIST = [
-    "𝘼𝙨𝙝𝙪 𝑻𝑴𝑲𝑪 𝑴𝑬𝑰-->-ᥬ🌵᭄",
-    "𝘼𝙨𝙝𝙪 𝑻𝑴𝑲𝑪 𝑴𝑬𝑰-->-ᥬ🍈᭄",
-    "𝘼𝙨𝙝𝙪 𝑻𝑴𝑲𝑪 𝑴𝑬𝑰-->-ᥬ🌶️᭄",
-    "𝘼𝙨𝙝𝙪 𝑻𝑴𝑲𝑪 𝑴𝑬𝑰-->-ᥬ🥭᭄",
-    "𝘼𝙨𝙝𝙪 𝑻𝑴𝑲𝑪 𝑴𝑬𝑰-->-ᥬ🍆᭄",
-    "𝘼𝙨𝙝𝙪 𝑻𝑴𝑲𝑪 𝑴𝑬𝑰-->-ᥬ🍌᭄",
-    "𝘼𝙨𝙝𝙪 𝑻𝑴𝑲𝑪 𝑴𝑬𝑰-->-ᥬ🥒᭄",
-    "𝘼𝙨𝙝𝙪 𝑻𝑴𝑲𝑪 𝑴𝑬𝑰-->-ᥬ🍓᭄",
-    "𝘼𝙨𝙝𝙪 𝑻𝑴𝑲𝑪 𝑴𝑬𝑰-->-ᥬ🌽᭄",
-    "𝘼𝙨𝙝𝙪 𝑻𝑴𝑲𝑪 𝑴𝑬𝑰-->-ᥬ🍇᭄"
+    "{target} ᴛᴇʀɪ ᴍᴋᴄ ʟᴡᴅᴇ ᴄʜxᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
+    "{target} ᴛᴇʀɪ ᴍᴀᴀ ᴋᴀ ʙʜᴏsᴅᴀ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
+    "{target} ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʟᴜɴᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
+    "{target} ᴛᴇʀɪ ʙᴇʜᴇɴ ᴋɪ ᴀɴᴋʜ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
 ]
 
 # ==================== SPAM MESSAGES ====================
@@ -315,10 +309,7 @@ def nc_worker(g_id, target_mention, token=None):
     while ACTIVE_NC_CHANNELS.get(key, False):
         try:
             base_line = random.choice(NC_LIST)
-            if base_line.startswith("𝘼𝙨𝙝𝙪 "):
-                new_text = f"{target_mention} " + base_line[len("𝘼𝙨𝙝𝙪 "):]
-            else:
-                new_text = f"{target_mention} {base_line}"
+            new_text = base_line.replace("{target}", target_mention)
             if len(new_text) > 100:
                 new_text = new_text[:100]
             change_gc_name(g_id, new_text, token)
@@ -710,6 +701,7 @@ ________________________________
                 send_msg(c_id, "✅ Spammm stopped.", token=self.token)
                 return
 
+            # ========== NC (UPDATED WITH NEW PATTERNS) ==========
             if cmd_lower.startswith("nc "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
