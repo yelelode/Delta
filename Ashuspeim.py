@@ -58,12 +58,12 @@ PARALLEL_NC = 15
 # Global Persistent Session for HTTP Requests
 http_session = None
 
-# ==================== NC LIST (UPDATED WITH SPECIAL PATTERNS) ====================
+# ==================== NC LIST (FIXED TRIPLE QUOTES FOR TERMUX) ====================
 NC_LIST = [
-    "{target} ᴛᴇʀɪ ᴍᴋᴄ ʟᴡᴅᴇ ᴄʜxᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥[span_0](start_span)[span_0](end_span)
-    "{target} ᴛᴇʀɪ ᴍᴀᴀ ᴋᴀ ʙʜᴏsᴅᴀ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥[span_1](start_span)[span_1](end_span)
-    "{target} ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʟᴜɴᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥[span_2](start_span)[span_2](end_span)
-    "{target} ᴛᴇʀɪ ʙᴇʜᴇɴ ᴋɪ ᴀɴᴋʜ-[span_3](start_span)[span_3](end_span)
+    """{target} ᴛᴇʀɪ ᴍᴋᴄ ʟᴡᴅᴇ ᴄʜxᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥""",
+    """{target} ᴛᴇʀɪ ᴍᴀᴀ ᴋᴀ ʙʜᴏsᴅᴀ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥""",
+    """{target} ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʟᴜɴᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥""",
+    """{target} ᴛᴇʀɪ ʙᴇʜᴇɴ ᴋɪ ᴀɴᴋʜ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥""",
 ]
 
 # ==================== SPAM MESSAGES ====================
@@ -72,14 +72,13 @@ SPAM_MESSAGES = [
     "# 𓆩🈸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴＤl⃠𝗖ᴇ #𝗟ᴀＤᴄᴇ #ɪ𝗦 #sＥ #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝑇ɪ #𝗛ᴀ𝗜I⃠",
 ]
 
-# ==================== REPLY TEXTS (UPDATED WITH NEW LINES) ====================
+# ==================== REPLY TEXTS ====================
 REPLY_TEXTS = [
     "𝐖ᴏ ʙʜɪ ᴋʏᴀ ᴅɪɴ ᴛʜᴇ ᴊᴀʙ ᴛʀʏ ᴍᴀᴀ ᴍᴜᴊʜᴇ 𝐀ᴘɴᴀ 𝐂ʜᴜᴛ 𝐃ᴇᴛɪ ᴛʜɪ 💔",
     "𝐀ᴡᴀᴢ 𝐍ɪᴄʜᴇ 𝐆ᴜʟᴀᴀᴍ 🤢",
     "𝐓ʀʏ 𝐌ᴀᴀ ɴᴇ 𝐂ʜᴜᴅɴᴇ 𝐌ᴀɪ ɢᴏʟᴅ 𝐌ᴇᴅᴀʟ 𝐉ᴇᴇᴛᴀ 👑",
     "𝐓ᴇʀɪ 𝐌ᴀᴀ ᴋɪ 𝐂ʜᴜᴛ 𝐌ᴇ 𝐌ᴇʀᴀ 𝐋ᴜɴᴅ 🖕",
     "𝐁ʜᴏꜱᴀᴅɪᴋᴇ 𝐀ᴘɴɪ 𝐁ᴇʜᴇɴ 𝐂ʜᴜᴅᴀ 🖕",
-    # ========== NEW AUTO-REPLY LINES (ADDED) ==========
     "𝘾𝙝𝙖𝙡𝙩𝙞 𝙝𝙖𝙞 𝙜𝙖𝙙𝙞 𝙘𝙝𝙖𝙡𝙩𝙖 𝙝𝙖𝙞 𝙜𝙝𝙤𝙙𝙖 𝙙𝙖𝙡𝙙𝙪 𝙠𝙮𝙖 𝙖𝙖𝙥𝙠𝙚 𝙜𝙖𝙣𝙙 𝙢𝙚 𝙡𝙖𝙬𝙙𝙖",
     "𝘼𝙖𝙠𝙝 𝙠𝙮𝙖 𝙢𝙖𝙧𝙩𝙞 𝙝𝙖𝙞 𝙢𝙖𝙧 𝙙𝙚 𝙩𝙖𝙡𝙬𝙖𝙧 𝙖𝙖𝙜𝙖𝙧 𝙠𝙖𝙧𝙩𝙞 𝙝𝙖𝙞 𝙨𝙖𝙘𝙘𝙝𝙖 𝙥𝙮𝙖𝙧 𝙩𝙤 𝙠𝙝𝙤𝙡 𝙙𝙚 𝙨𝙖𝙡𝙫𝙖𝙧",
     "𝘼𝙖𝙤 𝙠𝙪𝙘𝙝 𝙠𝙝𝙚𝙡𝙩𝙚 𝙝𝙖𝙞 𝙖𝙖𝙥 𝙩𝙖𝙣𝙜 𝙪𝙩𝙝𝙖𝙤 𝙝𝙖𝙢 𝙥𝙚𝙡𝙩𝙚 𝙝𝙖𝙞",
@@ -258,10 +257,6 @@ def send_msg(c_id, text, reply_to=None, token=None):
         return None
 
 def send_long_menu(c_id, text, token):
-    """
-    Auto-Chunking Logic: Agar Help menu 2000 characters se lamba ho, 
-    to ye use safely split karke sequential messages mein send kar deta hai.
-    """
     max_len = 1900
     lines = text.split("\n")
     chunks = []
