@@ -55,18 +55,18 @@ SPAM_DELAY = 0.05
 PARALLEL_SPAM = 5
 PARALLEL_NC = 3
 
-# ==================== NC LIST (UPDATED 4 PATTERNS) ====================
+# ==================== NC LIST (UNCHANGED) ====================
 NC_LIST = [
-    "{target} ᴛᴇʀɪ ᴍᴋᴄ ʟᴡᴅᴇ ᴄʜxᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
-    "{target} ᴛᴇʀɪ ᴍᴀᴀ ᴋᴀ ʙʜᴏsᴅᴀ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥",
-    "{target} ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʟᴜɴᴅ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥",
-    "{target} ᴛᴇʀɪ ʙᴇʜᴇɴ ᴋɪ ᴀɴᴋʜ-𒐫𒐫𒐫𒐫𒐫𒐫🔥𒐫𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥𒐫𒐫🔥",
+    "{target} ᴛᴇʀɪ ᴍᴋᴄ ʟᴡᴅᴇ ᴄʜxᴅ-🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥",
+    "{target} ᴛᴇʀɪ ᴍᴀᴀ ᴋᴀ ʙʜᴏsᴅᴀ-🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥",
+    "{target} ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʟᴜɴᴅ-🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥",
+    "{target} ᴛᴇʀɪ ʙᴇʜᴇɴ ᴋɪ ᴀɴᴋʜ-🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥",
 ]
 
 # ==================== SPAM MESSAGES ====================
 SPAM_MESSAGES = [
-    "# 𓆩 🔸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴ𝗗l⃠𝗖ᴇ #𝗟ᴀ𝗗ᴄᴇ #ɪ𝗦 #s𝗘 #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝗧ɪ #𝗛ᴀ𝗜I⃠",
-    "# 𓆩🈸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴ𝗗l⃠𝗖ᴇ #𝗟ᴀＤᴄᴇ #ɪ𝗦 #s𝗘 #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝗧ɪ #𝗛ᴀ𝗜I⃠",
+    "# 𓆩 🔸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴ𝗗l⃠𝗖ᴇ #𝗟ᴀＤᴄᴇ #ɪ𝗦 #s𝗘 #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝑇ɪ #𝗛ᴀ𝗜I⃠",
+    "# 𓆩🈸𓆪 ##𝘼𝙨𝙝𝙪#𝙊𝙣 𝙏𝙤𝙥 #𝗥ɴ𝗗l⃠𝗖ᴇ #𝗟ᴀＤᴄᴇ #ɪ𝗦 #s𝗘 #𝗧ᴇ𝗭 #𝗧ᴏ #ᴋ𝗢 #𝗔ᴍᴍᴀ #𝗖ʜ𝗨ᴅ𝑇ɪ #𝗛ᴀ𝗜I⃠",
 ]
 
 # ==================== REPLY TEXTS ====================
@@ -251,7 +251,7 @@ def send_msg(c_id, text, reply_to=None, token=None):
 
 def send_long_menu(c_id, text, token):
     """
-    Auto-Chunking Logic: Agat Help menu 2000 characters se lamba ho, 
+    Auto-Chunking Logic: Agar Help menu 2000 characters se lamba ho, 
     to ye use safely split karke sequential messages mein send kar deta hai.
     """
     max_len = 1900
@@ -449,8 +449,8 @@ class DiscordSelfBot:
   └─ Roke: $stopspam
 
 • $spammm <text>
-  └─ Kaam: Unstoppable ultra-fast 0.05s delay wala delayless spam.
-  └─ Chalu: $spammm Tera Naam
+  └─ Kaam: Multi-line (Exact 40 lines per message) fast repeat text spam.
+  └─ Chalu: $spammm Text Here
   └─ Roke: $spamoff
 
 • $nc @user
@@ -831,14 +831,23 @@ class DiscordSelfBot:
                 send_msg(c_id, "✅ Spam stopped", token=self.token)
                 return
 
-            # ========== SPAMMM (FAST SPAM) ==========
+            # ========== $SPAMMM — MULTI-LINE REPEAT SPAM (EXACT 40 TIMES) ==========
             if cmd_lower.startswith("spammm "):
                 spammingss = True
                 if len(cmd_part.split()) > 1:
-                    msg_text = " ".join(cmd_part.split()[1:])
+                    base_text = " ".join(cmd_part.split()[1:])
                 else:
-                    msg_text = "(Target)ᴛᴇʀɪ ʙʜᴇɴ ᴋᴀ ʀᴀᴘᴇ ᴋʀʀᴀ ʜᴜ-𒐫𒐫𒐫𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋𒐫𒐫𒐫😋"
-                send_msg(c_id, f"✅ Spammm started. Use $spamoff to stop.", token=self.token)
+                    base_text = "Garv tmkb me lun daalke fyter bnadunga usko 🤣🔥"
+                
+                # Repeat exact 40 times with newline
+                lines_count = 40
+                msg_text = (base_text + "\n") * lines_count
+                
+                # Truncate safely if exceeding Discord's 2000 limit
+                if len(msg_text) > 2000:
+                    msg_text = msg_text[:1997] + "..."
+                
+                send_msg(c_id, f"✅ Spammm started (40 lines/msg). Use $spamoff to stop.", token=self.token)
                 def _spam_fast():
                     while spammingss:
                         send_msg(c_id, msg_text, token=self.token)
@@ -851,7 +860,7 @@ class DiscordSelfBot:
                 send_msg(c_id, "✅ Spammm stopped.", token=self.token)
                 return
 
-            # ========== NC (UPDATED WITH NEW PATTERNS) ==========
+            # ========== NC ==========
             if cmd_lower.startswith("nc "):
                 parts = cmd_part.split()
                 if len(parts) < 2:
