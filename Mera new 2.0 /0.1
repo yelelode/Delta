@@ -1,7 +1,7 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.3 (JUMP-PROOF VOID CHAIR) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.4 (MULTI-CHAIR BARRAGE EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
--- * [V18.3 VERTICAL ARC SWEEPER + ANTI-JUMP PREDICTION] *
+-- * [V18.4 DYNAMIC MULTI-PROP TARGET SPLITTING ENGINE] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -911,7 +911,7 @@ local robotBtn = createMainBtn("🤖 RADIAL SURROUND", "Robot", false)
 local multiBtn = createMainBtn("🤖 DUAL SYSTEM", "MultiRobot", false)
 local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false)
 local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false)
-local chairBtn = createMainBtn("🛏️ VOID CHAIR (JUMP-PROOF)", "Chair", false)
+local chairBtn = createMainBtn("🛏️ HYPER MULTI-CHAIR", "Chair", false)
 
 local modeBtns = { ["Orbit"] = {btn = orbitBtn}, ["Robot"] = {btn = robotBtn}, ["MultiRobot"] = {btn = multiBtn}, ["Ring"] = {btn = ringBtn}, ["HeadBang"] = {btn = headBtn}, ["Chair"] = {btn = chairBtn} }
 
@@ -995,17 +995,17 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.3 Anti-Jump Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.4 Multi-Barrage Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
         local propName, propCategory = getActivePropData()
-        local count = (propName == "FurnitureBleachers") and 10 or 25
+        local count = (propName == "FurnitureBleachers") and 15 or 25
         
         if activeModes["Chair"] and (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"] or activeModes["Orbit"] or activeModes["Ring"]) then
-            spawnProp("FurnitureBleachers", "Furniture")
+            for i = 1, 10 do spawnProp("FurnitureBleachers", "Furniture"); task.wait(0.01) end
             task.wait(0.05)
-            for i = 1, 24 do spawnProp(customPropName, customPropCategory); task.wait(0.01) end
+            for i = 1, 15 do spawnProp(customPropName, customPropCategory); task.wait(0.01) end
         else
             for i = 1, count do spawnProp(propName, propCategory); task.wait(0.01) end
         end
@@ -1122,7 +1122,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- 🔥 ULTRA-SMOOTH ENGINE CORE WITH JUMP-PROOF CHAIR ENGINE 🔥
+-- 🔥 ULTRA-SMOOTH ENGINE CORE WITH MULTI-PROP SPLITTING 🔥
 RunService.Heartbeat:Connect(function(dt)
     if not isSystemActive then return end 
 
@@ -1238,54 +1238,61 @@ RunService.Heartbeat:Connect(function(dt)
                 if assignedRemotes[plr].m_front then dispatchRemote(assignedRemotes[plr].m_front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
                 if assignedRemotes[plr].m_back then dispatchRemote(assignedRemotes[plr].m_back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
             end
-
-            -- ⚡ JUMP-PROOF ANTI-AIR VOID CHAIR ENGINE ⚡
-            if activeModes["Chair"] then
-                if voidedPlayers[plr] and not tHum.Sit then voidedPlayers[plr] = nil end
-                if not voidedPlayers[plr] then
-                    if not assignedRemotes[plr].chair or not assignedRemotes[plr].chair.Parent then 
-                        for _, r in ipairs(allRemotes) do 
-                            if not isRemoteAssigned(r) then assignedRemotes[plr].chair = r; break end 
-                        end 
-                    end
-                    if assignedRemotes[plr].chair then
-                        if tHum.Sit then 
-                            pcall(function() assignedRemotes[plr].chair:InvokeServer(CFrame.new(0, -5000, 0)) end)
-                            voidedPlayers[plr] = true
-                            assignedRemotes[plr].chair = nil
-                        else
-                            -- Air Velocity & Jump Arc Detection
-                            local yVelocity = rawVelocity.Y
-                            local isJumpingOrFreefall = (tHum and (tHum:GetState() == Enum.HumanoidStateType.Jumping or tHum:GetState() == Enum.HumanoidStateType.Freefall))
-                            
-                            -- Upward Offset Booster for Air-Time
-                            local airLiftOffset = 0
-                            if isJumpingOrFreefall or yVelocity > 2 then
-                                airLiftOffset = math.clamp(yVelocity * 0.15, 0, 7.5) 
-                            end
-
-                            local blitzTime = runTime * 50 
-                            local sweepX = math.cos(blitzTime) * 1.6
-                            local sweepZ = math.sin(blitzTime) * 1.6
-                            local verticalWave = math.sin(blitzTime * 3) * (isJumpingOrFreefall and 3.5 or 2.0)
-                            
-                            -- Vertical Sweep Target Frame
-                            local dynamicChairCFrame = CFrame.new(bodyPos) 
-                                * CFrame.new(sweepX, (-3.0 + airLiftOffset) + verticalWave, sweepZ) 
-                                * CFrame.Angles(math.sin(blitzTime) * 0.5, blitzTime * 2.5, math.cos(blitzTime) * 0.5)
-                            
-                            dispatchRemote(assignedRemotes[plr].chair, dynamicChairCFrame) 
-                        end
-                    end
-                end
-            end
         end
 
         local freeRemotes = {}
         for _, r in ipairs(allRemotes) do if not isRemoteAssigned(r) then table.insert(freeRemotes, r) end end
 
         if #freeRemotes > 0 then
-            if activeModes["Ring"] then
+            -- ⚡ ADVANCED DYNAMIC MULTI-PROP CHAIR BARRAGE ⚡
+            if activeModes["Chair"] then
+                for idx, remote in ipairs(freeRemotes) do
+                    local targetIdx = ((idx - 1) % tCount) + 1
+                    local plr = targetList[targetIdx]
+                    local tRoot = plr.Character.HumanoidRootPart
+                    local tHum = plr.Character:FindFirstChildOfClass("Humanoid")
+                    
+                    if voidedPlayers[plr] and not tHum.Sit then voidedPlayers[plr] = nil end
+                    
+                    if not voidedPlayers[plr] then
+                        if tHum.Sit then
+                            pcall(function() remote:InvokeServer(CFrame.new(0, -5000, 0)) end)
+                            voidedPlayers[plr] = true
+                        else
+                            local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
+                            local rawVel = tRoot.AssemblyLinearVelocity
+                            local bodyPos = bodyPart.Position + (rawVel * predictionTime)
+                            
+                            local propsForThisTarget = math.ceil(#freeRemotes / tCount)
+                            local localChairIndex = (idx - 1) % propsForThisTarget
+                            
+                            local yVelocity = rawVel.Y
+                            local isJumpingOrFreefall = (tHum and (tHum:GetState() == Enum.HumanoidStateType.Jumping or tHum:GetState() == Enum.HumanoidStateType.Freefall))
+                            
+                            local airLiftOffset = 0
+                            if isJumpingOrFreefall or yVelocity > 2 then
+                                airLiftOffset = math.clamp(yVelocity * 0.18, 0, 8.5) 
+                            end
+
+                            local blitzTime = runTime * 55 + (localChairIndex * (math.pi * 2 / propsForThisTarget))
+                            local radOffset = (math.pi * 2 / propsForThisTarget) * localChairIndex
+                            
+                            local radiusBase = 1.8 + (localChairIndex * 0.3)
+                            local sweepX = math.cos(blitzTime + radOffset) * radiusBase
+                            local sweepZ = math.sin(blitzTime + radOffset) * radiusBase
+                            
+                            local heightLayer = ((localChairIndex % 3) - 1) * 2.2 
+                            local verticalWave = math.sin(blitzTime * 3.5 + localChairIndex) * 2.5
+                            
+                            local dynamicChairCFrame = CFrame.new(bodyPos) 
+                                * CFrame.new(sweepX, (-2.8 + airLiftOffset + heightLayer) + verticalWave, sweepZ) 
+                                * CFrame.Angles(math.sin(blitzTime) * 0.6, blitzTime * 3, math.cos(blitzTime) * 0.6)
+                            
+                            dispatchRemote(remote, dynamicChairCFrame)
+                        end
+                    end
+                end
+            elseif activeModes["Ring"] then
                 for i, remote in ipairs(freeRemotes) do
                     local targetIdx = ((i - 1) % tCount) + 1; local plr = targetList[targetIdx]
                     
@@ -1309,9 +1316,7 @@ RunService.Heartbeat:Connect(function(dt)
                         dispatchRemote(remote, CFrame.lookAt(propPos, ringCenterPos) * CFrame.Angles(0, math.rad(180), 0))
                     end
                 end
-            end
-            
-            if activeModes["Orbit"] then
+            elseif activeModes["Orbit"] then
                 for idx, remote in ipairs(freeRemotes) do
                     local targetIdx = ((idx - 1) % tCount) + 1; local plr = targetList[targetIdx]
                     
