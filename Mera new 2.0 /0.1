@@ -1,8 +1,7 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.1 (GALACTIC QUASAR EDITION) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.2 (HYPER-CHAIR BLITZ EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
--- * [V12.2 PERFECT STICKY ENGINE + DYNAMIC CUSTOM PROPS] *
--- * [V18.1.1 BUG FIX: PROPS NO LONGER STOP WHEN MOVING/RUNNING] *
+-- * [V18.2 ADVANCED HYPER-SPEED MULTI-AXIS VOID CHAIR ENGINE] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -54,7 +53,6 @@ pcall(function()
                 local args = {...}
                 if args[1] == "RequestingPropName" then
                     lastGameSpawnTime = tick() 
-                    -- Save the prop the user clicked in the menu!
                     if args[2] and args[3] then
                         customPropName = args[2]
                         customPropCategory = args[3]
@@ -284,7 +282,6 @@ local function getActivePropData()
     if needsChair and not needsRobot then 
         return "FurnitureBleachers", "Furniture" 
     else 
-        -- Returns the prop the user last clicked in the menu!
         return customPropName, customPropCategory 
     end
 end
@@ -385,7 +382,6 @@ local discordBtn = Instance.new("TextButton", footer); discordBtn.Size = UDim2.f
 crispText(discordBtn)
 discordBtn.MouseButton1Click:Connect(function() pcall(function() copyToClip("not_ashu.") end); sendNotif("TXR System", "Copied to clipboard!", 2); discordBtn.Text = "⚡ Copied Core!"; discordBtn.TextColor3 = Colors.Primary; task.delay(1.5, function() if discordBtn then discordBtn.Text = "Discord: @not_ashu."; discordBtn.TextColor3 = Colors.SubText end end) end)
 
--- ✨ V18.0 GALACTIC QUASAR CORE ✨
 local openBtnContainer = Instance.new("Frame", gui)
 openBtnContainer.Size = UDim2.fromOffset(86, 86) 
 openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -394,7 +390,6 @@ openBtnContainer.BackgroundTransparency = 1
 openBtnContainer.Visible = false
 openBtnContainer.ZIndex = 100
 
--- Outer Event Horizon Glow
 local coreGlow = Instance.new("ImageLabel", openBtnContainer)
 coreGlow.Size = UDim2.fromScale(1.8, 1.8)
 coreGlow.Position = UDim2.fromScale(0.5, 0.5)
@@ -406,7 +401,6 @@ coreGlow.ImageTransparency = 0.6
 coreGlow.ZIndex = 98
 Instance.new("UICorner", coreGlow).CornerRadius = UDim.new(1, 0) 
 
--- Inner Singularity Glow (Intense)
 local eventGlow = Instance.new("ImageLabel", openBtnContainer)
 eventGlow.Size = UDim2.fromScale(1.2, 1.2)
 eventGlow.Position = UDim2.fromScale(0.5, 0.5)
@@ -430,7 +424,6 @@ openBtn.ClipsDescendants = false
 openBtn.ZIndex = 101
 Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0)
 
--- Outer Energy Bezel
 local gimbalOuter = Instance.new("Frame", openBtnContainer)
 gimbalOuter.Size = UDim2.fromScale(1.05, 1.05)
 gimbalOuter.Position = UDim2.fromScale(0.5, 0.5)
@@ -454,7 +447,6 @@ local openStroke = Instance.new("UIStroke", openBtn)
 openStroke.Thickness = 1.5
 openStroke.Color = Colors.Primary
 
--- QUAD GIMBALS
 local gimbals = {}
 for i = 1, 4 do
     local g = Instance.new("Frame", openBtn)
@@ -469,7 +461,6 @@ for i = 1, 4 do
     table.insert(gimbals, {frame = g, stroke = gs})
 end
 
--- 16-Pointed Hyper-Tesseract
 local diamonds = {}
 for i = 1, 4 do
     local d = Instance.new("Frame", openBtn)
@@ -485,7 +476,6 @@ for i = 1, 4 do
     table.insert(diamonds, {frame = d, stroke = ds})
 end
 
--- Inner Crosshair
 local crosshair = Instance.new("ImageLabel", openBtn)
 crosshair.Size = UDim2.fromScale(0.65, 0.65)
 crosshair.Position = UDim2.fromScale(0.5, 0.5)
@@ -496,7 +486,6 @@ crosshair.ImageColor3 = Colors.Primary
 crosshair.ImageTransparency = 0.2
 crosshair.ZIndex = 104
 
--- Center Pulsing Nova Core
 local centerCore = Instance.new("Frame", openBtn)
 centerCore.Size = UDim2.fromOffset(10, 10)
 centerCore.Position = UDim2.fromScale(0.5, 0.5)
@@ -509,7 +498,6 @@ local coreStroke = Instance.new("UIStroke", centerCore)
 coreStroke.Thickness = 2
 coreStroke.Color = Color3.new(1,1,1)
 
--- 12-ORB INFINITY HELIX
 local orbs = {}
 for i=1, 12 do
     local orb = Instance.new("Frame", openBtn)
@@ -923,7 +911,7 @@ local robotBtn = createMainBtn("🤖 RADIAL SURROUND", "Robot", false)
 local multiBtn = createMainBtn("🤖 DUAL SYSTEM", "MultiRobot", false)
 local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false)
 local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false)
-local chairBtn = createMainBtn("🛏️ VOID CHAIR", "Chair", false)
+local chairBtn = createMainBtn("🛏️ VOID CHAIR BLITZ", "Chair", false)
 
 local modeBtns = { ["Orbit"] = {btn = orbitBtn}, ["Robot"] = {btn = robotBtn}, ["MultiRobot"] = {btn = multiBtn}, ["Ring"] = {btn = ringBtn}, ["HeadBang"] = {btn = headBtn}, ["Chair"] = {btn = chairBtn} }
 
@@ -948,7 +936,6 @@ for key, data in pairs(modeBtns) do
     end)
 end
 
--- 👁️ TACTICAL ESP HUD TOGGLE 👁️
 local espBtn = createMainBtn("👁️ TACTICAL ESP (HUD)", "ESP", false)
 espBtn.MouseButton1Click:Connect(function() 
     activeModes["ESP"] = not activeModes["ESP"] 
@@ -981,7 +968,6 @@ soundBtn.MouseButton1Click:Connect(function()
     else TweenService:Create(soundBtn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play(); if accent then TweenService:Create(accent, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 0, 0, 0)}):Play() end; if isSystemActive then task.spawn(StopRobotBangMusic) end end
 end)
 
--- 🛡️ GOD SHIELD (ANTI-TOUCH/SIT) TOGGLE 🛡️
 local shieldBtn = createMainBtn("🛡️ GOD SHIELD (ANTI-TOUCH/SIT)", "Shield", false)
 shieldBtn.MouseButton1Click:Connect(function() 
     isGodShieldEnabled = not isGodShieldEnabled; activeModes["Shield"] = isGodShieldEnabled; local accent = shieldBtn:FindFirstChild("Accent")
@@ -1009,7 +995,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.1.1 Quasar Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.2 Hyper-Chair Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
@@ -1080,7 +1066,7 @@ local function isRemoteAssigned(remote)
     return false 
 end
 
--- ✨ PERFECT STICKY LOCAL-DISPATCH ENGINE (UPDATED TO PREVENT LAG) ✨
+-- ✨ PERFECT STICKY LOCAL-DISPATCH ENGINE ✨
 local function dispatchRemote(remote, targetCFrame)
     if not remote or not remote.Parent then return end
     pcall(function() 
@@ -1092,7 +1078,6 @@ local function dispatchRemote(remote, targetCFrame)
             parent.CFrame = parent.CFrame:Lerp(targetCFrame, 0.6) 
         end 
     end)
-    -- Using task.spawn so the thread doesn't queue and lag the game
     task.spawn(function() pcall(function() remote:InvokeServer(targetCFrame) end) end)
 end
 
@@ -1137,7 +1122,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- 🔥 ULTRA-SMOOTH ENGINE CORE 🔥
+-- 🔥 ULTRA-SMOOTH ENGINE CORE WITH HYPER-CHAIR ENGINE 🔥
 RunService.Heartbeat:Connect(function(dt)
     if not isSystemActive then return end 
 
@@ -1162,7 +1147,6 @@ RunService.Heartbeat:Connect(function(dt)
     local robotSpeedMultiplier = 60 / 20 
     robotAnimTime = robotAnimTime + (dt * robotSpeedMultiplier)
     
-    -- Ping is now fetched ONCE per frame to prevent extreme lag spikes
     local currentPing = 0.05
     pcall(function() currentPing = lp:GetNetworkPing() end)
     local predictionTime = currentPing + 0.03
@@ -1255,6 +1239,7 @@ RunService.Heartbeat:Connect(function(dt)
                 if assignedRemotes[plr].m_back then dispatchRemote(assignedRemotes[plr].m_back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
             end
 
+            -- ⚡ ADVANCED HYPER-SCAN VOID CHAIR LOGIC ⚡
             if activeModes["Chair"] then
                 if voidedPlayers[plr] and not tHum.Sit then voidedPlayers[plr] = nil end
                 if not voidedPlayers[plr] then
@@ -1269,8 +1254,18 @@ RunService.Heartbeat:Connect(function(dt)
                             voidedPlayers[plr] = true
                             assignedRemotes[plr].chair = nil
                         else
-                            -- Bug Fix: Removed move magnitude check so it follows perfectly while walking
-                            dispatchRemote(assignedRemotes[plr].chair, CFrame.new(bodyPos) * CFrame.new(0, -3.2, 0)) 
+                            -- Multi-Axis High Frequency Orbital Sweep
+                            local blitzTime = runTime * 45 
+                            local sweepX = math.cos(blitzTime) * 1.8
+                            local sweepZ = math.sin(blitzTime) * 1.8
+                            local sweepY = math.sin(blitzTime * 2.5) * 2.2 -- Rapid Vertical Sweep
+                            
+                            -- Motion Prediction Target Frame
+                            local dynamicChairCFrame = CFrame.new(bodyPos) 
+                                * CFrame.new(sweepX, -2.8 + sweepY, sweepZ) 
+                                * CFrame.Angles(math.sin(blitzTime) * 0.4, blitzTime * 2, math.cos(blitzTime) * 0.4)
+                            
+                            dispatchRemote(assignedRemotes[plr].chair, dynamicChairCFrame) 
                         end
                     end
                 end
@@ -1364,7 +1359,6 @@ task.spawn(function()
         if isRainbowEnabled and isSystemActive then
             local syncColor = Color3.fromHSV(hue, 1, 1)
 
-            -- ✨ ADVANCED SERVER BYPASS INJECTED HERE ✨
             task.spawn(function()
                 local playerGui = lp:FindFirstChild("PlayerGui")
                 if playerGui then
@@ -1411,7 +1405,6 @@ mainEspGui.Name = "TXR_TacticalESP"
 mainEspGui.IgnoreGuiInset = true
 _G.TXR_ESP_GUI = mainEspGui
 
--- 🌐 TACTICAL CITY/STATE DATABASE 🌐
 local cities = {
     {"Los Angeles", "CA"}, {"New York", "NY"}, {"Chicago", "IL"}, {"Houston", "TX"}, {"Phoenix", "AZ"},
     {"London", "UK"}, {"Toronto", "ON"}, {"Sydney", "NSW"}, {"Melbourne", "VIC"}, {"Mumbai", "MH"},
