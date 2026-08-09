@@ -1,7 +1,7 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.2 (HYPER-CHAIR BLITZ EDITION) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.3 (JUMP-PROOF VOID CHAIR) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
--- * [V18.2 ADVANCED HYPER-SPEED MULTI-AXIS VOID CHAIR ENGINE] *
+-- * [V18.3 VERTICAL ARC SWEEPER + ANTI-JUMP PREDICTION] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -911,7 +911,7 @@ local robotBtn = createMainBtn("🤖 RADIAL SURROUND", "Robot", false)
 local multiBtn = createMainBtn("🤖 DUAL SYSTEM", "MultiRobot", false)
 local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false)
 local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false)
-local chairBtn = createMainBtn("🛏️ VOID CHAIR BLITZ", "Chair", false)
+local chairBtn = createMainBtn("🛏️ VOID CHAIR (JUMP-PROOF)", "Chair", false)
 
 local modeBtns = { ["Orbit"] = {btn = orbitBtn}, ["Robot"] = {btn = robotBtn}, ["MultiRobot"] = {btn = multiBtn}, ["Ring"] = {btn = ringBtn}, ["HeadBang"] = {btn = headBtn}, ["Chair"] = {btn = chairBtn} }
 
@@ -995,7 +995,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.2 Hyper-Chair Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.3 Anti-Jump Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
@@ -1122,7 +1122,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- 🔥 ULTRA-SMOOTH ENGINE CORE WITH HYPER-CHAIR ENGINE 🔥
+-- 🔥 ULTRA-SMOOTH ENGINE CORE WITH JUMP-PROOF CHAIR ENGINE 🔥
 RunService.Heartbeat:Connect(function(dt)
     if not isSystemActive then return end 
 
@@ -1149,7 +1149,7 @@ RunService.Heartbeat:Connect(function(dt)
     
     local currentPing = 0.05
     pcall(function() currentPing = lp:GetNetworkPing() end)
-    local predictionTime = currentPing + 0.03
+    local predictionTime = currentPing + 0.04
     
     local allRemotes = getAvailableRemotes()
     local tCount = 0; local targetList = {}
@@ -1239,7 +1239,7 @@ RunService.Heartbeat:Connect(function(dt)
                 if assignedRemotes[plr].m_back then dispatchRemote(assignedRemotes[plr].m_back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
             end
 
-            -- ⚡ ADVANCED HYPER-SCAN VOID CHAIR LOGIC ⚡
+            -- ⚡ JUMP-PROOF ANTI-AIR VOID CHAIR ENGINE ⚡
             if activeModes["Chair"] then
                 if voidedPlayers[plr] and not tHum.Sit then voidedPlayers[plr] = nil end
                 if not voidedPlayers[plr] then
@@ -1254,16 +1254,25 @@ RunService.Heartbeat:Connect(function(dt)
                             voidedPlayers[plr] = true
                             assignedRemotes[plr].chair = nil
                         else
-                            -- Multi-Axis High Frequency Orbital Sweep
-                            local blitzTime = runTime * 45 
-                            local sweepX = math.cos(blitzTime) * 1.8
-                            local sweepZ = math.sin(blitzTime) * 1.8
-                            local sweepY = math.sin(blitzTime * 2.5) * 2.2 -- Rapid Vertical Sweep
+                            -- Air Velocity & Jump Arc Detection
+                            local yVelocity = rawVelocity.Y
+                            local isJumpingOrFreefall = (tHum and (tHum:GetState() == Enum.HumanoidStateType.Jumping or tHum:GetState() == Enum.HumanoidStateType.Freefall))
                             
-                            -- Motion Prediction Target Frame
+                            -- Upward Offset Booster for Air-Time
+                            local airLiftOffset = 0
+                            if isJumpingOrFreefall or yVelocity > 2 then
+                                airLiftOffset = math.clamp(yVelocity * 0.15, 0, 7.5) 
+                            end
+
+                            local blitzTime = runTime * 50 
+                            local sweepX = math.cos(blitzTime) * 1.6
+                            local sweepZ = math.sin(blitzTime) * 1.6
+                            local verticalWave = math.sin(blitzTime * 3) * (isJumpingOrFreefall and 3.5 or 2.0)
+                            
+                            -- Vertical Sweep Target Frame
                             local dynamicChairCFrame = CFrame.new(bodyPos) 
-                                * CFrame.new(sweepX, -2.8 + sweepY, sweepZ) 
-                                * CFrame.Angles(math.sin(blitzTime) * 0.4, blitzTime * 2, math.cos(blitzTime) * 0.4)
+                                * CFrame.new(sweepX, (-3.0 + airLiftOffset) + verticalWave, sweepZ) 
+                                * CFrame.Angles(math.sin(blitzTime) * 0.5, blitzTime * 2.5, math.cos(blitzTime) * 0.5)
                             
                             dispatchRemote(assignedRemotes[plr].chair, dynamicChairCFrame) 
                         end
