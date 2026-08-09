@@ -1,8 +1,7 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.6 (PING-OPTIMIZED VOID CHAIR) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.7 (SEAT-GLITCH FIXED) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
--- * [V18.6 ZERO-LAG NETWORK ENGINE + DYNAMIC CHAIR CAP] *
--- * [FIXED: SYNTAX ERROR & GUI LOADING GLITCH] *
+-- * [V18.7 FIXED: PROPS TILTING/LICKING GROUND ON SIT] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -1000,7 +999,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.6 Quantum Void Engine Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.7 Seat-Glitch Fixed Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
@@ -1214,9 +1213,12 @@ RunService.Heartbeat:Connect(function(dt)
             
             local dynamicBaseCFrame = CFrame.lookAt(bodyPos, bodyPos + flatLook)
             
-            local isProne = (tHum and (tHum:GetState() == Enum.HumanoidStateType.Physics or tHum.Sit))
-            local yOffset = isProne and -1.5 or -3.8
-            local tiltAngle = isProne and math.rad(-90) or 0
+            -- FIX: Separated Sitting from Ragdoll (Physics) so robots don't lick the ground when a player sits
+            local isSitting = (tHum and tHum.Sit)
+            local isRagdoll = (tHum and tHum:GetState() == Enum.HumanoidStateType.Physics)
+            
+            local yOffset = isSitting and -2.5 or (isRagdoll and -1.5 or -3.8)
+            local tiltAngle = isRagdoll and math.rad(-90) or 0
 
             local centerGroundPos = bodyPos + Vector3.new(0, yOffset, 0)
             
@@ -1238,7 +1240,7 @@ RunService.Heartbeat:Connect(function(dt)
                 local headPos = actualHead.Position + (targetVelocities[plr] * predictionTime)
                 local headLockCFrame = CFrame.lookAt(headPos, headPos + flatLook)
                 
-                local headY = isProne and -0.8 or -2.4 
+                local headY = (isSitting or isRagdoll) and -0.8 or -2.4 
                 local headDist = 1.0 + (1.5 * rScale) - (((1.5 * rScale)) * snapPower)
                 
                 if assignedRemotes[plr].h_front then dispatchRemote(assignedRemotes[plr].h_front, headLockCFrame * CFrame.new(0, headY, -headDist)) end
@@ -1293,11 +1295,12 @@ RunService.Heartbeat:Connect(function(dt)
                     if isSeated or voidedPlayers[plr] then
                         voidedPlayers[plr] = true
                         
+                        -- Instant Smooth Teleport to Void
                         task.spawn(function()
                             pcall(function() remote:InvokeServer(CFrame.new(0, -9000, 0)) end)
                         end)
                     else
-                        -- Max 4 chairs per player to prevent lag
+                        -- Dynamic Cap to prevent Packet Flood Ping Spike (Max 4 active chairs per player)
                         local propsForThisTarget = math.min(4, math.ceil(#freeRemotes / tCount))
                         local localChairIndex = (idx - 1) % propsForThisTarget
                         
