@@ -2,6 +2,7 @@
 -- 👑 TXR ASHU: QUANTUM CORE V18.9 (SPAWN-KILL + SMOOTH UI) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V18.9 INSTANT RESPAWN TRAP & BUTTERY SMOOTH ANIMATIONS] *
+-- * [UI FIXED: SLIDER BADGE PERFECTLY ALIGNED] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -234,7 +235,6 @@ local function applySmartHover(btn, modeKey)
 
     local isHovered = false
 
-    -- Upgraded to Quint & Sine for buttery smooth UI feel
     local hoverInInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     local hoverOutInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
     local pressInfo = TweenInfo.new(0.1, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
@@ -749,7 +749,7 @@ openBtn.MouseButton1Down:Connect(function()
     TweenService:Create(openBtnScale, TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Scale = 0.85}):Play() 
 end)
 openBtn.MouseButton1Up:Connect(function() 
-    TweenService:Create(openBtnScale, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05}):Play() 
+    TweenService:Create(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05}):Play() 
 end)
 
 closeBtn.MouseButton1Click:Connect(function() 
@@ -773,7 +773,7 @@ openBtn.MouseButton1Click:Connect(function()
     if dragThresholdMet then return end 
     TweenService:Create(openBtnScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play(); task.wait(0.25); openBtnContainer.Visible = false; mainFrame.Visible = true; aura.Visible = true; mainScale.Scale = 0.8; auraScale.Scale = 0.8; 
     TweenService:Create(mainScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play(); TweenService:Create(auraScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
-    TweenService:Create(mainFrame, TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play(); TweenService:Create(aura, TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
+    TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play(); TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
 end)
 
 -- MAIN LIST
@@ -893,13 +893,14 @@ local function createMainBtn(text, modeKey, isMenuOpener)
     return btn
 end
 
+-- ✨ UI FIX APPLIED HERE: ADJUSTED BADGE Y-POSITION ✨
 local function createSlider(name, min, max, defaultVal, suffix)
     local container = Instance.new("Frame", mainList); container.Size = UDim2.new(1, 0, 0, 46); container.BackgroundTransparency = 1; container.LayoutOrder = getOrder(); container.ZIndex = 7
     
     local titleLabel = Instance.new("TextLabel", container); titleLabel.Size = UDim2.new(0.6, 0, 0, 14); titleLabel.Position = UDim2.new(0, 6, 0, 0); titleLabel.BackgroundTransparency = 1; titleLabel.Text = name; titleLabel.TextColor3 = Colors.SubText; titleLabel.Font = Enum.Font.GothamBold; titleLabel.TextSize = 10; titleLabel.TextXAlignment = Enum.TextXAlignment.Left; titleLabel.ZIndex = 8
     crispText(titleLabel)
 
-    local valBadge = Instance.new("Frame", container); valBadge.Size = UDim2.new(0, 48, 0, 16); valBadge.AnchorPoint = Vector2.new(1, 0); valBadge.Position = UDim2.new(1, -6, 0, -2); valBadge.BackgroundColor3 = Colors.Primary; valBadge.BackgroundTransparency = 0.85; valBadge.ZIndex = 8; Instance.new("UICorner", valBadge).CornerRadius = UDim.new(0, 4)
+    local valBadge = Instance.new("Frame", container); valBadge.Size = UDim2.new(0, 48, 0, 16); valBadge.AnchorPoint = Vector2.new(1, 0); valBadge.Position = UDim2.new(1, -6, 0, 1); valBadge.BackgroundColor3 = Colors.Primary; valBadge.BackgroundTransparency = 0.85; valBadge.ZIndex = 8; Instance.new("UICorner", valBadge).CornerRadius = UDim.new(0, 4)
     local valStroke = Instance.new("UIStroke", valBadge); valStroke.Color = Colors.Primary; valStroke.Transparency = 0.5; valStroke.Thickness = 1
     local valLabel = Instance.new("TextLabel", valBadge); valLabel.Size = UDim2.new(1, 0, 1, 0); valLabel.BackgroundTransparency = 1; valLabel.Text = defaultVal .. (suffix or ""); valLabel.TextColor3 = Colors.Primary; valLabel.Font = Enum.Font.GothamBold; valLabel.TextSize = 10; valLabel.ZIndex = 9
     crispText(valLabel)
