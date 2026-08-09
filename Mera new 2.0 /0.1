@@ -1,8 +1,7 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.9 (SPAWN-KILL + SMOOTH UI) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.10 (PERFECT ALIGNMENT) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
--- * [V18.9 INSTANT RESPAWN TRAP & BUTTERY SMOOTH ANIMATIONS] *
--- * [UI FIXED: SLIDER BADGE PERFECTLY ALIGNED] *
+-- * [V18.10 UI PIXEL-PERFECT SLIDER BADGE ALIGNMENT] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -893,14 +892,14 @@ local function createMainBtn(text, modeKey, isMenuOpener)
     return btn
 end
 
--- ✨ UI FIX APPLIED HERE: ADJUSTED BADGE Y-POSITION ✨
+-- ✨ UI FIX APPLIED HERE: ADJUSTED BADGE Y-POSITION FOR PIXEL PERFECT CENTER ✨
 local function createSlider(name, min, max, defaultVal, suffix)
     local container = Instance.new("Frame", mainList); container.Size = UDim2.new(1, 0, 0, 46); container.BackgroundTransparency = 1; container.LayoutOrder = getOrder(); container.ZIndex = 7
     
     local titleLabel = Instance.new("TextLabel", container); titleLabel.Size = UDim2.new(0.6, 0, 0, 14); titleLabel.Position = UDim2.new(0, 6, 0, 0); titleLabel.BackgroundTransparency = 1; titleLabel.Text = name; titleLabel.TextColor3 = Colors.SubText; titleLabel.Font = Enum.Font.GothamBold; titleLabel.TextSize = 10; titleLabel.TextXAlignment = Enum.TextXAlignment.Left; titleLabel.ZIndex = 8
     crispText(titleLabel)
 
-    local valBadge = Instance.new("Frame", container); valBadge.Size = UDim2.new(0, 48, 0, 16); valBadge.AnchorPoint = Vector2.new(1, 0); valBadge.Position = UDim2.new(1, -6, 0, 1); valBadge.BackgroundColor3 = Colors.Primary; valBadge.BackgroundTransparency = 0.85; valBadge.ZIndex = 8; Instance.new("UICorner", valBadge).CornerRadius = UDim.new(0, 4)
+    local valBadge = Instance.new("Frame", container); valBadge.Size = UDim2.new(0, 48, 0, 16); valBadge.AnchorPoint = Vector2.new(1, 0); valBadge.Position = UDim2.new(1, -6, 0, -1); valBadge.BackgroundColor3 = Colors.Primary; valBadge.BackgroundTransparency = 0.85; valBadge.ZIndex = 8; Instance.new("UICorner", valBadge).CornerRadius = UDim.new(0, 4)
     local valStroke = Instance.new("UIStroke", valBadge); valStroke.Color = Colors.Primary; valStroke.Transparency = 0.5; valStroke.Thickness = 1
     local valLabel = Instance.new("TextLabel", valBadge); valLabel.Size = UDim2.new(1, 0, 1, 0); valLabel.BackgroundTransparency = 1; valLabel.Text = defaultVal .. (suffix or ""); valLabel.TextColor3 = Colors.Primary; valLabel.Font = Enum.Font.GothamBold; valLabel.TextSize = 10; valLabel.ZIndex = 9
     crispText(valLabel)
@@ -1039,7 +1038,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.9 Spawn-Kill Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.10 Perfect Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
