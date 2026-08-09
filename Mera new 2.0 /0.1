@@ -1,7 +1,7 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.15 (GLIDING UI PHYSICS) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.16 (LIQUID INTERPOLATION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
--- * [V18.15 ADDED WINDOW DRAG INERTIA / MOMENTUM ENGINE] *
+-- * [V18.16 DELTATIME LERP PHYSICS FOR 144HZ FEEL ON 60FPS] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -708,88 +708,63 @@ openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function()
     end 
 end)
 
--- ✨ V18.15 GLIDING PHYSICS DRAG ENGINE ✨
+-- ✨ V18.16 LIQUID DRAG INTERPOLATION ENGINE ✨
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart = nil
     local startPos = nil
-    local inertiaVelocity = Vector2.new(0, 0)
-    local lastInputPos = Vector2.new(0, 0)
-    local lastMoveTime = tick()
-    local inertiaLoop = nil
+    local targetPos = frame.Position
+    local velocity = Vector2.new(0,0)
+    local lastInputPos = Vector2.new(0,0)
+    local dragLoop = nil
 
     handle.InputBegan:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
             dragging = true
-            if isOrb then 
-                isDraggingOrb = true 
-                dragThresholdMet = false 
-            end
             dragStart = input.Position
-            startPos = frame.Position 
+            startPos = frame.Position
+            targetPos = startPos
             lastInputPos = Vector2.new(input.Position.X, input.Position.Y)
-            inertiaVelocity = Vector2.new(0, 0)
+            velocity = Vector2.new(0,0)
+            if isOrb then isDraggingOrb = true; dragThresholdMet = false end
             
-            if inertiaLoop then
-                inertiaLoop:Disconnect()
-                inertiaLoop = nil
-            end
+            if dragLoop then dragLoop:Disconnect() end
+            dragLoop = RunService.RenderStepped:Connect(function(dt)
+                if dragging then
+                    -- 144Hz Feel: RenderStepped interpolates position dynamically
+                    frame.Position = frame.Position:Lerp(targetPos, math.clamp(dt * 25, 0, 1))
+                else
+                    if velocity.Magnitude > 0.5 then
+                        velocity = velocity * 0.90
+                        targetPos = UDim2.new(targetPos.X.Scale, targetPos.X.Offset + velocity.X, targetPos.Y.Scale, targetPos.Y.Offset + velocity.Y)
+                        frame.Position = frame.Position:Lerp(targetPos, math.clamp(dt * 15, 0, 1))
+                    else
+                        dragLoop:Disconnect()
+                        dragLoop = nil
+                    end
+                end
+                if ghostAura then ghostAura.Position = frame.Position end
+            end)
         end 
     end)
 
     handle.InputEnded:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
             dragging = false
-            if isOrb then 
-                isDraggingOrb = false 
-                orbHovered = false 
-            end
-            
-            -- If user held the panel still before releasing, cancel momentum
-            if tick() - lastMoveTime > 0.05 then
-                inertiaVelocity = Vector2.new(0, 0)
-            end
-            
-            -- Start Gliding Physics
-            if inertiaLoop then inertiaLoop:Disconnect() end
-            inertiaLoop = RunService.RenderStepped:Connect(function()
-                if inertiaVelocity.Magnitude < 0.5 then
-                    inertiaVelocity = Vector2.new(0, 0)
-                    inertiaLoop:Disconnect()
-                    inertiaLoop = nil
-                    return
-                end
-                
-                -- Friction (0.92 = buttery smooth slide)
-                inertiaVelocity = inertiaVelocity * 0.92 
-                
-                local currentPos = frame.Position
-                local newPos = UDim2.new(
-                    currentPos.X.Scale, currentPos.X.Offset + inertiaVelocity.X,
-                    currentPos.Y.Scale, currentPos.Y.Offset + inertiaVelocity.Y
-                )
-                frame.Position = newPos
-                if ghostAura then ghostAura.Position = newPos end
-            end)
+            if isOrb then isDraggingOrb = false; orbHovered = false end
         end 
     end)
 
     UserInputService.InputChanged:Connect(function(input) 
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then 
-            local delta = input.Position - dragStart 
-            if isOrb and delta.Magnitude > 5 then
-                dragThresholdMet = true
-            end
+            local delta = input.Position - dragStart
+            if isOrb and delta.Magnitude > 5 then dragThresholdMet = true end
+            -- Sets Target instead of absolute position for smooth glide
+            targetPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
             
-            -- Calculate momentum velocity
             local currentMousePos = Vector2.new(input.Position.X, input.Position.Y)
-            inertiaVelocity = currentMousePos - lastInputPos
+            velocity = currentMousePos - lastInputPos
             lastInputPos = currentMousePos
-            lastMoveTime = tick()
-            
-            local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-            frame.Position = newPos 
-            if ghostAura then ghostAura.Position = newPos end
         end 
     end)
 end
@@ -826,11 +801,11 @@ openBtn.MouseButton1Click:Connect(function()
     TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play(); TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
 end)
 
--- ✨ SAFE & SMOOTH TOUCH SCROLLING ✨
-local mainList = Instance.new("ScrollingFrame", mainFrame); mainList.Size = UDim2.new(1, -24, 1, -88); mainList.Position = UDim2.fromOffset(12, 56); mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 0; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ElasticBehavior = Enum.ElasticBehavior.Always; mainList.Active = true; mainList.ZIndex = 6
+-- MAIN LIST
+local mainList = Instance.new("ScrollingFrame", mainFrame); mainList.Size = UDim2.new(1, -24, 1, -88); mainList.Position = UDim2.fromOffset(12, 56); mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 0; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ZIndex = 6
 local listLayout = Instance.new("UIListLayout", mainList); listLayout.Padding = UDim.new(0, 8); listLayout.SortOrder = Enum.SortOrder.LayoutOrder; listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 local mainPadding = Instance.new("UIPadding", mainList); mainPadding.PaddingLeft = UDim.new(0, 10); mainPadding.PaddingRight = UDim.new(0, 10); mainPadding.PaddingTop = UDim.new(0, 2); mainPadding.PaddingBottom = UDim.new(0, 2)
-listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() mainList.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 15) end)
+listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() mainList.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10) end)
 local layoutIdx = 1; local function getOrder() layoutIdx = layoutIdx + 1; return layoutIdx end
 
 -- MENUS 
@@ -841,11 +816,10 @@ local function createMenu(titleStr)
     crispText(menuTitle)
 
     local backBtn = Instance.new("TextButton", top); backBtn.Size = UDim2.fromOffset(40, 26); backBtn.Position = UDim2.new(1, -50, 0.5, -13); backBtn.BackgroundColor3 = Colors.Surface; backBtn.BackgroundTransparency = 0.5; backBtn.Text = "←"; backBtn.TextColor3 = Colors.Primary; backBtn.Font = Enum.Font.GothamBold; backBtn.TextSize = 15; backBtn.AutoButtonColor = false; backBtn.ZIndex = 22; Instance.new("UICorner", backBtn).CornerRadius = UDim.new(0, 6); applySmartHover(backBtn, nil)
-    
-    local scroll = Instance.new("ScrollingFrame", menu); scroll.Size = UDim2.new(1, -24, 1, -66); scroll.Position = UDim2.fromOffset(12, 56); scroll.BackgroundTransparency = 1; scroll.ScrollBarThickness = 0; scroll.ScrollingDirection = Enum.ScrollingDirection.Y; scroll.ElasticBehavior = Enum.ElasticBehavior.Always; scroll.Active = true; scroll.ZIndex = 22
+    local scroll = Instance.new("ScrollingFrame", menu); scroll.Size = UDim2.new(1, -24, 1, -66); scroll.Position = UDim2.fromOffset(12, 56); scroll.BackgroundTransparency = 1; scroll.ScrollBarThickness = 0; scroll.ScrollingDirection = Enum.ScrollingDirection.Y; scroll.ZIndex = 22
     local lay = Instance.new("UIListLayout", scroll); lay.Padding = UDim.new(0, 8); lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
     local scrollPad = Instance.new("UIPadding", scroll); scrollPad.PaddingLeft = UDim.new(0, 10); scrollPad.PaddingRight = UDim.new(0, 10)
-    lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 15) end)
+    lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 10) end)
     
     backBtn.MouseButton1Click:Connect(function() TweenService:Create(menu, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play(); mainList.Visible = true end)
     return menu, scroll
@@ -944,7 +918,6 @@ local function createMainBtn(text, modeKey, isMenuOpener)
     return btn
 end
 
--- ✨ UI FIX APPLIED HERE: ADJUSTED BADGE Y-POSITION FOR PIXEL PERFECT CENTER ✨
 local function createSlider(name, min, max, defaultVal, suffix)
     local container = Instance.new("Frame", mainList); container.Size = UDim2.new(1, 0, 0, 46); container.BackgroundTransparency = 1; container.LayoutOrder = getOrder(); container.ZIndex = 7
     
@@ -1090,7 +1063,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.15 Safe UI Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.16 Safe UI Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
