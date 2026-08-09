@@ -1,7 +1,7 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.7 (SEAT-GLITCH FIXED) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.8 (AUTO-REJOIN LOCK EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
--- * [V18.7 FIXED: PROPS TILTING/LICKING GROUND ON SIT] *
+-- * [V18.8 SMART REJOIN PERSISTENCE ENGINE ADDED] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -34,6 +34,7 @@ end)
 
 -- --- CORE LOGIC ---
 local selectedPlayers, assignedRemotes, voidedPlayers, propsCache = {}, {}, {}, {}
+local autoRejoinTargets = {} -- ✨ V18.8 REJOIN PERSISTENCE MEMORY VAULT
 local activeModes, modeQueue = {}, {} 
 local activeGeometry = "Spin"
 local isRainbowEnabled, isSoundEnabled, isSystemActive, isGodShieldEnabled = false, false, false, false
@@ -801,7 +802,7 @@ end
 local playerMenu, playerScroll = createMenu("👥 MATRIX TARGETS")
 local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
 
--- 🛠️ TARGET LIST GENERATOR 🛠️
+-- 🛠️ TARGET LIST GENERATOR WITH ✨ REJOIN PERSISTENCE ✨
 local function refreshPlayers()
     for _, child in ipairs(playerScroll:GetChildren()) do if child:IsA("TextButton") then child:Destroy() end end
     for _, plr in ipairs(Players:GetPlayers()) do
@@ -819,6 +820,7 @@ local function refreshPlayers()
             
             if selectedPlayers[plr] then 
                 selectedPlayers[plr] = nil; 
+                autoRejoinTargets[plr.UserId] = nil; -- REMOVE FROM REJOIN VAULT
                 TweenService:Create(btn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play(); 
                 TweenService:Create(accent, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 0, 0, 0)}):Play()
                 
@@ -826,6 +828,7 @@ local function refreshPlayers()
                 btn:SetAttribute("BaseText", Colors.Text)
             else 
                 selectedPlayers[plr] = true; 
+                autoRejoinTargets[plr.UserId] = true; -- ADD TO REJOIN VAULT
                 TweenService:Create(btn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play(); 
                 TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Size = UDim2.new(0, 3, 0.6, 0)}):Play() 
                 
@@ -835,7 +838,25 @@ local function refreshPlayers()
         end)
     end
 end
-Players.PlayerAdded:Connect(refreshPlayers); Players.PlayerRemoving:Connect(refreshPlayers); refreshPlayers()
+
+-- ✨ SMART PLAYER JOIN/LEAVE HANDLERS ✨
+Players.PlayerAdded:Connect(function(plr)
+    -- If user is in the auto-rejoin vault, instantly re-target them!
+    if autoRejoinTargets[plr.UserId] then
+        selectedPlayers[plr] = true
+    end
+    refreshPlayers()
+end)
+
+Players.PlayerRemoving:Connect(function(plr)
+    -- Clean memory instances safely, BUT keep their UserId in autoRejoinTargets
+    selectedPlayers[plr] = nil
+    assignedRemotes[plr] = nil
+    voidedPlayers[plr] = nil
+    targetVelocities[plr] = nil
+    refreshPlayers()
+end)
+refreshPlayers()
 
 local geometries = {"Spin", "Reverse Spin", "Bobbing Orbit", "Vertical Halo", "Atom", "Galaxy Spiral", "Crown", "DNA", "Snake Body", "Wings"}
 for _, geo in ipairs(geometries) do
@@ -999,7 +1020,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.7 Seat-Glitch Fixed Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.8 Auto-Rejoin Persistence Active.", 2)
         clearProps()
         task.wait(0.3)
         
@@ -1213,7 +1234,6 @@ RunService.Heartbeat:Connect(function(dt)
             
             local dynamicBaseCFrame = CFrame.lookAt(bodyPos, bodyPos + flatLook)
             
-            -- FIX: Separated Sitting from Ragdoll (Physics) so robots don't lick the ground when a player sits
             local isSitting = (tHum and tHum.Sit)
             local isRagdoll = (tHum and tHum:GetState() == Enum.HumanoidStateType.Physics)
             
@@ -1295,12 +1315,11 @@ RunService.Heartbeat:Connect(function(dt)
                     if isSeated or voidedPlayers[plr] then
                         voidedPlayers[plr] = true
                         
-                        -- Instant Smooth Teleport to Void
                         task.spawn(function()
                             pcall(function() remote:InvokeServer(CFrame.new(0, -9000, 0)) end)
                         end)
                     else
-                        -- Dynamic Cap to prevent Packet Flood Ping Spike (Max 4 active chairs per player)
+                        -- Max 4 chairs per player to prevent lag
                         local propsForThisTarget = math.min(4, math.ceil(#freeRemotes / tCount))
                         local localChairIndex = (idx - 1) % propsForThisTarget
                         
