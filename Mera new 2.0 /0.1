@@ -2,6 +2,7 @@
 -- 👑 TXR ASHU: QUANTUM CORE V18.6 (PING-OPTIMIZED VOID CHAIR) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V18.6 ZERO-LAG NETWORK ENGINE + DYNAMIC CHAIR CAP] *
+-- * [FIXED: SYNTAX ERROR & GUI LOADING GLITCH] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -16,8 +17,12 @@ local StarterGui = game:GetService("StarterGui")
 local lp = Players.LocalPlayer
 
 local copyToClip = setclipboard or toclipboard or function() end
-local targetGuiParent = game:GetService("CoreGui")
+
+-- SAFE GUI PARENTING (FIXED FOR ALL EXECUTORS)
+local targetGuiParent
+pcall(function() targetGuiParent = game:GetService("CoreGui") end)
 if gethui then pcall(function() targetGuiParent = gethui() end) end
+if not targetGuiParent then targetGuiParent = lp:WaitForChild("PlayerGui") end
 
 local CREATOR_USER_ID = 9685785248
 
@@ -995,15 +1000,15 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.6 Ping-Optimized Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.6 Quantum Void Engine Activated.", 2)
         clearProps()
         task.wait(0.3)
         
         local propName, propCategory = getActivePropData()
-        local count = (propName == "FurnitureBleachers") and 10 or 25
+        local count = (propName == "FurnitureBleachers") and 15 or 25
         
         if activeModes["Chair"] and (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"] or activeModes["Orbit"] or activeModes["Ring"]) then
-            for i = 1, 8 do spawnProp("FurnitureBleachers", "Furniture"); task.wait(0.01) end
+            for i = 1, 10 do spawnProp("FurnitureBleachers", "Furniture"); task.wait(0.01) end
             task.wait(0.05)
             for i = 1, 15 do spawnProp(customPropName, customPropCategory); task.wait(0.01) end
         else
@@ -1068,23 +1073,21 @@ end
 
 -- ✨ ZERO-LAG NETWORK ADAPTIVE DISPATCHER ✨
 local lastRemoteFireTimes = {}
-local FIRE_INTERVAL = 0.035 -- Caps packet rate to ~30 FPS (Eliminates High Ping)
+local FIRE_INTERVAL = 0.035 
 
 local function dispatchRemote(remote, targetCFrame)
     if not remote or not remote.Parent then return end
     
-    -- Visual Lerp (Client-side)
     pcall(function() 
         local parent = remote.Parent
         if parent:IsA("Model") then 
             local part = parent.PrimaryPart or parent:FindFirstChildWhichIsA("BasePart")
-            if part then part.CFrame = part.CFrame:Lerp(targetCFrame, 0.7) end 
+            if part then part.CFrame = part.CFrame:Lerp(targetCFrame, 0.75) end 
         elseif parent:IsA("BasePart") then 
-            parent.CFrame = parent.CFrame:Lerp(targetCFrame, 0.7) 
+            parent.CFrame = parent.CFrame:Lerp(targetCFrame, 0.75) 
         end 
     end)
     
-    -- Network Throttled Server Fire
     local now = tick()
     if not lastRemoteFireTimes[remote] or (now - lastRemoteFireTimes[remote]) >= FIRE_INTERVAL then
         lastRemoteFireTimes[remote] = now
@@ -1127,7 +1130,7 @@ RunService.Stepped:Connect(function()
             for _, plr in ipairs(Players:GetPlayers()) do
                 if plr ~= lp and plr.Character then
                     for _, p in ipairs(plr.Character:GetChildren()) do
-                        if p:IsA("BasePart") me then
+                        if p:IsA("BasePart") then
                             pcall(function() p.CanCollide = false end)
                         end
                     end
@@ -1290,12 +1293,11 @@ RunService.Heartbeat:Connect(function(dt)
                     if isSeated or voidedPlayers[plr] then
                         voidedPlayers[plr] = true
                         
-                        -- Instant Smooth Teleport to Void
                         task.spawn(function()
                             pcall(function() remote:InvokeServer(CFrame.new(0, -9000, 0)) end)
                         end)
                     else
-                        -- Dynamic Cap to prevent Packet Flood Ping Spike (Max 4 active chairs per player)
+                        -- Max 4 chairs per player to prevent lag
                         local propsForThisTarget = math.min(4, math.ceil(#freeRemotes / tCount))
                         local localChairIndex = (idx - 1) % propsForThisTarget
                         
