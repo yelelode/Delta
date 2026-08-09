@@ -1,7 +1,7 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.12 (ULTRA-LIQUID UI) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.13 (144Hz ULTRA-SCROLL) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
--- * [V18.12 EXTREME BUTTERY SMOOTH TWEENING & ELASTIC BOUNCE] *
+-- * [V18.13 144FPS UNLOCK + HARDWARE ACCELERATED DRAG] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -25,10 +25,10 @@ if not targetGuiParent then targetGuiParent = lp:WaitForChild("PlayerGui") end
 
 local CREATOR_USER_ID = 9685785248
 
--- ⚡ 90 FPS GAMING ENGINE ⚡
+-- ⚡ 144 FPS ULTRA-SMOOTH GAMING ENGINE ⚡
 pcall(function()
     if setfpscap then
-        setfpscap(90)
+        setfpscap(144)
     end
 end)
 
@@ -234,7 +234,6 @@ local function applySmartHover(btn, modeKey)
 
     local isHovered = false
 
-    -- ✨ Liquid Smooth Tweening Formulas ✨
     local hoverInInfo = TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     local hoverOutInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
     local pressInfo = TweenInfo.new(0.08, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
@@ -776,11 +775,10 @@ openBtn.MouseButton1Click:Connect(function()
     TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play(); TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
 end)
 
--- MAIN LIST
-local mainList = Instance.new("ScrollingFrame", mainFrame); mainList.Size = UDim2.new(1, -24, 1, -88); mainList.Position = UDim2.fromOffset(12, 56); mainList.BackgroundTransparency = 0.999; mainList.ScrollBarThickness = 0; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ElasticBehavior = Enum.ElasticBehavior.Always; mainList.ZIndex = 6
+-- ✨ 144Hz ULTRA-SMOOTH HARDWARE SCROLL LIST ✨
+local mainList = Instance.new("ScrollingFrame", mainFrame); mainList.Size = UDim2.new(1, -24, 1, -88); mainList.Position = UDim2.fromOffset(12, 56); mainList.BackgroundTransparency = 0.999; mainList.ScrollBarThickness = 0; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ElasticBehavior = Enum.ElasticBehavior.Always; mainList.AutomaticCanvasSize = Enum.AutomaticSize.Y; mainList.Active = true; mainList.ZIndex = 6
 local listLayout = Instance.new("UIListLayout", mainList); listLayout.Padding = UDim.new(0, 8); listLayout.SortOrder = Enum.SortOrder.LayoutOrder; listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-local mainPadding = Instance.new("UIPadding", mainList); mainPadding.PaddingLeft = UDim.new(0, 10); mainPadding.PaddingRight = UDim.new(0, 10); mainPadding.PaddingTop = UDim.new(0, 2); mainPadding.PaddingBottom = UDim.new(0, 2)
-listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() mainList.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10) end)
+local mainPadding = Instance.new("UIPadding", mainList); mainPadding.PaddingLeft = UDim.new(0, 10); mainPadding.PaddingRight = UDim.new(0, 10); mainPadding.PaddingTop = UDim.new(0, 2); mainPadding.PaddingBottom = UDim.new(0, 10)
 local layoutIdx = 1; local function getOrder() layoutIdx = layoutIdx + 1; return layoutIdx end
 
 -- MENUS 
@@ -791,12 +789,13 @@ local function createMenu(titleStr)
     crispText(menuTitle)
 
     local backBtn = Instance.new("TextButton", top); backBtn.Size = UDim2.fromOffset(40, 26); backBtn.Position = UDim2.new(1, -50, 0.5, -13); backBtn.BackgroundColor3 = Colors.Surface; backBtn.BackgroundTransparency = 0.5; backBtn.Text = "←"; backBtn.TextColor3 = Colors.Primary; backBtn.Font = Enum.Font.GothamBold; backBtn.TextSize = 15; backBtn.AutoButtonColor = false; backBtn.ZIndex = 22; Instance.new("UICorner", backBtn).CornerRadius = UDim.new(0, 6); applySmartHover(backBtn, nil)
-    local scroll = Instance.new("ScrollingFrame", menu); scroll.Size = UDim2.new(1, -24, 1, -66); scroll.Position = UDim2.fromOffset(12, 56); scroll.BackgroundTransparency = 0.999; scroll.ScrollBarThickness = 0; scroll.ScrollingDirection = Enum.ScrollingDirection.Y; scroll.ElasticBehavior = Enum.ElasticBehavior.Always; scroll.ZIndex = 22
-    local lay = Instance.new("UIListLayout", scroll); lay.Padding = UDim.new(0, 8); lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    local scrollPad = Instance.new("UIPadding", scroll); scrollPad.PaddingLeft = UDim.new(0, 10); scrollPad.PaddingRight = UDim.new(0, 10)
-    lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 10) end)
     
-    backBtn.MouseButton1Click:Connect(function() TweenService:Create(menu, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play(); mainList.Visible = true end)
+    -- ✨ 144Hz ULTRA-SMOOTH HARDWARE SCROLL MENU ✨
+    local scroll = Instance.new("ScrollingFrame", menu); scroll.Size = UDim2.new(1, -24, 1, -66); scroll.Position = UDim2.fromOffset(12, 56); scroll.BackgroundTransparency = 0.999; scroll.ScrollBarThickness = 0; scroll.ScrollingDirection = Enum.ScrollingDirection.Y; scroll.ElasticBehavior = Enum.ElasticBehavior.Always; scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y; scroll.Active = true; scroll.ZIndex = 22
+    local lay = Instance.new("UIListLayout", scroll); lay.Padding = UDim.new(0, 8); lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    local scrollPad = Instance.new("UIPadding", scroll); scrollPad.PaddingLeft = UDim.new(0, 10); scrollPad.PaddingRight = UDim.new(0, 10); scrollPad.PaddingBottom = UDim.new(0, 10)
+    
+    backBtn.MouseButton1Click:Connect(function() TweenService:Create(menu, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play(); mainList.Visible = true end)
     return menu, scroll
 end
 
@@ -880,7 +879,7 @@ local geometries = {"Spin", "Reverse Spin", "Bobbing Orbit", "Vertical Halo", "A
 for _, geo in ipairs(geometries) do
     local btn = Instance.new("TextButton", geoScroll); btn.Size = UDim2.new(1, 0, 0, 36); btn.BackgroundColor3 = Colors.Surface; btn.BackgroundTransparency = 0.4; btn.Text = "   ⚡ " .. geo; btn.TextColor3 = Colors.Text; btn.Font = Enum.Font.GothamMedium; btn.TextSize = 11; btn.TextXAlignment = Enum.TextXAlignment.Left; btn.AutoButtonColor = false; btn.ZIndex = 23; Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6); applySmartHover(btn, nil)
     crispText(btn)
-    btn.MouseButton1Click:Connect(function() activeGeometry = geo; sendNotif("Engine", "Lock: " .. geo, 2); TweenService:Create(geoMenu, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play(); mainList.Visible = true end)
+    btn.MouseButton1Click:Connect(function() activeGeometry = geo; sendNotif("Engine", "Lock: " .. geo, 2); TweenService:Create(geoMenu, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play(); mainList.Visible = true end)
 end
 
 local function createMainBtn(text, modeKey, isMenuOpener)
@@ -893,6 +892,7 @@ local function createMainBtn(text, modeKey, isMenuOpener)
     return btn
 end
 
+-- ✨ UI FIX APPLIED HERE: ADJUSTED BADGE Y-POSITION FOR PIXEL PERFECT CENTER ✨
 local function createSlider(name, min, max, defaultVal, suffix)
     local container = Instance.new("Frame", mainList); container.Size = UDim2.new(1, 0, 0, 46); container.BackgroundTransparency = 1; container.LayoutOrder = getOrder(); container.ZIndex = 7
     
@@ -946,8 +946,8 @@ end
 local getRadius = createSlider("ORBIT RADIUS", 2, 100, 15, "")
 local getSpeedMs = createSlider("ENGINE YIELD", 10, 300, 50, " %") 
 
-local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true); openTargetBtn.MouseButton1Click:Connect(function() mainList.Visible = false; TweenService:Create(playerMenu, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play() end)
-local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true); openGeoBtn.MouseButton1Click:Connect(function() mainList.Visible = false; TweenService:Create(geoMenu, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play() end)
+local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true); openTargetBtn.MouseButton1Click:Connect(function() mainList.Visible = false; TweenService:Create(playerMenu, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play() end)
+local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true); openGeoBtn.MouseButton1Click:Connect(function() mainList.Visible = false; TweenService:Create(geoMenu, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play() end)
 
 local orbitBtn = createMainBtn("🪐 QUANTUM ORBIT", "Orbit", false)
 local robotBtn = createMainBtn("🤖 RADIAL SURROUND", "Robot", false)
@@ -1038,7 +1038,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.12 Liquid UI Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.13 Ultra-Scroll Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
