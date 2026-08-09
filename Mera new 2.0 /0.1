@@ -1,7 +1,7 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.10 (PERFECT ALIGNMENT) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.11 (ULTRA-SMOOTH SCROLL) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
--- * [V18.10 UI PIXEL-PERFECT SLIDER BADGE ALIGNMENT] *
+-- * [V18.11 IOS-STYLE ELASTIC BOUNCE & FLAWLESS TOUCH DRAG] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -775,8 +775,8 @@ openBtn.MouseButton1Click:Connect(function()
     TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play(); TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
 end)
 
--- MAIN LIST
-local mainList = Instance.new("ScrollingFrame", mainFrame); mainList.Size = UDim2.new(1, -24, 1, -88); mainList.Position = UDim2.fromOffset(12, 56); mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 0; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ZIndex = 6
+-- MAIN LIST (✨ FLAWLESS TOUCH SCROLL & BOUNCE ✨)
+local mainList = Instance.new("ScrollingFrame", mainFrame); mainList.Size = UDim2.new(1, -24, 1, -88); mainList.Position = UDim2.fromOffset(12, 56); mainList.BackgroundTransparency = 0.999; mainList.ScrollBarThickness = 0; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ElasticBehavior = Enum.ElasticBehavior.Always; mainList.ZIndex = 6
 local listLayout = Instance.new("UIListLayout", mainList); listLayout.Padding = UDim.new(0, 8); listLayout.SortOrder = Enum.SortOrder.LayoutOrder; listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 local mainPadding = Instance.new("UIPadding", mainList); mainPadding.PaddingLeft = UDim.new(0, 10); mainPadding.PaddingRight = UDim.new(0, 10); mainPadding.PaddingTop = UDim.new(0, 2); mainPadding.PaddingBottom = UDim.new(0, 2)
 listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() mainList.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10) end)
@@ -790,7 +790,8 @@ local function createMenu(titleStr)
     crispText(menuTitle)
 
     local backBtn = Instance.new("TextButton", top); backBtn.Size = UDim2.fromOffset(40, 26); backBtn.Position = UDim2.new(1, -50, 0.5, -13); backBtn.BackgroundColor3 = Colors.Surface; backBtn.BackgroundTransparency = 0.5; backBtn.Text = "←"; backBtn.TextColor3 = Colors.Primary; backBtn.Font = Enum.Font.GothamBold; backBtn.TextSize = 15; backBtn.AutoButtonColor = false; backBtn.ZIndex = 22; Instance.new("UICorner", backBtn).CornerRadius = UDim.new(0, 6); applySmartHover(backBtn, nil)
-    local scroll = Instance.new("ScrollingFrame", menu); scroll.Size = UDim2.new(1, -24, 1, -66); scroll.Position = UDim2.fromOffset(12, 56); scroll.BackgroundTransparency = 1; scroll.ScrollBarThickness = 0; scroll.ScrollingDirection = Enum.ScrollingDirection.Y; scroll.ZIndex = 22
+    -- ✨ FLAWLESS TOUCH SCROLL & BOUNCE ✨
+    local scroll = Instance.new("ScrollingFrame", menu); scroll.Size = UDim2.new(1, -24, 1, -66); scroll.Position = UDim2.fromOffset(12, 56); scroll.BackgroundTransparency = 0.999; scroll.ScrollBarThickness = 0; scroll.ScrollingDirection = Enum.ScrollingDirection.Y; scroll.ElasticBehavior = Enum.ElasticBehavior.Always; scroll.ZIndex = 22
     local lay = Instance.new("UIListLayout", scroll); lay.Padding = UDim.new(0, 8); lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
     local scrollPad = Instance.new("UIPadding", scroll); scrollPad.PaddingLeft = UDim.new(0, 10); scrollPad.PaddingRight = UDim.new(0, 10)
     lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 10) end)
@@ -892,7 +893,6 @@ local function createMainBtn(text, modeKey, isMenuOpener)
     return btn
 end
 
--- ✨ UI FIX APPLIED HERE: ADJUSTED BADGE Y-POSITION FOR PIXEL PERFECT CENTER ✨
 local function createSlider(name, min, max, defaultVal, suffix)
     local container = Instance.new("Frame", mainList); container.Size = UDim2.new(1, 0, 0, 46); container.BackgroundTransparency = 1; container.LayoutOrder = getOrder(); container.ZIndex = 7
     
@@ -1038,7 +1038,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.10 Perfect Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.11 Quantum Void Engine Activated.", 2)
         clearProps()
         task.wait(0.3)
         
