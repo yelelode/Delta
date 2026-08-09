@@ -1,7 +1,7 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.8 (AUTO-REJOIN LOCK EDITION) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.9 (SPAWN-KILL + SMOOTH UI) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
--- * [V18.8 SMART REJOIN PERSISTENCE ENGINE ADDED] *
+-- * [V18.9 INSTANT RESPAWN TRAP & BUTTERY SMOOTH ANIMATIONS] *
 -- =========================================================
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
@@ -215,7 +215,7 @@ local function StopRobotBangMusic()
     end)
 end
 
--- 🛠️ SMART HOVER SYSTEM 🛠️
+-- 🛠️ ULTRA-SMOOTH HOVER SYSTEM (V18.9 UPDATED) 🛠️
 local function applySmartHover(btn, modeKey)
     local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
     btnScale.Scale = 1
@@ -234,10 +234,11 @@ local function applySmartHover(btn, modeKey)
 
     local isHovered = false
 
-    local hoverInInfo = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.1)
-    local hoverOutInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-    local pressInfo = TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-    local releaseInfo = TweenInfo.new(0.65, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
+    -- Upgraded to Quint & Sine for buttery smooth UI feel
+    local hoverInInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local hoverOutInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    local pressInfo = TweenInfo.new(0.1, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
+    local releaseInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 
     btn.MouseEnter:Connect(function()
         isHovered = true
@@ -748,7 +749,7 @@ openBtn.MouseButton1Down:Connect(function()
     TweenService:Create(openBtnScale, TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Scale = 0.85}):Play() 
 end)
 openBtn.MouseButton1Up:Connect(function() 
-    TweenService:Create(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05}):Play() 
+    TweenService:Create(openBtnScale, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05}):Play() 
 end)
 
 closeBtn.MouseButton1Click:Connect(function() 
@@ -772,7 +773,7 @@ openBtn.MouseButton1Click:Connect(function()
     if dragThresholdMet then return end 
     TweenService:Create(openBtnScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play(); task.wait(0.25); openBtnContainer.Visible = false; mainFrame.Visible = true; aura.Visible = true; mainScale.Scale = 0.8; auraScale.Scale = 0.8; 
     TweenService:Create(mainScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play(); TweenService:Create(auraScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
-    TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play(); TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
+    TweenService:Create(mainFrame, TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play(); TweenService:Create(aura, TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
 end)
 
 -- MAIN LIST
@@ -795,7 +796,7 @@ local function createMenu(titleStr)
     local scrollPad = Instance.new("UIPadding", scroll); scrollPad.PaddingLeft = UDim.new(0, 10); scrollPad.PaddingRight = UDim.new(0, 10)
     lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 10) end)
     
-    backBtn.MouseButton1Click:Connect(function() TweenService:Create(menu, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play(); mainList.Visible = true end)
+    backBtn.MouseButton1Click:Connect(function() TweenService:Create(menu, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play(); mainList.Visible = true end)
     return menu, scroll
 end
 
@@ -820,7 +821,7 @@ local function refreshPlayers()
             
             if selectedPlayers[plr] then 
                 selectedPlayers[plr] = nil; 
-                autoRejoinTargets[plr.UserId] = nil; -- REMOVE FROM REJOIN VAULT
+                autoRejoinTargets[plr.UserId] = nil; 
                 TweenService:Create(btn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play(); 
                 TweenService:Create(accent, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 0, 0, 0)}):Play()
                 
@@ -828,7 +829,7 @@ local function refreshPlayers()
                 btn:SetAttribute("BaseText", Colors.Text)
             else 
                 selectedPlayers[plr] = true; 
-                autoRejoinTargets[plr.UserId] = true; -- ADD TO REJOIN VAULT
+                autoRejoinTargets[plr.UserId] = true; 
                 TweenService:Create(btn, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play(); 
                 TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Size = UDim2.new(0, 3, 0.6, 0)}):Play() 
                 
@@ -839,17 +840,34 @@ local function refreshPlayers()
     end
 end
 
--- ✨ SMART PLAYER JOIN/LEAVE HANDLERS ✨
+-- ✨ SMART PLAYER JOIN/LEAVE & SPAWN-KILL HANDLERS ✨
 Players.PlayerAdded:Connect(function(plr)
-    -- If user is in the auto-rejoin vault, instantly re-target them!
     if autoRejoinTargets[plr.UserId] then
         selectedPlayers[plr] = true
     end
+    -- ✨ V18.9 INSTANT RESPAWN TRAP ✨
+    plr.CharacterAdded:Connect(function()
+        if selectedPlayers[plr] then
+            voidedPlayers[plr] = nil
+            assignedRemotes[plr] = nil
+            targetVelocities[plr] = Vector3.new(0,0,0)
+        end
+    end)
     refreshPlayers()
 end)
 
+-- Apply spawn-kill trap to all existing players
+for _, plr in ipairs(Players:GetPlayers()) do
+    plr.CharacterAdded:Connect(function()
+        if selectedPlayers[plr] then
+            voidedPlayers[plr] = nil
+            assignedRemotes[plr] = nil
+            targetVelocities[plr] = Vector3.new(0,0,0)
+        end
+    end)
+end
+
 Players.PlayerRemoving:Connect(function(plr)
-    -- Clean memory instances safely, BUT keep their UserId in autoRejoinTargets
     selectedPlayers[plr] = nil
     assignedRemotes[plr] = nil
     voidedPlayers[plr] = nil
@@ -862,7 +880,7 @@ local geometries = {"Spin", "Reverse Spin", "Bobbing Orbit", "Vertical Halo", "A
 for _, geo in ipairs(geometries) do
     local btn = Instance.new("TextButton", geoScroll); btn.Size = UDim2.new(1, 0, 0, 36); btn.BackgroundColor3 = Colors.Surface; btn.BackgroundTransparency = 0.4; btn.Text = "   ⚡ " .. geo; btn.TextColor3 = Colors.Text; btn.Font = Enum.Font.GothamMedium; btn.TextSize = 11; btn.TextXAlignment = Enum.TextXAlignment.Left; btn.AutoButtonColor = false; btn.ZIndex = 23; Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6); applySmartHover(btn, nil)
     crispText(btn)
-    btn.MouseButton1Click:Connect(function() activeGeometry = geo; sendNotif("Engine", "Lock: " .. geo, 2); TweenService:Create(geoMenu, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play(); mainList.Visible = true end)
+    btn.MouseButton1Click:Connect(function() activeGeometry = geo; sendNotif("Engine", "Lock: " .. geo, 2); TweenService:Create(geoMenu, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play(); mainList.Visible = true end)
 end
 
 local function createMainBtn(text, modeKey, isMenuOpener)
@@ -928,8 +946,8 @@ end
 local getRadius = createSlider("ORBIT RADIUS", 2, 100, 15, "")
 local getSpeedMs = createSlider("ENGINE YIELD", 10, 300, 50, " %") 
 
-local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true); openTargetBtn.MouseButton1Click:Connect(function() mainList.Visible = false; TweenService:Create(playerMenu, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play() end)
-local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true); openGeoBtn.MouseButton1Click:Connect(function() mainList.Visible = false; TweenService:Create(geoMenu, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play() end)
+local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true); openTargetBtn.MouseButton1Click:Connect(function() mainList.Visible = false; TweenService:Create(playerMenu, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play() end)
+local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true); openGeoBtn.MouseButton1Click:Connect(function() mainList.Visible = false; TweenService:Create(geoMenu, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play() end)
 
 local orbitBtn = createMainBtn("🪐 QUANTUM ORBIT", "Orbit", false)
 local robotBtn = createMainBtn("🤖 RADIAL SURROUND", "Robot", false)
@@ -1020,7 +1038,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.8 Auto-Rejoin Persistence Active.", 2)
+        sendNotif("ENGINE CORE", "V18.9 Spawn-Kill Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
