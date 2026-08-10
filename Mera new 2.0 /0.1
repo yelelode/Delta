@@ -4,8 +4,14 @@
 -- * [V18.16 DELTATIME LERP PHYSICS FOR 144HZ FEEL ON 60FPS] *
 -- =========================================================
 
+-- 🧹 RE-EXECUTION CLEANUP SYSTEM (Naya Fix: Purane hidden loops kill karega)
+local currentExecutionID = tick()
+_G.TXR_InstanceID = currentExecutionID
+
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then _G.OrbitalGUI:Destroy() end
 if _G.TXRAdminPanel and _G.TXRAdminPanel.Parent then _G.TXRAdminPanel:Destroy() end
+if _G.TXR_ESP_GUI and _G.TXR_ESP_GUI.Parent then _G.TXR_ESP_GUI:Destroy() end
+pcall(function() game:GetService("ReplicatedStorage"):WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("ClearAllProps") end)
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -310,7 +316,9 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 end)
 
 -- --- GUI CONSTRUCTION ---
-local gui = Instance.new("ScreenGui", targetGuiParent); gui.Name = "OrbitalCyberUI"; gui.ResetOnSpawn = false; _G.OrbitalGUI = gui
+-- Naya Fix: Anti-Cheat bypass and protection injected here without removing old lines
+local gui = Instance.new("ScreenGui", targetGuiParent); gui.Name = "TXR_" .. tostring(math.random(100000, 999999)); gui.ResetOnSpawn = false; _G.OrbitalGUI = gui
+pcall(function() if syn and syn.protect_gui then syn.protect_gui(gui) end; if protectgui then protectgui(gui) end end)
 
 local aura = Instance.new("ImageLabel", gui)
 aura.AnchorPoint = Vector2.new(0.5, 0.5); aura.Position = UDim2.fromScale(0.5, 0.5); aura.Size = UDim2.new(0, 320, 0, 450)
@@ -549,6 +557,7 @@ task.spawn(function()
     local currentRadiusMod = 1
     
     RunService.RenderStepped:Connect(function(dt)
+        if _G.TXR_InstanceID ~= currentExecutionID then return end -- Naya Fix
         if not gui.Parent then return end
         t = t + dt
         
@@ -708,7 +717,7 @@ openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function()
     end 
 end)
 
--- ✨ V18.16 LIQUID DRAG INTERPOLATION ENGINE ✨
+-- ✨ V18.16 LIQUID DRAG INTERPOLATION ENGINE (Naya Fix: Screen Clamp yaha hai) ✨
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart = nil
@@ -717,6 +726,25 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
     local velocity = Vector2.new(0,0)
     local lastInputPos = Vector2.new(0,0)
     local dragLoop = nil
+
+    local function getClampedTarget(newXScale, newXOffset, newYScale, newYOffset)
+        local parentSize = gui.AbsoluteSize
+        local frameSize = frame.AbsoluteSize
+        local anchor = frame.AnchorPoint
+
+        local absX = (newXScale * parentSize.X) + newXOffset
+        local absY = (newYScale * parentSize.Y) + newYOffset
+
+        local minX = frameSize.X * anchor.X
+        local maxX = parentSize.X - (frameSize.X * (1 - anchor.X))
+        local minY = frameSize.Y * anchor.Y
+        local maxY = parentSize.Y - (frameSize.Y * (1 - anchor.Y))
+
+        local clampedX = math.clamp(absX, minX, maxX)
+        local clampedY = math.clamp(absY, minY, maxY)
+
+        return UDim2.new(newXScale, clampedX - (newXScale * parentSize.X), newYScale, clampedY - (newYScale * parentSize.Y))
+    end
 
     handle.InputBegan:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
@@ -730,13 +758,16 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
             
             if dragLoop then dragLoop:Disconnect() end
             dragLoop = RunService.RenderStepped:Connect(function(dt)
+                if _G.TXR_InstanceID ~= currentExecutionID then 
+                    dragLoop:Disconnect() 
+                    return 
+                end
                 if dragging then
-                    -- 144Hz Feel: RenderStepped interpolates position dynamically
                     frame.Position = frame.Position:Lerp(targetPos, math.clamp(dt * 25, 0, 1))
                 else
                     if velocity.Magnitude > 0.5 then
                         velocity = velocity * 0.90
-                        targetPos = UDim2.new(targetPos.X.Scale, targetPos.X.Offset + velocity.X, targetPos.Y.Scale, targetPos.Y.Offset + velocity.Y)
+                        targetPos = getClampedTarget(targetPos.X.Scale, targetPos.X.Offset + velocity.X, targetPos.Y.Scale, targetPos.Y.Offset + velocity.Y)
                         frame.Position = frame.Position:Lerp(targetPos, math.clamp(dt * 15, 0, 1))
                     else
                         dragLoop:Disconnect()
@@ -759,9 +790,7 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then 
             local delta = input.Position - dragStart
             if isOrb and delta.Magnitude > 5 then dragThresholdMet = true end
-            -- Sets Target instead of absolute position for smooth glide
-            targetPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-            
+            targetPos = getClampedTarget(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
             local currentMousePos = Vector2.new(input.Position.X, input.Position.Y)
             velocity = currentMousePos - lastInputPos
             lastInputPos = currentMousePos
@@ -1219,6 +1248,13 @@ end
 
 -- 🔥 ULTRA-ACCURATE ZERO-LAG ENGINE CORE 🔥
 RunService.Heartbeat:Connect(function(dt)
+    if _G.TXR_InstanceID ~= currentExecutionID then return end -- Naya Fix: Kill Zombie Loops
+    if not gui or not gui.Parent then -- Naya Fix: Safe UI Death Halt
+        isSystemActive = false 
+        task.spawn(StopRobotBangMusic)
+        return 
+    end
+
     if not isSystemActive then return end 
 
     for plr in pairs(assignedRemotes) do
@@ -1449,6 +1485,8 @@ end)
 -- ✨ V18.0 RADIO-SYNC RAINBOW ENGINE ✨
 local hue = 0
 RunService.Heartbeat:Connect(function(dt)
+    if _G.TXR_InstanceID ~= currentExecutionID then return end -- Naya Fix
+
     if isRainbowEnabled then 
         local speedMultiplier = (getSpeedMs() / 20)
         hue = (hue + (0.5 * speedMultiplier * dt)) % 1
@@ -1474,7 +1512,7 @@ end)
 
 task.spawn(function()
     local RE = game:GetService("ReplicatedStorage"):WaitForChild("RE")
-    while gui.Parent do
+    while _G.TXR_InstanceID == currentExecutionID and gui.Parent do -- Naya Fix
         if isRainbowEnabled and isSystemActive then
             local syncColor = Color3.fromHSV(hue, 1, 1)
 
@@ -1520,7 +1558,7 @@ pcall(function() if not espGuiParent then espGuiParent = lp:WaitForChild("Player
 if _G.TXR_ESP_GUI and _G.TXR_ESP_GUI.Parent then _G.TXR_ESP_GUI:Destroy() end
 
 local mainEspGui = Instance.new("ScreenGui", espGuiParent)
-mainEspGui.Name = "TXR_TacticalESP"
+mainEspGui.Name = "TXR_TacticalESP_" .. tostring(math.random(100000, 999999))
 mainEspGui.IgnoreGuiInset = true
 _G.TXR_ESP_GUI = mainEspGui
 
@@ -1588,6 +1626,7 @@ local function getESPContainer(plr)
 end
 
 RunService.RenderStepped:Connect(function()
+    if _G.TXR_InstanceID ~= currentExecutionID then return end -- Naya Fix
     if not mainEspGui.Parent then return end
     local camera = workspace.CurrentCamera
     local myRoot = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
@@ -1660,5 +1699,24 @@ Players.PlayerRemoving:Connect(function(plr)
     if espObjects[plr] then
         espObjects[plr].container:Destroy()
         espObjects[plr] = nil
+    end
+end)
+
+-- 🚨 Naya Fix: EMERGENCY UI RECOVERY BIND 🚨
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if _G.TXR_InstanceID ~= currentExecutionID then return end
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
+        if gui and gui.Parent then
+            if mainFrame.Visible or openBtnContainer.Visible then
+                mainFrame.Visible = false
+                openBtnContainer.Visible = false
+                aura.Visible = false
+            else
+                openBtnContainer.Visible = true
+                openBtnScale.Scale = 1
+            end
+        else
+            sendNotif("TXR CORE", "UI was deleted by Game! Please re-execute.", 4)
+        end
     end
 end)
