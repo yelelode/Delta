@@ -1,10 +1,11 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.16 (LIQUID INTERPOLATION) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.18 (NEURAL ADAPTATION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V18.16 DELTATIME LERP PHYSICS FOR 144HZ FEEL ON 60FPS] *
+-- * [V18.18 HEURISTIC REMOTE SCANNER & STEALTH C-CLOSURE] *
 -- =========================================================
 
--- 🧹 RE-EXECUTION CLEANUP SYSTEM (Naya Fix: Purane hidden loops kill karega)
+-- 🧹 RE-EXECUTION CLEANUP SYSTEM (Kills old hidden loops)
 local currentExecutionID = tick()
 _G.TXR_InstanceID = currentExecutionID
 
@@ -23,7 +24,7 @@ local lp = Players.LocalPlayer
 
 local copyToClip = setclipboard or toclipboard or function() end
 
--- SAFE GUI PARENTING (FIXED FOR ALL EXECUTORS)
+-- SAFE GUI PARENTING
 local targetGuiParent
 pcall(function() targetGuiParent = game:GetService("CoreGui") end)
 if gethui then pcall(function() targetGuiParent = gethui() end) end
@@ -32,15 +33,37 @@ if not targetGuiParent then targetGuiParent = lp:WaitForChild("PlayerGui") end
 local CREATOR_USER_ID = 9685785248
 
 -- ⚡ 144 FPS ULTRA-SMOOTH GAMING ENGINE ⚡
-pcall(function()
-    if setfpscap then
-        setfpscap(144)
-    end
-end)
+pcall(function() if setfpscap then setfpscap(144) end end)
+
+-- 🧠 V18.18 NEURAL ADAPTIVE ENGINE (FUTURE-PROOF SCANNER) 🧠
+-- Agar game aage chal kar update hota hai, toh ye engine naam ke bajaye behavior se remotes dhundhega
+local DynamicRemotes = { ClearProps = nil, SpawnVehicle = nil, DespawnVehicle = nil }
+
+local function ScanForRemotes()
+    pcall(function()
+        local reFolder = ReplicatedStorage:FindFirstChild("RE")
+        if not reFolder then return end
+        
+        -- Default check
+        if reFolder:FindFirstChild("1Clea1rTool1s") then DynamicRemotes.ClearProps = reFolder["1Clea1rTool1s"] end
+        if reFolder:FindFirstChild("1NoMoto1rVehicle1s") then DynamicRemotes.SpawnVehicle = reFolder["1NoMoto1rVehicle1s"] end
+        if reFolder:FindFirstChild("1DeSpawnVehi1cle") then DynamicRemotes.DespawnVehicle = reFolder["1DeSpawnVehi1cle"] end
+        
+        -- Heuristic Fallback (Agar naam change ho gaya future me)
+        if not DynamicRemotes.ClearProps then
+            for _, v in ipairs(reFolder:GetChildren()) do
+                if v:IsA("RemoteEvent") and (string.find(string.lower(v.Name), "clear") and string.find(string.lower(v.Name), "tool")) then
+                    DynamicRemotes.ClearProps = v; break
+                end
+            end
+        end
+    end)
+end
+ScanForRemotes()
 
 -- --- CORE LOGIC ---
 local selectedPlayers, assignedRemotes, voidedPlayers, propsCache = {}, {}, {}, {}
-local autoRejoinTargets = {} -- ✨ V18.8 REJOIN PERSISTENCE MEMORY VAULT
+local autoRejoinTargets = {} 
 local activeModes, modeQueue = {}, {} 
 local activeGeometry = "Spin"
 local isRainbowEnabled, isSoundEnabled, isSystemActive, isGodShieldEnabled = false, false, false, false
@@ -49,30 +72,34 @@ local robotAnimTime = 0
 local espObjects = {} 
 local targetVelocities = {} 
 
--- ✨ CUSTOM PROP TRACKER ✨
 local customPropName = "ScreensRobotBig"
 local customPropCategory = "Screens"
 local lastGameSpawnTime = 0
 
--- ✨ SMART METAMETHOD HOOK (Custom Prop Interception) ✨
+-- ✨ SMART METAMETHOD HOOK (WITH C-CLOSURE STEALTH FOR BYPASSING ANTI-CHEAT) ✨
+-- Naya update: newcclosure() use kiya hai taki game ka anti-cheat isko external lua script na maan sake
 pcall(function()
     local oldNamecall
-    oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+    oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
         if not checkcaller() then
             local method = getnamecallmethod()
-            if method == "FireServer" and tostring(self) == "1Clea1rTool1s" then
-                local args = {...}
-                if args[1] == "RequestingPropName" then
-                    lastGameSpawnTime = tick() 
-                    if args[2] and args[3] then
-                        customPropName = args[2]
-                        customPropCategory = args[3]
+            if method == "FireServer" then
+                local name = tostring(self)
+                -- Uses dynamic check in case of updates
+                if name == "1Clea1rTool1s" or (DynamicRemotes.ClearProps and self == DynamicRemotes.ClearProps) then
+                    local args = {...}
+                    if args[1] == "RequestingPropName" then
+                        lastGameSpawnTime = tick() 
+                        if args[2] and args[3] then
+                            customPropName = args[2]
+                            customPropCategory = args[3]
+                        end
                     end
                 end
             end
         end
         return oldNamecall(self, ...)
-    end)
+    end))
 end)
 
 -- --- 🌌 PREMIUM CYBERPALETTE 🌌 ---
@@ -189,7 +216,7 @@ local function PlayRobotBangMusic()
     local soundId = "134489447055645" 
     local RE = ReplicatedStorage:WaitForChild("RE")
     pcall(function()
-        local spawnVehicle = RE:FindFirstChild("1NoMoto1rVehicle1s")
+        local spawnVehicle = DynamicRemotes.SpawnVehicle or RE:FindFirstChild("1NoMoto1rVehicle1s")
         if spawnVehicle then spawnVehicle:FireServer("SegwaySmall"); task.wait(0.3) end
         for _, remote in ipairs(RE:GetChildren()) do
             if remote:IsA("RemoteEvent") then pcall(function() remote:FireServer("PickingScooterMusicText", soundId, true); remote:FireServer("ToolMusicText", soundId, true); remote:FireServer("Music", soundId, true) end) end
@@ -212,7 +239,7 @@ local function StopRobotBangMusic()
         for _, remote in ipairs(RE:GetChildren()) do
             if remote:IsA("RemoteEvent") then pcall(function() remote:FireServer("PickingScooterMusicText", "0", true); remote:FireServer("ToolMusicText", "0", true); remote:FireServer("Music", "0", true) end) end
         end
-        local despawnVehicle = RE:FindFirstChild("1DeSpawnVehi1cle")
+        local despawnVehicle = DynamicRemotes.DespawnVehicle or RE:FindFirstChild("1DeSpawnVehi1cle")
         if despawnVehicle then pcall(function() despawnVehicle:FireServer() end) end
         task.spawn(function()
             local vehiclesFolder = workspace:FindFirstChild("Vehicles")
@@ -273,28 +300,20 @@ local function applySmartHover(btn, modeKey)
         end
     end)
 
-    btn.MouseButton1Down:Connect(function()
-        TweenService:Create(btnScale, pressInfo, {Scale = 0.85}):Play() 
-    end)
-
-    btn.MouseButton1Up:Connect(function()
-        local targetScale = isHovered and 1.05 or 1
-        TweenService:Create(btnScale, releaseInfo, {Scale = targetScale}):Play() 
-    end)
+    btn.MouseButton1Down:Connect(function() TweenService:Create(btnScale, pressInfo, {Scale = 0.85}):Play() end)
+    btn.MouseButton1Up:Connect(function() local targetScale = isHovered and 1.05 or 1; TweenService:Create(btnScale, releaseInfo, {Scale = targetScale}):Play() end)
 end
 
-local function clearProps() pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("ClearAllProps") end); task.wait(0.35) end
-local function spawnProp(propName, category) pcall(function() ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer("RequestingPropName", propName, category) end) end
+-- Uses Dynamic Engine for clearing props
+local function clearProps() pcall(function() local r = DynamicRemotes.ClearProps or ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"); r:FireServer("ClearAllProps") end); task.wait(0.35) end
+local function spawnProp(propName, category) pcall(function() local r = DynamicRemotes.ClearProps or ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"); r:FireServer("RequestingPropName", propName, category) end) end
 
 local function getActivePropData()
     local needsChair = activeModes["Chair"]
     local needsRobot = activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["Orbit"] or activeModes["Ring"] or activeModes["HeadBang"]
     
-    if needsChair and not needsRobot then 
-        return "FurnitureBleachers", "Furniture" 
-    else 
-        return customPropName, customPropCategory 
-    end
+    if needsChair and not needsRobot then return "FurnitureBleachers", "Furniture" 
+    else return customPropName, customPropCategory end
 end
 
 local mouse = lp:GetMouse()
@@ -316,7 +335,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 end)
 
 -- --- GUI CONSTRUCTION ---
--- Naya Fix: Anti-Cheat bypass and protection injected here without removing old lines
 local gui = Instance.new("ScreenGui", targetGuiParent); gui.Name = "TXR_" .. tostring(math.random(100000, 999999)); gui.ResetOnSpawn = false; _G.OrbitalGUI = gui
 pcall(function() if syn and syn.protect_gui then syn.protect_gui(gui) end; if protectgui then protectgui(gui) end end)
 
@@ -557,7 +575,7 @@ task.spawn(function()
     local currentRadiusMod = 1
     
     RunService.RenderStepped:Connect(function(dt)
-        if _G.TXR_InstanceID ~= currentExecutionID then return end -- Naya Fix
+        if _G.TXR_InstanceID ~= currentExecutionID then return end
         if not gui.Parent then return end
         t = t + dt
         
@@ -717,7 +735,7 @@ openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function()
     end 
 end)
 
--- ✨ V18.16 LIQUID DRAG INTERPOLATION ENGINE (Naya Fix: Screen Clamp yaha hai) ✨
+-- ✨ V18.16 LIQUID DRAG INTERPOLATION ENGINE (WITH SMART SCREEN CLAMPING) ✨
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart = nil
@@ -799,12 +817,8 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
 end
 makeDraggable(mainFrame, header, aura, false); makeDraggable(openBtnContainer, openBtn, nil, true)
 
-openBtn.MouseButton1Down:Connect(function() 
-    TweenService:Create(openBtnScale, TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Scale = 0.85}):Play() 
-end)
-openBtn.MouseButton1Up:Connect(function() 
-    TweenService:Create(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05}):Play() 
-end)
+openBtn.MouseButton1Down:Connect(function() TweenService:Create(openBtnScale, TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Scale = 0.85}):Play() end)
+openBtn.MouseButton1Up:Connect(function() TweenService:Create(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05}):Play() end)
 
 closeBtn.MouseButton1Click:Connect(function() 
     TweenService:Create(mainScale, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.In), {Scale = 0.8}):Play()
@@ -894,39 +908,22 @@ local function refreshPlayers()
     end
 end
 
--- ✨ SMART PLAYER JOIN/LEAVE & SPAWN-KILL HANDLERS ✨
 Players.PlayerAdded:Connect(function(plr)
-    if autoRejoinTargets[plr.UserId] then
-        selectedPlayers[plr] = true
-    end
-    -- ✨ V18.9 INSTANT RESPAWN TRAP ✨
+    if autoRejoinTargets[plr.UserId] then selectedPlayers[plr] = true end
     plr.CharacterAdded:Connect(function()
-        if selectedPlayers[plr] then
-            voidedPlayers[plr] = nil
-            assignedRemotes[plr] = nil
-            targetVelocities[plr] = Vector3.new(0,0,0)
-        end
+        if selectedPlayers[plr] then voidedPlayers[plr] = nil; assignedRemotes[plr] = nil; targetVelocities[plr] = Vector3.new(0,0,0) end
     end)
     refreshPlayers()
 end)
 
--- Apply spawn-kill trap to all existing players
 for _, plr in ipairs(Players:GetPlayers()) do
     plr.CharacterAdded:Connect(function()
-        if selectedPlayers[plr] then
-            voidedPlayers[plr] = nil
-            assignedRemotes[plr] = nil
-            targetVelocities[plr] = Vector3.new(0,0,0)
-        end
+        if selectedPlayers[plr] then voidedPlayers[plr] = nil; assignedRemotes[plr] = nil; targetVelocities[plr] = Vector3.new(0,0,0) end
     end)
 end
 
 Players.PlayerRemoving:Connect(function(plr)
-    selectedPlayers[plr] = nil
-    assignedRemotes[plr] = nil
-    voidedPlayers[plr] = nil
-    targetVelocities[plr] = nil
-    refreshPlayers()
+    selectedPlayers[plr] = nil; assignedRemotes[plr] = nil; voidedPlayers[plr] = nil; targetVelocities[plr] = nil; refreshPlayers()
 end)
 refreshPlayers()
 
@@ -1092,7 +1089,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.16 Safe UI Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.18 Adaptive Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
@@ -1193,6 +1190,7 @@ end
 
 -- 🛡️ GOD SHIELD (PRE-PHYSICS ENGINE) 🛡️
 RunService.Stepped:Connect(function()
+    if _G.TXR_InstanceID ~= currentExecutionID then return end 
     if isGodShieldEnabled and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
         local char = lp.Character
         local hum = char:FindFirstChildOfClass("Humanoid")
@@ -1248,8 +1246,8 @@ end
 
 -- 🔥 ULTRA-ACCURATE ZERO-LAG ENGINE CORE 🔥
 RunService.Heartbeat:Connect(function(dt)
-    if _G.TXR_InstanceID ~= currentExecutionID then return end -- Naya Fix: Kill Zombie Loops
-    if not gui or not gui.Parent then -- Naya Fix: Safe UI Death Halt
+    if _G.TXR_InstanceID ~= currentExecutionID then return end 
+    if not gui or not gui.Parent then 
         isSystemActive = false 
         task.spawn(StopRobotBangMusic)
         return 
@@ -1482,11 +1480,11 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
--- ✨ V18.0 RADIO-SYNC RAINBOW ENGINE ✨
+-- ✨ V18.0 TRUE RADIO-SYNC RAINBOW ENGINE ✨
 local hue = 0
 RunService.Heartbeat:Connect(function(dt)
-    if _G.TXR_InstanceID ~= currentExecutionID then return end -- Naya Fix
-
+    if _G.TXR_InstanceID ~= currentExecutionID then return end 
+    
     if isRainbowEnabled then 
         local speedMultiplier = (getSpeedMs() / 20)
         hue = (hue + (0.5 * speedMultiplier * dt)) % 1
@@ -1512,7 +1510,7 @@ end)
 
 task.spawn(function()
     local RE = game:GetService("ReplicatedStorage"):WaitForChild("RE")
-    while _G.TXR_InstanceID == currentExecutionID and gui.Parent do -- Naya Fix
+    while _G.TXR_InstanceID == currentExecutionID and gui.Parent do 
         if isRainbowEnabled and isSystemActive then
             local syncColor = Color3.fromHSV(hue, 1, 1)
 
@@ -1626,8 +1624,9 @@ local function getESPContainer(plr)
 end
 
 RunService.RenderStepped:Connect(function()
-    if _G.TXR_InstanceID ~= currentExecutionID then return end -- Naya Fix
+    if _G.TXR_InstanceID ~= currentExecutionID then return end 
     if not mainEspGui.Parent then return end
+    
     local camera = workspace.CurrentCamera
     local myRoot = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
     
@@ -1702,7 +1701,7 @@ Players.PlayerRemoving:Connect(function(plr)
     end
 end)
 
--- 🚨 Naya Fix: EMERGENCY UI RECOVERY BIND 🚨
+-- 🚨 EMERGENCY UI RECOVERY BIND (RIGHT SHIFT) 🚨
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if _G.TXR_InstanceID ~= currentExecutionID then return end
     if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
