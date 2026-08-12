@@ -1,10 +1,10 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.21 (CYBERPUNK MATRIX EDITION) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.22 (CYBERPUNK MATRIX FIXED) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V18.16 DELTATIME LERP PHYSICS FOR 144HZ FEEL ON 60FPS] *
 -- * [V18.18 HEURISTIC REMOTE SCANNER & STEALTH C-CLOSURE] *
 -- * [V18.20 FIXED VISIBILITY & TRUE-SERVER RGB SYNC] *
--- * [V18.21 HARDCORE MATRIX RAIN UI EFFECT] *
+-- * [V18.22 MATRIX RAIN Z-INDEX & VISIBILITY FIX] *
 -- =========================================================
 
 -- 🧹 RE-EXECUTION CLEANUP SYSTEM
@@ -294,6 +294,8 @@ end)
 
 -- --- GUI CONSTRUCTION ---
 local gui = Instance.new("ScreenGui", targetGuiParent); gui.Name = "TXR_" .. tostring(math.random(100000, 999999)); gui.ResetOnSpawn = false; _G.OrbitalGUI = gui
+-- 🛡️ Z-INDEX BUG FIX: Ye line ensure karegi ki effects proper layer me dikhein
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
 pcall(function() if syn and syn.protect_gui then syn.protect_gui(gui) end; if protectgui then protectgui(gui) end end)
 
 local aura = Instance.new("ImageLabel", gui)
@@ -317,37 +319,38 @@ local strokeGrad = Instance.new("UIGradient", mainStroke); strokeGrad.Color = Co
 
 local mainScale = Instance.new("UIScale", mainFrame); mainScale.Scale = 0.85; 
 
--- ✨ 🌐 V18.21 MATRIX RAIN (HACKER) EFFECT 🌐 ✨
+-- ✨ 🌐 V18.22 PERFECT MATRIX RAIN (HACKER) EFFECT 🌐 ✨
 local matrixContainer = Instance.new("Frame", mainFrame)
 matrixContainer.Size = UDim2.fromScale(1, 1)
 matrixContainer.BackgroundTransparency = 1
-matrixContainer.ZIndex = 2
+matrixContainer.ZIndex = 2 -- Sibling mode fix: Renders exactly above background
 matrixContainer.ClipsDescendants = true
 
 local matrixDrops = {}
 local matrixChars = {"0", "1", "ア", "イ", "ウ", "エ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "セ", "ソ", "タ", "チ", "ツ", "テ", "ト", "X", "Z", "M", "V", "$", "@"}
 
-for i = 1, 35 do
+-- Badi aur zyada matrix lines add ki hain
+for i = 1, 45 do
     local drop = Instance.new("TextLabel", matrixContainer)
-    drop.Size = UDim2.new(0, 15, 0, 15)
+    drop.Size = UDim2.new(0, 20, 0, 20)
     drop.BackgroundTransparency = 1
     drop.Text = matrixChars[math.random(1, #matrixChars)]
     drop.TextColor3 = Colors.Primary
     drop.Font = Enum.Font.Code
-    drop.TextSize = math.random(11, 16)
-    drop.ZIndex = 3
+    drop.TextSize = math.random(14, 22) -- Bada size
+    drop.ZIndex = 2
     
     local stroke = Instance.new("UIStroke", drop)
-    stroke.Thickness = 0.6
+    stroke.Thickness = 0.8
     stroke.Color = Colors.PrimaryDark
-    stroke.Transparency = 0.5
+    stroke.Transparency = 0.3 -- Glow badhaya
 
     table.insert(matrixDrops, {
         element = drop,
         stroke = stroke,
         x = math.random() * 0.95,
         y = math.random() * -1.5,
-        speed = math.random(15, 35) / 100,
+        speed = math.random(20, 45) / 100,
         tickOffset = math.random(1, 10)
     })
 end
@@ -567,7 +570,7 @@ task.spawn(function()
             titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
             scanlines.Position = UDim2.new(0, 0, (t * 0.08) % 1 - 1, 0)
 
-            -- ✨ MATRIX RAIN UPDATE ENGINE ✨
+            -- ✨ FIXED MATRIX RAIN UPDATE ENGINE ✨
             local activeThemeColor = isSystemActive and Colors.Danger or Colors.Primary
             local activeStrokeColor = isSystemActive and Color3.fromRGB(130, 0, 0) or Colors.PrimaryDark
             local rainSpeedMod = isSystemActive and 2.5 or 1.0
@@ -578,26 +581,24 @@ task.spawn(function()
                 if drop.y > 1.1 then
                     drop.y = math.random() * -0.5
                     drop.x = math.random() * 0.95
-                    drop.element.TextSize = math.random(11, 16)
+                    drop.element.TextSize = math.random(14, 22)
                 end
                 
                 drop.element.Position = UDim2.fromScale(drop.x, drop.y)
                 drop.element.TextColor3 = activeThemeColor
                 drop.stroke.Color = activeStrokeColor
                 
-                -- Matrix Flickering effect
                 if math.floor(t * 15 + drop.tickOffset) % 4 == 0 then
                     drop.element.Text = matrixChars[math.random(1, #matrixChars)]
                 end
                 
-                -- Fade out slowly at the bottom
                 local fade = math.clamp((drop.y - 0.7) / 0.4, 0, 1)
                 if drop.y > 0.7 then
                     drop.element.TextTransparency = fade
                     drop.stroke.Transparency = 0.5 + (fade * 0.5)
                 else
                     drop.element.TextTransparency = 0
-                    drop.stroke.Transparency = 0.5
+                    drop.stroke.Transparency = 0.3
                 end
             end
         end
@@ -1084,7 +1085,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.21 Matrix Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.22 Matrix Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
@@ -1475,23 +1476,6 @@ RunService.Heartbeat:Connect(function(dt)
     if isRainbowEnabled then 
         local speedMultiplier = (getSpeedMs() / 20)
         hue = (hue + (0.5 * speedMultiplier * dt)) % 1
-        local color = Color3.fromHSV(hue, 1, 1) 
-        
-        for _, prop in ipairs(propsCache) do 
-            if prop and prop.Parent then
-                for _, desc in ipairs(prop:GetDescendants()) do 
-                    if desc:IsA("BasePart") then 
-                        pcall(function()
-                            desc.Color = color 
-                            if desc.Material ~= Enum.Material.Neon then desc.Material = Enum.Material.Neon end
-                        end)
-                    end
-                    if desc:IsA("SpecialMesh") then
-                        pcall(function() desc.TextureId = ""; desc.VertexColor = Vector3.new(color.R, color.G, color.B) end)
-                    end
-                end 
-            end
-        end
     end
 end)
 
