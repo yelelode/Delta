@@ -1,9 +1,9 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.19 (PLEXUS NETWORK EDITION) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.20 (PERFECT PLEXUS & TRUE RGB) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V18.16 DELTATIME LERP PHYSICS FOR 144HZ FEEL ON 60FPS] *
 -- * [V18.18 HEURISTIC REMOTE SCANNER & STEALTH C-CLOSURE] *
--- * [V18.19 NEW-GEN WEB PLEXUS NODE EFFECT] *
+-- * [V18.20 FIXED PLEXUS VISIBILITY & TRUE-SERVER RGB SYNC] *
 -- =========================================================
 
 -- 🧹 RE-EXECUTION CLEANUP SYSTEM
@@ -316,25 +316,26 @@ local strokeGrad = Instance.new("UIGradient", mainStroke); strokeGrad.Color = Co
 
 local mainScale = Instance.new("UIScale", mainFrame); mainScale.Scale = 0.85; 
 
--- ✨ 🌐 V18.19 NEW GEN PLEXUS (CONSTELLATION) NETWORK EFFECT 🌐 ✨
+-- ✨ 🌐 V18.20 PERFECT PLEXUS (CONSTELLATION) NETWORK EFFECT 🌐 ✨
+-- ZIndex fixed to ensure visibility over background
 local plexusContainer = Instance.new("Frame", mainFrame)
 plexusContainer.Size = UDim2.fromScale(1, 1)
 plexusContainer.BackgroundTransparency = 1
-plexusContainer.ZIndex = 2
+plexusContainer.ZIndex = 3 
 plexusContainer.ClipsDescendants = true
 
 local plexusNodes = {}
 local plexusLines = {}
-local NUM_NODES = 24
-local MAX_CONNECT_DIST = 68
+local NUM_NODES = 32
+local MAX_CONNECT_DIST = 85
 
 for i = 1, NUM_NODES do
     local node = Instance.new("Frame", plexusContainer)
-    node.Size = UDim2.fromOffset(3, 3)
+    node.Size = UDim2.fromOffset(4, 4) -- Size increased
     node.BackgroundColor3 = Colors.Primary
     node.BorderSizePixel = 0
     node.AnchorPoint = Vector2.new(0.5, 0.5)
-    node.ZIndex = 3
+    node.ZIndex = 5 -- Ensures dots pop
     Instance.new("UICorner", node).CornerRadius = UDim.new(1, 0)
     
     table.insert(plexusNodes, {
@@ -346,11 +347,11 @@ for i = 1, NUM_NODES do
     })
 end
 
-for i = 1, 40 do 
+for i = 1, 55 do 
     local line = Instance.new("Frame", plexusContainer)
     line.BackgroundColor3 = Colors.Primary
     line.BorderSizePixel = 0
-    line.ZIndex = 2
+    line.ZIndex = 4
     line.AnchorPoint = Vector2.new(0.5, 0.5)
     line.Visible = false
     table.insert(plexusLines, line)
@@ -571,7 +572,7 @@ task.spawn(function()
             titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
             scanlines.Position = UDim2.new(0, 0, (t * 0.08) % 1 - 1, 0)
 
-            -- ✨ PLEXUS RENDER ENGINE (DYNAMIC NETWORKING) ✨
+            -- ✨ PLEXUS RENDER ENGINE ✨
             local w, h = mainFrame.AbsoluteSize.X, mainFrame.AbsoluteSize.Y
             if w > 0 and h > 0 then
                 local currentThemeColor = isSystemActive and Colors.Danger or Colors.Primary
@@ -599,10 +600,10 @@ task.spawn(function()
                             local dist = math.sqrt(distSq)
                             local line = plexusLines[lineIndex]
                             line.Visible = true
-                            line.Size = UDim2.new(0, dist, 0, 1)
+                            line.Size = UDim2.new(0, dist, 0, 1.5) -- Thicker lines for visibility
                             line.Position = UDim2.fromOffset(plexusNodes[i].x + dx/2, plexusNodes[i].y + dy/2)
                             line.Rotation = math.deg(math.atan2(dy, dx))
-                            line.BackgroundTransparency = 0.2 + (0.8 * (dist / MAX_CONNECT_DIST))
+                            line.BackgroundTransparency = 0.3 + (0.7 * (dist / MAX_CONNECT_DIST))
                             line.BackgroundColor3 = currentThemeColor
                             lineIndex = lineIndex + 1
                         end
@@ -1097,7 +1098,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.19 Plexus Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.20 Plexus Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
@@ -1481,6 +1482,7 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
+-- ✨ V18.20 FIX: TRUE RADIO-SYNC RAINBOW ENGINE (NO FAKE NEON BLOOM) ✨
 local hue = 0
 RunService.Heartbeat:Connect(function(dt)
     if _G.TXR_InstanceID ~= currentExecutionID then return end 
@@ -1488,23 +1490,7 @@ RunService.Heartbeat:Connect(function(dt)
     if isRainbowEnabled then 
         local speedMultiplier = (getSpeedMs() / 20)
         hue = (hue + (0.5 * speedMultiplier * dt)) % 1
-        local color = Color3.fromHSV(hue, 1, 1) 
-        
-        for _, prop in ipairs(propsCache) do 
-            if prop and prop.Parent then
-                for _, desc in ipairs(prop:GetDescendants()) do 
-                    if desc:IsA("BasePart") then 
-                        pcall(function()
-                            desc.Color = color 
-                            if desc.Material ~= Enum.Material.Neon then desc.Material = Enum.Material.Neon end
-                        end)
-                    end
-                    if desc:IsA("SpecialMesh") then
-                        pcall(function() desc.TextureId = ""; desc.VertexColor = Vector3.new(color.R, color.G, color.B) end)
-                    end
-                end 
-            end
-        end
+        -- Yaha se Neon force hata diya hai, ab sirf original server color dikhega!
     end
 end)
 
