@@ -1,10 +1,9 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.25 (HOLOGRAPHIC EDITION) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.26 (ONYX TERMINAL EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V18.16 DELTATIME LERP PHYSICS FOR 144HZ FEEL ON 60FPS] *
 -- * [V18.18 HEURISTIC REMOTE SCANNER & STEALTH C-CLOSURE] *
--- * [V18.23 BUTTERY SMOOTH ROBOT BANG & EXPANDED CODE] *
--- * [V18.25 PREMIUM HOLOGRAPHIC EXIT MODAL & 3D MATRIX] *
+-- * [V18.26 PREMIUM ONYX EXIT MODAL & CORNER GLITCH FIXED] *
 -- =========================================================
 
 -- 🧹 RE-EXECUTION CLEANUP SYSTEM
@@ -537,7 +536,7 @@ strokeGrad.Color = ColorSequence.new({
 local mainScale = Instance.new("UIScale", mainFrame)
 mainScale.Scale = 0.85
 
--- ✨ 🌐 V18.25 3D DEPTH MATRIX RAIN EFFECT 🌐 ✨
+-- ✨ 🌐 V18.26 3D DEPTH MATRIX RAIN EFFECT 🌐 ✨
 local matrixContainer = Instance.new("Frame", mainFrame)
 matrixContainer.Size = UDim2.fromScale(1, 1)
 matrixContainer.BackgroundTransparency = 1
@@ -547,7 +546,6 @@ matrixContainer.ClipsDescendants = true
 local matrixDrops = {}
 local matrixChars = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "Z", "X", "V", "ア", "イ", "ウ", "エ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "セ", "ソ"}
 
--- Increased to 65 for better density
 for i = 1, 65 do
     local drop = Instance.new("TextLabel", matrixContainer)
     drop.Size = UDim2.new(0, 20, 0, 20)
@@ -561,8 +559,7 @@ for i = 1, 65 do
     stroke.Thickness = 0.5 
     stroke.Color = Colors.PrimaryDark
     
-    -- Assigning depth for 3D Parallax feel
-    local depthLayer = math.random(1, 3) -- 1: Background, 2: Midground, 3: Foreground
+    local depthLayer = math.random(1, 3) 
     local scaleMult = depthLayer / 3
     
     drop.TextSize = math.random(12, 18) * scaleMult
@@ -572,7 +569,7 @@ for i = 1, 65 do
         stroke = stroke,
         x = math.random() * 0.95,
         y = math.random() * -1.5,
-        speed = (math.random(15, 45) / 100) * scaleMult, -- Background moves slower
+        speed = (math.random(15, 45) / 100) * scaleMult,
         tickOffset = math.random(1, 10),
         depth = depthLayer
     })
@@ -943,7 +940,6 @@ task.spawn(function()
 
             -- ✨ 3D MATRIX RAIN UPDATE ENGINE ✨
             for i, drop in ipairs(matrixDrops) do
-                -- Background drops fall slightly slower to simulate depth
                 drop.y = drop.y + (drop.speed * dt)
                 
                 if drop.y > 1.1 then
@@ -958,7 +954,7 @@ task.spawn(function()
                 end
                 
                 local fade = math.clamp((drop.y - 0.4) / 0.6, 0, 1)
-                local depthFade = (3 - drop.depth) * 0.2 -- Background is darker
+                local depthFade = (3 - drop.depth) * 0.2 
                 
                 if drop.y > 0.4 then
                     drop.element.TextTransparency = 0.2 + depthFade + (fade * 0.5) 
@@ -1204,7 +1200,6 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
     end)
 end
 
--- ✨ FIXED DRAGGING (AB PURE BACKGROUND SE DRAG HOGA) ✨
 makeDraggable(mainFrame, mainFrame, aura, false) 
 makeDraggable(openBtnContainer, openBtn, nil, true)
 
@@ -1218,7 +1213,7 @@ openBtn.MouseButton1Up:Connect(function()
     TweenService:Create(openBtnScale, tInfo, {Scale = 1.05}):Play() 
 end)
 
--- ✨ 🛑 V18.25 PREMIUM HOLOGRAPHIC EXIT MODAL 🛑 ✨
+-- ✨ 🛑 V18.26 PREMIUM ONYX EXIT MODAL (EDGE GLITCH FIXED) 🛑 ✨
 local closeOverlay = Instance.new("Frame", mainFrame)
 closeOverlay.Size = UDim2.fromScale(1, 1)
 closeOverlay.BackgroundColor3 = Color3.new(0, 0, 0)
@@ -1226,72 +1221,52 @@ closeOverlay.BackgroundTransparency = 1
 closeOverlay.ZIndex = 50
 closeOverlay.Visible = false
 
+-- Fix for the sharp corners spilling over main UI edges
+local overlayCorner = Instance.new("UICorner", closeOverlay)
+overlayCorner.CornerRadius = UDim.new(0, 14)
+
 local closeModal = Instance.new("Frame", closeOverlay)
-closeModal.Size = UDim2.fromScale(0.85, 0.42)
+closeModal.Size = UDim2.fromScale(0.85, 0.38)
 closeModal.AnchorPoint = Vector2.new(0.5, 0.5)
 closeModal.Position = UDim2.fromScale(0.5, 0.5)
-closeModal.BackgroundColor3 = Colors.Background
-closeModal.BackgroundTransparency = 0.05
+closeModal.BackgroundColor3 = Color3.fromRGB(15, 18, 26) -- Dark Onyx color
 closeModal.ZIndex = 51
 
 local cmCorner = Instance.new("UICorner", closeModal)
 cmCorner.CornerRadius = UDim.new(0, 10)
 
+-- Subtle tech border instead of bright RGB
 local cmStroke = Instance.new("UIStroke", closeModal)
-cmStroke.Thickness = 1.5
-cmStroke.Color = Color3.new(1,1,1)
-local cmStrokeGrad = Instance.new("UIGradient", cmStroke)
-cmStrokeGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Colors.Danger),
-    ColorSequenceKeypoint.new(0.5, Colors.Purple),
-    ColorSequenceKeypoint.new(1, Colors.Danger)
-})
+cmStroke.Thickness = 1
+cmStroke.Color = Colors.PrimaryDark
+cmStroke.Transparency = 0.6
 
-local cmScanlines = Instance.new("ImageLabel", closeModal)
-cmScanlines.Size = UDim2.fromScale(1, 1)
-cmScanlines.BackgroundTransparency = 1
-cmScanlines.Image = "rbxassetid://7186136106" 
-cmScanlines.ImageColor3 = Colors.Danger
-cmScanlines.ImageTransparency = 0.95
-cmScanlines.ZIndex = 51
-cmScanlines.TileSize = UDim2.new(0, 100, 0, 4)
-local cmScanCorner = Instance.new("UICorner", cmScanlines)
-cmScanCorner.CornerRadius = UDim.new(0, 10)
+-- Sleek Cyan Top Accent Line
+local topAccent = Instance.new("Frame", closeModal)
+topAccent.Size = UDim2.new(1, 0, 0, 2)
+topAccent.BackgroundColor3 = Colors.Primary
+topAccent.BorderSizePixel = 0
+topAccent.ZIndex = 52
+local taCorner = Instance.new("UICorner", topAccent)
+taCorner.CornerRadius = UDim.new(1, 0)
 
 local cmTitle = Instance.new("TextLabel", closeModal)
-cmTitle.Size = UDim2.new(1, 0, 0, 35)
-cmTitle.Position = UDim2.fromOffset(0, 5)
+cmTitle.Size = UDim2.new(1, 0, 0, 30)
+cmTitle.Position = UDim2.fromOffset(0, 12)
 cmTitle.BackgroundTransparency = 1
-cmTitle.Text = "⚠️ SYSTEM EXIT"
-cmTitle.TextColor3 = Color3.new(1,1,1)
+cmTitle.Text = "SYSTEM OVERRIDE"
+cmTitle.TextColor3 = Colors.Primary
 cmTitle.Font = Enum.Font.GothamBlack
-cmTitle.TextSize = 15
+cmTitle.TextSize = 14
 cmTitle.ZIndex = 52
-local cmTitleGrad = Instance.new("UIGradient", cmTitle)
-cmTitleGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Colors.Danger), 
-    ColorSequenceKeypoint.new(1, Colors.Warning)
-})
 crispText(cmTitle)
-
-local cmDivider = Instance.new("Frame", closeModal)
-cmDivider.Size = UDim2.new(0.8, 0, 0, 1)
-cmDivider.Position = UDim2.new(0.1, 0, 0, 40)
-cmDivider.BorderSizePixel = 0
-cmDivider.ZIndex = 52
-local cmDivGrad = Instance.new("UIGradient", cmDivider)
-cmDivGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Colors.Background),
-    ColorSequenceKeypoint.new(0.5, Colors.Danger),
-    ColorSequenceKeypoint.new(1, Colors.Background)
-})
 
 local cmSub = Instance.new("TextLabel", closeModal)
 cmSub.Size = UDim2.new(1, -30, 0, 40)
-cmSub.Position = UDim2.fromOffset(15, 50)
+cmSub.Position = UDim2.fromOffset(15, 45)
 cmSub.BackgroundTransparency = 1
-cmSub.Text = "Terminate Quantum Core and halt all active processes?"
-cmSub.TextColor3 = Colors.Text
+cmSub.Text = "Terminate Quantum Core and halt all active network processes?"
+cmSub.TextColor3 = Colors.SubText
 cmSub.Font = Enum.Font.GothamMedium
 cmSub.TextSize = 12
 cmSub.TextWrapped = true
@@ -1303,7 +1278,7 @@ cmConfirm.Size = UDim2.new(0.42, 0, 0, 32)
 cmConfirm.Position = UDim2.new(0.05, 0, 1, -42)
 cmConfirm.BackgroundColor3 = Colors.Danger
 cmConfirm.Text = "TERMINATE"
-cmConfirm.TextColor3 = Colors.TextDark
+cmConfirm.TextColor3 = Color3.new(1,1,1)
 cmConfirm.Font = Enum.Font.GothamBlack
 cmConfirm.TextSize = 11
 cmConfirm.ZIndex = 52
@@ -1313,8 +1288,8 @@ cfmCorner.CornerRadius = UDim.new(0, 6)
 local cmCancel = Instance.new("TextButton", closeModal)
 cmCancel.Size = UDim2.new(0.42, 0, 0, 32)
 cmCancel.Position = UDim2.new(0.53, 0, 1, -42)
-cmCancel.BackgroundColor3 = Colors.Surface
-cmCancel.BackgroundTransparency = 0.2
+cmCancel.BackgroundColor3 = Colors.SurfaceHover
+cmCancel.BackgroundTransparency = 0
 cmCancel.Text = "CANCEL"
 cmCancel.TextColor3 = Colors.Text
 cmCancel.Font = Enum.Font.GothamBold
@@ -1322,10 +1297,6 @@ cmCancel.TextSize = 11
 cmCancel.ZIndex = 52
 local cnlCorner = Instance.new("UICorner", cmCancel)
 cnlCorner.CornerRadius = UDim.new(0, 6)
-local cnlStroke = Instance.new("UIStroke", cmCancel)
-cnlStroke.Color = Colors.PrimaryDark
-cnlStroke.Thickness = 1
-cnlStroke.Transparency = 0.5
 
 applySmartHover(cmConfirm, nil)
 applySmartHover(cmCancel, nil)
@@ -2089,7 +2060,7 @@ startBtn.MouseButton1Click:Connect(function()
     end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.25 Matrix Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.26 Matrix Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
@@ -2838,5 +2809,26 @@ Players.PlayerRemoving:Connect(function(plr)
     if espObjects[plr] then
         espObjects[plr].container:Destroy()
         espObjects[plr] = nil
+    end
+end)
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if _G.TXR_InstanceID ~= currentExecutionID then 
+        return 
+    end
+    
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
+        if gui and gui.Parent then
+            if mainFrame.Visible or openBtnContainer.Visible then
+                mainFrame.Visible = false
+                openBtnContainer.Visible = false
+                aura.Visible = false
+            else
+                openBtnContainer.Visible = true
+                openBtnScale.Scale = 1
+            end
+        else
+            sendNotif("TXR CORE", "UI was deleted by Game! Please re-execute.", 4)
+        end
     end
 end)
