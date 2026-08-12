@@ -536,7 +536,7 @@ strokeGrad.Color = ColorSequence.new({
 local mainScale = Instance.new("UIScale", mainFrame)
 mainScale.Scale = 0.85
 
--- ✨ 🌐 V18.26 5X ULTRA-DYNAMIC 3D MATRIX RAIN ENGINE 🌐 ✨
+-- ✨ 🌐 V18.26 PREMIUM CLEAN MATRIX RAIN ENGINE 🌐 ✨
 local matrixContainer = Instance.new("Frame", mainFrame)
 matrixContainer.Size = UDim2.fromScale(1, 1)
 matrixContainer.BackgroundTransparency = 1
@@ -546,7 +546,8 @@ matrixContainer.ClipsDescendants = true
 local matrixDrops = {}
 local matrixChars = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "Z", "X", "V", "ア", "イ", "ウ", "エ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "セ", "ソ"}
 
-for i = 1, 100 do
+-- Reduced count to 55 for a clean, non-cluttered look
+for i = 1, 55 do
     local drop = Instance.new("TextLabel", matrixContainer)
     drop.Size = UDim2.new(0, 20, 0, 20)
     drop.BackgroundTransparency = 1
@@ -556,24 +557,23 @@ for i = 1, 100 do
     drop.ZIndex = 2
     
     local stroke = Instance.new("UIStroke", drop)
-    stroke.Thickness = 0.5 
+    stroke.Thickness = 0.6 
     stroke.Color = Colors.PrimaryDark
     
-    local depthLayer = math.random(1, 5) 
-    local scaleMult = depthLayer / 5
+    local depthLayer = math.random(1, 3) -- Kept at 3 so words don't pop into the face
+    local scaleMult = 0.6 + (depthLayer * 0.15) -- Controlled size multiplier
     
-    drop.TextSize = math.random(12, 22) * scaleMult
+    drop.TextSize = math.random(12, 15) * scaleMult
     
     table.insert(matrixDrops, {
         element = drop,
         stroke = stroke,
         x = math.random() * 0.95,
         y = math.random() * -1.5,
-        baseSpeed = (math.random(15, 60) / 100) * scaleMult,
-        speed = 0,
+        speed = (math.random(12, 35) / 100) * scaleMult,
         tickOffset = math.random(1, 10),
         depth = depthLayer,
-        isHead = (math.random() > 0.7)
+        isHead = (math.random() > 0.85) -- Rare clean white leading head
     })
 end
 
@@ -1052,47 +1052,37 @@ task.spawn(function()
             titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
             scanlines.Position = UDim2.new(0, 0, (t * 0.08) % 1 - 1, 0)
 
-            -- ✨ 5X ULTRA-SMOOTH MATRIX RAIN ENGINE ✨
+            -- ✨ CLEAN & ELEGANT MATRIX RAIN UPDATE ENGINE ✨
             for i, drop in ipairs(matrixDrops) do
-                -- Dynamic wind/speed
-                drop.speed = drop.baseSpeed + (math.sin(t * 2 + drop.tickOffset) * 0.05)
                 drop.y = drop.y + (drop.speed * dt)
-                
-                -- Digital organic drift
-                local drift = math.sin(t * 1.5 + drop.tickOffset) * 0.005 * (drop.depth / 5)
                 
                 if drop.y > 1.1 then
                     drop.y = math.random() * -0.5
                     drop.x = math.random() * 0.95
-                    drop.isHead = (math.random() > 0.7)
+                    drop.isHead = (math.random() > 0.85) -- Rare clean white head
                 end
                 
-                drop.element.Position = UDim2.fromScale(drop.x + drift, drop.y)
+                drop.element.Position = UDim2.fromScale(drop.x, drop.y)
                 
-                if math.floor(t * 20 + drop.tickOffset) % 3 == 0 then
+                if math.floor(t * 12 + drop.tickOffset) % 4 == 0 then
                     drop.element.Text = matrixChars[math.random(1, #matrixChars)]
                 end
                 
-                local fade = math.clamp((drop.y - 0.4) / 0.6, 0, 1)
-                local depthFade = (5 - drop.depth) * 0.2 
-                local pulse = (math.sin(t * 6 + drop.tickOffset) + 1) * 0.15
+                local fade = math.clamp((drop.y - 0.2) / 0.7, 0, 1)
+                local depthFade = (3 - drop.depth) * 0.25 
                 
-                -- The White-Head effect
-                if drop.isHead and drop.y < 0.5 then
-                    local colorAlpha = math.clamp(drop.y * 2, 0, 1)
-                    drop.element.TextColor3 = Color3.new(1,1,1):Lerp(Colors.Primary, colorAlpha)
-                    drop.stroke.Color = Colors.Primary:Lerp(Colors.PrimaryDark, colorAlpha)
+                -- Subtle White-Head Effect & Smooth Fading
+                if drop.isHead and drop.y < 0.8 then
+                    local headGlow = math.clamp(drop.y * 2.5, 0, 1)
+                    drop.element.TextColor3 = Color3.new(1,1,1):Lerp(Colors.Primary, headGlow)
+                    drop.stroke.Color = Colors.Primary:Lerp(Colors.PrimaryDark, headGlow)
+                    drop.element.TextTransparency = 0.1 + depthFade + (fade * 0.4)
+                    drop.stroke.Transparency = 0.2 + depthFade + (fade * 0.4)
                 else
                     drop.element.TextColor3 = Colors.Primary
                     drop.stroke.Color = Colors.PrimaryDark
-                end
-                
-                if drop.y > 0.4 then
-                    drop.element.TextTransparency = 0.1 + depthFade + (fade * 0.7) - pulse
-                    drop.stroke.Transparency = 0.3 + depthFade + (fade * 0.3)
-                else
-                    drop.element.TextTransparency = 0.1 + depthFade - pulse
-                    drop.stroke.Transparency = 0.3 + depthFade
+                    drop.element.TextTransparency = 0.3 + depthFade + (fade * 0.6)
+                    drop.stroke.Transparency = 0.5 + depthFade + (fade * 0.4)
                 end
             end
         end
