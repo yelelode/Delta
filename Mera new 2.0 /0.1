@@ -1,9 +1,10 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.23 (ULTRA-SMOOTH EDITION) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.24 (FINAL POLISH EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V18.16 DELTATIME LERP PHYSICS FOR 144HZ FEEL ON 60FPS] *
 -- * [V18.18 HEURISTIC REMOTE SCANNER & STEALTH C-CLOSURE] *
 -- * [V18.23 BUTTERY SMOOTH ROBOT BANG & EXPANDED CODE] *
+-- * [V18.24 CYBER EXIT MODAL, DRAG FIX & PURE CYAN MATRIX] *
 -- =========================================================
 
 -- 🧹 RE-EXECUTION CLEANUP SYSTEM
@@ -536,7 +537,7 @@ strokeGrad.Color = ColorSequence.new({
 local mainScale = Instance.new("UIScale", mainFrame)
 mainScale.Scale = 0.85
 
--- ✨ 🌐 V18.23 POLISHED MATRIX RAIN EFFECT 🌐 ✨
+-- ✨ 🌐 V18.24 POLISHED MATRIX RAIN EFFECT (ALWAYS CYAN) 🌐 ✨
 local matrixContainer = Instance.new("Frame", mainFrame)
 matrixContainer.Size = UDim2.fromScale(1, 1)
 matrixContainer.BackgroundTransparency = 1
@@ -544,7 +545,7 @@ matrixContainer.ZIndex = 2
 matrixContainer.ClipsDescendants = true
 
 local matrixDrops = {}
-local matrixChars = {"0", "1", "ア", "イ", "ウ", "エ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "セ", "ソ", "タ", "チ", "ツ", "テ", "ト", "X", "Z", "M", "V", "$", "@"}
+local matrixChars = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "Z", "X", "V", "ア", "イ", "ウ", "エ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "セ", "ソ"}
 
 for i = 1, 45 do
     local drop = Instance.new("TextLabel", matrixContainer)
@@ -557,9 +558,9 @@ for i = 1, 45 do
     drop.ZIndex = 2
     
     local stroke = Instance.new("UIStroke", drop)
-    stroke.Thickness = 0.5 -- Thinned the stroke so it's less noisy
+    stroke.Thickness = 0.5 
     stroke.Color = Colors.PrimaryDark
-    stroke.Transparency = 0.8 -- Made the stroke more transparent
+    stroke.Transparency = 0.8 
 
     table.insert(matrixDrops, {
         element = drop,
@@ -934,9 +935,9 @@ task.spawn(function()
             titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
             scanlines.Position = UDim2.new(0, 0, (t * 0.08) % 1 - 1, 0)
 
-            -- ✨ FIXED MATRIX RAIN UPDATE ENGINE ✨
-            local activeThemeColor = isSystemActive and Colors.Danger or Colors.Primary
-            local activeStrokeColor = isSystemActive and Color3.fromRGB(130, 0, 0) or Colors.PrimaryDark
+            -- ✨ FIXED MATRIX RAIN UPDATE ENGINE (NO RED COLOR ON START) ✨
+            local activeThemeColor = Colors.Primary
+            local activeStrokeColor = Colors.PrimaryDark
             local rainSpeedMod = isSystemActive and 2.5 or 1.0
 
             for i, drop in ipairs(matrixDrops) do
@@ -956,11 +957,9 @@ task.spawn(function()
                     drop.element.Text = matrixChars[math.random(1, #matrixChars)]
                 end
                 
-                -- Fade logic to make text much subtler when behind UI elements
                 local fade = math.clamp((drop.y - 0.4) / 0.6, 0, 1)
                 
                 if drop.y > 0.4 then
-                    -- Fades out nicely to prevent visual clutter
                     drop.element.TextTransparency = 0.5 + (fade * 0.5) 
                     drop.stroke.Transparency = 0.8 + (fade * 0.2)
                 else
@@ -1204,7 +1203,8 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
     end)
 end
 
-makeDraggable(mainFrame, header, aura, false)
+-- ✨ FIXED DRAGGING (AB PURE BACKGROUND SE DRAG HOGA) ✨
+makeDraggable(mainFrame, mainFrame, aura, false) 
 makeDraggable(openBtnContainer, openBtn, nil, true)
 
 openBtn.MouseButton1Down:Connect(function() 
@@ -1217,12 +1217,103 @@ openBtn.MouseButton1Up:Connect(function()
     TweenService:Create(openBtnScale, tInfo, {Scale = 1.05}):Play() 
 end)
 
+-- ✨ 🛑 V18.24 NEW EXIT CONFIRMATION MODAL 🛑 ✨
+local closeOverlay = Instance.new("Frame", mainFrame)
+closeOverlay.Size = UDim2.fromScale(1, 1)
+closeOverlay.BackgroundColor3 = Color3.new(0, 0, 0)
+closeOverlay.BackgroundTransparency = 1
+closeOverlay.ZIndex = 50
+closeOverlay.Visible = false
+
+local closeModal = Instance.new("Frame", closeOverlay)
+closeModal.Size = UDim2.fromScale(0.85, 0.4)
+closeModal.AnchorPoint = Vector2.new(0.5, 0.5)
+closeModal.Position = UDim2.fromScale(0.5, 0.5)
+closeModal.BackgroundColor3 = Colors.Surface
+closeModal.ZIndex = 51
+
+local cmCorner = Instance.new("UICorner", closeModal)
+cmCorner.CornerRadius = UDim.new(0, 12)
+
+local cmStroke = Instance.new("UIStroke", closeModal)
+cmStroke.Color = Colors.Danger
+cmStroke.Thickness = 1.5
+cmStroke.Transparency = 0.2
+
+local cmTitle = Instance.new("TextLabel", closeModal)
+cmTitle.Size = UDim2.new(1, 0, 0, 30)
+cmTitle.Position = UDim2.fromOffset(0, 10)
+cmTitle.BackgroundTransparency = 1
+cmTitle.Text = "SYSTEM EXIT"
+cmTitle.TextColor3 = Colors.Danger
+cmTitle.Font = Enum.Font.GothamBlack
+cmTitle.TextSize = 16
+cmTitle.ZIndex = 52
+crispText(cmTitle)
+
+local cmSub = Instance.new("TextLabel", closeModal)
+cmSub.Size = UDim2.new(1, -20, 0, 40)
+cmSub.Position = UDim2.fromOffset(10, 45)
+cmSub.BackgroundTransparency = 1
+cmSub.Text = "Are you sure you want to terminate Quantum Core?"
+cmSub.TextColor3 = Colors.Text
+cmSub.Font = Enum.Font.GothamMedium
+cmSub.TextSize = 12
+cmSub.TextWrapped = true
+cmSub.ZIndex = 52
+crispText(cmSub)
+
+local cmConfirm = Instance.new("TextButton", closeModal)
+cmConfirm.Size = UDim2.new(0.4, 0, 0, 30)
+cmConfirm.Position = UDim2.new(0.06, 0, 1, -40)
+cmConfirm.BackgroundColor3 = Colors.Danger
+cmConfirm.Text = "TERMINATE"
+cmConfirm.TextColor3 = Colors.TextDark
+cmConfirm.Font = Enum.Font.GothamBlack
+cmConfirm.TextSize = 11
+cmConfirm.ZIndex = 52
+local cfmCorner = Instance.new("UICorner", cmConfirm)
+cfmCorner.CornerRadius = UDim.new(0, 6)
+
+local cmCancel = Instance.new("TextButton", closeModal)
+cmCancel.Size = UDim2.new(0.4, 0, 0, 30)
+cmCancel.Position = UDim2.new(0.54, 0, 1, -40)
+cmCancel.BackgroundColor3 = Colors.SurfaceHover
+cmCancel.Text = "CANCEL"
+cmCancel.TextColor3 = Colors.Text
+cmCancel.Font = Enum.Font.GothamBold
+cmCancel.TextSize = 11
+cmCancel.ZIndex = 52
+local cnlCorner = Instance.new("UICorner", cmCancel)
+cnlCorner.CornerRadius = UDim.new(0, 6)
+
+applySmartHover(cmConfirm, nil)
+applySmartHover(cmCancel, nil)
+
+-- Hooking Modal Logic
 closeBtn.MouseButton1Click:Connect(function() 
+    closeOverlay.Visible = true
+    closeModal.Position = UDim2.fromScale(0.5, 0.45)
+    
+    TweenService:Create(closeOverlay, TweenInfo.new(0.3), {BackgroundTransparency = 0.4}):Play()
+    TweenService:Create(closeModal, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0.5, 0.5)}):Play()
+end)
+
+cmCancel.MouseButton1Click:Connect(function()
+    TweenService:Create(closeOverlay, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+    local hideTween = TweenService:Create(closeModal, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.fromScale(0.5, 0.55)})
+    hideTween:Play()
+    hideTween.Completed:Connect(function()
+        closeOverlay.Visible = false
+    end)
+end)
+
+cmConfirm.MouseButton1Click:Connect(function() 
     local tInfo1 = TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.In)
     local tInfo2 = TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
     
-    TweenService:Create(mainScale, tInfo1, {Scale = 0.8}):Play()
-    TweenService:Create(auraScale, tInfo1, {Scale = 0.8}):Play()
+    TweenService:Create(mainScale, tInfo1, {Scale = 0}):Play()
+    TweenService:Create(auraScale, tInfo1, {Scale = 0}):Play()
     TweenService:Create(mainFrame, tInfo2, {BackgroundTransparency = 1, Position = UDim2.new(0.5, 0, 0.5, 30)}):Play()
     TweenService:Create(aura, tInfo2, {ImageTransparency = 1}):Play()
     
@@ -1960,7 +2051,7 @@ startBtn.MouseButton1Click:Connect(function()
     end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.23 Matrix Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.24 Matrix Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
@@ -2254,7 +2345,6 @@ RunService.Heartbeat:Connect(function(dt)
             local maxBaseDist = math.max(2.5, 4.0 * rScale) 
             local touchDist = 1.0 
             
-            -- ✨ SMOOTH BUTTERY MATH FORMULA (Replaced aggressive math.pow snaps) ✨
             local snapPower = (math.sin(smoothAnimTime * 6.5) + 1) / 2
             local smoothDist = maxBaseDist - ((maxBaseDist - touchDist) * snapPower)
             
