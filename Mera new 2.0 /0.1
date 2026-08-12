@@ -1,11 +1,12 @@
 -- =========================================================
--- 👑 TXR ASHU: QUANTUM CORE V18.18 (NEURAL ADAPTATION) 👑
+-- 👑 TXR ASHU: QUANTUM CORE V18.19 (PLEXUS NETWORK EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V18.16 DELTATIME LERP PHYSICS FOR 144HZ FEEL ON 60FPS] *
 -- * [V18.18 HEURISTIC REMOTE SCANNER & STEALTH C-CLOSURE] *
+-- * [V18.19 NEW-GEN WEB PLEXUS NODE EFFECT] *
 -- =========================================================
 
--- 🧹 RE-EXECUTION CLEANUP SYSTEM (Kills old hidden loops)
+-- 🧹 RE-EXECUTION CLEANUP SYSTEM
 local currentExecutionID = tick()
 _G.TXR_InstanceID = currentExecutionID
 
@@ -35,8 +36,7 @@ local CREATOR_USER_ID = 9685785248
 -- ⚡ 144 FPS ULTRA-SMOOTH GAMING ENGINE ⚡
 pcall(function() if setfpscap then setfpscap(144) end end)
 
--- 🧠 V18.18 NEURAL ADAPTIVE ENGINE (FUTURE-PROOF SCANNER) 🧠
--- Agar game aage chal kar update hota hai, toh ye engine naam ke bajaye behavior se remotes dhundhega
+-- 🧠 V18.18 NEURAL ADAPTIVE ENGINE
 local DynamicRemotes = { ClearProps = nil, SpawnVehicle = nil, DespawnVehicle = nil }
 
 local function ScanForRemotes()
@@ -44,12 +44,10 @@ local function ScanForRemotes()
         local reFolder = ReplicatedStorage:FindFirstChild("RE")
         if not reFolder then return end
         
-        -- Default check
         if reFolder:FindFirstChild("1Clea1rTool1s") then DynamicRemotes.ClearProps = reFolder["1Clea1rTool1s"] end
         if reFolder:FindFirstChild("1NoMoto1rVehicle1s") then DynamicRemotes.SpawnVehicle = reFolder["1NoMoto1rVehicle1s"] end
         if reFolder:FindFirstChild("1DeSpawnVehi1cle") then DynamicRemotes.DespawnVehicle = reFolder["1DeSpawnVehi1cle"] end
         
-        -- Heuristic Fallback (Agar naam change ho gaya future me)
         if not DynamicRemotes.ClearProps then
             for _, v in ipairs(reFolder:GetChildren()) do
                 if v:IsA("RemoteEvent") and (string.find(string.lower(v.Name), "clear") and string.find(string.lower(v.Name), "tool")) then
@@ -76,8 +74,7 @@ local customPropName = "ScreensRobotBig"
 local customPropCategory = "Screens"
 local lastGameSpawnTime = 0
 
--- ✨ SMART METAMETHOD HOOK (WITH C-CLOSURE STEALTH FOR BYPASSING ANTI-CHEAT) ✨
--- Naya update: newcclosure() use kiya hai taki game ka anti-cheat isko external lua script na maan sake
+-- ✨ SMART METAMETHOD HOOK (WITH C-CLOSURE STEALTH) ✨
 pcall(function()
     local oldNamecall
     oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
@@ -85,7 +82,6 @@ pcall(function()
             local method = getnamecallmethod()
             if method == "FireServer" then
                 local name = tostring(self)
-                -- Uses dynamic check in case of updates
                 if name == "1Clea1rTool1s" or (DynamicRemotes.ClearProps and self == DynamicRemotes.ClearProps) then
                     local args = {...}
                     if args[1] == "RequestingPropName" then
@@ -172,7 +168,6 @@ local function triggerBanTrap()
     lp:Kick("\n⚠️ WARNING ⚠️\n\naapne apne Ashu papa ko troll kiya hai\n\nAagar firse select kiya to aap permanent blacklist ho jaenge")
 end
 
--- 👑 CREATOR JOIN ALERT (VIP ANNOUNCEMENT) 👑
 local function onPlayerJoinAlert(plr)
     if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
         local alertGui = Instance.new("ScreenGui")
@@ -211,7 +206,6 @@ local function onPlayerJoinAlert(plr)
 end
 Players.PlayerAdded:Connect(onPlayerJoinAlert)
 
--- 🔥 EXPLOIT METHODS 🔥
 local function PlayRobotBangMusic()
     local soundId = "134489447055645" 
     local RE = ReplicatedStorage:WaitForChild("RE")
@@ -248,72 +242,40 @@ local function StopRobotBangMusic()
     end)
 end
 
--- 🛠️ ULTRA-LIQUID HOVER SYSTEM 🛠️
 local function applySmartHover(btn, modeKey)
     local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
     btnScale.Scale = 1
-
     local corner = btn:FindFirstChildOfClass("UICorner")
-    if not corner then
-        corner = Instance.new("UICorner", btn)
-        corner.CornerRadius = UDim.new(0, 8)
-    end
-
-    if not btn:GetAttribute("BaseColor") then
-        btn:SetAttribute("BaseColor", btn.BackgroundColor3)
-        btn:SetAttribute("BaseTrans", btn.BackgroundTransparency)
-        btn:SetAttribute("BaseText", btn.TextColor3)
-    end
+    if not corner then corner = Instance.new("UICorner", btn); corner.CornerRadius = UDim.new(0, 8) end
+    if not btn:GetAttribute("BaseColor") then btn:SetAttribute("BaseColor", btn.BackgroundColor3); btn:SetAttribute("BaseTrans", btn.BackgroundTransparency); btn:SetAttribute("BaseText", btn.TextColor3) end
 
     local isHovered = false
-
     local hoverInInfo = TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     local hoverOutInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
     local pressInfo = TweenInfo.new(0.08, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
     local releaseInfo = TweenInfo.new(0.65, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
 
     btn.MouseEnter:Connect(function()
-        isHovered = true
-        TweenService:Create(btnScale, hoverInInfo, {Scale = 1.05}):Play()
-        TweenService:Create(corner, hoverInInfo, {CornerRadius = UDim.new(1, 0)}):Play() 
-        
-        if not modeKey or not activeModes[modeKey] then
-            TweenService:Create(btn, hoverInInfo, {
-                BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-                BackgroundTransparency = 0.1,
-                TextColor3 = Color3.fromRGB(255, 255, 255)
-            }):Play()
-        end
+        isHovered = true; TweenService:Create(btnScale, hoverInInfo, {Scale = 1.05}):Play(); TweenService:Create(corner, hoverInInfo, {CornerRadius = UDim.new(1, 0)}):Play() 
+        if not modeKey or not activeModes[modeKey] then TweenService:Create(btn, hoverInInfo, { BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 0.1, TextColor3 = Color3.fromRGB(255, 255, 255) }):Play() end
     end)
 
     btn.MouseLeave:Connect(function()
-        isHovered = false
-        TweenService:Create(btnScale, hoverOutInfo, {Scale = 1}):Play()
-        TweenService:Create(corner, hoverOutInfo, {CornerRadius = UDim.new(0, 8)}):Play() 
-        
-        if not modeKey or not activeModes[modeKey] then
-            TweenService:Create(btn, hoverOutInfo, {
-                BackgroundColor3 = btn:GetAttribute("BaseColor"),
-                BackgroundTransparency = btn:GetAttribute("BaseTrans"),
-                TextColor3 = btn:GetAttribute("BaseText")
-            }):Play()
-        end
+        isHovered = false; TweenService:Create(btnScale, hoverOutInfo, {Scale = 1}):Play(); TweenService:Create(corner, hoverOutInfo, {CornerRadius = UDim.new(0, 8)}):Play() 
+        if not modeKey or not activeModes[modeKey] then TweenService:Create(btn, hoverOutInfo, { BackgroundColor3 = btn:GetAttribute("BaseColor"), BackgroundTransparency = btn:GetAttribute("BaseTrans"), TextColor3 = btn:GetAttribute("BaseText") }):Play() end
     end)
 
     btn.MouseButton1Down:Connect(function() TweenService:Create(btnScale, pressInfo, {Scale = 0.85}):Play() end)
     btn.MouseButton1Up:Connect(function() local targetScale = isHovered and 1.05 or 1; TweenService:Create(btnScale, releaseInfo, {Scale = targetScale}):Play() end)
 end
 
--- Uses Dynamic Engine for clearing props
 local function clearProps() pcall(function() local r = DynamicRemotes.ClearProps or ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"); r:FireServer("ClearAllProps") end); task.wait(0.35) end
 local function spawnProp(propName, category) pcall(function() local r = DynamicRemotes.ClearProps or ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"); r:FireServer("RequestingPropName", propName, category) end) end
 
 local function getActivePropData()
     local needsChair = activeModes["Chair"]
     local needsRobot = activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["Orbit"] or activeModes["Ring"] or activeModes["HeadBang"]
-    
-    if needsChair and not needsRobot then return "FurnitureBleachers", "Furniture" 
-    else return customPropName, customPropCategory end
+    if needsChair and not needsRobot then return "FurnitureBleachers", "Furniture" else return customPropName, customPropCategory end
 end
 
 local mouse = lp:GetMouse()
@@ -324,12 +286,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         local char = lp.Character
         local tool = char and char:FindFirstChildOfClass("Tool")
         if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
-            task.delay(0.05, function()
-                if tick() - lastGameSpawnTime > 0.5 then
-                    local propName, propCategory = getActivePropData()
-                    spawnProp(propName, propCategory)
-                end
-            end)
+            task.delay(0.05, function() if tick() - lastGameSpawnTime > 0.5 then local propName, propCategory = getActivePropData(); spawnProp(propName, propCategory) end end)
         end
     end
 end)
@@ -359,20 +316,44 @@ local strokeGrad = Instance.new("UIGradient", mainStroke); strokeGrad.Color = Co
 
 local mainScale = Instance.new("UIScale", mainFrame); mainScale.Scale = 0.85; 
 
-local particleContainer = Instance.new("Frame", mainFrame)
-particleContainer.Size = UDim2.fromScale(1, 1)
-particleContainer.BackgroundTransparency = 1
-particleContainer.ZIndex = 3
-local dataParticles = {}
-for i = 1, 15 do
-    local p = Instance.new("Frame", particleContainer)
-    p.Size = UDim2.fromOffset(math.random(2, 4), math.random(8, 25))
-    p.BackgroundColor3 = Colors.Primary
-    p.Position = UDim2.fromScale(math.random(), math.random())
-    p.BackgroundTransparency = math.random(75, 95) / 100
-    p.BorderSizePixel = 0
-    Instance.new("UICorner", p).CornerRadius = UDim.new(1, 0)
-    table.insert(dataParticles, {element = p, speed = math.random(15, 30) / 100})
+-- ✨ 🌐 V18.19 NEW GEN PLEXUS (CONSTELLATION) NETWORK EFFECT 🌐 ✨
+local plexusContainer = Instance.new("Frame", mainFrame)
+plexusContainer.Size = UDim2.fromScale(1, 1)
+plexusContainer.BackgroundTransparency = 1
+plexusContainer.ZIndex = 2
+plexusContainer.ClipsDescendants = true
+
+local plexusNodes = {}
+local plexusLines = {}
+local NUM_NODES = 24
+local MAX_CONNECT_DIST = 68
+
+for i = 1, NUM_NODES do
+    local node = Instance.new("Frame", plexusContainer)
+    node.Size = UDim2.fromOffset(3, 3)
+    node.BackgroundColor3 = Colors.Primary
+    node.BorderSizePixel = 0
+    node.AnchorPoint = Vector2.new(0.5, 0.5)
+    node.ZIndex = 3
+    Instance.new("UICorner", node).CornerRadius = UDim.new(1, 0)
+    
+    table.insert(plexusNodes, {
+        element = node,
+        x = math.random(0, 280),
+        y = math.random(0, 410),
+        vx = (math.random() - 0.5) * 35,
+        vy = (math.random() - 0.5) * 35
+    })
+end
+
+for i = 1, 40 do 
+    local line = Instance.new("Frame", plexusContainer)
+    line.BackgroundColor3 = Colors.Primary
+    line.BorderSizePixel = 0
+    line.ZIndex = 2
+    line.AnchorPoint = Vector2.new(0.5, 0.5)
+    line.Visible = false
+    table.insert(plexusLines, line)
 end
 
 local scanlines = Instance.new("ImageLabel", mainFrame)
@@ -588,18 +569,49 @@ task.spawn(function()
             aura.ImageTransparency = 0.45 + (breath * 0.15)
             mainStroke.Transparency = 0.15 + (breath * 0.2)
             titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
-            
             scanlines.Position = UDim2.new(0, 0, (t * 0.08) % 1 - 1, 0)
 
-            for _, pData in ipairs(dataParticles) do
-                local newY = pData.element.Position.Y.Scale - (pData.speed * dt)
-                if newY < -0.1 then 
-                    newY = 1.1
-                    pData.element.Position = UDim2.fromScale(math.random(), newY)
-                else
-                    pData.element.Position = UDim2.new(pData.element.Position.X.Scale, 0, newY, 0)
+            -- ✨ PLEXUS RENDER ENGINE (DYNAMIC NETWORKING) ✨
+            local w, h = mainFrame.AbsoluteSize.X, mainFrame.AbsoluteSize.Y
+            if w > 0 and h > 0 then
+                local currentThemeColor = isSystemActive and Colors.Danger or Colors.Primary
+                local activeSpeedMod = isSystemActive and 3.5 or 1.0
+
+                for _, n in ipairs(plexusNodes) do
+                    n.x = n.x + (n.vx * dt * activeSpeedMod)
+                    n.y = n.y + (n.vy * dt * activeSpeedMod)
+                    
+                    if n.x < 0 then n.x = 0; n.vx = -n.vx elseif n.x > w then n.x = w; n.vx = -n.vx end
+                    if n.y < 0 then n.y = 0; n.vy = -n.vy elseif n.y > h then n.y = h; n.vy = -n.vy end
+                    
+                    n.element.Position = UDim2.fromOffset(n.x, n.y)
+                    n.element.BackgroundColor3 = currentThemeColor
                 end
-                pData.element.BackgroundColor3 = isSystemActive and Colors.Danger or Colors.Primary
+
+                local lineIndex = 1
+                for i = 1, NUM_NODES do
+                    for j = i + 1, NUM_NODES do
+                        local dx = plexusNodes[j].x - plexusNodes[i].x
+                        local dy = plexusNodes[j].y - plexusNodes[i].y
+                        local distSq = (dx * dx) + (dy * dy)
+                        
+                        if distSq < (MAX_CONNECT_DIST * MAX_CONNECT_DIST) and lineIndex <= #plexusLines then
+                            local dist = math.sqrt(distSq)
+                            local line = plexusLines[lineIndex]
+                            line.Visible = true
+                            line.Size = UDim2.new(0, dist, 0, 1)
+                            line.Position = UDim2.fromOffset(plexusNodes[i].x + dx/2, plexusNodes[i].y + dy/2)
+                            line.Rotation = math.deg(math.atan2(dy, dx))
+                            line.BackgroundTransparency = 0.2 + (0.8 * (dist / MAX_CONNECT_DIST))
+                            line.BackgroundColor3 = currentThemeColor
+                            lineIndex = lineIndex + 1
+                        end
+                    end
+                end
+                
+                for i = lineIndex, #plexusLines do
+                    plexusLines[i].Visible = false
+                end
             end
         end
         
@@ -735,7 +747,6 @@ openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function()
     end 
 end)
 
--- ✨ V18.16 LIQUID DRAG INTERPOLATION ENGINE (WITH SMART SCREEN CLAMPING) ✨
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart = nil
@@ -844,14 +855,12 @@ openBtn.MouseButton1Click:Connect(function()
     TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play(); TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
 end)
 
--- MAIN LIST
 local mainList = Instance.new("ScrollingFrame", mainFrame); mainList.Size = UDim2.new(1, -24, 1, -88); mainList.Position = UDim2.fromOffset(12, 56); mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 0; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ZIndex = 6
 local listLayout = Instance.new("UIListLayout", mainList); listLayout.Padding = UDim.new(0, 8); listLayout.SortOrder = Enum.SortOrder.LayoutOrder; listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 local mainPadding = Instance.new("UIPadding", mainList); mainPadding.PaddingLeft = UDim.new(0, 10); mainPadding.PaddingRight = UDim.new(0, 10); mainPadding.PaddingTop = UDim.new(0, 2); mainPadding.PaddingBottom = UDim.new(0, 2)
 listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() mainList.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10) end)
 local layoutIdx = 1; local function getOrder() layoutIdx = layoutIdx + 1; return layoutIdx end
 
--- MENUS 
 local function createMenu(titleStr)
     local menu = Instance.new("Frame", mainFrame); menu.Size = UDim2.fromScale(1, 1); menu.Position = UDim2.fromScale(1.2, 0); menu.BackgroundColor3 = Colors.Background; menu.BackgroundTransparency = 0.1; menu.ZIndex = 20; Instance.new("UICorner", menu).CornerRadius = UDim.new(0, 14)
     local top = Instance.new("Frame", menu); top.Size = UDim2.new(1, 0, 0, 50); top.BackgroundColor3 = Colors.Background; top.BackgroundTransparency = 1; top.ZIndex = 21
@@ -871,7 +880,6 @@ end
 local playerMenu, playerScroll = createMenu("👥 MATRIX TARGETS")
 local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
 
--- 🛠️ TARGET LIST GENERATOR WITH ✨ REJOIN PERSISTENCE ✨
 local function refreshPlayers()
     for _, child in ipairs(playerScroll:GetChildren()) do if child:IsA("TextButton") then child:Destroy() end end
     for _, plr in ipairs(Players:GetPlayers()) do
@@ -1089,7 +1097,7 @@ startBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then task.spawn(PlayRobotBangMusic) end
     
     task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.18 Adaptive Core Activated.", 2)
+        sendNotif("ENGINE CORE", "V18.19 Plexus Core Activated.", 2)
         clearProps()
         task.wait(0.3)
         
@@ -1113,7 +1121,6 @@ stopBtn.MouseButton1Click:Connect(function()
     task.spawn(StopRobotBangMusic); sendNotif("System Core", "All Tasks Halted.", 2) 
 end)
 
--- ✨ OPTIMIZED PROP SCANNER ✨
 local lastRemoteScan = 0
 local cachedRemotes = {}
 
@@ -1160,7 +1167,6 @@ local function isRemoteAssigned(remote)
     return false 
 end
 
--- ✨ ZERO-LAG NETWORK ADAPTIVE DISPATCHER ✨
 local lastRemoteFireTimes = {}
 local FIRE_INTERVAL = 0.035 
 
@@ -1188,7 +1194,6 @@ local function dispatchRemote(remote, targetCFrame)
     end
 end
 
--- 🛡️ GOD SHIELD (PRE-PHYSICS ENGINE) 🛡️
 RunService.Stepped:Connect(function()
     if _G.TXR_InstanceID ~= currentExecutionID then return end 
     if isGodShieldEnabled and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
@@ -1230,7 +1235,6 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- 🔥 SMART SEAT CHECKER HELPER 🔥
 local function isPlayerSeated(plr)
     if not plr.Character then return false end
     local hum = plr.Character:FindFirstChildOfClass("Humanoid")
@@ -1244,7 +1248,6 @@ local function isPlayerSeated(plr)
     return false
 end
 
--- 🔥 ULTRA-ACCURATE ZERO-LAG ENGINE CORE 🔥
 RunService.Heartbeat:Connect(function(dt)
     if _G.TXR_InstanceID ~= currentExecutionID then return end 
     if not gui or not gui.Parent then 
@@ -1375,7 +1378,6 @@ RunService.Heartbeat:Connect(function(dt)
         for _, r in ipairs(allRemotes) do if not isRemoteAssigned(r) then table.insert(freeRemotes, r) end end
 
         if #freeRemotes > 0 then
-            -- ⚡ OPTIMIZED ACCURATE VOID CHAIR BARRAGE ⚡
             if activeModes["Chair"] then
                 for idx, remote in ipairs(freeRemotes) do
                     local targetIdx = ((idx - 1) % tCount) + 1
@@ -1396,7 +1398,6 @@ RunService.Heartbeat:Connect(function(dt)
                             pcall(function() remote:InvokeServer(CFrame.new(0, -9000, 0)) end)
                         end)
                     else
-                        -- Max 4 chairs per player to prevent lag
                         local propsForThisTarget = math.min(4, math.ceil(#freeRemotes / tCount))
                         local localChairIndex = (idx - 1) % propsForThisTarget
                         
@@ -1480,7 +1481,6 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
--- ✨ V18.0 TRUE RADIO-SYNC RAINBOW ENGINE ✨
 local hue = 0
 RunService.Heartbeat:Connect(function(dt)
     if _G.TXR_InstanceID ~= currentExecutionID then return end 
@@ -1701,7 +1701,6 @@ Players.PlayerRemoving:Connect(function(plr)
     end
 end)
 
--- 🚨 EMERGENCY UI RECOVERY BIND (RIGHT SHIFT) 🚨
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if _G.TXR_InstanceID ~= currentExecutionID then return end
     if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
