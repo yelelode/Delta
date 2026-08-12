@@ -1226,7 +1226,7 @@ local overlayCorner = Instance.new("UICorner", closeOverlay)
 overlayCorner.CornerRadius = UDim.new(0, 14)
 
 local closeModal = Instance.new("Frame", closeOverlay)
-closeModal.Size = UDim2.fromScale(0.85, 0.38)
+closeModal.Size = UDim2.fromScale(0.85, 0.42)
 closeModal.AnchorPoint = Vector2.new(0.5, 0.5)
 closeModal.Position = UDim2.fromScale(0.5, 0.5)
 closeModal.BackgroundColor3 = Color3.fromRGB(15, 18, 26) -- Dark Onyx color
@@ -1237,9 +1237,9 @@ cmCorner.CornerRadius = UDim.new(0, 10)
 
 -- Subtle tech border instead of bright RGB
 local cmStroke = Instance.new("UIStroke", closeModal)
-cmStroke.Thickness = 1
-cmStroke.Color = Colors.PrimaryDark
-cmStroke.Transparency = 0.6
+cmStroke.Thickness = 1.5
+cmStroke.Color = Colors.Primary
+cmStroke.Transparency = 0.1
 
 -- Sleek Cyan Top Accent Line
 local topAccent = Instance.new("Frame", closeModal)
@@ -1274,29 +1274,29 @@ cmSub.ZIndex = 52
 crispText(cmSub)
 
 local cmConfirm = Instance.new("TextButton", closeModal)
-cmConfirm.Size = UDim2.new(0.42, 0, 0, 32)
-cmConfirm.Position = UDim2.new(0.05, 0, 1, -42)
+cmConfirm.Size = UDim2.new(0.43, 0, 0, 36)
+cmConfirm.Position = UDim2.new(0.05, 0, 1, -46)
 cmConfirm.BackgroundColor3 = Colors.Danger
 cmConfirm.Text = "TERMINATE"
 cmConfirm.TextColor3 = Color3.new(1,1,1)
 cmConfirm.Font = Enum.Font.GothamBlack
-cmConfirm.TextSize = 11
+cmConfirm.TextSize = 12
 cmConfirm.ZIndex = 52
 local cfmCorner = Instance.new("UICorner", cmConfirm)
-cfmCorner.CornerRadius = UDim.new(0, 6)
+cfmCorner.CornerRadius = UDim.new(0, 8)
 
 local cmCancel = Instance.new("TextButton", closeModal)
-cmCancel.Size = UDim2.new(0.42, 0, 0, 32)
-cmCancel.Position = UDim2.new(0.53, 0, 1, -42)
+cmCancel.Size = UDim2.new(0.43, 0, 0, 36)
+cmCancel.Position = UDim2.new(0.52, 0, 1, -46)
 cmCancel.BackgroundColor3 = Colors.SurfaceHover
 cmCancel.BackgroundTransparency = 0
 cmCancel.Text = "CANCEL"
 cmCancel.TextColor3 = Colors.Text
 cmCancel.Font = Enum.Font.GothamBold
-cmCancel.TextSize = 11
+cmCancel.TextSize = 12
 cmCancel.ZIndex = 52
 local cnlCorner = Instance.new("UICorner", cmCancel)
-cnlCorner.CornerRadius = UDim.new(0, 6)
+cnlCorner.CornerRadius = UDim.new(0, 8)
 
 applySmartHover(cmConfirm, nil)
 applySmartHover(cmCancel, nil)
@@ -2294,7 +2294,7 @@ RunService.Heartbeat:Connect(function(dt)
     local smoothAngle = runTime * speedMultiplier * 1.5
     local smoothSelfAngle = runTime * speedMultiplier * 2.5 
     
-    local robotSpeedMultiplier = 60 / 20 
+    local robotSpeedMultiplier = getSpeedMs() / 20 
     robotAnimTime = robotAnimTime + (dt * robotSpeedMultiplier)
     
     local currentPing = 0.05
