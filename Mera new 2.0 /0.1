@@ -1812,7 +1812,8 @@ local function createSlider(name, min, max, defaultVal, suffix)
     local knobCorner = Instance.new("UICorner", knob)
     knobCorner.CornerRadius = UDim.new(1,0)
     
-    local knobDot = Instance.new("Frame", knob)
+    local knobDot = Instance.new("Frame", knobDot)
+    knobDot = Instance.new("Frame", knob)
     knobDot.Size = UDim2.new(0, 6, 0, 6)
     knobDot.AnchorPoint = Vector2.new(0.5, 0.5)
     knobDot.Position = UDim2.fromScale(0.5, 0.5)
@@ -2083,6 +2084,30 @@ autoDeployBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+-- ✨ NEW SILENT SPOOF BUTTON ✨
+local silentSpawnBtn = createMainBtn("🎯 SILENT DEPLOY (SPOOF CLICK)", "SilentSpawn", false)
+silentSpawnBtn.MouseButton1Click:Connect(function() 
+    activeModes["SilentSpawn"] = not activeModes["SilentSpawn"]
+    local accent = silentSpawnBtn:FindFirstChild("Accent")
+    
+    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    if activeModes["SilentSpawn"] then 
+        TweenService:Create(silentSpawnBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+        end
+        sendNotif("AUTOMATION", "Silent Deploy ON. (Spoofs Server Data)", 2)
+    else 
+        TweenService:Create(silentSpawnBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+        end 
+        sendNotif("AUTOMATION", "Silent Deploy OFF.", 2)
+    end
+end)
+
 local toggleRow = Instance.new("Frame", mainList)
 toggleRow.Size = UDim2.new(1, 0, 0, 42)
 toggleRow.BackgroundTransparency = 1
@@ -2152,6 +2177,75 @@ startBtn.MouseButton1Click:Connect(function()
         
         local propName, propCategory = getActivePropData()
         local count = (propName == "FurnitureBleachers") and 15 or 25
+
+        -- ✨ NEW SILENT SPOOF CLICK INJECTION ✨
+        if activeModes["SilentSpawn"] then
+            sendNotif("SILENT DEPLOY", "Spoofing mouse clicks to server...", 2)
+            
+            local function getAutoClickData()
+                local char = lp.Character
+                if char and char:FindFirstChild("HumanoidRootPart") then
+                    local root = char.HumanoidRootPart
+                    local params = RaycastParams.new()
+                    local ignoreList = {char}
+                    if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
+                    if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
+                    params.FilterDescendantsInstances = ignoreList
+                    params.FilterType = Enum.RaycastFilterType.Exclude
+                    
+                    local hit = workspace:Raycast(root.Position, Vector3.new(0, -25, 0), params)
+                    if hit then
+                        return hit.Instance, hit.Position
+                    end
+                    return workspace.Terrain, root.Position - Vector3.new(0, 3, 0)
+                end
+                return workspace.Terrain, Vector3.new(0,0,0)
+            end
+            
+            local reFolder = game:GetService("ReplicatedStorage"):WaitForChild("RE")
+            
+            local function fireSpoofedClick()
+                local targetPart, exactPosition = getAutoClickData()
+                local spoofData = {
+                    ["2_TargetPart"] = targetPart,
+                    ["1_Info"] = "You clicked the screen!",
+                    ["3_ExactPosition"] = exactPosition
+                }
+                
+                for _, r in ipairs(reFolder:GetChildren()) do
+                    if r:IsA("RemoteEvent") and (string.find(r.Name, "Click") or string.find(r.Name, "Spawn") or string.find(r.Name, "Tool")) then
+                        pcall(function() r:FireServer(spoofData) end)
+                    end
+                end
+                
+                local tool = lp.Character:FindFirstChildOfClass("Tool") or lp.Backpack:FindFirstChildOfClass("Tool")
+                if tool then
+                    for _, r in ipairs(tool:GetDescendants()) do
+                        if r:IsA("RemoteEvent") then
+                            pcall(function() r:FireServer(spoofData) end)
+                        end
+                    end
+                end
+            end
+
+            local function silentSpawnLoop(spawnCount, pName, pCat)
+                for i = 1, spawnCount do 
+                    spawnProp(pName, pCat)
+                    fireSpoofedClick()
+                    task.wait(0.035) 
+                end
+            end
+
+            if activeModes["Chair"] and (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"] or activeModes["Orbit"] or activeModes["Ring"]) then
+                silentSpawnLoop(10, "FurnitureBleachers", "Furniture")
+                task.wait(0.1)
+                silentSpawnLoop(15, customPropName, customPropCategory)
+            else
+                silentSpawnLoop(count, propName, propCategory)
+            end
+            return
+        end
+        -- ✨ END SILENT SPOOF CLICK INJECTION ✨
 
         -- ✨ NEW HANDS-FREE DEPLOYMENT INJECTION ✨
         if activeModes["AutoDeploy"] then
