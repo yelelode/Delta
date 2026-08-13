@@ -5,7 +5,7 @@
 -- * [V18.18 HEURISTIC REMOTE SCANNER & STEALTH C-CLOSURE] *
 -- * [V18.26 PREMIUM ONYX EXIT MODAL & ANTI-DELETE STEALTH] *
 -- * [V18.26 ADDED: CINEMATIC WATERFALL STAGGER ANIMATIONS] *
--- * [V18.26 FIXED: LOAD BAR BUG & ULTRA-SMOOTH PHYSICS DRAG] *
+-- * [V18.26 ADDED: SMART HITBOX & ACTIVE ENERGY FLOW SLIDERS]*
 -- =========================================================
 
 -- 🧹 RE-EXECUTION CLEANUP SYSTEM
@@ -664,7 +664,7 @@ proBadge.ZIndex = 11
 local proBadgeCorner = Instance.new("UICorner", proBadge)
 proBadgeCorner.CornerRadius = UDim.new(0, 6)
 
-local proText = Instance.new("TextLabel", header)
+local proText = Instance.new("TextLabel", proBadge)
 proText.Size = UDim2.fromScale(1, 1)
 proText.BackgroundTransparency = 1
 proText.Text = "PRO"
@@ -1823,7 +1823,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     local bgCorner = Instance.new("UICorner", bg)
     bgCorner.CornerRadius = UDim.new(1, 0)
     
-    -- ✨ SMART HITBOX FOR EASY MOBILE/PC DRAG ✨
+    -- ✨ NEW SMART HITBOX FOR EASY MOBILE/PC DRAG ✨
     local hitbox = Instance.new("TextButton", container)
     hitbox.Size = UDim2.new(1, 0, 0, 30)
     hitbox.Position = UDim2.new(0, 0, 0, 13)
@@ -1832,17 +1832,18 @@ local function createSlider(name, min, max, defaultVal, suffix)
     hitbox.ZIndex = 15
     
     local fill = Instance.new("Frame", bg)
-    -- ✨ FIXED THE BUG: Now properly creates UDim2 with 4 arguments ✨
-    fill.Size = UDim2.new((defaultVal - min) / (max - min), 0, 1, 0)
+    fill.Size = UDim2.new((defaultVal - min) / (max - min), 1, 0)
     fill.BackgroundColor3 = Color3.new(1,1,1)
     fill.ZIndex = 9
     
     local fillCorner = Instance.new("UICorner", fill)
     fillCorner.CornerRadius = UDim.new(1, 0)
     
+    -- ✨ ACTIVE ENERGY FLOW GRADIENT ✨
     local fillGrad = Instance.new("UIGradient", fill)
     fillGrad.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Colors.PrimaryDark), 
+        ColorSequenceKeypoint.new(0.5, Color3.new(1, 1, 1)), 
         ColorSequenceKeypoint.new(1, Colors.Primary)
     })
     
@@ -1871,29 +1872,18 @@ local function createSlider(name, min, max, defaultVal, suffix)
     knobStroke.Color = Colors.Primary
     knobStroke.Transparency = 0.8
     knobStroke.Thickness = 2
-    
-    -- ✨ NEW NEON VOLUMETRIC AURA EFFECT ✨
-    local knobAura = Instance.new("Frame", knob)
-    knobAura.Size = UDim2.new(0, 14, 0, 14)
-    knobAura.AnchorPoint = Vector2.new(0.5, 0.5)
-    knobAura.Position = UDim2.fromScale(0.5, 0.5)
-    knobAura.BackgroundColor3 = Colors.Primary
-    knobAura.BackgroundTransparency = 1
-    knobAura.ZIndex = 10
-    
-    local auraCorner = Instance.new("UICorner", knobAura)
-    auraCorner.CornerRadius = UDim.new(1, 0)
 
     local value = defaultVal
     local dragging = false
-    local dragConnection = nil
+    local flowLoop = nil
     
-    local function update(inputX) 
-        local relativeX = math.clamp(inputX - bg.AbsolutePosition.X, 0, bg.AbsoluteSize.X)
+    local function update(input) 
+        local rawPos = input.Position.X
+        local relativeX = math.clamp(rawPos - bg.AbsolutePosition.X, 0, bg.AbsoluteSize.X)
         local pos = relativeX / bg.AbsoluteSize.X
         
-        -- Ultra-smooth Lerp Interpolation
-        TweenService:Create(fill, TweenInfo.new(0.04, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.new(pos, 0, 1, 0)}):Play()
+        local tInfo = TweenInfo.new(0.05, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+        TweenService:Create(fill, tInfo, {Size = UDim2.new(pos, 0, 1, 0)}):Play()
         
         value = math.floor(min + (pos * (max - min)))
         valLabel.Text = value .. (suffix or "")
@@ -1913,28 +1903,22 @@ local function createSlider(name, min, max, defaultVal, suffix)
             TweenService:Create(valBadge, tInfo2, {BackgroundTransparency = 0.2}):Play()
             TweenService:Create(valStroke, tInfo2, {Transparency = 0}):Play()
             
-            -- ✨ AURA EXPAND ANIMATION ✨
-            TweenService:Create(knobAura, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 36, 0, 36), BackgroundTransparency = 0.75}):Play()
-            
-            update(input.Position.X) 
-            
-            if dragConnection then dragConnection:Disconnect() end
-            dragConnection = RunService.RenderStepped:Connect(function()
-                if dragging then
-                    local mousePos = UserInputService:GetMouseLocation()
-                    update(mousePos.X)
-                end
+            -- ✨ ENERGY FLOW ANIMATION START ✨
+            if flowLoop then flowLoop:Disconnect() end
+            local offsetTick = 0
+            flowLoop = RunService.RenderStepped:Connect(function(dt)
+                if _G.TXR_InstanceID ~= currentExecutionID then flowLoop:Disconnect() return end
+                offsetTick = (offsetTick + dt * 2) % 1
+                fillGrad.Offset = Vector2.new(-offsetTick, 0)
             end)
+            
+            update(input) 
         end 
     end)
     
     hitbox.InputEnded:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
             dragging = false
-            if dragConnection then 
-                dragConnection:Disconnect() 
-                dragConnection = nil 
-            end
             uiHoverCount = math.max(0, uiHoverCount - 1) -- ✨ Unfocus
             
             local tInfo1 = TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
@@ -1946,8 +1930,17 @@ local function createSlider(name, min, max, defaultVal, suffix)
             TweenService:Create(valBadge, tInfo2, {BackgroundTransparency = 0.85}):Play()
             TweenService:Create(valStroke, tInfo2, {Transparency = 0.5}):Play()
             
-            -- ✨ AURA SHRINK ANIMATION ✨
-            TweenService:Create(knobAura, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 14, 0, 14), BackgroundTransparency = 1}):Play()
+            -- ✨ ENERGY FLOW ANIMATION STOP ✨
+            if flowLoop then 
+                flowLoop:Disconnect() 
+                TweenService:Create(fillGrad, TweenInfo.new(0.5), {Offset = Vector2.new(0,0)}):Play()
+            end
+        end 
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input) 
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then 
+            update(input) 
         end 
     end)
     
