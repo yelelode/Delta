@@ -951,7 +951,7 @@ local function spawnSonar(pulseColor)
     end)
 end
 
--- ✨ 🛑 V18.26 PREMIUM ONYX EXIT MODAL (SEAMLESS UI MATCH) 🛑 ✨
+-- ✨ 🛑 V18.26 PREMIUM ONYX EXIT MODAL (ULTRA SLEEK) 🛑 ✨
 local closeOverlay = Instance.new("Frame", mainFrame)
 closeOverlay.Size = UDim2.fromScale(1, 1)
 closeOverlay.BackgroundColor3 = Color3.new(0, 0, 0)
@@ -959,104 +959,88 @@ closeOverlay.BackgroundTransparency = 1
 closeOverlay.ZIndex = 50
 closeOverlay.Visible = false
 
-local overlayCorner = Instance.new("UICorner", closeOverlay)
-overlayCorner.CornerRadius = UDim.new(0, 14)
-
 local closeModal = Instance.new("Frame", closeOverlay)
-closeModal.Size = UDim2.fromScale(0.85, 0.42)
+closeModal.Size = UDim2.fromScale(0.85, 0.4)
 closeModal.AnchorPoint = Vector2.new(0.5, 0.5)
 closeModal.Position = UDim2.fromScale(0.5, 0.5)
-closeModal.BackgroundColor3 = Color3.new(1, 1, 1)
-closeModal.BackgroundTransparency = 0.05
+closeModal.BackgroundColor3 = Colors.Background
+closeModal.BackgroundTransparency = 0.1
+closeModal.ClipsDescendants = true
 closeModal.ZIndex = 51
 
-local cmBgGradient = Instance.new("UIGradient", closeModal)
-cmBgGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(16, 20, 30)), 
-    ColorSequenceKeypoint.new(0.5, Colors.Background), 
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(16, 20, 30))
-})
-cmBgGradient.Rotation = -45
-
 local cmCorner = Instance.new("UICorner", closeModal)
-cmCorner.CornerRadius = UDim.new(0, 12)
+cmCorner.CornerRadius = UDim.new(0, 14)
 
 local cmStroke = Instance.new("UIStroke", closeModal)
-cmStroke.Thickness = 1.5
-cmStroke.Color = Color3.new(1,1,1)
-cmStroke.Transparency = 0.2
+cmStroke.Color = Colors.Primary
+cmStroke.Thickness = 2
+cmStroke.Transparency = 0.5
 
-local cmStrokeGrad = Instance.new("UIGradient", cmStroke)
-cmStrokeGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Colors.Primary), 
-    ColorSequenceKeypoint.new(0.5, Colors.Purple), 
+local cmGrad = Instance.new("UIGradient", cmStroke)
+cmGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Colors.Primary),
+    ColorSequenceKeypoint.new(0.5, Colors.Purple),
     ColorSequenceKeypoint.new(1, Colors.Primary)
 })
 
 local cmTitle = Instance.new("TextLabel", closeModal)
-cmTitle.Size = UDim2.new(1, 0, 0, 30)
-cmTitle.Position = UDim2.fromOffset(0, 12)
+cmTitle.Size = UDim2.new(1, 0, 0, 40)
+cmTitle.Position = UDim2.fromOffset(0, 10)
 cmTitle.BackgroundTransparency = 1
-cmTitle.Text = "SYSTEM OVERRIDE"
+cmTitle.Text = "SYSTEM HALT"
 cmTitle.TextColor3 = Color3.new(1,1,1)
 cmTitle.Font = Enum.Font.GothamBlack
-cmTitle.TextSize = 15
+cmTitle.TextSize = 16
 cmTitle.ZIndex = 52
-
-local cmTitleGrad = Instance.new("UIGradient", cmTitle)
-cmTitleGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Colors.Primary), 
-    ColorSequenceKeypoint.new(1, Colors.Purple)
-})
 crispText(cmTitle)
 
 local cmSub = Instance.new("TextLabel", closeModal)
-cmSub.Size = UDim2.new(1, -30, 0, 40)
-cmSub.Position = UDim2.fromOffset(15, 45)
+cmSub.Size = UDim2.new(1, -40, 0, 40)
+cmSub.Position = UDim2.new(0, 20, 0, 50)
 cmSub.BackgroundTransparency = 1
-cmSub.Text = "Terminate Quantum Core and halt all active network processes?"
-cmSub.TextColor3 = Colors.Text
+cmSub.Text = "Terminate Quantum Core and halt all active processes?"
+cmSub.TextColor3 = Colors.SubText
 cmSub.Font = Enum.Font.GothamMedium
 cmSub.TextSize = 12
 cmSub.TextWrapped = true
 cmSub.ZIndex = 52
-crispText(cmSub)
 
-local cmCancel = Instance.new("TextButton", closeModal)
-cmCancel.Size = UDim2.new(0.43, 0, 0, 36)
-cmCancel.Position = UDim2.new(0.05, 0, 1, -46)
+local buttonContainer = Instance.new("Frame", closeModal)
+buttonContainer.Size = UDim2.new(1, -20, 0, 40)
+buttonContainer.Position = UDim2.new(0, 10, 1, -50)
+buttonContainer.BackgroundTransparency = 1
+buttonContainer.ZIndex = 52
+
+local cmCancel = Instance.new("TextButton", buttonContainer)
+cmCancel.Size = UDim2.new(0.48, 0, 1, 0)
+cmCancel.Position = UDim2.fromScale(0, 0)
 cmCancel.BackgroundColor3 = Colors.Surface
 cmCancel.BackgroundTransparency = 0.5
-cmCancel.Text = "CANCEL"
-cmCancel.TextColor3 = Colors.Text
+cmCancel.Text = "RETURN"
+cmCancel.TextColor3 = Colors.Primary
 cmCancel.Font = Enum.Font.GothamBold
 cmCancel.TextSize = 12
-cmCancel.ZIndex = 52
+cmCancel.AutoButtonColor = false
+cmCancel.ZIndex = 53
 local cnlCorner = Instance.new("UICorner", cmCancel)
 cnlCorner.CornerRadius = UDim.new(0, 8)
-
 local cnlStroke = Instance.new("UIStroke", cmCancel)
 cnlStroke.Color = Colors.Primary
-cnlStroke.Thickness = 1
 cnlStroke.Transparency = 0.5
 
-local cmConfirm = Instance.new("TextButton", closeModal)
-cmConfirm.Size = UDim2.new(0.43, 0, 0, 36)
-cmConfirm.Position = UDim2.new(0.52, 0, 1, -46)
+local cmConfirm = Instance.new("TextButton", buttonContainer)
+cmConfirm.Size = UDim2.new(0.48, 0, 1, 0)
+cmConfirm.Position = UDim2.fromScale(0.52, 0)
 cmConfirm.BackgroundColor3 = Colors.Danger
 cmConfirm.BackgroundTransparency = 0.2
 cmConfirm.Text = "TERMINATE"
 cmConfirm.TextColor3 = Color3.new(1,1,1)
 cmConfirm.Font = Enum.Font.GothamBlack
 cmConfirm.TextSize = 12
-cmConfirm.ZIndex = 52
+cmConfirm.AutoButtonColor = false
+cmConfirm.ZIndex = 53
 local cfmCorner = Instance.new("UICorner", cmConfirm)
 cfmCorner.CornerRadius = UDim.new(0, 8)
-
-local cfmStroke = Instance.new("UIStroke", cmConfirm)
-cfmStroke.Color = Colors.Danger
-cfmStroke.Thickness = 1.5
-cfmStroke.Transparency = 0.2
 
 applySmartHover(cmConfirm, nil)
 applySmartHover(cmCancel, nil)
@@ -1084,10 +1068,8 @@ task.spawn(function()
             strokeGrad.Rotation = rot
             bgGradient.Rotation = (rot/2) - 45
             
-            -- SEAMLESS MATCHING GRADIENT ANIMATION
-            cmStrokeGrad.Rotation = rot
-            cmBgGradient.Rotation = (rot/2) - 45
-            cmTitleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
+            -- UI SYNC
+            cmGrad.Rotation = rot
             
             local breath = (math.sin(t * 3) + 1) / 2 
             aura.ImageTransparency = 0.45 + (breath * 0.15)
@@ -1403,10 +1385,10 @@ end)
 cmCancel.MouseButton1Click:Connect(function()
     TweenService:Create(closeOverlay, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
     local hideTween = TweenService:Create(closeModal, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.fromScale(0.5, 0.55)})
-    hideTween:Play()
     hideTween.Completed:Connect(function()
         closeOverlay.Visible = false
     end)
+    hideTween:Play()
 end)
 
 cmConfirm.MouseButton1Click:Connect(function() 
