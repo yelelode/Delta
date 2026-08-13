@@ -5,7 +5,7 @@
 -- * [V18.18 HEURISTIC REMOTE SCANNER & STEALTH C-CLOSURE] *
 -- * [V18.26 PREMIUM ONYX EXIT MODAL & ANTI-DELETE STEALTH] *
 -- * [V18.26 ADDED: CINEMATIC WATERFALL STAGGER ANIMATIONS] *
--- * [V18.26 FIXED: LOAD BAR BUG & ADDED NEON AURA EFFECT] *
+-- * [V18.26 FIXED: LOAD BAR BUG & ULTRA-SMOOTH PHYSICS DRAG] *
 -- =========================================================
 
 -- 🧹 RE-EXECUTION CLEANUP SYSTEM
@@ -664,7 +664,7 @@ proBadge.ZIndex = 11
 local proBadgeCorner = Instance.new("UICorner", proBadge)
 proBadgeCorner.CornerRadius = UDim.new(0, 6)
 
-local proText = Instance.new("TextLabel", proBadge)
+local proText = Instance.new("TextLabel", header)
 proText.Size = UDim2.fromScale(1, 1)
 proText.BackgroundTransparency = 1
 proText.Text = "PRO"
@@ -1886,14 +1886,14 @@ local function createSlider(name, min, max, defaultVal, suffix)
 
     local value = defaultVal
     local dragging = false
+    local dragConnection = nil
     
-    local function update(input) 
-        local rawPos = input.Position.X
-        local relativeX = math.clamp(rawPos - bg.AbsolutePosition.X, 0, bg.AbsoluteSize.X)
+    local function update(inputX) 
+        local relativeX = math.clamp(inputX - bg.AbsolutePosition.X, 0, bg.AbsoluteSize.X)
         local pos = relativeX / bg.AbsoluteSize.X
         
-        local tInfo = TweenInfo.new(0.05, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-        TweenService:Create(fill, tInfo, {Size = UDim2.new(pos, 0, 1, 0)}):Play()
+        -- Ultra-smooth Lerp Interpolation
+        TweenService:Create(fill, TweenInfo.new(0.04, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.new(pos, 0, 1, 0)}):Play()
         
         value = math.floor(min + (pos * (max - min)))
         valLabel.Text = value .. (suffix or "")
@@ -1916,13 +1916,25 @@ local function createSlider(name, min, max, defaultVal, suffix)
             -- ✨ AURA EXPAND ANIMATION ✨
             TweenService:Create(knobAura, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 36, 0, 36), BackgroundTransparency = 0.75}):Play()
             
-            update(input) 
+            update(input.Position.X) 
+            
+            if dragConnection then dragConnection:Disconnect() end
+            dragConnection = RunService.RenderStepped:Connect(function()
+                if dragging then
+                    local mousePos = UserInputService:GetMouseLocation()
+                    update(mousePos.X)
+                end
+            end)
         end 
     end)
     
     hitbox.InputEnded:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
             dragging = false
+            if dragConnection then 
+                dragConnection:Disconnect() 
+                dragConnection = nil 
+            end
             uiHoverCount = math.max(0, uiHoverCount - 1) -- ✨ Unfocus
             
             local tInfo1 = TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
@@ -1936,12 +1948,6 @@ local function createSlider(name, min, max, defaultVal, suffix)
             
             -- ✨ AURA SHRINK ANIMATION ✨
             TweenService:Create(knobAura, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 14, 0, 14), BackgroundTransparency = 1}):Play()
-        end 
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input) 
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then 
-            update(input) 
         end 
     end)
     
