@@ -190,8 +190,11 @@ local function crispText(element)
     stroke.Thickness = 1.2
 end
 
--- ✨ WATERFALL STAGGER ANIMATION ENGINE ✨
+-- ✨ WATERFALL STAGGER ANIMATION ENGINE (FIXED GLITCH & OVERLAP) ✨
 local function animateWaterfall(container)
+    local currentID = (container:GetAttribute("WaterfallID") or 0) + 1
+    container:SetAttribute("WaterfallID", currentID)
+    
     task.spawn(function()
         local items = {}
         for _, child in ipairs(container:GetChildren()) do
@@ -210,6 +213,7 @@ local function animateWaterfall(container)
         end)
 
         for _, child in ipairs(items) do
+            if container:GetAttribute("WaterfallID") ~= currentID then return end -- Cancel if naya menu open hua
             local scale = child:FindFirstChildOfClass("UIScale")
             if scale then
                 TweenService:Create(scale, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
@@ -1560,6 +1564,7 @@ local function createMenu(titleStr)
     local lay = Instance.new("UIListLayout", scroll)
     lay.Padding = UDim.new(0, 8)
     lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    lay.SortOrder = Enum.SortOrder.LayoutOrder
     
     local scrollPad = Instance.new("UIPadding", scroll)
     scrollPad.PaddingLeft = UDim.new(0, 10)
@@ -1599,6 +1604,7 @@ local function refreshPlayers()
         btn.TextSize = 11
         btn.TextXAlignment = Enum.TextXAlignment.Left
         btn.AutoButtonColor = false
+        btn.LayoutOrder = getOrder()
         btn.ZIndex = 23
         
         local btnCorner = Instance.new("UICorner", btn)
@@ -1700,6 +1706,7 @@ for _, geo in ipairs(geometries) do
     btn.TextSize = 11
     btn.TextXAlignment = Enum.TextXAlignment.Left
     btn.AutoButtonColor = false
+    btn.LayoutOrder = getOrder()
     btn.ZIndex = 23
     
     local btnCorner = Instance.new("UICorner", btn)
@@ -1823,7 +1830,6 @@ local function createSlider(name, min, max, defaultVal, suffix)
     local bgCorner = Instance.new("UICorner", bg)
     bgCorner.CornerRadius = UDim.new(1, 0)
     
-    -- ✨ NEW SMART HITBOX FOR EASY MOBILE/PC DRAG ✨
     local hitbox = Instance.new("TextButton", container)
     hitbox.Size = UDim2.new(1, 0, 0, 30)
     hitbox.Position = UDim2.new(0, 0, 0, 13)
@@ -1833,19 +1839,17 @@ local function createSlider(name, min, max, defaultVal, suffix)
     
     local fill = Instance.new("Frame", bg)
     fill.Size = UDim2.new((defaultVal - min) / (max - min), 1, 0)
-    fill.BackgroundColor3 = Color3.new(1,1,1)
+    fill.BackgroundColor3 = Colors.PrimaryDark -- Default Idle Color
     fill.ZIndex = 9
     
     local fillCorner = Instance.new("UICorner", fill)
     fillCorner.CornerRadius = UDim.new(1, 0)
     
-    -- ✨ ACTIVE ENERGY FLOW GRADIENT ✨
-    local fillGrad = Instance.new("UIGradient", fill)
-    fillGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Colors.PrimaryDark), 
-        ColorSequenceKeypoint.new(0.5, Color3.new(1, 1, 1)), 
-        ColorSequenceKeypoint.new(1, Colors.Primary)
-    })
+    -- ✨ NEW: STATIC GLOW EFFECT SYSTEM ✨
+    local fillGlow = Instance.new("UIStroke", fill)
+    fillGlow.Color = Colors.Primary
+    fillGlow.Thickness = 1
+    fillGlow.Transparency = 1 -- Hidden when idle
     
     local knob = Instance.new("Frame", fill)
     knob.Size = UDim2.new(0, 14, 0, 14)
@@ -1875,7 +1879,6 @@ local function createSlider(name, min, max, defaultVal, suffix)
 
     local value = defaultVal
     local dragging = false
-    local flowLoop = nil
     
     local function update(input) 
         local rawPos = input.Position.X
@@ -1903,14 +1906,9 @@ local function createSlider(name, min, max, defaultVal, suffix)
             TweenService:Create(valBadge, tInfo2, {BackgroundTransparency = 0.2}):Play()
             TweenService:Create(valStroke, tInfo2, {Transparency = 0}):Play()
             
-            -- ✨ ENERGY FLOW ANIMATION START ✨
-            if flowLoop then flowLoop:Disconnect() end
-            local offsetTick = 0
-            flowLoop = RunService.RenderStepped:Connect(function(dt)
-                if _G.TXR_InstanceID ~= currentExecutionID then flowLoop:Disconnect() return end
-                offsetTick = (offsetTick + dt * 2) % 1
-                fillGrad.Offset = Vector2.new(-offsetTick, 0)
-            end)
+            -- ✨ GLOW ON DRAG ✨
+            TweenService:Create(fill, tInfo2, {BackgroundColor3 = Color3.new(1, 1, 1)}):Play()
+            TweenService:Create(fillGlow, tInfo2, {Transparency = 0.4, Thickness = 4}):Play()
             
             update(input) 
         end 
@@ -1930,11 +1928,9 @@ local function createSlider(name, min, max, defaultVal, suffix)
             TweenService:Create(valBadge, tInfo2, {BackgroundTransparency = 0.85}):Play()
             TweenService:Create(valStroke, tInfo2, {Transparency = 0.5}):Play()
             
-            -- ✨ ENERGY FLOW ANIMATION STOP ✨
-            if flowLoop then 
-                flowLoop:Disconnect() 
-                TweenService:Create(fillGrad, TweenInfo.new(0.5), {Offset = Vector2.new(0,0)}):Play()
-            end
+            -- ✨ GLOW OFF WHEN RELEASED ✨
+            TweenService:Create(fill, tInfo2, {BackgroundColor3 = Colors.PrimaryDark}):Play()
+            TweenService:Create(fillGlow, tInfo2, {Transparency = 1, Thickness = 1}):Play()
         end 
     end)
     
