@@ -951,7 +951,7 @@ local function spawnSonar(pulseColor)
     end)
 end
 
--- ✨ 🛑 V18.26 PREMIUM ONYX EXIT MODAL 🛑 ✨
+-- ✨ 🛑 V18.26 PREMIUM ONYX EXIT MODAL (ENHANCED HACKER VIBE) 🛑 ✨
 local closeOverlay = Instance.new("Frame", mainFrame)
 closeOverlay.Size = UDim2.fromScale(1, 1)
 closeOverlay.BackgroundColor3 = Color3.new(0, 0, 0)
@@ -963,18 +963,19 @@ local overlayCorner = Instance.new("UICorner", closeOverlay)
 overlayCorner.CornerRadius = UDim.new(0, 14)
 
 local closeModal = Instance.new("Frame", closeOverlay)
-closeModal.Size = UDim2.fromScale(0.85, 0.42)
+closeModal.Size = UDim2.fromScale(0.85, 0.48)
 closeModal.AnchorPoint = Vector2.new(0.5, 0.5)
 closeModal.Position = UDim2.fromScale(0.5, 0.5)
-closeModal.BackgroundColor3 = Color3.new(1, 1, 1)
+closeModal.BackgroundColor3 = Colors.Background
 closeModal.BackgroundTransparency = 0.05
+closeModal.ClipsDescendants = true
 closeModal.ZIndex = 51
 
 local cmBgGradient = Instance.new("UIGradient", closeModal)
 cmBgGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(16, 20, 30)), 
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 10, 15)), 
     ColorSequenceKeypoint.new(0.5, Colors.Background), 
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(16, 20, 30))
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 10, 15))
 })
 cmBgGradient.Rotation = -45
 
@@ -983,75 +984,62 @@ cmCorner.CornerRadius = UDim.new(0, 12)
 
 local cmStroke = Instance.new("UIStroke", closeModal)
 cmStroke.Thickness = 1.5
-cmStroke.Color = Color3.new(1,1,1)
+cmStroke.Color = Colors.Danger
 cmStroke.Transparency = 0.2
-
-local cmStrokeGrad = Instance.new("UIGradient", cmStroke)
-cmStrokeGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Colors.Primary), 
-    ColorSequenceKeypoint.new(0.5, Colors.Purple), 
-    ColorSequenceKeypoint.new(1, Colors.Primary)
-})
 
 local cmTitle = Instance.new("TextLabel", closeModal)
 cmTitle.Size = UDim2.new(1, 0, 0, 30)
-cmTitle.Position = UDim2.fromOffset(0, 12)
+cmTitle.Position = UDim2.fromOffset(0, 15)
 cmTitle.BackgroundTransparency = 1
-cmTitle.Text = "SYSTEM OVERRIDE"
-cmTitle.TextColor3 = Color3.new(1,1,1)
+cmTitle.Text = "⚠ CRITICAL HALT ⚠"
+cmTitle.TextColor3 = Colors.Danger
 cmTitle.Font = Enum.Font.GothamBlack
-cmTitle.TextSize = 15
+cmTitle.TextSize = 16
 cmTitle.ZIndex = 52
-
-local cmTitleGrad = Instance.new("UIGradient", cmTitle)
-cmTitleGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Colors.Primary), 
-    ColorSequenceKeypoint.new(1, Colors.Purple)
-})
 crispText(cmTitle)
 
 local cmSub = Instance.new("TextLabel", closeModal)
-cmSub.Size = UDim2.new(1, -30, 0, 40)
-cmSub.Position = UDim2.fromOffset(15, 45)
+cmSub.Size = UDim2.new(1, -30, 0, 45)
+cmSub.Position = UDim2.fromOffset(15, 48)
 cmSub.BackgroundTransparency = 1
-cmSub.Text = "Terminate Quantum Core and halt all active network processes?"
+cmSub.Text = "Terminating the Quantum Core will instantly kill all active network processes."
 cmSub.TextColor3 = Colors.Text
 cmSub.Font = Enum.Font.GothamMedium
-cmSub.TextSize = 12
+cmSub.TextSize = 11
 cmSub.TextWrapped = true
 cmSub.ZIndex = 52
 crispText(cmSub)
 
 local cmConfirm = Instance.new("TextButton", closeModal)
-cmConfirm.Size = UDim2.new(0.43, 0, 0, 36)
-cmConfirm.Position = UDim2.new(0.05, 0, 1, -46)
+cmConfirm.Size = UDim2.new(0.85, 0, 0, 36)
+cmConfirm.Position = UDim2.new(0.075, 0, 1, -88)
 cmConfirm.BackgroundColor3 = Colors.Danger
-cmConfirm.BackgroundTransparency = 0.2
-cmConfirm.Text = "TERMINATE"
+cmConfirm.BackgroundTransparency = 0.15
+cmConfirm.Text = "TERMINATE SYSTEM"
 cmConfirm.TextColor3 = Color3.new(1,1,1)
 cmConfirm.Font = Enum.Font.GothamBlack
 cmConfirm.TextSize = 12
 cmConfirm.ZIndex = 52
 local cfmCorner = Instance.new("UICorner", cmConfirm)
-cfmCorner.CornerRadius = UDim.new(0, 8)
+cfmCorner.CornerRadius = UDim.new(0, 6)
 
 local cfmStroke = Instance.new("UIStroke", cmConfirm)
 cfmStroke.Color = Colors.Danger
-cfmStroke.Thickness = 1.5
+cfmStroke.Thickness = 2
 cfmStroke.Transparency = 0.2
 
 local cmCancel = Instance.new("TextButton", closeModal)
-cmCancel.Size = UDim2.new(0.43, 0, 0, 36)
-cmCancel.Position = UDim2.new(0.52, 0, 1, -46)
+cmCancel.Size = UDim2.new(0.85, 0, 0, 36)
+cmCancel.Position = UDim2.new(0.075, 0, 1, -44)
 cmCancel.BackgroundColor3 = Colors.Surface
 cmCancel.BackgroundTransparency = 0.5
-cmCancel.Text = "CANCEL"
+cmCancel.Text = "RETURN TO MATRIX"
 cmCancel.TextColor3 = Colors.Text
 cmCancel.Font = Enum.Font.GothamBold
 cmCancel.TextSize = 12
 cmCancel.ZIndex = 52
 local cnlCorner = Instance.new("UICorner", cmCancel)
-cnlCorner.CornerRadius = UDim.new(0, 8)
+cnlCorner.CornerRadius = UDim.new(0, 6)
 
 local cnlStroke = Instance.new("UIStroke", cmCancel)
 cnlStroke.Color = Colors.Primary
@@ -1084,9 +1072,9 @@ task.spawn(function()
             strokeGrad.Rotation = rot
             bgGradient.Rotation = (rot/2) - 45
             
-            cmStrokeGrad.Rotation = rot
+            -- NEW MODAL ANIMATION
             cmBgGradient.Rotation = (rot/2) - 45
-            cmTitleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
+            cmStroke.Transparency = 0.2 + (math.sin(t * 6) * 0.3) -- Pulsing Danger Glow
             
             local breath = (math.sin(t * 3) + 1) / 2 
             aura.ImageTransparency = 0.45 + (breath * 0.15)
