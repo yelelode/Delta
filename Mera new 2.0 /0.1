@@ -5,6 +5,7 @@
 -- * [V18.18 HEURISTIC REMOTE SCANNER & STEALTH C-CLOSURE] *
 -- * [V18.26 PREMIUM ONYX EXIT MODAL & ANTI-DELETE STEALTH] *
 -- * [V18.26 ADDED: CINEMATIC WATERFALL STAGGER ANIMATIONS] *
+-- * [V18.26 ADDED: SMART HITBOX & ACTIVE ENERGY FLOW SLIDERS]*
 -- =========================================================
 
 -- 🧹 RE-EXECUTION CLEANUP SYSTEM
@@ -1813,16 +1814,22 @@ local function createSlider(name, min, max, defaultVal, suffix)
     valLabel.ZIndex = 9
     crispText(valLabel)
 
-    local bg = Instance.new("TextButton", container)
+    local bg = Instance.new("Frame", container)
     bg.Size = UDim2.new(1, -20, 0, 4)
     bg.Position = UDim2.new(0, 10, 0, 26)
     bg.BackgroundColor3 = Colors.SurfaceHover
-    bg.Text = ""
-    bg.AutoButtonColor = false
     bg.ZIndex = 8
     
     local bgCorner = Instance.new("UICorner", bg)
     bgCorner.CornerRadius = UDim.new(1, 0)
+    
+    -- ✨ NEW SMART HITBOX FOR EASY MOBILE/PC DRAG ✨
+    local hitbox = Instance.new("TextButton", container)
+    hitbox.Size = UDim2.new(1, 0, 0, 30)
+    hitbox.Position = UDim2.new(0, 0, 0, 13)
+    hitbox.BackgroundTransparency = 1
+    hitbox.Text = ""
+    hitbox.ZIndex = 15
     
     local fill = Instance.new("Frame", bg)
     fill.Size = UDim2.new((defaultVal - min) / (max - min), 1, 0)
@@ -1832,9 +1839,11 @@ local function createSlider(name, min, max, defaultVal, suffix)
     local fillCorner = Instance.new("UICorner", fill)
     fillCorner.CornerRadius = UDim.new(1, 0)
     
+    -- ✨ ACTIVE ENERGY FLOW GRADIENT ✨
     local fillGrad = Instance.new("UIGradient", fill)
     fillGrad.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Colors.PrimaryDark), 
+        ColorSequenceKeypoint.new(0.5, Color3.new(1, 1, 1)), 
         ColorSequenceKeypoint.new(1, Colors.Primary)
     })
     
@@ -1848,8 +1857,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     local knobCorner = Instance.new("UICorner", knob)
     knobCorner.CornerRadius = UDim.new(1,0)
     
-    local knobDot = Instance.new("Frame", knobDot)
-    knobDot = Instance.new("Frame", knob)
+    local knobDot = Instance.new("Frame", knob)
     knobDot.Size = UDim2.new(0, 6, 0, 6)
     knobDot.AnchorPoint = Vector2.new(0.5, 0.5)
     knobDot.Position = UDim2.fromScale(0.5, 0.5)
@@ -1867,16 +1875,21 @@ local function createSlider(name, min, max, defaultVal, suffix)
 
     local value = defaultVal
     local dragging = false
+    local flowLoop = nil
     
     local function update(input) 
-        local pos = math.clamp((input.Position.X - bg.AbsolutePosition.X) / bg.AbsoluteSize.X, 0, 1)
-        local tInfo = TweenInfo.new(0.08, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
+        local rawPos = input.Position.X
+        local relativeX = math.clamp(rawPos - bg.AbsolutePosition.X, 0, bg.AbsoluteSize.X)
+        local pos = relativeX / bg.AbsoluteSize.X
+        
+        local tInfo = TweenInfo.new(0.05, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
         TweenService:Create(fill, tInfo, {Size = UDim2.new(pos, 0, 1, 0)}):Play()
+        
         value = math.floor(min + (pos * (max - min)))
         valLabel.Text = value .. (suffix or "")
     end
     
-    bg.InputBegan:Connect(function(input) 
+    hitbox.InputBegan:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
             dragging = true
             uiHoverCount = uiHoverCount + 1 -- ✨ Focus
@@ -1886,15 +1899,24 @@ local function createSlider(name, min, max, defaultVal, suffix)
             
             TweenService:Create(knob, tInfo1, {Size = UDim2.new(0, 18, 0, 18)}):Play()
             TweenService:Create(knobDot, tInfo2, {Size = UDim2.new(0, 8, 0, 8)}):Play()
-            TweenService:Create(knobStroke, tInfo2, {Transparency = 0.2, Thickness = 4}):Play()
-            TweenService:Create(valBadge, tInfo2, {BackgroundTransparency = 0.5}):Play()
+            TweenService:Create(knobStroke, tInfo2, {Transparency = 0.1, Thickness = 4}):Play()
+            TweenService:Create(valBadge, tInfo2, {BackgroundTransparency = 0.2}):Play()
             TweenService:Create(valStroke, tInfo2, {Transparency = 0}):Play()
+            
+            -- ✨ ENERGY FLOW ANIMATION START ✨
+            if flowLoop then flowLoop:Disconnect() end
+            local offsetTick = 0
+            flowLoop = RunService.RenderStepped:Connect(function(dt)
+                if _G.TXR_InstanceID ~= currentExecutionID then flowLoop:Disconnect() return end
+                offsetTick = (offsetTick + dt * 2) % 1
+                fillGrad.Offset = Vector2.new(-offsetTick, 0)
+            end)
             
             update(input) 
         end 
     end)
     
-    bg.InputEnded:Connect(function(input) 
+    hitbox.InputEnded:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
             dragging = false
             uiHoverCount = math.max(0, uiHoverCount - 1) -- ✨ Unfocus
@@ -1907,6 +1929,12 @@ local function createSlider(name, min, max, defaultVal, suffix)
             TweenService:Create(knobStroke, tInfo2, {Transparency = 0.8, Thickness = 2}):Play()
             TweenService:Create(valBadge, tInfo2, {BackgroundTransparency = 0.85}):Play()
             TweenService:Create(valStroke, tInfo2, {Transparency = 0.5}):Play()
+            
+            -- ✨ ENERGY FLOW ANIMATION STOP ✨
+            if flowLoop then 
+                flowLoop:Disconnect() 
+                TweenService:Create(fillGrad, TweenInfo.new(0.5), {Offset = Vector2.new(0,0)}):Play()
+            end
         end 
     end)
     
