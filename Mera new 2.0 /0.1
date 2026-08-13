@@ -127,6 +127,10 @@ local customPropName = "ScreensRobotBig"
 local customPropCategory = "Screens"
 local lastGameSpawnTime = 0
 
+-- ✨ UI INTERACTION STATES FOR DOF FOCUS ✨
+local uiHoverCount = 0
+local isSubMenuOpen = false
+
 -- ✨ SMART METAMETHOD HOOK (WITH C-CLOSURE STEALTH) ✨
 pcall(function()
     local oldNamecall
@@ -378,6 +382,7 @@ local function applySmartHover(btn, modeKey)
 
     btn.MouseEnter:Connect(function()
         isHovered = true
+        uiHoverCount = uiHoverCount + 1 -- ✨ UI Focus Trigger
         TweenService:Create(btnScale, hoverInInfo, {Scale = 1.05}):Play()
         TweenService:Create(corner, hoverInInfo, {CornerRadius = UDim.new(1, 0)}):Play() 
         
@@ -392,6 +397,7 @@ local function applySmartHover(btn, modeKey)
 
     btn.MouseLeave:Connect(function()
         isHovered = false
+        uiHoverCount = math.max(0, uiHoverCount - 1) -- ✨ UI Focus Release
         TweenService:Create(btnScale, hoverOutInfo, {Scale = 1}):Play()
         TweenService:Create(corner, hoverOutInfo, {CornerRadius = UDim.new(0, 8)}):Play() 
         
@@ -536,7 +542,7 @@ strokeGrad.Color = ColorSequence.new({
 local mainScale = Instance.new("UIScale", mainFrame)
 mainScale.Scale = 0.85
 
--- ✨ 🌐 V18.26 PREMIUM CLEAN MATRIX RAIN ENGINE 🌐 ✨
+-- ✨ 🌐 V18.26 PREMIUM MATRIX RAIN WITH SELECTIVE DOF FOCUS 🌐 ✨
 local matrixContainer = Instance.new("Frame", mainFrame)
 matrixContainer.Size = UDim2.fromScale(1, 1)
 matrixContainer.BackgroundTransparency = 1
@@ -546,7 +552,6 @@ matrixContainer.ClipsDescendants = true
 local matrixDrops = {}
 local matrixChars = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "Z", "X", "V", "ア", "イ", "ウ", "エ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "セ", "ソ"}
 
--- Reduced count to 55 for a clean, non-cluttered look
 for i = 1, 55 do
     local drop = Instance.new("TextLabel", matrixContainer)
     drop.Size = UDim2.new(0, 20, 0, 20)
@@ -560,8 +565,8 @@ for i = 1, 55 do
     stroke.Thickness = 0.6 
     stroke.Color = Colors.PrimaryDark
     
-    local depthLayer = math.random(1, 3) -- Kept at 3 so words don't pop into the face
-    local scaleMult = 0.6 + (depthLayer * 0.15) -- Controlled size multiplier
+    local depthLayer = math.random(1, 4) 
+    local scaleMult = 0.6 + (depthLayer * 0.15) 
     
     drop.TextSize = math.random(12, 15) * scaleMult
     
@@ -570,10 +575,11 @@ for i = 1, 55 do
         stroke = stroke,
         x = math.random() * 0.95,
         y = math.random() * -1.5,
-        speed = (math.random(12, 35) / 100) * scaleMult,
+        baseSpeed = (math.random(12, 35) / 100) * scaleMult,
+        speed = 0,
         tickOffset = math.random(1, 10),
         depth = depthLayer,
-        isHead = (math.random() > 0.85) -- Rare clean white leading head
+        isHead = (math.random() > 0.85) 
     })
 end
 
@@ -1025,6 +1031,7 @@ task.spawn(function()
     local sonarTimer = 0
     local currentSpeedMod = 1
     local currentRadiusMod = 1
+    local currentFocus = 0 -- ✨ Central variable for Depth of Field
     
     RunService.RenderStepped:Connect(function(dt)
         if _G.TXR_InstanceID ~= currentExecutionID then 
@@ -1052,37 +1059,53 @@ task.spawn(function()
             titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
             scanlines.Position = UDim2.new(0, 0, (t * 0.08) % 1 - 1, 0)
 
-            -- ✨ CLEAN & ELEGANT MATRIX RAIN UPDATE ENGINE ✨
+            -- ✨ FOCUS CALCULATION (Links UI Hovers & Menus to the Matrix) ✨
+            local targetFocus = isSubMenuOpen and 0.85 or (uiHoverCount > 0 and 0.45 or 0)
+            currentFocus = currentFocus + (targetFocus - currentFocus) * dt * 6
+            local timeScale = 1 - (currentFocus * 0.75) -- Creates "Bullet-Time" slowdown
+
+            -- ✨ CLEAN & ELEGANT MATRIX RAIN UPDATE ENGINE WITH DOF ✨
             for i, drop in ipairs(matrixDrops) do
-                drop.y = drop.y + (drop.speed * dt)
+                drop.speed = drop.baseSpeed + (math.sin(t * 2 + drop.tickOffset) * 0.05)
+                drop.y = drop.y + (drop.speed * timeScale * dt)
+                
+                local drift = math.sin(t * 1.5 + drop.tickOffset) * 0.005 * (drop.depth / 5) * timeScale
                 
                 if drop.y > 1.1 then
                     drop.y = math.random() * -0.5
                     drop.x = math.random() * 0.95
-                    drop.isHead = (math.random() > 0.85) -- Rare clean white head
+                    drop.isHead = (math.random() > 0.85) 
                 end
                 
-                drop.element.Position = UDim2.fromScale(drop.x, drop.y)
+                drop.element.Position = UDim2.fromScale(drop.x + drift, drop.y)
                 
-                if math.floor(t * 12 + drop.tickOffset) % 4 == 0 then
+                if math.floor(t * (12 * timeScale) + drop.tickOffset) % 4 == 0 then
                     drop.element.Text = matrixChars[math.random(1, #matrixChars)]
                 end
                 
                 local fade = math.clamp((drop.y - 0.2) / 0.7, 0, 1)
-                local depthFade = (3 - drop.depth) * 0.25 
+                
+                -- ✨ DEPTH OF FIELD (DoF) MATH ✨
+                local baseDepthFade = (3 - drop.depth) * 0.25 
+                local focusFade = currentFocus * 0.6 
+                local focusBlur = currentFocus * (drop.depth * 0.2) 
+                local totalBaseTrans = baseDepthFade + focusFade + focusBlur
                 
                 -- Subtle White-Head Effect & Smooth Fading
                 if drop.isHead and drop.y < 0.8 then
                     local headGlow = math.clamp(drop.y * 2.5, 0, 1)
-                    drop.element.TextColor3 = Color3.new(1,1,1):Lerp(Colors.Primary, headGlow)
+                    local headColor = Color3.new(0.85, 1, 1):Lerp(Colors.Primary, headGlow + (currentFocus * 0.5))
+                    drop.element.TextColor3 = headColor
                     drop.stroke.Color = Colors.Primary:Lerp(Colors.PrimaryDark, headGlow)
-                    drop.element.TextTransparency = 0.1 + depthFade + (fade * 0.4)
-                    drop.stroke.Transparency = 0.2 + depthFade + (fade * 0.4)
+                    
+                    drop.element.TextTransparency = math.clamp(0.1 + totalBaseTrans + (fade * 0.4), 0, 1)
+                    drop.stroke.Transparency = math.clamp(0.2 + totalBaseTrans + (fade * 0.4), 0, 1)
                 else
                     drop.element.TextColor3 = Colors.Primary
                     drop.stroke.Color = Colors.PrimaryDark
-                    drop.element.TextTransparency = 0.3 + depthFade + (fade * 0.6)
-                    drop.stroke.Transparency = 0.5 + depthFade + (fade * 0.4)
+                    
+                    drop.element.TextTransparency = math.clamp(0.3 + totalBaseTrans + (fade * 0.6), 0, 1)
+                    drop.stroke.Transparency = math.clamp(0.5 + totalBaseTrans + (fade * 0.4), 0, 1)
                 end
             end
         end
@@ -1512,6 +1535,7 @@ local function createMenu(titleStr)
     end)
     
     backBtn.MouseButton1Click:Connect(function() 
+        isSubMenuOpen = false -- ✨ UI Focus Disable
         local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
         TweenService:Create(menu, tInfo, {Position = UDim2.fromScale(1.2, 0)}):Play()
         mainList.Visible = true 
@@ -1650,6 +1674,7 @@ for _, geo in ipairs(geometries) do
     
     btn.MouseButton1Click:Connect(function() 
         activeGeometry = geo
+        isSubMenuOpen = false -- ✨ UI Focus Disable
         sendNotif("Engine", "Lock: " .. geo, 2)
         
         local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
@@ -1817,6 +1842,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     bg.InputBegan:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
             dragging = true
+            uiHoverCount = uiHoverCount + 1 -- ✨ Focus
             
             local tInfo1 = TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
             local tInfo2 = TweenInfo.new(0.3, Enum.EasingStyle.Quart)
@@ -1834,6 +1860,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     bg.InputEnded:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
             dragging = false
+            uiHoverCount = math.max(0, uiHoverCount - 1) -- ✨ Unfocus
             
             local tInfo1 = TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
             local tInfo2 = TweenInfo.new(0.4, Enum.EasingStyle.Quart)
@@ -1863,6 +1890,7 @@ local getSpeedMs = createSlider("ENGINE YIELD", 10, 300, 50, " %")
 local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true)
 openTargetBtn.MouseButton1Click:Connect(function() 
     mainList.Visible = false
+    isSubMenuOpen = true -- ✨ UI Focus Trigger
     local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     TweenService:Create(playerMenu, tInfo, {Position = UDim2.fromScale(0, 0)}):Play() 
 end)
@@ -1870,6 +1898,7 @@ end)
 local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true)
 openGeoBtn.MouseButton1Click:Connect(function() 
     mainList.Visible = false
+    isSubMenuOpen = true -- ✨ UI Focus Trigger
     local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     TweenService:Create(geoMenu, tInfo, {Position = UDim2.fromScale(0, 0)}):Play() 
 end)
