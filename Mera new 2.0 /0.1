@@ -4,6 +4,7 @@
 -- * [V18.16 DELTATIME LERP PHYSICS FOR 144HZ FEEL ON 60FPS] *
 -- * [V18.18 HEURISTIC REMOTE SCANNER & STEALTH C-CLOSURE] *
 -- * [V18.26 PREMIUM ONYX EXIT MODAL & ANTI-DELETE STEALTH] *
+-- * [V18.26 ADDED: CINEMATIC WATERFALL STAGGER ANIMATIONS] *
 -- =========================================================
 
 -- 🧹 RE-EXECUTION CLEANUP SYSTEM
@@ -186,6 +187,35 @@ local function crispText(element)
     stroke.Color = Color3.new(0, 0, 0)
     stroke.Transparency = 0.75
     stroke.Thickness = 1.2
+end
+
+-- ✨ WATERFALL STAGGER ANIMATION ENGINE ✨
+local function animateWaterfall(container)
+    task.spawn(function()
+        local items = {}
+        for _, child in ipairs(container:GetChildren()) do
+            if child:IsA("GuiObject") and child.Name ~= "UIListLayout" and child.Name ~= "UIPadding" then
+                table.insert(items, child)
+                local scale = child:FindFirstChildOfClass("UIScale")
+                if not scale then
+                    scale = Instance.new("UIScale", child)
+                end
+                scale.Scale = 0 -- Snap to 0 for pop-up effect
+            end
+        end
+        
+        table.sort(items, function(a, b) 
+            return (a.LayoutOrder or 0) < (b.LayoutOrder or 0) 
+        end)
+
+        for _, child in ipairs(items) do
+            local scale = child:FindFirstChildOfClass("UIScale")
+            if scale then
+                TweenService:Create(scale, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+                task.wait(0.035) -- Micro-delay creates the waterfall
+            end
+        end
+    end)
 end
 
 -- ⚠️ ASHU PAPA TRAP (ANTI-SKID SECURITY) ⚠️
@@ -1432,6 +1462,10 @@ openBtn.MouseButton1Click:Connect(function()
     TweenService:Create(auraScale, tInfo2, {Scale = 1}):Play()
     TweenService:Create(mainFrame, tInfo3, {BackgroundTransparency = 0.1}):Play()
     TweenService:Create(aura, tInfo3, {ImageTransparency = 0.55}):Play()
+    
+    if not isSubMenuOpen then
+        animateWaterfall(mainList)
+    end
 end)
 
 local mainList = Instance.new("ScrollingFrame", mainFrame)
@@ -1539,6 +1573,7 @@ local function createMenu(titleStr)
         local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
         TweenService:Create(menu, tInfo, {Position = UDim2.fromScale(1.2, 0)}):Play()
         mainList.Visible = true 
+        animateWaterfall(mainList)
     end)
     
     return menu, scroll
@@ -1680,6 +1715,7 @@ for _, geo in ipairs(geometries) do
         local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
         TweenService:Create(geoMenu, tInfo, {Position = UDim2.fromScale(1.2, 0)}):Play()
         mainList.Visible = true 
+        animateWaterfall(mainList)
     end)
 end
 
@@ -1894,6 +1930,7 @@ openTargetBtn.MouseButton1Click:Connect(function()
     isSubMenuOpen = true -- ✨ UI Focus Trigger
     local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     TweenService:Create(playerMenu, tInfo, {Position = UDim2.fromScale(0, 0)}):Play() 
+    animateWaterfall(playerScroll)
 end)
 
 local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true)
@@ -1902,6 +1939,7 @@ openGeoBtn.MouseButton1Click:Connect(function()
     isSubMenuOpen = true -- ✨ UI Focus Trigger
     local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     TweenService:Create(geoMenu, tInfo, {Position = UDim2.fromScale(0, 0)}):Play() 
+    animateWaterfall(geoScroll)
 end)
 
 local orbitBtn = createMainBtn("🪐 QUANTUM ORBIT", "Orbit", false)
