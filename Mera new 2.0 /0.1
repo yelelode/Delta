@@ -2059,6 +2059,30 @@ shieldBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+-- ✨ NEW AUTO-DEPLOY BUTTON ✨
+local autoDeployBtn = createMainBtn("⚡ AUTO DEPLOY (HANDS-FREE)", "AutoDeploy", false)
+autoDeployBtn.MouseButton1Click:Connect(function() 
+    activeModes["AutoDeploy"] = not activeModes["AutoDeploy"]
+    local accent = autoDeployBtn:FindFirstChild("Accent")
+    
+    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    if activeModes["AutoDeploy"] then 
+        TweenService:Create(autoDeployBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+        end
+        sendNotif("AUTOMATION", "Auto-Deploy ON. No tool/click required.", 2)
+    else 
+        TweenService:Create(autoDeployBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+        end 
+        sendNotif("AUTOMATION", "Auto-Deploy OFF. Manual mode active.", 2)
+    end
+end)
+
 local toggleRow = Instance.new("Frame", mainList)
 toggleRow.Size = UDim2.new(1, 0, 0, 42)
 toggleRow.BackgroundTransparency = 1
@@ -2128,7 +2152,54 @@ startBtn.MouseButton1Click:Connect(function()
         
         local propName, propCategory = getActivePropData()
         local count = (propName == "FurnitureBleachers") and 15 or 25
+
+        -- ✨ NEW HANDS-FREE DEPLOYMENT INJECTION ✨
+        if activeModes["AutoDeploy"] then
+            sendNotif("AUTO DEPLOY", "Initializing Hands-Free Deployment...", 2)
+            local propTool = lp.Character:FindFirstChildOfClass("Tool")
+            
+            -- Automatically search and grab the tool from inventory
+            if not propTool or not (string.find(string.lower(propTool.Name), "prop") or string.find(string.lower(propTool.Name), "box")) then
+                for _, v in ipairs(lp.Backpack:GetChildren()) do
+                    if v:IsA("Tool") and (string.find(string.lower(v.Name), "prop") or string.find(string.lower(v.Name), "box")) then
+                        pcall(function() lp.Character.Humanoid:EquipTool(v) end)
+                        propTool = v
+                        break
+                    end
+                end
+            end
+            
+            if propTool then
+                if activeModes["Chair"] and (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"] or activeModes["Orbit"] or activeModes["Ring"]) then
+                    for i = 1, 10 do 
+                        spawnProp("FurnitureBleachers", "Furniture")
+                        pcall(function() propTool:Activate() end) -- Simulate real mouse click!
+                        task.wait(0.05) 
+                    end
+                    task.wait(0.1)
+                    for i = 1, 15 do 
+                        spawnProp(customPropName, customPropCategory)
+                        pcall(function() propTool:Activate() end)
+                        task.wait(0.05) 
+                    end
+                else
+                    for i = 1, count do 
+                        spawnProp(propName, propCategory)
+                        pcall(function() propTool:Activate() end)
+                        task.wait(0.05) 
+                    end
+                end
+                
+                -- Put the tool back in the bag smoothly
+                pcall(function() propTool.Parent = lp.Backpack end)
+            else
+                sendNotif("ERROR", "Prop tool not found! Please grab it from menu first.", 3)
+            end
+            return -- Exit block, handled via automation
+        end
+        -- ✨ END NEW INJECTION ✨
         
+        -- ORIGINAL MANUAL LOGIC (Kept 100% intact)
         if activeModes["Chair"] and (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"] or activeModes["Orbit"] or activeModes["Ring"]) then
             for i = 1, 10 do 
                 spawnProp("FurnitureBleachers", "Furniture")
