@@ -3,7 +3,7 @@
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V18.16 DELTATIME LERP PHYSICS FOR 144HZ FEEL ON 60FPS] *
 -- * [V18.18 HEURISTIC REMOTE SCANNER & STEALTH C-CLOSURE] *
--- * [V18.26 PREMIUM ONYX EXIT MODAL & CORNER GLITCH FIXED] *
+-- * [V18.26 PREMIUM ONYX EXIT MODAL & ANTI-DELETE STEALTH] *
 -- =========================================================
 
 -- 🧹 RE-EXECUTION CLEANUP SYSTEM
@@ -2380,6 +2380,28 @@ RunService.Heartbeat:Connect(function(dt)
         local currentRadius = getRadius()
         local rScale = currentRadius / 15 
 
+        -- ✨ INDOOR ANTI-DELETE DEFENSE SYSTEM ✨
+        local targetSafeOffsets = {}
+        for _, plr in ipairs(targetList) do
+            targetSafeOffsets[plr] = Vector3.new(0, 0, 0)
+            pcall(function()
+                local root = plr.Character:FindFirstChild("HumanoidRootPart")
+                if root then
+                    local params = RaycastParams.new()
+                    local ignoreList = {plr.Character, lp.Character}
+                    if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
+                    if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
+                    params.FilterDescendantsInstances = ignoreList
+                    params.FilterType = Enum.RaycastFilterType.Exclude
+                    
+                    local hit = workspace:Raycast(root.Position, Vector3.new(0, 45, 0), params)
+                    if hit then
+                        targetSafeOffsets[plr] = Vector3.new(0, -250, 0) -- Send to underground bunker
+                    end
+                end
+            end)
+        end
+
         for _, plr in ipairs(targetList) do
             local tRoot = plr.Character.HumanoidRootPart
             local tHum = plr.Character:FindFirstChildOfClass("Humanoid")
@@ -2395,7 +2417,7 @@ RunService.Heartbeat:Connect(function(dt)
             end
             targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 10)
             
-            local bodyPos = bodyPart.Position + (targetVelocities[plr] * predictionTime)
+            local bodyPos = bodyPart.Position + (targetVelocities[plr] * predictionTime) + targetSafeOffsets[plr]
             
             local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
             if flatLook.Magnitude > 0.01 then 
@@ -2436,7 +2458,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
                 
                 local actualHead = plr.Character:FindFirstChild("Head") or tRoot
-                local headPos = actualHead.Position + (targetVelocities[plr] * predictionTime)
+                local headPos = actualHead.Position + (targetVelocities[plr] * predictionTime) + targetSafeOffsets[plr]
                 local headLockCFrame = CFrame.lookAt(headPos, headPos + flatLook)
                 
                 local headY = (isSitting or isRagdoll) and -0.8 or -2.4 
@@ -2543,7 +2565,7 @@ RunService.Heartbeat:Connect(function(dt)
                         if localChairIndex < propsForThisTarget then
                             local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
                             local rawVel = tRoot.AssemblyLinearVelocity
-                            local bodyPos = bodyPart.Position + (rawVel * predictionTime)
+                            local bodyPos = bodyPart.Position + (rawVel * predictionTime) + targetSafeOffsets[plr]
                             
                             local yVelocity = rawVel.Y
                             local isJumpingOrFreefall = (tHum and (tHum:GetState() == Enum.HumanoidStateType.Jumping or tHum:GetState() == Enum.HumanoidStateType.Freefall))
@@ -2579,7 +2601,7 @@ RunService.Heartbeat:Connect(function(dt)
                     local tRoot = plr.Character.HumanoidRootPart
                     local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
                     
-                    local bodyPos = bodyPart.Position + (targetVelocities[plr] * predictionTime)
+                    local bodyPos = bodyPart.Position + (targetVelocities[plr] * predictionTime) + targetSafeOffsets[plr]
                     local ringCenterPos = bodyPos + Vector3.new(0, -3.8, 0)
                     
                     local propsForThisTarget = 0
@@ -2614,7 +2636,7 @@ RunService.Heartbeat:Connect(function(dt)
                     local tRoot = plr.Character.HumanoidRootPart
                     local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
                     
-                    local bodyPos = bodyPart.Position + (targetVelocities[plr] * predictionTime)
+                    local bodyPos = bodyPart.Position + (targetVelocities[plr] * predictionTime) + targetSafeOffsets[plr]
                     local dynamicOrbitBase = CFrame.new(bodyPos)
                     
                     local propsForThisTarget = math.ceil(#freeRemotes / tCount)
