@@ -1789,7 +1789,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     bgCorner.CornerRadius = UDim.new(1, 0)
     
     local fill = Instance.new("Frame", bg)
-    fill.Size = UDim2.new((defaultVal - min) / (max - min), 0, 1, 0)
+    fill.Size = UDim2.new((defaultVal - min) / (max - min), 1, 0)
     fill.BackgroundColor3 = Color3.new(1,1,1)
     fill.ZIndex = 9
     
@@ -2060,54 +2060,6 @@ shieldBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ✨ NEW AUTO-DEPLOY BUTTON ✨
-local autoDeployBtn = createMainBtn("⚡ AUTO DEPLOY (HANDS-FREE)", "AutoDeploy", false)
-autoDeployBtn.MouseButton1Click:Connect(function() 
-    activeModes["AutoDeploy"] = not activeModes["AutoDeploy"]
-    local accent = autoDeployBtn:FindFirstChild("Accent")
-    
-    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-    
-    if activeModes["AutoDeploy"] then 
-        TweenService:Create(autoDeployBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
-        if accent then 
-            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
-        end
-        sendNotif("AUTOMATION", "Auto-Deploy ON. No tool/click required.", 2)
-    else 
-        TweenService:Create(autoDeployBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
-        if accent then 
-            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
-        end 
-        sendNotif("AUTOMATION", "Auto-Deploy OFF. Manual mode active.", 2)
-    end
-end)
-
--- ✨ NEW SILENT SPOOF BUTTON ✨
-local silentSpawnBtn = createMainBtn("🎯 SILENT DEPLOY (SPOOF CLICK)", "SilentSpawn", false)
-silentSpawnBtn.MouseButton1Click:Connect(function() 
-    activeModes["SilentSpawn"] = not activeModes["SilentSpawn"]
-    local accent = silentSpawnBtn:FindFirstChild("Accent")
-    
-    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-    
-    if activeModes["SilentSpawn"] then 
-        TweenService:Create(silentSpawnBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
-        if accent then 
-            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
-        end
-        sendNotif("AUTOMATION", "Silent Deploy ON. (Spoofs Server Data)", 2)
-    else 
-        TweenService:Create(silentSpawnBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
-        if accent then 
-            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
-        end 
-        sendNotif("AUTOMATION", "Silent Deploy OFF.", 2)
-    end
-end)
-
 local toggleRow = Instance.new("Frame", mainList)
 toggleRow.Size = UDim2.new(1, 0, 0, 42)
 toggleRow.BackgroundTransparency = 1
@@ -2178,121 +2130,6 @@ startBtn.MouseButton1Click:Connect(function()
         local propName, propCategory = getActivePropData()
         local count = (propName == "FurnitureBleachers") and 15 or 25
 
-        -- ✨ NEW SILENT SPOOF CLICK INJECTION ✨
-        if activeModes["SilentSpawn"] then
-            sendNotif("SILENT DEPLOY", "Spoofing mouse clicks to server...", 2)
-            
-            local function getAutoClickData()
-                local char = lp.Character
-                if char and char:FindFirstChild("HumanoidRootPart") then
-                    local root = char.HumanoidRootPart
-                    local params = RaycastParams.new()
-                    local ignoreList = {char}
-                    if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
-                    if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
-                    params.FilterDescendantsInstances = ignoreList
-                    params.FilterType = Enum.RaycastFilterType.Exclude
-                    
-                    local hit = workspace:Raycast(root.Position, Vector3.new(0, -25, 0), params)
-                    if hit then
-                        return hit.Instance, hit.Position
-                    end
-                    return workspace.Terrain, root.Position - Vector3.new(0, 3, 0)
-                end
-                return workspace.Terrain, Vector3.new(0,0,0)
-            end
-            
-            local reFolder = game:GetService("ReplicatedStorage"):WaitForChild("RE")
-            
-            local function fireSpoofedClick()
-                local targetPart, exactPosition = getAutoClickData()
-                local spoofData = {
-                    ["2_TargetPart"] = targetPart,
-                    ["1_Info"] = "You clicked the screen!",
-                    ["3_ExactPosition"] = exactPosition
-                }
-                
-                for _, r in ipairs(reFolder:GetChildren()) do
-                    if r:IsA("RemoteEvent") and (string.find(r.Name, "Click") or string.find(r.Name, "Spawn") or string.find(r.Name, "Tool")) then
-                        pcall(function() r:FireServer(spoofData) end)
-                    end
-                end
-                
-                local tool = lp.Character:FindFirstChildOfClass("Tool") or lp.Backpack:FindFirstChildOfClass("Tool")
-                if tool then
-                    for _, r in ipairs(tool:GetDescendants()) do
-                        if r:IsA("RemoteEvent") then
-                            pcall(function() r:FireServer(spoofData) end)
-                        end
-                    end
-                end
-            end
-
-            local function silentSpawnLoop(spawnCount, pName, pCat)
-                for i = 1, spawnCount do 
-                    spawnProp(pName, pCat)
-                    fireSpoofedClick()
-                    task.wait(0.035) 
-                end
-            end
-
-            if activeModes["Chair"] and (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"] or activeModes["Orbit"] or activeModes["Ring"]) then
-                silentSpawnLoop(10, "FurnitureBleachers", "Furniture")
-                task.wait(0.1)
-                silentSpawnLoop(15, customPropName, customPropCategory)
-            else
-                silentSpawnLoop(count, propName, propCategory)
-            end
-            return
-        end
-        -- ✨ END SILENT SPOOF CLICK INJECTION ✨
-
-        -- ✨ NEW HANDS-FREE DEPLOYMENT INJECTION ✨
-        if activeModes["AutoDeploy"] then
-            sendNotif("AUTO DEPLOY", "Initializing Hands-Free Deployment...", 2)
-            local propTool = lp.Character:FindFirstChildOfClass("Tool")
-            
-            -- Automatically search and grab the tool from inventory
-            if not propTool or not (string.find(string.lower(propTool.Name), "prop") or string.find(string.lower(propTool.Name), "box")) then
-                for _, v in ipairs(lp.Backpack:GetChildren()) do
-                    if v:IsA("Tool") and (string.find(string.lower(v.Name), "prop") or string.find(string.lower(v.Name), "box")) then
-                        pcall(function() lp.Character.Humanoid:EquipTool(v) end)
-                        propTool = v
-                        break
-                    end
-                end
-            end
-            
-            if propTool then
-                if activeModes["Chair"] and (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"] or activeModes["Orbit"] or activeModes["Ring"]) then
-                    for i = 1, 10 do 
-                        spawnProp("FurnitureBleachers", "Furniture")
-                        pcall(function() propTool:Activate() end) -- Simulate real mouse click!
-                        task.wait(0.05) 
-                    end
-                    task.wait(0.1)
-                    for i = 1, 15 do 
-                        spawnProp(customPropName, customPropCategory)
-                        pcall(function() propTool:Activate() end)
-                        task.wait(0.05) 
-                    end
-                else
-                    for i = 1, count do 
-                        spawnProp(propName, propCategory)
-                        pcall(function() propTool:Activate() end)
-                        task.wait(0.05) 
-                    end
-                end
-                
-                -- Put the tool back in the bag smoothly
-                pcall(function() propTool.Parent = lp.Backpack end)
-            else
-                sendNotif("ERROR", "Prop tool not found! Please grab it from menu first.", 3)
-            end
-            return -- Exit block, handled via automation
-        end
-        -- ✨ END NEW INJECTION ✨
-        
         -- ORIGINAL MANUAL LOGIC (Kept 100% intact)
         if activeModes["Chair"] and (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"] or activeModes["Orbit"] or activeModes["Ring"]) then
             for i = 1, 10 do 
@@ -2802,12 +2639,29 @@ RunService.Heartbeat:Connect(function(dt)
                     local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
                     
                     local bodyPos = bodyPart.Position + (targetVelocities[plr] * predictionTime) + targetSafeOffsets[plr]
-                    local dynamicOrbitBase = CFrame.new(bodyPos)
                     
-                    local propsForThisTarget = math.ceil(#freeRemotes / tCount)
-                    local localIdx = idx % propsForThisTarget
+                    local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
+                    if flatLook.Magnitude > 0.01 then 
+                        flatLook = flatLook.Unit 
+                    else 
+                        flatLook = Vector3.new(0, 0, -1) 
+                    end
+                    local dynamicOrbitBase = CFrame.lookAt(bodyPos, bodyPos + flatLook)
+                    
+                    local propsForThisTarget = 0
+                    local myLocalIdx = 0
+                    
+                    for j = 1, #freeRemotes do
+                        if (((j - 1) % tCount) + 1) == targetIdx then
+                            propsForThisTarget = propsForThisTarget + 1
+                            if j <= idx then
+                                myLocalIdx = propsForThisTarget
+                            end
+                        end
+                    end
+                    
                     local x, y, z = 0, 0, 0
-                    local radRatio = (localIdx / propsForThisTarget) * math.pi * 2 
+                    local radRatio = (myLocalIdx / propsForThisTarget) * math.pi * 2 
                     
                     if activeGeometry == "Spin" then 
                         x = math.cos(radRatio + smoothAngle) * currentRadius
@@ -2818,7 +2672,51 @@ RunService.Heartbeat:Connect(function(dt)
                     elseif activeGeometry == "Bobbing Orbit" then 
                         x = math.cos(radRatio + smoothAngle) * currentRadius
                         z = math.sin(radRatio + smoothAngle) * currentRadius
-                        y = math.sin((smoothAngle * 2) + radRatio) * (currentRadius / 1.5)
+                        y = math.sin((smoothAngle * 2) + radRatio) * (currentRadius * 0.3)
+                    elseif activeGeometry == "Vertical Halo" then
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        y = math.sin(radRatio + smoothAngle) * currentRadius
+                    elseif activeGeometry == "Atom" then
+                        local axis = myLocalIdx % 3
+                        if axis == 0 then
+                            x = math.cos(radRatio + smoothAngle) * currentRadius
+                            z = math.sin(radRatio + smoothAngle) * currentRadius
+                        elseif axis == 1 then
+                            x = math.cos(radRatio + smoothAngle) * currentRadius
+                            y = math.sin(radRatio + smoothAngle) * currentRadius
+                        else
+                            z = math.cos(radRatio + smoothAngle) * currentRadius
+                            y = math.sin(radRatio + smoothAngle) * currentRadius
+                        end
+                    elseif activeGeometry == "Galaxy Spiral" then
+                        local dynRad = currentRadius * (0.4 + 0.6 * math.sin(smoothAngle + radRatio * 2))
+                        x = math.cos(radRatio + smoothAngle) * dynRad
+                        z = math.sin(radRatio + smoothAngle) * dynRad
+                    elseif activeGeometry == "Crown" then
+                        y = 2.5 + math.sin(radRatio * 3 + smoothAngle * 4) * 0.8
+                        x = math.cos(radRatio + smoothAngle) * (currentRadius * 0.5)
+                        z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
+                    elseif activeGeometry == "DNA" then
+                        local helixHeight = currentRadius * 1.5
+                        local phase = (myLocalIdx % 2 == 0) and math.pi or 0
+                        local heightProgress = math.floor((myLocalIdx - 1) / 2) / math.max(1, math.floor(propsForThisTarget / 2))
+                        y = (heightProgress * helixHeight) - (helixHeight/2) + math.sin(smoothAngle)
+                        local helixRad = currentRadius * 0.4
+                        x = math.cos(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
+                        z = math.sin(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
+                    elseif activeGeometry == "Snake Body" then
+                        local delay = myLocalIdx * 0.3
+                        x = math.cos(smoothAngle - delay) * currentRadius
+                        z = math.sin(smoothAngle - delay) * currentRadius
+                        y = math.sin((smoothAngle - delay) * 2) * (currentRadius * 0.3)
+                    elseif activeGeometry == "Wings" then
+                        local side = (myLocalIdx % 2 == 0) and 1 or -1
+                        local wingIdx = math.ceil(myLocalIdx / 2)
+                        local totalWings = math.max(1, math.ceil(propsForThisTarget / 2))
+                        local wingProgress = wingIdx / totalWings
+                        x = side * (1 + wingProgress * currentRadius)
+                        y = 0.5 + (wingProgress * currentRadius * 0.8) + math.sin(smoothAngle + wingProgress * 2) * 0.5
+                        z = 1.5 + (wingProgress * 0.5)
                     else 
                         x = math.cos(radRatio + smoothAngle) * currentRadius
                         z = math.sin(radRatio + smoothAngle) * currentRadius 
