@@ -2311,8 +2311,11 @@ local function dispatchRemote(remote, targetCFrame)
         end 
     end)
     
+    -- ✨ NEW: Emergency Drop Bypass (0ms Delay if target is underground bunker) ✨
+    local isEmergency = targetCFrame.Y < -100
+    
     local now = tick()
-    if not lastRemoteFireTimes[remote] or (now - lastRemoteFireTimes[remote]) >= FIRE_INTERVAL then
+    if isEmergency or not lastRemoteFireTimes[remote] or (now - lastRemoteFireTimes[remote]) >= FIRE_INTERVAL then
         lastRemoteFireTimes[remote] = now
         task.spawn(function() 
             pcall(function() 
@@ -2461,6 +2464,13 @@ RunService.Heartbeat:Connect(function(dt)
                 pcall(function()
                     local root = plr.Character:FindFirstChild("HumanoidRootPart")
                     if root then
+                        -- ✨ NEW: Look-Ahead Radar for high speeds (1000 speed bypass)
+                        local checkPos = root.Position
+                        local vel = root.AssemblyLinearVelocity
+                        if vel.Magnitude > 30 then
+                            checkPos = checkPos + (vel * 0.15) -- Predict 150ms into the future
+                        end
+
                         local params = RaycastParams.new()
                         local ignoreList = {plr.Character, lp.Character}
                         if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
@@ -2470,11 +2480,12 @@ RunService.Heartbeat:Connect(function(dt)
                         
                         local inDangerZone = false
                         
-                        local hitUp = workspace:Raycast(root.Position, Vector3.new(0, 45, 0), params)
+                        -- Raycasts use predicted 'checkPos' now
+                        local hitUp = workspace:Raycast(checkPos, Vector3.new(0, 45, 0), params)
                         if hitUp then
                             inDangerZone = true
                         else
-                            local hitDown = workspace:Raycast(root.Position, Vector3.new(0, -15, 0), params)
+                            local hitDown = workspace:Raycast(checkPos, Vector3.new(0, -15, 0), params)
                             if hitDown and hitDown.Instance then
                                 local currentInst = hitDown.Instance
                                 while currentInst and currentInst ~= workspace do
@@ -2489,7 +2500,7 @@ RunService.Heartbeat:Connect(function(dt)
                         end
 
                         if inDangerZone then
-                            targetSafeOffsets[plr] = Vector3.new(0, -250, 0) -- Send to underground bunker
+                            targetSafeOffsets[plr] = Vector3.new(0, -250, 0) -- Send to underground bunker instantly
                         end
                     end
                 end)
