@@ -2520,9 +2520,24 @@ RunService.Heartbeat:Connect(function(dt)
             if not targetVelocities[plr] then 
                 targetVelocities[plr] = rawVelocity 
             end
-            targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 10)
             
-            local bodyPos = bodyPart.Position + (targetVelocities[plr] * predictionTime) + targetSafeOffsets[plr]
+            -- ✨ ADVANCED ANTI-OVERSHOOT & TACTICAL TRACKING ✨
+            local velocityDiff = (rawVelocity - targetVelocities[plr]).Magnitude
+            if rawVelocity.Magnitude < 2 or velocityDiff > 25 then
+                -- Player suddenly stopped or dashed: Snap prediction instantly
+                targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 45)
+            else
+                -- Normal moving: Smooth tighter tracking
+                targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 16)
+            end
+            
+            -- Prevent massive prediction leaps (Max 15 studs ahead)
+            local predictedOffset = targetVelocities[plr] * predictionTime
+            if predictedOffset.Magnitude > 15 then
+                predictedOffset = predictedOffset.Unit * 15
+            end
+            
+            local bodyPos = bodyPart.Position + predictedOffset + targetSafeOffsets[plr]
             
             local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
             if flatLook.Magnitude > 0.01 then 
@@ -2563,7 +2578,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
                 
                 local actualHead = plr.Character:FindFirstChild("Head") or tRoot
-                local headPos = actualHead.Position + (targetVelocities[plr] * predictionTime) + targetSafeOffsets[plr]
+                local headPos = actualHead.Position + predictedOffset + targetSafeOffsets[plr]
                 local headLockCFrame = CFrame.lookAt(headPos, headPos + flatLook)
                 
                 local headY = (isSitting or isRagdoll) and -0.8 or -2.4 
@@ -2670,7 +2685,11 @@ RunService.Heartbeat:Connect(function(dt)
                         if localChairIndex < propsForThisTarget then
                             local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
                             local rawVel = tRoot.AssemblyLinearVelocity
-                            local bodyPos = bodyPart.Position + (rawVel * predictionTime) + targetSafeOffsets[plr]
+                            
+                            -- Fix Chair prediction too
+                            local pOffset = rawVel * predictionTime
+                            if pOffset.Magnitude > 15 then pOffset = pOffset.Unit * 15 end
+                            local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
                             
                             local yVelocity = rawVel.Y
                             local isJumpingOrFreefall = (tHum and (tHum:GetState() == Enum.HumanoidStateType.Jumping or tHum:GetState() == Enum.HumanoidStateType.Freefall))
@@ -2706,7 +2725,10 @@ RunService.Heartbeat:Connect(function(dt)
                     local tRoot = plr.Character.HumanoidRootPart
                     local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
                     
-                    local bodyPos = bodyPart.Position + (targetVelocities[plr] * predictionTime) + targetSafeOffsets[plr]
+                    local pOffset = targetVelocities[plr] * predictionTime
+                    if pOffset.Magnitude > 15 then pOffset = pOffset.Unit * 15 end
+                    local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
+                    
                     local ringCenterPos = bodyPos + Vector3.new(0, -3.8, 0)
                     
                     local propsForThisTarget = 0
@@ -2741,7 +2763,9 @@ RunService.Heartbeat:Connect(function(dt)
                     local tRoot = plr.Character.HumanoidRootPart
                     local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
                     
-                    local bodyPos = bodyPart.Position + (targetVelocities[plr] * predictionTime) + targetSafeOffsets[plr]
+                    local pOffset = targetVelocities[plr] * predictionTime
+                    if pOffset.Magnitude > 15 then pOffset = pOffset.Unit * 15 end
+                    local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
                     
                     local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
                     if flatLook.Magnitude > 0.01 then 
