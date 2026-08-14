@@ -2097,6 +2097,40 @@ shieldBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+local houseProtBtn = createMainBtn("🏠 HOUSE DEFENSE (ANTI-DELETE)", "HouseProt", false)
+local isHouseProtEnabled = true
+activeModes["HouseProt"] = true
+
+houseProtBtn.BackgroundColor3 = Colors.ActiveTint
+houseProtBtn.TextColor3 = Colors.Primary
+local houseAccent = houseProtBtn:FindFirstChild("Accent")
+if houseAccent then
+    houseAccent.Size = UDim2.new(0, 4, 0.7, 0)
+end
+
+houseProtBtn.MouseButton1Click:Connect(function() 
+    isHouseProtEnabled = not isHouseProtEnabled
+    activeModes["HouseProt"] = isHouseProtEnabled
+    local accent = houseProtBtn:FindFirstChild("Accent")
+    
+    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    if isHouseProtEnabled then 
+        TweenService:Create(houseProtBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+        end
+        sendNotif("🏠 SECURITY", "House Defense Activated.", 2)
+    else 
+        TweenService:Create(houseProtBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+        end 
+        sendNotif("🏠 SECURITY", "House Defense Deactivated.", 2)
+    end
+end)
+
 local toggleRow = Instance.new("Frame", mainList)
 toggleRow.Size = UDim2.new(1, 0, 0, 42)
 toggleRow.BackgroundTransparency = 1
@@ -2419,26 +2453,47 @@ RunService.Heartbeat:Connect(function(dt)
         local currentRadius = getRadius()
         local rScale = currentRadius / 15 
 
-        -- ✨ INDOOR ANTI-DELETE DEFENSE SYSTEM ✨
+        -- ✨ ADVANCED PLOT & INDOOR ANTI-DELETE DEFENSE SYSTEM ✨
         local targetSafeOffsets = {}
         for _, plr in ipairs(targetList) do
             targetSafeOffsets[plr] = Vector3.new(0, 0, 0)
-            pcall(function()
-                local root = plr.Character:FindFirstChild("HumanoidRootPart")
-                if root then
-                    local params = RaycastParams.new()
-                    local ignoreList = {plr.Character, lp.Character}
-                    if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
-                    if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
-                    params.FilterDescendantsInstances = ignoreList
-                    params.FilterType = Enum.RaycastFilterType.Exclude
-                    
-                    local hit = workspace:Raycast(root.Position, Vector3.new(0, 45, 0), params)
-                    if hit then
-                        targetSafeOffsets[plr] = Vector3.new(0, -250, 0) -- Send to underground bunker
+            if activeModes["HouseProt"] then
+                pcall(function()
+                    local root = plr.Character:FindFirstChild("HumanoidRootPart")
+                    if root then
+                        local params = RaycastParams.new()
+                        local ignoreList = {plr.Character, lp.Character}
+                        if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
+                        if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
+                        params.FilterDescendantsInstances = ignoreList
+                        params.FilterType = Enum.RaycastFilterType.Exclude
+                        
+                        local inDangerZone = false
+                        
+                        local hitUp = workspace:Raycast(root.Position, Vector3.new(0, 45, 0), params)
+                        if hitUp then
+                            inDangerZone = true
+                        else
+                            local hitDown = workspace:Raycast(root.Position, Vector3.new(0, -15, 0), params)
+                            if hitDown and hitDown.Instance then
+                                local currentInst = hitDown.Instance
+                                while currentInst and currentInst ~= workspace do
+                                    local lowerName = string.lower(currentInst.Name)
+                                    if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") then
+                                        inDangerZone = true
+                                        break
+                                    end
+                                    currentInst = currentInst.Parent
+                                end
+                            end
+                        end
+
+                        if inDangerZone then
+                            targetSafeOffsets[plr] = Vector3.new(0, -250, 0) -- Send to underground bunker
+                        end
                     end
-                end
-            end)
+                end)
+            end
         end
 
         for _, plr in ipairs(targetList) do
