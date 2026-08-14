@@ -2521,21 +2521,21 @@ RunService.Heartbeat:Connect(function(dt)
                 targetVelocities[plr] = rawVelocity 
             end
             
-            -- ✨ ADVANCED ANTI-OVERSHOOT & TACTICAL TRACKING ✨
+            -- ✨ ADVANCED ANTI-OVERSHOOT (FIXED HIGH SPEED STICKING) ✨
             local velocityDiff = (rawVelocity - targetVelocities[plr]).Magnitude
-            if rawVelocity.Magnitude < 2 or velocityDiff > 25 then
-                -- Player suddenly stopped or dashed: Snap prediction instantly
+            if rawVelocity.Magnitude < 2 then
+                -- Player suddenly stopped: Snap prediction instantly to prevent rubber-banding
+                targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 50)
+            elseif velocityDiff > 100 then
+                -- Player is dashing at massive speeds (e.g. 1000): Snap instantly so robots stick perfectly
                 targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 45)
             else
-                -- Normal moving: Smooth tighter tracking
-                targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 16)
+                -- Normal moving: Original smooth tracking
+                targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 10)
             end
             
-            -- Prevent massive prediction leaps (Max 15 studs ahead)
+            -- Removed 15 stud limit: 1000+ speed works flawlessly now
             local predictedOffset = targetVelocities[plr] * predictionTime
-            if predictedOffset.Magnitude > 15 then
-                predictedOffset = predictedOffset.Unit * 15
-            end
             
             local bodyPos = bodyPart.Position + predictedOffset + targetSafeOffsets[plr]
             
@@ -2686,9 +2686,7 @@ RunService.Heartbeat:Connect(function(dt)
                             local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
                             local rawVel = tRoot.AssemblyLinearVelocity
                             
-                            -- Fix Chair prediction too
-                            local pOffset = rawVel * predictionTime
-                            if pOffset.Magnitude > 15 then pOffset = pOffset.Unit * 15 end
+                            local pOffset = targetVelocities[plr] * predictionTime
                             local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
                             
                             local yVelocity = rawVel.Y
@@ -2726,7 +2724,6 @@ RunService.Heartbeat:Connect(function(dt)
                     local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
                     
                     local pOffset = targetVelocities[plr] * predictionTime
-                    if pOffset.Magnitude > 15 then pOffset = pOffset.Unit * 15 end
                     local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
                     
                     local ringCenterPos = bodyPos + Vector3.new(0, -3.8, 0)
@@ -2764,7 +2761,6 @@ RunService.Heartbeat:Connect(function(dt)
                     local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
                     
                     local pOffset = targetVelocities[plr] * predictionTime
-                    if pOffset.Magnitude > 15 then pOffset = pOffset.Unit * 15 end
                     local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
                     
                     local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
