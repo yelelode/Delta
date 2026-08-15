@@ -2473,6 +2473,12 @@ RunService.Heartbeat:Connect(function(dt)
 
                         local params = RaycastParams.new()
                         local ignoreList = {plr.Character, lp.Character}
+                        
+                        -- ✨ BUG FIX: Ignore ALL players so they don't trigger each other when grouped
+                        for _, p in ipairs(Players:GetPlayers()) do
+                            if p.Character then table.insert(ignoreList, p.Character) end
+                        end
+                        
                         if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
                         if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
                         params.FilterDescendantsInstances = ignoreList
@@ -2482,9 +2488,21 @@ RunService.Heartbeat:Connect(function(dt)
                         
                         -- Raycasts use predicted 'checkPos' now
                         local hitUp = workspace:Raycast(checkPos, Vector3.new(0, 45, 0), params)
-                        if hitUp then
-                            inDangerZone = true
-                        else
+                        
+                        -- ✨ BUG FIX: Only trigger DangerZone if the ceiling is ACTUALLY a house (fixes underground bug)
+                        if hitUp and hitUp.Instance then
+                            local currentInst = hitUp.Instance
+                            while currentInst and currentInst ~= workspace do
+                                local lowerName = string.lower(currentInst.Name)
+                                if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") then
+                                    inDangerZone = true
+                                    break
+                                end
+                                currentInst = currentInst.Parent
+                            end
+                        end
+
+                        if not inDangerZone then
                             local hitDown = workspace:Raycast(checkPos, Vector3.new(0, -15, 0), params)
                             if hitDown and hitDown.Instance then
                                 local currentInst = hitDown.Instance
