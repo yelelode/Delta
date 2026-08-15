@@ -140,15 +140,14 @@ pcall(function()
         if not checkcaller() then
             local method = getnamecallmethod()
             if method == "FireServer" then
-                local name = tostring(self)
-                if name == "1Clea1rTool1s" or (DynamicRemotes.ClearProps and self == DynamicRemotes.ClearProps) then
-                    local args = {...}
-                    if args[1] == "RequestingPropName" then
-                        lastGameSpawnTime = tick() 
-                        if args[2] and args[3] then
-                            customPropName = args[2]
-                            customPropCategory = args[3]
-                        end
+                local args = {...}
+                -- ✨ BUG FIX: Removed strict remote name check to bypass Brookhaven updates.
+                -- Now it intercepts ANY remote sending "RequestingPropName".
+                if type(args[1]) == "string" and args[1] == "RequestingPropName" then
+                    lastGameSpawnTime = tick() 
+                    if args[2] and args[3] then
+                        customPropName = tostring(args[2])
+                        customPropCategory = tostring(args[3])
                     end
                 end
             end
@@ -465,8 +464,19 @@ end
 
 local function spawnProp(propName, category) 
     pcall(function() 
-        local r = DynamicRemotes.ClearProps or ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s")
-        r:FireServer("RequestingPropName", propName, category) 
+        local RE = ReplicatedStorage:WaitForChild("RE")
+        local r = DynamicRemotes.ClearProps or RE:FindFirstChild("1Clea1rTool1s")
+        if not r then
+            for _, v in ipairs(RE:GetChildren()) do
+                if v:IsA("RemoteEvent") and string.find(string.lower(v.Name), "clear") then
+                    r = v
+                    break
+                end
+            end
+        end
+        if r then
+            r:FireServer("RequestingPropName", propName, category) 
+        end
     end) 
 end
 
