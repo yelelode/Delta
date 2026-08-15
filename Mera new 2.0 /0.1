@@ -2310,6 +2310,7 @@ local function dispatchRemote(remote, targetCFrame)
     end
     
     -- ✨ INDIVIDUAL ROBOT DETECTOR (PER-PROP RAYCAST) ✨
+    local isEmergency = false
     if activeModes["HouseProt"] then
         local checkPos = targetCFrame.Position
         local params = RaycastParams.new()
@@ -2353,6 +2354,7 @@ local function dispatchRemote(remote, targetCFrame)
 
         if inDangerZone then
             targetCFrame = targetCFrame * CFrame.new(0, -250, 0)
+            isEmergency = true
         end
     end
 
@@ -2361,15 +2363,26 @@ local function dispatchRemote(remote, targetCFrame)
         if parent:IsA("Model") then 
             local part = parent.PrimaryPart or parent:FindFirstChildWhichIsA("BasePart")
             if part then 
-                part.CFrame = part.CFrame:Lerp(targetCFrame, 0.75) 
+                -- ✨ BUG FIX: Stop Visual Glitch (Flying underground) - Instant Snap lagaya hai
+                if isEmergency or (part.Position - targetCFrame.Position).Magnitude > 50 then
+                    part.CFrame = targetCFrame 
+                else
+                    part.CFrame = part.CFrame:Lerp(targetCFrame, 0.75) 
+                end
             end 
         elseif parent:IsA("BasePart") then 
-            parent.CFrame = parent.CFrame:Lerp(targetCFrame, 0.75) 
+            if isEmergency or (parent.Position - targetCFrame.Position).Magnitude > 50 then
+                parent.CFrame = targetCFrame
+            else
+                parent.CFrame = parent.CFrame:Lerp(targetCFrame, 0.75) 
+            end
         end 
     end)
     
     -- ✨ NEW: Emergency Drop Bypass (0ms Delay if target is underground bunker) ✨
-    local isEmergency = targetCFrame.Y < -100
+    if not isEmergency then
+        isEmergency = targetCFrame.Y < -100
+    end
     
     local now = tick()
     if isEmergency or not lastRemoteFireTimes[remote] or (now - lastRemoteFireTimes[remote]) >= FIRE_INTERVAL then
