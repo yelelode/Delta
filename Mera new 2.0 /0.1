@@ -2313,7 +2313,7 @@ local function dispatchRemote(remote, targetCFrame)
         params.FilterType = Enum.RaycastFilterType.Exclude
         
         local inDangerZone = false
-        local hitUp = workspace:Raycast(checkPos, Vector3.new(0, 45, 0), params)
+        local hitUp = workspace:Raycast(checkPos, Vector3.new(0, 250, 0), params)
         if hitUp and hitUp.Instance then
             local currentInst = hitUp.Instance
             while currentInst and currentInst ~= workspace do
@@ -2327,7 +2327,7 @@ local function dispatchRemote(remote, targetCFrame)
         end
         
         if not inDangerZone then
-            local hitDown = workspace:Raycast(checkPos, Vector3.new(0, -15, 0), params)
+            local hitDown = workspace:Raycast(checkPos, Vector3.new(0, -250, 0), params)
             if hitDown and hitDown.Instance then
                 local currentInst = hitDown.Instance
                 while currentInst and currentInst ~= workspace do
