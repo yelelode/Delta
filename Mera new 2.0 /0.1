@@ -2299,6 +2299,53 @@ local function dispatchRemote(remote, targetCFrame)
         return 
     end
     
+    -- ✨ INDIVIDUAL ROBOT DETECTOR (PER-PROP RAYCAST) ✨
+    if activeModes["HouseProt"] then
+        local checkPos = targetCFrame.Position
+        local params = RaycastParams.new()
+        local ignoreList = {lp.Character}
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p.Character then table.insert(ignoreList, p.Character) end
+        end
+        if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
+        if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
+        params.FilterDescendantsInstances = ignoreList
+        params.FilterType = Enum.RaycastFilterType.Exclude
+        
+        local inDangerZone = false
+        local hitUp = workspace:Raycast(checkPos, Vector3.new(0, 45, 0), params)
+        if hitUp and hitUp.Instance then
+            local currentInst = hitUp.Instance
+            while currentInst and currentInst ~= workspace do
+                local lowerName = string.lower(currentInst.Name)
+                if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") then
+                    inDangerZone = true
+                    break
+                end
+                currentInst = currentInst.Parent
+            end
+        end
+        
+        if not inDangerZone then
+            local hitDown = workspace:Raycast(checkPos, Vector3.new(0, -15, 0), params)
+            if hitDown and hitDown.Instance then
+                local currentInst = hitDown.Instance
+                while currentInst and currentInst ~= workspace do
+                    local lowerName = string.lower(currentInst.Name)
+                    if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") then
+                        inDangerZone = true
+                        break
+                    end
+                    currentInst = currentInst.Parent
+                end
+            end
+        end
+
+        if inDangerZone then
+            targetCFrame = targetCFrame * CFrame.new(0, -250, 0)
+        end
+    end
+
     pcall(function() 
         local parent = remote.Parent
         if parent:IsA("Model") then 
@@ -2460,69 +2507,7 @@ RunService.Heartbeat:Connect(function(dt)
         local targetSafeOffsets = {}
         for _, plr in ipairs(targetList) do
             targetSafeOffsets[plr] = Vector3.new(0, 0, 0)
-            if activeModes["HouseProt"] then
-                pcall(function()
-                    local root = plr.Character:FindFirstChild("HumanoidRootPart")
-                    if root then
-                        -- ✨ NEW: Look-Ahead Radar for high speeds (1000 speed bypass)
-                        local checkPos = root.Position
-                        local vel = root.AssemblyLinearVelocity
-                        if vel.Magnitude > 30 then
-                            checkPos = checkPos + (vel * 0.15) -- Predict 150ms into the future
-                        end
-
-                        local params = RaycastParams.new()
-                        local ignoreList = {plr.Character, lp.Character}
-                        
-                        -- ✨ BUG FIX: Ignore ALL players so they don't trigger each other when grouped
-                        for _, p in ipairs(Players:GetPlayers()) do
-                            if p.Character then table.insert(ignoreList, p.Character) end
-                        end
-                        
-                        if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
-                        if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
-                        params.FilterDescendantsInstances = ignoreList
-                        params.FilterType = Enum.RaycastFilterType.Exclude
-                        
-                        local inDangerZone = false
-                        
-                        -- Raycasts use predicted 'checkPos' now
-                        local hitUp = workspace:Raycast(checkPos, Vector3.new(0, 45, 0), params)
-                        
-                        -- ✨ BUG FIX: Only trigger DangerZone if the ceiling is ACTUALLY a house (fixes underground bug)
-                        if hitUp and hitUp.Instance then
-                            local currentInst = hitUp.Instance
-                            while currentInst and currentInst ~= workspace do
-                                local lowerName = string.lower(currentInst.Name)
-                                if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") then
-                                    inDangerZone = true
-                                    break
-                                end
-                                currentInst = currentInst.Parent
-                            end
-                        end
-
-                        if not inDangerZone then
-                            local hitDown = workspace:Raycast(checkPos, Vector3.new(0, -15, 0), params)
-                            if hitDown and hitDown.Instance then
-                                local currentInst = hitDown.Instance
-                                while currentInst and currentInst ~= workspace do
-                                    local lowerName = string.lower(currentInst.Name)
-                                    if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") then
-                                        inDangerZone = true
-                                        break
-                                    end
-                                    currentInst = currentInst.Parent
-                                end
-                            end
-                        end
-
-                        if inDangerZone then
-                            targetSafeOffsets[plr] = Vector3.new(0, -250, 0) -- Send to underground bunker instantly
-                        end
-                    end
-                end)
-            end
+            -- 🧠 LOGIC SHIFTED: Ab Player ki jagah har ek single Robot (prop) ka position dispatchRemote mein check hoga!
         end
 
         for _, plr in ipairs(targetList) do
