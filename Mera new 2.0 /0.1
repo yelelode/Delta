@@ -2213,6 +2213,7 @@ startBtn.MouseButton1Click:Connect(function()
         local propName, propCategory = getActivePropData()
         local count = (propName == "FurnitureBleachers") and 15 or 25
 
+        -- ORIGINAL MANUAL LOGIC (Kept 100% intact)
         if activeModes["Chair"] and (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"] or activeModes["Orbit"] or activeModes["Ring"]) then
             for i = 1, 10 do 
                 spawnProp("FurnitureBleachers", "Furniture")
@@ -2325,9 +2326,10 @@ local function dispatchRemote(remote, targetCFrame)
         params.FilterType = Enum.RaycastFilterType.Exclude
         
         local inDangerZone = false
-        local robotRadius = 2.0 
+        local robotRadius = 4.5 -- ✨ UPGRADED: Wider radius so robots hide earlier and stay hidden longer until fully outside
         
-        local hitUp = workspace:Spherecast(checkPos, robotRadius, Vector3.new(0, 250, 0), params)
+        -- ✨ UPGRADED: 5000 studs cast to guarantee multi-jumps or extreme heights never break the radar
+        local hitUp = workspace:Spherecast(checkPos, robotRadius, Vector3.new(0, 5000, 0), params)
         if hitUp and hitUp.Instance then
             local inst = hitUp.Instance
             if DangerCache[inst] then
@@ -2353,7 +2355,7 @@ local function dispatchRemote(remote, targetCFrame)
         end
         
         if not inDangerZone then
-            local hitDown = workspace:Spherecast(checkPos, robotRadius, Vector3.new(0, -250, 0), params)
+            local hitDown = workspace:Spherecast(checkPos, robotRadius, Vector3.new(0, -5000, 0), params)
             if hitDown and hitDown.Instance then
                 local inst = hitDown.Instance
                 if DangerCache[inst] then
@@ -2380,7 +2382,7 @@ local function dispatchRemote(remote, targetCFrame)
         end
 
         if inDangerZone then
-            targetCFrame = targetCFrame * CFrame.new(0, -250, 0)
+            targetCFrame = targetCFrame * CFrame.new(0, -500, 0) -- ✨ UPGRADED: Pushed deeper to 500 studs to prevent any camera clipping
             isEmergency = true
         end
     end
