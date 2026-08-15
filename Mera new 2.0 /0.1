@@ -125,10 +125,6 @@ local robotAnimTime = 0
 local espObjects = {} 
 local targetVelocities = {} 
 
--- ✨ SMART MEMORY CACHING TABLES ✨
-local DangerCache = {}
-local SafeCache = {}
-
 local customPropName = "ScreensRobotBig"
 local customPropCategory = "Screens"
 local lastGameSpawnTime = 0
@@ -145,6 +141,8 @@ pcall(function()
             local method = getnamecallmethod()
             if method == "FireServer" then
                 local args = {...}
+                -- ✨ BUG FIX: Removed strict remote name check to bypass Brookhaven updates.
+                -- Now it intercepts ANY remote sending "RequestingPropName".
                 if type(args[1]) == "string" and args[1] == "RequestingPropName" then
                     lastGameSpawnTime = tick() 
                     if args[2] and args[3] then
@@ -2311,7 +2309,7 @@ local function dispatchRemote(remote, targetCFrame)
         return 
     end
     
-    -- ✨ INDIVIDUAL ROBOT DETECTOR (TRUE SPHERECAST + SMART CACHE) ✨
+    -- ✨ INDIVIDUAL ROBOT DETECTOR (PER-PROP RAYCAST) ✨
     local isEmergency = false
     if activeModes["HouseProt"] then
         local checkPos = targetCFrame.Position
@@ -2326,63 +2324,36 @@ local function dispatchRemote(remote, targetCFrame)
         params.FilterType = Enum.RaycastFilterType.Exclude
         
         local inDangerZone = false
-        local robotRadius = 4.5 -- ✨ UPGRADED: Wider radius so robots hide earlier and stay hidden longer until fully outside
-        
-        -- ✨ UPGRADED: 5000 studs cast to guarantee multi-jumps or extreme heights never break the radar
-        local hitUp = workspace:Spherecast(checkPos, robotRadius, Vector3.new(0, 5000, 0), params)
+        local hitUp = workspace:Raycast(checkPos, Vector3.new(0, 250, 0), params)
         if hitUp and hitUp.Instance then
-            local inst = hitUp.Instance
-            if DangerCache[inst] then
-                inDangerZone = true
-            elseif SafeCache[inst] == nil then
-                local currentInst = inst
-                local foundDanger = false
-                while currentInst and currentInst ~= workspace do
-                    local lowerName = string.lower(currentInst.Name)
-                    if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") then
-                        foundDanger = true
-                        break
-                    end
-                    currentInst = currentInst.Parent
-                end
-                if foundDanger then
-                    DangerCache[inst] = true
+            local currentInst = hitUp.Instance
+            while currentInst and currentInst ~= workspace do
+                local lowerName = string.lower(currentInst.Name)
+                if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") then
                     inDangerZone = true
-                else
-                    SafeCache[inst] = true
+                    break
                 end
+                currentInst = currentInst.Parent
             end
         end
         
         if not inDangerZone then
-            local hitDown = workspace:Spherecast(checkPos, robotRadius, Vector3.new(0, -5000, 0), params)
+            local hitDown = workspace:Raycast(checkPos, Vector3.new(0, -250, 0), params)
             if hitDown and hitDown.Instance then
-                local inst = hitDown.Instance
-                if DangerCache[inst] then
-                    inDangerZone = true
-                elseif SafeCache[inst] == nil then
-                    local currentInst = inst
-                    local foundDanger = false
-                    while currentInst and currentInst ~= workspace do
-                        local lowerName = string.lower(currentInst.Name)
-                        if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") then
-                            foundDanger = true
-                            break
-                        end
-                        currentInst = currentInst.Parent
-                    end
-                    if foundDanger then
-                        DangerCache[inst] = true
+                local currentInst = hitDown.Instance
+                while currentInst and currentInst ~= workspace do
+                    local lowerName = string.lower(currentInst.Name)
+                    if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") then
                         inDangerZone = true
-                    else
-                        SafeCache[inst] = true
+                        break
                     end
+                    currentInst = currentInst.Parent
                 end
             end
         end
 
         if inDangerZone then
-            targetCFrame = targetCFrame * CFrame.new(0, -500, 0) -- ✨ UPGRADED: Pushed deeper to 500 studs to prevent any camera clipping
+            targetCFrame = targetCFrame * CFrame.new(0, -250, 0)
             isEmergency = true
         end
     end
@@ -2392,6 +2363,7 @@ local function dispatchRemote(remote, targetCFrame)
         if parent:IsA("Model") then 
             local part = parent.PrimaryPart or parent:FindFirstChildWhichIsA("BasePart")
             if part then 
+                -- ✨ BUG FIX: Stop Visual Glitch (Flying underground) - Instant Snap lagaya hai
                 if isEmergency or (part.Position - targetCFrame.Position).Magnitude > 50 then
                     part.CFrame = targetCFrame 
                 else
@@ -2407,6 +2379,7 @@ local function dispatchRemote(remote, targetCFrame)
         end 
     end)
     
+    -- ✨ NEW: Emergency Drop Bypass (0ms Delay if target is underground bunker) ✨
     if not isEmergency then
         isEmergency = targetCFrame.Y < -100
     end
@@ -2532,13 +2505,11 @@ RunService.Heartbeat:Connect(function(dt)
     local robotSpeedMultiplier = getSpeedMs() / 20 
     robotAnimTime = robotAnimTime + (dt * robotSpeedMultiplier)
     
-    -- ✨ ULTRA-ACCURATE PING MATH ✨
     local currentPing = 0.05
     pcall(function() 
         currentPing = lp:GetNetworkPing() 
     end)
-    local baseLatency = math.clamp(currentPing, 0.03, 0.3)
-    local predictionTime = baseLatency + 0.02 
+    local predictionTime = math.clamp(currentPing + 0.03, 0.04, 0.2)
     
     local allRemotes = getAvailableRemotes()
     local tCount = 0
@@ -2555,9 +2526,11 @@ RunService.Heartbeat:Connect(function(dt)
         local currentRadius = getRadius()
         local rScale = currentRadius / 15 
 
+        -- ✨ ADVANCED PLOT & INDOOR ANTI-DELETE DEFENSE SYSTEM ✨
         local targetSafeOffsets = {}
         for _, plr in ipairs(targetList) do
             targetSafeOffsets[plr] = Vector3.new(0, 0, 0)
+            -- 🧠 LOGIC SHIFTED: Ab Player ki jagah har ek single Robot (prop) ka position dispatchRemote mein check hoga!
         end
 
         for _, plr in ipairs(targetList) do
@@ -2574,17 +2547,20 @@ RunService.Heartbeat:Connect(function(dt)
                 targetVelocities[plr] = rawVelocity 
             end
             
-            -- ✨ DYNAMIC LERP FOR PERFECT STICKING ✨
+            -- ✨ ADVANCED ANTI-OVERSHOOT (FIXED HIGH SPEED STICKING) ✨
             local velocityDiff = (rawVelocity - targetVelocities[plr]).Magnitude
-            local lerpSpeed = 15 
-            
-            if rawVelocity.Magnitude < 1 then
-                lerpSpeed = 40 
-            elseif velocityDiff > 50 then
-                lerpSpeed = 35 
+            if rawVelocity.Magnitude < 2 then
+                -- Player suddenly stopped: Snap prediction instantly to prevent rubber-banding
+                targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 50)
+            elseif velocityDiff > 100 then
+                -- Player is dashing at massive speeds (e.g. 1000): Snap instantly so robots stick perfectly
+                targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 45)
+            else
+                -- Normal moving: Original smooth tracking
+                targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 10)
             end
             
-            targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, math.clamp(dt * lerpSpeed, 0, 1))
+            -- Removed 15 stud limit: 1000+ speed works flawlessly now
             local predictedOffset = targetVelocities[plr] * predictionTime
             
             local bodyPos = bodyPart.Position + predictedOffset + targetSafeOffsets[plr]
