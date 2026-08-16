@@ -3224,10 +3224,23 @@ RunService.Heartbeat:Connect(function()
     
     local now = tick()
     
-    -- "Touch" Radius set to 6 studs (ek dam paas khade hone par detect karega)
-    for _, part in ipairs(workspace:GetPartBoundsInRadius(myRoot.Position, 6)) do
+    -- Radius set to 8 studs for better detection
+    for _, part in ipairs(workspace:GetPartBoundsInRadius(myRoot.Position, 8)) do
         if part:IsA("BasePart") and not part:IsDescendantOf(myChar) then
-            local attackerName = string.match(part.Name, "Prop(.+)")
+            
+            -- Check the part and its parents to find the "Prop<Name>" model
+            local currentInst = part
+            local attackerName = nil
+            
+            while currentInst and currentInst ~= workspace do
+                local match = string.match(currentInst.Name, "^Prop(.+)")
+                if match then
+                    attackerName = match
+                    break
+                end
+                currentInst = currentInst.Parent
+            end
+            
             if attackerName and attackerName ~= lp.Name then
                 local attackerPlayer = Players:FindFirstChild(attackerName)
                 if attackerPlayer then
@@ -3241,7 +3254,6 @@ RunService.Heartbeat:Connect(function()
     end
     
     for attackerPlayer, lastTime in pairs(activeThreats) do
-        -- Agar 4 second tak prop ke paas nahi ho, toh ESP hat jayega
         if now - lastTime > 4 then
             activeThreats[attackerPlayer] = nil
             if threatEspObjects[attackerPlayer] then
