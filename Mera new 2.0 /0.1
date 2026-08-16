@@ -2979,10 +2979,11 @@ mainEspGui.IgnoreGuiInset = true
 _G.TXR_ESP_GUI = mainEspGui
 
 local cities = {
-    {"Los Angeles", "CA"}, {"New York", "NY"}, {"Chicago", "IL"}, {"Houston", "TX"}, {"Phoenix", "AZ"},
-    {"London", "UK"}, {"Toronto", "ON"}, {"Sydney", "NSW"}, {"Melbourne", "VIC"}, {"Mumbai", "MH"},
-    {"Delhi", "DL"}, {"Berlin", "BE"}, {"Tokyo", "TK"}, {"Dallas", "TX"}, {"Miami", "FL"},
-    {"Seattle", "WA"}, {"Atlanta", "GA"}, {"Boston", "MA"}, {"Denver", "CO"}, {"Dubai", "DB"}
+    {"Mumbai", "MH"}, {"Delhi", "DL"}, {"Bangalore", "KA"}, {"Hyderabad", "TS"}, {"Ahmedabad", "GJ"},
+    {"Chennai", "TN"}, {"Kolkata", "WB"}, {"Surat", "GJ"}, {"Pune", "MH"}, {"Jaipur", "RJ"},
+    {"Lucknow", "UP"}, {"Kanpur", "UP"}, {"Nagpur", "MH"}, {"Indore", "MP"}, {"Thane", "MH"},
+    {"Bhopal", "MP"}, {"Visakhapatnam", "AP"}, {"Patna", "BR"}, {"Vadodara", "GJ"}, {"Ludhiana", "PB"},
+    {"Agra", "UP"}, {"Nashik", "MH"}, {"Ranchi", "JH"}, {"Guwahati", "AS"}, {"Chandigarh", "CH"}
 }
 
 local function getSimulatedGeoData(userId)
@@ -3148,5 +3149,157 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         else
             sendNotif("TXR CORE", "UI was deleted by Game! Please re-execute.", 4)
         end
+    end
+end)
+
+-- =================================================================
+-- 🚨 RGB THREAT RADAR ENGINE (SEPARATE ESP FOR ATTACKERS) 🚨
+-- =================================================================
+local threatGuiParent = game:GetService("CoreGui")
+pcall(function() 
+    if not threatGuiParent then 
+        threatGuiParent = lp:WaitForChild("PlayerGui") 
+    end 
+end)
+
+if _G.TXR_THREAT_ESP and _G.TXR_THREAT_ESP.Parent then 
+    _G.TXR_THREAT_ESP:Destroy() 
+end
+
+local threatEspGui = Instance.new("ScreenGui", threatGuiParent)
+threatEspGui.Name = "TXR_ThreatESP_" .. tostring(math.random(100000, 999999))
+threatEspGui.IgnoreGuiInset = true
+_G.TXR_THREAT_ESP = threatEspGui
+
+local activeThreats = {}
+local threatEspObjects = {}
+
+local function getThreatESPContainer(plr)
+    if not threatEspObjects[plr] then
+        local container = Instance.new("Frame", threatEspGui)
+        container.BackgroundTransparency = 1
+        container.Visible = false
+        
+        local box = Instance.new("Frame", container)
+        box.Size = UDim2.new(1, 0, 1, 0)
+        box.BackgroundTransparency = 1
+        
+        local stroke = Instance.new("UIStroke", box)
+        stroke.Thickness = 2.5
+        
+        local titleLabel = Instance.new("TextLabel", container)
+        titleLabel.Size = UDim2.new(1, 0, 0, 20)
+        titleLabel.Position = UDim2.new(0, 0, 0, -40)
+        titleLabel.BackgroundTransparency = 1
+        titleLabel.Text = "⚠️ TARGET LOCKED ⚠️"
+        titleLabel.Font = Enum.Font.GothamBlack
+        titleLabel.TextSize = 14
+        crispText(titleLabel)
+        
+        local nameLabel = Instance.new("TextLabel", container)
+        nameLabel.Size = UDim2.new(1, 0, 0, 15)
+        nameLabel.Position = UDim2.new(0, 0, 0, -20)
+        nameLabel.BackgroundTransparency = 1
+        nameLabel.Font = Enum.Font.GothamBold
+        nameLabel.TextSize = 14
+        crispText(nameLabel)
+        
+        threatEspObjects[plr] = {
+            container = container, 
+            stroke = stroke,
+            title = titleLabel,
+            name = nameLabel
+        }
+    end
+    return threatEspObjects[plr]
+end
+
+RunService.Heartbeat:Connect(function()
+    if _G.TXR_InstanceID ~= currentExecutionID then return end
+    if not isSystemActive then return end 
+    
+    local myChar = lp.Character
+    local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
+    if not myRoot then return end
+    
+    local now = tick()
+    for _, part in ipairs(workspace:GetPartBoundsInRadius(myRoot.Position, 30)) do
+        if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(myChar) then
+            if part.AssemblyLinearVelocity.Magnitude > 30 then
+                local attackerName = string.match(part.Name, "Prop(.+)")
+                if attackerName and attackerName ~= lp.Name then
+                    local attackerPlayer = Players:FindFirstChild(attackerName)
+                    if attackerPlayer then
+                        if not activeThreats[attackerPlayer] then
+                            sendNotif("🚨 RADAR", "@" .. attackerName .. " IS ATTACKING! RGB ESP ON.", 3)
+                        end
+                        activeThreats[attackerPlayer] = now
+                    end
+                end
+            end
+        end
+    end
+    
+    for attackerPlayer, lastTime in pairs(activeThreats) do
+        if now - lastTime > 4 then
+            activeThreats[attackerPlayer] = nil
+            if threatEspObjects[attackerPlayer] then
+                threatEspObjects[attackerPlayer].container.Visible = false
+            end
+            sendNotif("✅ CLEAR", "@" .. attackerPlayer.Name .. " stopped attacking.", 3)
+        end
+    end
+end)
+
+local threatHue = 0
+RunService.RenderStepped:Connect(function(dt)
+    if _G.TXR_InstanceID ~= currentExecutionID then return end 
+    if not threatEspGui.Parent then return end
+    
+    threatHue = (threatHue + (dt * 0.5)) % 1
+    local rgbColor = Color3.fromHSV(threatHue, 1, 1)
+    
+    local camera = workspace.CurrentCamera
+    
+    for plr, _ in pairs(activeThreats) do
+        if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Head") then
+            local root = plr.Character.HumanoidRootPart
+            local head = plr.Character.Head
+            
+            local topPos = head.Position + Vector3.new(0, 0.5, 0)
+            local bottomPos = root.Position - Vector3.new(0, 3, 0)
+            
+            local topViewport, onScreen1 = camera:WorldToViewportPoint(topPos)
+            local bottomViewport, onScreen2 = camera:WorldToViewportPoint(bottomPos)
+            
+            local esp = getThreatESPContainer(plr)
+            
+            if onScreen1 or onScreen2 then
+                esp.container.Visible = true
+                
+                local height = math.abs(bottomViewport.Y - topViewport.Y)
+                local width = height * 0.55
+                
+                esp.container.Size = UDim2.new(0, width, 0, height)
+                esp.container.Position = UDim2.new(0, topViewport.X - (width/2), 0, topViewport.Y)
+                
+                esp.stroke.Color = rgbColor
+                esp.title.TextColor3 = rgbColor
+                esp.name.Text = "@" .. plr.Name
+                esp.name.TextColor3 = rgbColor
+            else
+                esp.container.Visible = false
+            end
+        elseif threatEspObjects[plr] then
+            threatEspObjects[plr].container.Visible = false
+        end
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(plr)
+    activeThreats[plr] = nil
+    if threatEspObjects[plr] then
+        threatEspObjects[plr].container:Destroy()
+        threatEspObjects[plr] = nil
     end
 end)
