@@ -3153,7 +3153,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 end)
 
 -- =================================================================
--- 🚨 RGB THREAT RADAR ENGINE (SEPARATE ESP FOR ATTACKERS) 🚨
+-- 🚨 RGB THREAT RADAR ENGINE (TOUCH/PROXIMITY ESP LOCK) 🚨
 -- =================================================================
 local threatGuiParent = game:GetService("CoreGui")
 pcall(function() 
@@ -3223,30 +3223,31 @@ RunService.Heartbeat:Connect(function()
     if not myRoot then return end
     
     local now = tick()
-    for _, part in ipairs(workspace:GetPartBoundsInRadius(myRoot.Position, 30)) do
-        if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(myChar) then
-            if part.AssemblyLinearVelocity.Magnitude > 30 then
-                local attackerName = string.match(part.Name, "Prop(.+)")
-                if attackerName and attackerName ~= lp.Name then
-                    local attackerPlayer = Players:FindFirstChild(attackerName)
-                    if attackerPlayer then
-                        if not activeThreats[attackerPlayer] then
-                            sendNotif("🚨 RADAR", "@" .. attackerName .. " IS ATTACKING! RGB ESP ON.", 3)
-                        end
-                        activeThreats[attackerPlayer] = now
+    
+    -- "Touch" Radius set to 6 studs (ek dam paas khade hone par detect karega)
+    for _, part in ipairs(workspace:GetPartBoundsInRadius(myRoot.Position, 6)) do
+        if part:IsA("BasePart") and not part:IsDescendantOf(myChar) then
+            local attackerName = string.match(part.Name, "Prop(.+)")
+            if attackerName and attackerName ~= lp.Name then
+                local attackerPlayer = Players:FindFirstChild(attackerName)
+                if attackerPlayer then
+                    if not activeThreats[attackerPlayer] then
+                        sendNotif("🚨 RADAR", "Touched @" .. attackerName .. "'s prop! RGB ESP ON.", 3)
                     end
+                    activeThreats[attackerPlayer] = now
                 end
             end
         end
     end
     
     for attackerPlayer, lastTime in pairs(activeThreats) do
+        -- Agar 4 second tak prop ke paas nahi ho, toh ESP hat jayega
         if now - lastTime > 4 then
             activeThreats[attackerPlayer] = nil
             if threatEspObjects[attackerPlayer] then
                 threatEspObjects[attackerPlayer].container.Visible = false
             end
-            sendNotif("✅ CLEAR", "@" .. attackerPlayer.Name .. " stopped attacking.", 3)
+            sendNotif("✅ CLEAR", "Moved away from @" .. attackerPlayer.Name .. "'s props.", 3)
         end
     end
 end)
