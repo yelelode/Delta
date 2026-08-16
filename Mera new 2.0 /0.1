@@ -2231,21 +2231,6 @@ startBtn.MouseButton1Click:Connect(function()
     end) 
 end)
 
-stopBtn.MouseButton1Click:Connect(function() 
-    if not isSystemActive then 
-        return 
-    end 
-    
-    isSystemActive = false
-    local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Colors.Primary, TextColor3 = Colors.TextDark}):Play()
-    TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Danger}):Play()
-    TweenService:Create(stopStroke, tInfo, {Transparency = 0.5}):Play()
-    
-    task.spawn(StopRobotBangMusic)
-    sendNotif("System Core", "All Tasks Halted.", 2) 
-end)
-
 local lastRemoteScan = 0
 local cachedRemotes = {}
 
@@ -2353,7 +2338,7 @@ local function dispatchRemote(remote, targetCFrame)
         end
 
         if inDangerZone then
-            targetCFrame = targetCFrame * CFrame.new(0, -250, 0)
+            targetCFrame = targetCFrame * CFrame.new(0, -9000, 0)
             isEmergency = true
         end
     end
@@ -2530,7 +2515,44 @@ RunService.Heartbeat:Connect(function(dt)
         local targetSafeOffsets = {}
         for _, plr in ipairs(targetList) do
             targetSafeOffsets[plr] = Vector3.new(0, 0, 0)
-            -- 🧠 LOGIC SHIFTED: Ab Player ki jagah har ek single Robot (prop) ka position dispatchRemote mein check hoga!
+            -- 🧠 ADVANCED LOGIC: Player + Prop Dual Check (Fix for 1000+ speed glitches)
+            if activeModes["HouseProt"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                local tRoot = plr.Character.HumanoidRootPart
+                -- Using predicted position to react before they even enter
+                local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
+                local checkPos = tRoot.Position + pOffset
+                
+                local params = RaycastParams.new()
+                local ignoreList = {lp.Character}
+                for _, p in ipairs(Players:GetPlayers()) do
+                    if p.Character then table.insert(ignoreList, p.Character) end
+                end
+                if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
+                if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
+                params.FilterDescendantsInstances = ignoreList
+                params.FilterType = Enum.RaycastFilterType.Exclude
+
+                local hitUp = workspace:Raycast(checkPos, Vector3.new(0, 250, 0), params)
+                local hitDown = workspace:Raycast(checkPos, Vector3.new(0, -250, 0), params)
+
+                local function isDangerHit(hit)
+                    if hit and hit.Instance then
+                        local currentInst = hit.Instance
+                        while currentInst and currentInst ~= workspace do
+                            local lowerName = string.lower(currentInst.Name)
+                            if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") then
+                                return true
+                            end
+                            currentInst = currentInst.Parent
+                        end
+                    end
+                    return false
+                end
+
+                if isDangerHit(hitUp) or isDangerHit(hitDown) then
+                    targetSafeOffsets[plr] = Vector3.new(0, -9000, 0)
+                end
+            end
         end
 
         for _, plr in ipairs(targetList) do
