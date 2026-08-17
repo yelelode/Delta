@@ -1,4 +1,19 @@
 -- =========================================================
+-- 🛡️ TXR V18.26: QUANTUM ANTI-GLITCH & SAFE-BOOT ENGINE 🛡️
+-- =========================================================
+if not game:IsLoaded() then 
+    game.Loaded:Wait() 
+end
+
+local _TEMP_PLAYERS = game:GetService("Players")
+local _TEMP_LP = _TEMP_PLAYERS.LocalPlayer
+if not _TEMP_LP.Character then
+    _TEMP_LP.CharacterAdded:Wait()
+end
+repeat task.wait() until _TEMP_LP.Character and _TEMP_LP.Character:FindFirstChild("HumanoidRootPart")
+-- =========================================================
+
+-- =========================================================
 -- 👑 TXR ASHU: QUANTUM CORE V18.26 (ONYX TERMINAL EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V18.16 DELTATIME LERP PHYSICS FOR 144HZ FEEL ON 60FPS] *
