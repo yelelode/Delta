@@ -507,24 +507,29 @@ local function applySmartHover(btn, modeKey)
 end
 
 -- =========================================================
--- ✨ FIXED CLEAR PROPS METHOD FOR INJECT BUG (UNIVERSAL WIPE)
+-- ✨ FIXED CLEAR PROPS METHOD FOR INJECT BUG & STOP WIPE
 -- =========================================================
 local function clearProps() 
-    -- 1. Main Clear Request
-    pcall(function() 
-        local r = DynamicRemotes.ClearProps or ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s")
-        if r then
-            r:FireServer("ClearAllProps")
-            r:FireServer("ClearProps") 
-        end
+    -- 1. Aggressive Main Clear Request
+    task.spawn(function()
+        pcall(function() 
+            local r = DynamicRemotes.ClearProps or ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s")
+            if r then
+                for i = 1, 3 do
+                    r:FireServer("ClearAllProps")
+                    r:FireServer("ClearProps") 
+                    task.wait(0.05)
+                end
+            end
+        end)
     end)
     
-    -- 2. UNIVERSAL WIPE: Map me jaha bhi clear props ka remote hai sab trigger kar do
+    -- 2. UNIVERSAL WIPE: Map me jaha bhi clear props ka remote hai sab aggressively trigger
     task.spawn(function()
         for _, obj in ipairs(workspace:GetDescendants()) do
             if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
-                pcall(function() obj:InvokeServer() end)
-                task.wait(0.02) -- 🔥 Fast Universal wipe
+                task.spawn(function() pcall(function() obj:InvokeServer() end) end)
+                task.wait(0.01) -- Magic fast-stagger taaki request drop na ho
             end
         end
     end)
@@ -2220,7 +2225,7 @@ escapeBtn.MouseButton1Click:Connect(function()
         hrp.CFrame = CFrame.new(safePos)
         
         -- [🔥 TXR V18.26 FIX: SMART PROP SPEED DETECTOR & 100% WIPE 🔥]
-        local maxWait = 0.1 -- Increased baseline slightly for guaranteed sync
+        local maxWait = 0.1 
         pcall(function()
             local com = workspace:FindFirstChild("WorkspaceCom")
             if com then
@@ -2247,27 +2252,30 @@ escapeBtn.MouseButton1Click:Connect(function()
             end)
         end
         
-        task.wait(0.05) -- Extra small wait before sending back
+        task.wait(0.05) 
         hrp.CFrame = originalPos
         sendNotif("🚀 BOOM!", "Smart 100% Teleport & Wipe Started!", 2)
     else
         sendNotif("⚠️ ALERT", "House Not Found! Deploying Global Wipe anyway...", 2)
     end
 
-    -- 💥 UNIVERSAL MAP WIPE (With Sequential slight delay to prevent server drop)
+    -- 💥 UNIVERSAL MAP WIPE (Asynchronous & Aggressive)
     task.spawn(function()
         pcall(function() 
             local r = DynamicRemotes.ClearProps or ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s")
             if r then
-                r:FireServer("ClearAllProps")
-                r:FireServer("ClearProps") 
+                for i = 1, 3 do
+                    r:FireServer("ClearAllProps")
+                    r:FireServer("ClearProps") 
+                    task.wait(0.05)
+                end
             end
         end)
         
         for _, obj in ipairs(workspace:GetDescendants()) do
             if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
-                pcall(function() obj:InvokeServer() end)
-                task.wait(0.02) -- 🔥 THE MAGIC DELAY: Thoda delay taaki har player ka wipe server pe register ho
+                task.spawn(function() pcall(function() obj:InvokeServer() end) end)
+                task.wait(0.01) -- The magic fast-stagger for 100% reliable hits
             end
         end
     end)
@@ -2338,7 +2346,7 @@ startBtn.MouseButton1Click:Connect(function()
     task.spawn(function() 
         sendNotif("ENGINE CORE", "V18.26 Matrix Core Activated.", 2)
         clearProps()
-        task.wait(0.3)
+        task.wait(0.4)
         
         local propName, propCategory = getActivePropData()
         local count = (propName == "FurnitureBleachers") and 15 or 25
@@ -2360,6 +2368,27 @@ startBtn.MouseButton1Click:Connect(function()
             end
         end
     end) 
+end)
+
+-- 🔥 NEW: FIXED STOP BUTTON LOGIC WITH AUTO-WIPE 🔥
+stopBtn.MouseButton1Click:Connect(function()
+    if not isSystemActive then return end
+    isSystemActive = false
+    table.clear(assignedRemotes)
+    
+    local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Colors.Primary, TextColor3 = Colors.TextDark}):Play()
+    TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Danger}):Play()
+    TweenService:Create(stopStroke, tInfo, {Transparency = 0.5}):Play()
+    
+    if isSoundEnabled then 
+        task.spawn(StopRobotBangMusic) 
+    end
+    
+    task.spawn(function()
+        clearProps()
+        sendNotif("SYSTEM HALTED", "All props wiped automatically.", 2)
+    end)
 end)
 
 local lastRemoteScan = 0
