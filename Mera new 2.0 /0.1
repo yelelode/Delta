@@ -523,7 +523,8 @@ local function clearProps()
     task.spawn(function()
         for _, obj in ipairs(workspace:GetDescendants()) do
             if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
-                task.spawn(function() pcall(function() obj:InvokeServer() end) end)
+                pcall(function() obj:InvokeServer() end)
+                task.wait(0.02) -- 🔥 Fast Universal wipe
             end
         end
     end)
@@ -1907,8 +1908,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     knob.BackgroundColor3 = Colors.Text
     knob.ZIndex = 11
     
-    local knobCorner = Instance.new("UICorner", knobCorner)
-    if not knobCorner then knobCorner = Instance.new("UICorner", knob) end
+    local knobCorner = Instance.new("UICorner", knob)
     knobCorner.CornerRadius = UDim.new(1,0)
     
     local knobDot = Instance.new("Frame", knob)
@@ -2220,7 +2220,7 @@ escapeBtn.MouseButton1Click:Connect(function()
         hrp.CFrame = CFrame.new(safePos)
         
         -- [🔥 TXR V18.26 FIX: SMART PROP SPEED DETECTOR & 100% WIPE 🔥]
-        local maxWait = 0.05
+        local maxWait = 0.1 -- Increased baseline slightly for guaranteed sync
         pcall(function()
             local com = workspace:FindFirstChild("WorkspaceCom")
             if com then
@@ -2230,7 +2230,7 @@ escapeBtn.MouseButton1Click:Connect(function()
                             local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
                             if pt then
                                 local speed = pt.AssemblyLinearVelocity.Magnitude
-                                local requiredWait = math.clamp(speed / 500, 0.05, 0.35)
+                                local requiredWait = math.clamp(speed / 400, 0.1, 0.4)
                                 if requiredWait > maxWait then maxWait = requiredWait end
                             end
                         end
@@ -2244,27 +2244,30 @@ escapeBtn.MouseButton1Click:Connect(function()
         if houseData.Remote then
             task.spawn(function() 
                 pcall(function() houseData.Remote:InvokeServer() end) 
-                task.wait(0.1)
-                pcall(function() houseData.Remote:InvokeServer() end) -- Double strike for fast props
             end)
         end
-        -- [🔥 END FIX 🔥]
         
+        task.wait(0.05) -- Extra small wait before sending back
         hrp.CFrame = originalPos
         sendNotif("🚀 BOOM!", "Smart 100% Teleport & Wipe Started!", 2)
     else
         sendNotif("⚠️ ALERT", "House Not Found! Deploying Global Wipe anyway...", 2)
     end
 
-    -- 💥 UNIVERSAL MAP WIPE (This catches apartments and ANY custom lot)
+    -- 💥 UNIVERSAL MAP WIPE (With Sequential slight delay to prevent server drop)
     task.spawn(function()
+        pcall(function() 
+            local r = DynamicRemotes.ClearProps or ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s")
+            if r then
+                r:FireServer("ClearAllProps")
+                r:FireServer("ClearProps") 
+            end
+        end)
+        
         for _, obj in ipairs(workspace:GetDescendants()) do
             if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
-                task.spawn(function()
-                    pcall(function() obj:InvokeServer() end)
-                    task.wait(0.1)
-                    pcall(function() obj:InvokeServer() end) -- Extra clear check
-                end)
+                pcall(function() obj:InvokeServer() end)
+                task.wait(0.02) -- 🔥 THE MAGIC DELAY: Thoda delay taaki har player ka wipe server pe register ho
             end
         end
     end)
