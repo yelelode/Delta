@@ -68,25 +68,41 @@ pcall(function()
 end)
 
 -- =========================================================
--- 🏠 EXACT HOUSE FINDER METHOD (IMPORTED FROM WORKING SCRIPT)
+-- 🏠 UNIVERSAL HOUSE/APARTMENT FINDER METHOD
 -- =========================================================
 local function getMyHouse()
+    -- Pehle normal Lots check karo
     local lotsFolder = workspace:FindFirstChild("001_Lots")
-    if not lotsFolder then return nil end
-    for _, lot in ipairs(lotsFolder:GetChildren()) do
-        if string.find(string.lower(lot.Name), string.lower(lp.Name)) then
-            local picked = lot:FindFirstChild("HousePickedByPlayer")
-            if picked then
-                local houseModel = picked:FindFirstChild("HouseModel")
-                if houseModel then
-                    local clearRemote = houseModel:FindFirstChild("Permissions:ClearProps")
-                    if clearRemote and clearRemote:IsA("RemoteFunction") then
-                        return {Lot = lot, Remote = clearRemote}
+    if lotsFolder then
+        for _, lot in ipairs(lotsFolder:GetChildren()) do
+            if string.find(string.lower(lot.Name), string.lower(lp.Name)) then
+                local picked = lot:FindFirstChild("HousePickedByPlayer")
+                if picked then
+                    local houseModel = picked:FindFirstChild("HouseModel")
+                    if houseModel then
+                        local clearRemote = houseModel:FindFirstChild("Permissions:ClearProps", true)
+                        if clearRemote and clearRemote:IsA("RemoteFunction") then
+                            return {Lot = lot, Remote = clearRemote, Type = "Normal"}
+                        end
                     end
                 end
             end
         end
     end
+    
+    -- Agar normal Lot nahi mila, toh Apartments me dhundho (Global Workspace scan for our owner tag)
+    for _, desc in ipairs(workspace:GetDescendants()) do
+        if desc.Name == "HousePickedByPlayer" and (tostring(desc.Value) == lp.Name or desc.Value == lp) then
+            local parentLot = desc.Parent
+            if parentLot then
+                local clearRemote = parentLot:FindFirstChild("Permissions:ClearProps", true)
+                if clearRemote and clearRemote:IsA("RemoteFunction") then
+                    return {Lot = parentLot, Remote = clearRemote, Type = "Apartment"}
+                end
+            end
+        end
+    end
+    
     return nil
 end
 
@@ -476,9 +492,10 @@ local function applySmartHover(btn, modeKey)
 end
 
 -- =========================================================
--- ✨ FIXED CLEAR PROPS METHOD FOR INJECT BUG
+-- ✨ FIXED CLEAR PROPS METHOD FOR INJECT BUG (UNIVERSAL WIPE)
 -- =========================================================
 local function clearProps() 
+    -- 1. Main Clear Request
     pcall(function() 
         local r = DynamicRemotes.ClearProps or ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s")
         if r then
@@ -487,7 +504,16 @@ local function clearProps()
         end
     end)
     
-    -- Local cleanup just to be completely sure old robots disappear
+    -- 2. UNIVERSAL WIPE: Map me jaha bhi clear props ka remote hai sab trigger kar do
+    task.spawn(function()
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
+                task.spawn(function() pcall(function() obj:InvokeServer() end) end)
+            end
+        end
+    end)
+    
+    -- 3. Local cleanup
     pcall(function()
         local com = workspace:FindFirstChild("WorkspaceCom")
         if com then
@@ -2158,9 +2184,9 @@ houseProtBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🚀 FIXED FAST TP & CLEAR PROPS (WITH INSTANT RETURN)
+-- 🚀 FIXED UNIVERSAL FAST TP & MASSIVE MAP WIPE
 -- =========================================================
-local escapeBtn = createMainBtn("🚀 FAST TP & CLEAR PROPS", nil, false)
+local escapeBtn = createMainBtn("🚀 FAST TP & MASSIVE CLEAR", nil, false)
 escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
 escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
@@ -2168,33 +2194,36 @@ escapeBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
 
 escapeBtn.MouseButton1Click:Connect(function()
     local houseData = getMyHouse()
+    local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
     
-    if houseData then
-        local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-        if hrp then
-            -- 1. Location save karli
-            local originalPos = hrp.CFrame
-            local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
-            
-            -- 2. Ghar par chale gaye
-            hrp.CFrame = CFrame.new(safePos)
-            
-            -- 3. Game ko register karne ka time diya (sirf 0.05 second)
-            task.wait(0.05) 
-            
-            -- 4. Delete karne ka signal SPawn me diya (taaki script ruk na jaye)
-            task.spawn(function()
-                pcall(function() houseData.Remote:InvokeServer() end)
-            end)
-            
-            -- 5. INSTANTLY Purani location pe wapis
-            hrp.CFrame = originalPos
-            
-            sendNotif("🚀 BOOM!", "Fast TP, Cleared & Returned!", 2)
+    -- Teleportation phase
+    if hrp and houseData then
+        local originalPos = hrp.CFrame
+        local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
+        
+        hrp.CFrame = CFrame.new(safePos)
+        task.wait(0.05) 
+        
+        if houseData.Remote then
+            task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
         end
+        
+        hrp.CFrame = originalPos
+        sendNotif("🚀 BOOM!", "Teleported & Wipe Started!", 2)
     else
-        sendNotif("❌ ERROR", "House Not Found! (Spawn it first)", 2)
+        sendNotif("⚠️ ALERT", "House Not Found! Deploying Global Wipe anyway...", 2)
     end
+
+    -- 💥 UNIVERSAL MAP WIPE (This catches apartments and ANY custom lot)
+    task.spawn(function()
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
+                task.spawn(function()
+                    pcall(function() obj:InvokeServer() end)
+                end)
+            end
+        end
+    end)
 end)
 
 local toggleRow = Instance.new("Frame", mainList)
@@ -2261,7 +2290,6 @@ startBtn.MouseButton1Click:Connect(function()
     
     task.spawn(function() 
         sendNotif("ENGINE CORE", "V18.26 Matrix Core Activated.", 2)
-        -- NOW THIS WILL 100% CLEAR OLD PROPS FIRST
         clearProps()
         task.wait(0.3)
         
