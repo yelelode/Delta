@@ -1589,7 +1589,7 @@ local function createMenu(titleStr)
     end)
     
     backBtn.MouseButton1Click:Connect(function() 
-        isSubMenuOpen = false -- ✨ UI Focus Disable
+        isSubMenuOpen = false
         local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
         TweenService:Create(menu, tInfo, {Position = UDim2.fromScale(1.2, 0)}):Play()
         mainList.Visible = true 
@@ -1731,7 +1731,7 @@ for _, geo in ipairs(geometries) do
     
     btn.MouseButton1Click:Connect(function() 
         activeGeometry = geo
-        isSubMenuOpen = false -- ✨ UI Focus Disable
+        isSubMenuOpen = false
         sendNotif("Engine", "Lock: " .. geo, 2)
         
         local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
@@ -1903,7 +1903,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     hitbox.InputBegan:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
             dragging = true
-            uiHoverCount = uiHoverCount + 1 -- ✨ Focus
+            uiHoverCount = uiHoverCount + 1
             
             local tInfo1 = TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
             local tInfo2 = TweenInfo.new(0.3, Enum.EasingStyle.Quart)
@@ -1922,7 +1922,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     hitbox.InputEnded:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
             dragging = false
-            uiHoverCount = math.max(0, uiHoverCount - 1) -- ✨ Unfocus
+            uiHoverCount = math.max(0, uiHoverCount - 1)
             
             local tInfo1 = TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
             local tInfo2 = TweenInfo.new(0.4, Enum.EasingStyle.Quart)
@@ -2158,7 +2158,7 @@ houseProtBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🚀 FIXED FAST TP & CLEAR PROPS (USES THE EXACT WORKING METHOD)
+-- 🚀 FIXED FAST TP & CLEAR PROPS (WITH INSTANT RETURN)
 -- =========================================================
 local escapeBtn = createMainBtn("🚀 FAST TP & CLEAR PROPS", nil, false)
 escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
@@ -2170,16 +2170,28 @@ escapeBtn.MouseButton1Click:Connect(function()
     local houseData = getMyHouse()
     
     if houseData then
-        pcall(function()
-            local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
-                hrp.CFrame = CFrame.new(safePos)
-                task.wait(0.05) 
-                houseData.Remote:InvokeServer()
-            end
-        end)
-        sendNotif("🚀 BOOM!", "Teleported to House & Props Cleared!", 2)
+        local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            -- 1. Location save karli
+            local originalPos = hrp.CFrame
+            local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
+            
+            -- 2. Ghar par chale gaye
+            hrp.CFrame = CFrame.new(safePos)
+            
+            -- 3. Game ko register karne ka time diya (sirf 0.05 second)
+            task.wait(0.05) 
+            
+            -- 4. Delete karne ka signal SPawn me diya (taaki script ruk na jaye)
+            task.spawn(function()
+                pcall(function() houseData.Remote:InvokeServer() end)
+            end)
+            
+            -- 5. INSTANTLY Purani location pe wapis
+            hrp.CFrame = originalPos
+            
+            sendNotif("🚀 BOOM!", "Fast TP, Cleared & Returned!", 2)
+        end
     else
         sendNotif("❌ ERROR", "House Not Found! (Spawn it first)", 2)
     end
