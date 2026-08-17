@@ -2309,8 +2309,8 @@ local function dispatchRemote(remote, targetCFrame)
         params.FilterType = Enum.RaycastFilterType.Exclude
         
         local inDangerZone = false
-        -- 50x400x50 stud Forcefield Bubble around the target position
-        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(50, 400, 50), params)
+        -- Shrinked bubble to 12x250x12 (6 studs radius) so robots go right up to the border before dropping
+        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(12, 250, 12), params)
         for _, hitInst in ipairs(partsInBubble) do
             local currentInst = hitInst
             while currentInst and currentInst ~= workspace do
@@ -2520,7 +2520,7 @@ RunService.Heartbeat:Connect(function(dt)
                 params.FilterType = Enum.RaycastFilterType.Exclude
 
                 local inDangerZone = false
-                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(60, 400, 60), params)
+                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(12, 250, 12), params)
                 for _, hitInst in ipairs(partsInBubble) do
                     local currentInst = hitInst
                     while currentInst and currentInst ~= workspace do
