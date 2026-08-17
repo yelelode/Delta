@@ -1892,7 +1892,8 @@ local function createSlider(name, min, max, defaultVal, suffix)
     knob.BackgroundColor3 = Colors.Text
     knob.ZIndex = 11
     
-    local knobCorner = Instance.new("UICorner", knob)
+    local knobCorner = Instance.new("UICorner", knobCorner)
+    if not knobCorner then knobCorner = Instance.new("UICorner", knob) end
     knobCorner.CornerRadius = UDim.new(1,0)
     
     local knobDot = Instance.new("Frame", knob)
@@ -2202,14 +2203,40 @@ escapeBtn.MouseButton1Click:Connect(function()
         local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
         
         hrp.CFrame = CFrame.new(safePos)
-        task.wait(0.05) 
+        
+        -- [🔥 TXR V18.26 FIX: SMART PROP SPEED DETECTOR & 100% WIPE 🔥]
+        local maxWait = 0.05
+        pcall(function()
+            local com = workspace:FindFirstChild("WorkspaceCom")
+            if com then
+                for _, f in ipairs(com:GetChildren()) do
+                    for _, c in ipairs(f:GetChildren()) do
+                        if c.Name == "Prop" .. lp.Name then
+                            local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
+                            if pt then
+                                local speed = pt.AssemblyLinearVelocity.Magnitude
+                                local requiredWait = math.clamp(speed / 500, 0.05, 0.35)
+                                if requiredWait > maxWait then maxWait = requiredWait end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+        
+        task.wait(maxWait) 
         
         if houseData.Remote then
-            task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+            task.spawn(function() 
+                pcall(function() houseData.Remote:InvokeServer() end) 
+                task.wait(0.1)
+                pcall(function() houseData.Remote:InvokeServer() end) -- Double strike for fast props
+            end)
         end
+        -- [🔥 END FIX 🔥]
         
         hrp.CFrame = originalPos
-        sendNotif("🚀 BOOM!", "Teleported & Wipe Started!", 2)
+        sendNotif("🚀 BOOM!", "Smart 100% Teleport & Wipe Started!", 2)
     else
         sendNotif("⚠️ ALERT", "House Not Found! Deploying Global Wipe anyway...", 2)
     end
@@ -2220,6 +2247,8 @@ escapeBtn.MouseButton1Click:Connect(function()
             if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
                 task.spawn(function()
                     pcall(function() obj:InvokeServer() end)
+                    task.wait(0.1)
+                    pcall(function() obj:InvokeServer() end) -- Extra clear check
                 end)
             end
         end
@@ -2603,6 +2632,14 @@ RunService.Heartbeat:Connect(function(dt)
             
             local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
             local rawVelocity = tRoot.AssemblyLinearVelocity
+            
+            -- [🔥 TXR V18.26 FIX: ANTI-VELOCITY SPOOF DETECTOR 🔥]
+            -- Fake speed ya fling hone pe velocity bohot high ho jati hai
+            if rawVelocity.Magnitude > 150 or rawVelocity.Y > 100 or rawVelocity.Y < -100 then 
+                rawVelocity = Vector3.new(0, 0, 0)
+            end
+            -- [🔥 END FIX 🔥]
+
             if not targetVelocities[plr] then targetVelocities[plr] = rawVelocity end
             
             local velocityDiff = (rawVelocity - targetVelocities[plr]).Magnitude
