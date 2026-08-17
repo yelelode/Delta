@@ -2141,6 +2141,59 @@ houseProtBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+local escapeBtn = createMainBtn("🚀 FAST TP & CLEAR PROPS", nil, false)
+escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
+escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
+escapeBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
+
+escapeBtn.MouseButton1Click:Connect(function()
+    local char = lp.Character
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+    
+    local lots = workspace:FindFirstChild("001_Lots")
+    if not lots then return end
+    
+    local houseModel = nil
+    for _, lot in ipairs(lots:GetChildren()) do
+        local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
+        if ownerVal and tostring(ownerVal.Value) == lp.Name then
+            houseModel = ownerVal:FindFirstChild("HouseModel")
+            break
+        end
+    end
+    
+    if houseModel then
+        local cf = houseModel:GetPivot()
+        local rx = cf.X
+        local rz = cf.Z
+        local ry = cf.Y
+        
+        local rayOrigin = Vector3.new(rx, ry + 20, rz)
+        local params = RaycastParams.new()
+        params.FilterDescendantsInstances = {houseModel}
+        params.FilterType = Enum.RaycastFilterType.Include
+        local hit = workspace:Raycast(rayOrigin, Vector3.new(0, -50, 0), params)
+        
+        if hit then
+            root.CFrame = CFrame.new(hit.Position + Vector3.new(0, 3, 0))
+        else
+            root.CFrame = CFrame.new(cf.Position + Vector3.new(0, 3, 0))
+        end
+        
+        local remote = houseModel:FindFirstChild("Permissions:ClearProps")
+        if remote then
+            task.spawn(function()
+                pcall(function() remote:InvokeServer() end)
+            end)
+        end
+        sendNotif("🚀 BOOM!", "Teleported to Zamin & Props Cleared Fast!", 2)
+    else
+        sendNotif("❌ ERROR", "House Not Found! (Spawn it first)", 2)
+    end
+end)
+
 local toggleRow = Instance.new("Frame", mainList)
 toggleRow.Size = UDim2.new(1, 0, 0, 42)
 toggleRow.BackgroundTransparency = 1
