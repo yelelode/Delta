@@ -3356,3 +3356,74 @@ Players.PlayerRemoving:Connect(function(plr)
         threatEspObjects[plr] = nil
     end
 end)
+
+-- =================================================================
+-- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND) 🚀
+-- =================================================================
+local isSmartClearing = false
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if _G.TXR_InstanceID ~= currentExecutionID then return end
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.F5 and not isSmartClearing then
+        isSmartClearing = true
+        local houseData = getMyHouse()
+        local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+        
+        if hrp and houseData then
+            local originalPos = hrp.CFrame
+            local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
+            
+            -- 1. Instant teleport to house (Safe Zone)
+            hrp.CFrame = CFrame.new(safePos)
+            
+            -- Trigger house clear remote manually just in case
+            if houseData.Remote then
+                task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+            end
+
+            task.spawn(function()
+                local isCleared = false
+                local safetyCounter = 0
+                
+                -- 2. Wait and detect unauthorized props coming with you
+                while not isCleared and safetyCounter < 50 do
+                    task.wait(0.01) -- Mili-second loop (ekdam fast)
+                    safetyCounter = safetyCounter + 1
+                    
+                    local foundProp = false
+                    -- Scan for any prop near the player (radius 25)
+                    local com = workspace:FindFirstChild("WorkspaceCom")
+                    if com then
+                        for _, f in ipairs(com:GetChildren()) do
+                            for _, c in ipairs(f:GetChildren()) do
+                                -- Check if prop is NOT ours
+                                if c.Name:match("^Prop") and not c.Name:match("^Prop" .. lp.Name) then
+                                    local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
+                                    if pt and (pt.Position - hrp.Position).Magnitude < 25 then
+                                        foundProp = true
+                                        break
+                                    end
+                                end
+                            end
+                            if foundProp then break end
+                        end
+                    end
+
+                    -- 3. If no props detected near us, it's totally clear!
+                    if not foundProp then
+                        isCleared = true
+                    end
+                end
+                
+                -- 4. Instantly teleport back to old position usi speed se
+                hrp.CFrame = originalPos
+                isSmartClearing = false
+                sendNotif("SMART CLEAR", "Bang Props Cleared & Returned Instantly!", 2)
+            end)
+        else
+            if not houseData then
+                sendNotif("ERROR", "House not found! Please claim a house first.", 2)
+            end
+            isSmartClearing = false
+        end
+    end
+end)
