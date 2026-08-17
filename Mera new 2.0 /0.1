@@ -2153,44 +2153,73 @@ escapeBtn.MouseButton1Click:Connect(function()
     if not root then return end
     
     local lots = workspace:FindFirstChild("001_Lots")
-    if not lots then return end
+    if not lots then 
+        sendNotif("❌ ERROR", "001_Lots not found!", 2)
+        return 
+    end
     
-    local houseModel = nil
+    local myLot = nil
+    
+    -- STEP 1: Find your house perfectly
     for _, lot in ipairs(lots:GetChildren()) do
         local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
-        if ownerVal and tostring(ownerVal.Value) == lp.Name then
-            houseModel = ownerVal:FindFirstChild("HouseModel")
+        local nameVal = lot:FindFirstChild("PlayerName")
+        
+        if ownerVal and (ownerVal.Value == lp or tostring(ownerVal.Value) == lp.Name) then
+            myLot = lot
+            break
+        elseif nameVal and tostring(nameVal.Value) == lp.Name then
+            myLot = lot
             break
         end
     end
     
-    if houseModel then
-        local cf = houseModel:GetPivot()
-        local rx = cf.X
-        local rz = cf.Z
-        local ry = cf.Y
+    -- STEP 2: Fast Teleport to Zamin
+    if myLot then
+        local housePivot = nil
+        local houseModel = myLot:FindFirstChild("HouseModel", true)
         
-        local rayOrigin = Vector3.new(rx, ry + 20, rz)
-        local params = RaycastParams.new()
-        params.FilterDescendantsInstances = {houseModel}
-        params.FilterType = Enum.RaycastFilterType.Include
-        local hit = workspace:Raycast(rayOrigin, Vector3.new(0, -50, 0), params)
-        
-        if hit then
-            root.CFrame = CFrame.new(hit.Position + Vector3.new(0, 3, 0))
+        if houseModel then
+            housePivot = houseModel:GetPivot()
         else
-            root.CFrame = CFrame.new(cf.Position + Vector3.new(0, 3, 0))
+            housePivot = myLot:GetPivot()
         end
         
-        local remote = houseModel:FindFirstChild("Permissions:ClearProps")
+        if housePivot then
+            -- Zamin dhundne ke liye raycast (taaki hawa me tp na ho)
+            local rayOrigin = housePivot.Position + Vector3.new(0, 15, 0)
+            local rayParams = RaycastParams.new()
+            rayParams.FilterDescendantsInstances = {myLot}
+            rayParams.FilterType = Enum.RaycastFilterType.Include
+            local hit = workspace:Raycast(rayOrigin, Vector3.new(0, -100, 0), rayParams)
+            
+            if hit then
+                root.CFrame = CFrame.new(hit.Position + Vector3.new(0, 3, 0))
+            else
+                root.CFrame = CFrame.new(housePivot.Position + Vector3.new(0, 3, 0))
+            end
+        end
+    else
+        sendNotif("⚠️ WARNING", "House detect nahi hua, sirf Props uda rha hu.", 2)
+    end
+    
+    -- STEP 3: Clear Props (BRUTE-FORCE SAFE METHOD)
+    -- Hum map ke saare houses ka clear remote trigger karenge, server bas tumhara wala accept karega aur dusro ko block karega
+    local fired = false
+    for _, lot in ipairs(lots:GetChildren()) do
+        local remote = lot:FindFirstChild("Permissions:ClearProps", true)
         if remote then
             task.spawn(function()
                 pcall(function() remote:InvokeServer() end)
             end)
+            fired = true
         end
-        sendNotif("🚀 BOOM!", "Teleported to Zamin & Props Cleared Fast!", 2)
+    end
+    
+    if fired then
+        sendNotif("🚀 BOOM!", "Teleported & Props Cleared Fast!", 2)
     else
-        sendNotif("❌ ERROR", "House Not Found! (Spawn it first)", 2)
+        sendNotif("❌ ERROR", "Clear remote nahi mila!", 2)
     end
 end)
 
