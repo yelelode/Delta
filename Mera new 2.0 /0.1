@@ -172,6 +172,7 @@ local isRainbowEnabled = false
 local isSoundEnabled = false
 local isSystemActive = false
 local isGodShieldEnabled = false
+local isEvading = false -- 🔥 NEW FIX: Master void evasion lock
 local animTime = 0
 local angle = 0
 local selfAngle = 0 
@@ -2214,70 +2215,60 @@ escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
 escapeBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
 
 escapeBtn.MouseButton1Click:Connect(function()
-    local houseData = getMyHouse()
-    local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+    isEvading = true -- 🔥 Protect our props first
     
-    -- Teleportation phase
-    if hrp and houseData then
-        local originalPos = hrp.CFrame
-        local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
-        
-        hrp.CFrame = CFrame.new(safePos)
-        
-        -- [🔥 TXR V18.26 FIX: SMART PROP SPEED DETECTOR & 100% WIPE 🔥]
-        local maxWait = 0.1 
-        pcall(function()
-            local com = workspace:FindFirstChild("WorkspaceCom")
-            if com then
-                for _, f in ipairs(com:GetChildren()) do
-                    for _, c in ipairs(f:GetChildren()) do
-                        if c.Name == "Prop" .. lp.Name then
-                            local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
-                            if pt then
-                                local speed = pt.AssemblyLinearVelocity.Magnitude
-                                local requiredWait = math.clamp(speed / 400, 0.1, 0.4)
-                                if requiredWait > maxWait then maxWait = requiredWait end
-                            end
-                        end
+    -- 🛡️ INSTANT SKY-VAULT: Force all our props to the sky before any wipe commands
+    local com = workspace:FindFirstChild("WorkspaceCom")
+    if com then
+        for _, f in ipairs(com:GetChildren()) do
+            for _, c in ipairs(f:GetChildren()) do
+                if c.Name == "Prop" .. lp.Name then
+                    local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
+                    local r = c:FindFirstChild("SetCurrentCFrame")
+                    if pt and r then
+                        task.spawn(function() pcall(function() r:InvokeServer(CFrame.new(pt.Position.X, 15000, pt.Position.Z)) end) end)
                     end
                 end
             end
-        end)
-        
-        task.wait(maxWait) 
+        end
+    end
+    
+    task.wait(0.2) -- Give the server 200ms to register our props are safe in the sky
+    
+    local houseData = getMyHouse()
+    local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+    local originalPos = hrp and hrp.CFrame
+    
+    if hrp and houseData then
+        local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
+        hrp.CFrame = CFrame.new(safePos)
         
         if houseData.Remote then
-            task.spawn(function() 
-                pcall(function() houseData.Remote:InvokeServer() end) 
-            end)
+            task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
         end
         
         task.wait(0.05) 
         hrp.CFrame = originalPos
-        sendNotif("🚀 BOOM!", "Smart 100% Teleport & Wipe Started!", 2)
+        sendNotif("🚀 BOOM!", "Evaded & Wiped Attackers!", 2)
     else
-        sendNotif("⚠️ ALERT", "House Not Found! Deploying Global Wipe anyway...", 2)
+        sendNotif("⚠️ ALERT", "House Not Found! Deploying Global Wipe...", 2)
     end
 
-    -- 💥 UNIVERSAL MAP WIPE (Asynchronous & Aggressive)
+    -- 💥 UNIVERSAL MAP WIPE (Only clear OTHER houses)
     task.spawn(function()
-        pcall(function() 
-            local r = DynamicRemotes.ClearProps or ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s")
-            if r then
-                for i = 1, 3 do
-                    r:FireServer("ClearAllProps")
-                    r:FireServer("ClearProps") 
-                    task.wait(0.05)
-                end
-            end
-        end)
-        
+        local myHouseData = getMyHouse()
+        local myClearRemote = myHouseData and myHouseData.Remote
+
         for _, obj in ipairs(workspace:GetDescendants()) do
             if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
-                task.spawn(function() pcall(function() obj:InvokeServer() end) end)
-                task.wait(0.01) -- The magic fast-stagger for 100% reliable hits
+                if obj ~= myClearRemote then 
+                    task.spawn(function() pcall(function() obj:InvokeServer() end) end)
+                    task.wait(0.01) 
+                end
             end
         end
+        task.wait(0.3) -- Wait for house wipes to completely finish
+        isEvading = false -- 🔥 Bring our robots back down safely
     end)
 end)
 
@@ -2481,9 +2472,13 @@ local function dispatchRemote(remote, targetCFrame)
         end
 
         if inDangerZone then
-            targetCFrame = targetCFrame * CFrame.new(0, -9000, 0)
+            targetCFrame = targetCFrame * CFrame.new(0, 15000, 0)
             isEmergency = true
         end
+    end
+
+    if not isEmergency then
+        isEmergency = targetCFrame.Y < -100 or targetCFrame.Y > 10000
     end
 
     pcall(function() 
@@ -2505,10 +2500,6 @@ local function dispatchRemote(remote, targetCFrame)
             end
         end 
     end)
-    
-    if not isEmergency then
-        isEmergency = targetCFrame.Y < -100
-    end
     
     local now = tick()
     if isEmergency or not lastRemoteFireTimes[remote] or (now - lastRemoteFireTimes[remote]) >= FIRE_INTERVAL then
@@ -2636,7 +2627,10 @@ RunService.Heartbeat:Connect(function(dt)
         local targetSafeOffsets = {}
         for _, plr in ipairs(targetList) do
             targetSafeOffsets[plr] = Vector3.new(0, 0, 0)
-            if activeModes["HouseProt"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            
+            if isEvading then
+                targetSafeOffsets[plr] = Vector3.new(0, 15000, 0) -- 🔥 Hide in sky during evasion wipe
+            elseif activeModes["HouseProt"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
                 local tRoot = plr.Character.HumanoidRootPart
                 local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
                 local checkPos = tRoot.Position + pOffset
@@ -2667,7 +2661,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
 
                 if inDangerZone then
-                    targetSafeOffsets[plr] = Vector3.new(0, -9000, 0)
+                    targetSafeOffsets[plr] = Vector3.new(0, 15000, 0)
                 end
             end
         end
@@ -2813,7 +2807,7 @@ RunService.Heartbeat:Connect(function(dt)
                     
                     if isSeated or voidedPlayers[plr] then
                         voidedPlayers[plr] = true
-                        task.spawn(function() pcall(function() remote:InvokeServer(CFrame.new(0, -9000, 0)) end) end)
+                        task.spawn(function() pcall(function() remote:InvokeServer(CFrame.new(0, 15000, 0)) end) end)
                     else
                         local propsForThisTarget = math.min(4, math.ceil(#freeRemotes / tCount))
                         local localChairIndex = (idx - 1) % propsForThisTarget
