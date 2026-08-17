@@ -2294,11 +2294,11 @@ local function dispatchRemote(remote, targetCFrame)
         return 
     end
     
-    -- ✨ INDIVIDUAL ROBOT DETECTOR (PER-PROP RAYCAST) ✨
+    -- ✨ INDIVIDUAL ROBOT DETECTOR (PER-PROP BUBBLE CHECK) ✨
     local isEmergency = false
     if activeModes["HouseProt"] then
         local checkPos = targetCFrame.Position
-        local params = RaycastParams.new()
+        local params = OverlapParams.new()
         local ignoreList = {lp.Character}
         for _, p in ipairs(Players:GetPlayers()) do
             if p.Character then table.insert(ignoreList, p.Character) end
@@ -2309,32 +2309,19 @@ local function dispatchRemote(remote, targetCFrame)
         params.FilterType = Enum.RaycastFilterType.Exclude
         
         local inDangerZone = false
-        local hitUp = workspace:Raycast(checkPos, Vector3.new(0, 250, 0), params)
-        if hitUp and hitUp.Instance then
-            local currentInst = hitUp.Instance
+        -- 50x400x50 stud Forcefield Bubble around the target position
+        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(50, 400, 50), params)
+        for _, hitInst in ipairs(partsInBubble) do
+            local currentInst = hitInst
             while currentInst and currentInst ~= workspace do
                 local lowerName = string.lower(currentInst.Name)
-                if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") then
+                if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") or string.find(lowerName, "ban") then
                     inDangerZone = true
                     break
                 end
                 currentInst = currentInst.Parent
             end
-        end
-        
-        if not inDangerZone then
-            local hitDown = workspace:Raycast(checkPos, Vector3.new(0, -250, 0), params)
-            if hitDown and hitDown.Instance then
-                local currentInst = hitDown.Instance
-                while currentInst and currentInst ~= workspace do
-                    local lowerName = string.lower(currentInst.Name)
-                    if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") then
-                        inDangerZone = true
-                        break
-                    end
-                    currentInst = currentInst.Parent
-                end
-            end
+            if inDangerZone then break end
         end
 
         if inDangerZone then
@@ -2522,7 +2509,7 @@ RunService.Heartbeat:Connect(function(dt)
                 local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
                 local checkPos = tRoot.Position + pOffset
                 
-                local params = RaycastParams.new()
+                local params = OverlapParams.new()
                 local ignoreList = {lp.Character}
                 for _, p in ipairs(Players:GetPlayers()) do
                     if p.Character then table.insert(ignoreList, p.Character) end
@@ -2532,24 +2519,22 @@ RunService.Heartbeat:Connect(function(dt)
                 params.FilterDescendantsInstances = ignoreList
                 params.FilterType = Enum.RaycastFilterType.Exclude
 
-                local hitUp = workspace:Raycast(checkPos, Vector3.new(0, 250, 0), params)
-                local hitDown = workspace:Raycast(checkPos, Vector3.new(0, -250, 0), params)
-
-                local function isDangerHit(hit)
-                    if hit and hit.Instance then
-                        local currentInst = hit.Instance
-                        while currentInst and currentInst ~= workspace do
-                            local lowerName = string.lower(currentInst.Name)
-                            if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") then
-                                return true
-                            end
-                            currentInst = currentInst.Parent
+                local inDangerZone = false
+                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(60, 400, 60), params)
+                for _, hitInst in ipairs(partsInBubble) do
+                    local currentInst = hitInst
+                    while currentInst and currentInst ~= workspace do
+                        local lowerName = string.lower(currentInst.Name)
+                        if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") or string.find(lowerName, "ban") then
+                            inDangerZone = true
+                            break
                         end
+                        currentInst = currentInst.Parent
                     end
-                    return false
+                    if inDangerZone then break end
                 end
 
-                if isDangerHit(hitUp) or isDangerHit(hitDown) then
+                if inDangerZone then
                     targetSafeOffsets[plr] = Vector3.new(0, -9000, 0)
                 end
             end
