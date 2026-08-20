@@ -2225,15 +2225,15 @@ escapeBtn.MouseButton1Click:Connect(function()
     local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
     local originalPos = hrp and hrp.CFrame
     
-    -- 🧠 SMART DETECTION: Wait up to 1.5 seconds for props to get close
+    -- 🧠 SMART ADVANCED SCANNER: Detect props and wait 1.5s ONLY if enemy robots are found to gather all slow/fast robots
     local detectionTime = 0
     local propsDetected = false
     
     if hrp then
         while detectionTime < 1.5 do
             local found = false
-            -- Smart check for enemy props near player
-            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 25)) do
+            -- Smart check for enemy props near player with advanced radius
+            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
                 if obj.Name:match("Prop") and not obj.Name:match(lp.Name) then
                     found = true
                     break
@@ -2242,7 +2242,9 @@ escapeBtn.MouseButton1Click:Connect(function()
             
             if found then
                 propsDetected = true
-                break -- Fast props aagaye to turant break hoke wipe karega
+                -- Agar robot detect hua, toh exactly 1.5 sec wait karega taaki saare slow/fast robots paas aajaaye aur ek click me clear ho
+                task.wait(1.5)
+                break 
             end
             
             task.wait(0.1)
