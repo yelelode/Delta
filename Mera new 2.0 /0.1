@@ -2259,10 +2259,10 @@ escapeBtn.MouseButton1Click:Connect(function()
         local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
         hrp.CFrame = CFrame.new(safePos) -- 🚀 INSTANT TP TO HOUSE
         
-        -- ⏳ DYNAMIC SMART WAIT (Max 0.5s only if props were detected beforehand)
+        -- ⏳ DYNAMIC SMART WAIT (Max 0.7s only if props were detected beforehand)
         if propsDetectedBefore then
             local maxWait = 0
-            while maxWait < 0.5 do
+            while maxWait < 0.7 do
                 task.wait(0.05)
                 maxWait = maxWait + 0.05
                 
@@ -2280,8 +2280,12 @@ escapeBtn.MouseButton1Click:Connect(function()
             end
         end
         
+        -- 🔥 AGGRESSIVE HOUSE CLEAR (Spam 20 times fast)
         if houseData.Remote then
-            task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+            for i = 1, 20 do
+                task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+                task.wait(0.01) -- Staggered ultra-fast spam
+            end
         end
         
         task.wait(0.05) 
@@ -3413,9 +3417,12 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
             -- 1. Instant teleport to house (Safe Zone)
             hrp.CFrame = CFrame.new(safePos)
             
-            -- Trigger house clear remote manually just in case
+            -- Trigger house clear remote aggressively 20 times just in case
             if houseData.Remote then
-                task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+                for i = 1, 20 do
+                    task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+                    task.wait(0.01)
+                end
             end
 
             task.spawn(function()
