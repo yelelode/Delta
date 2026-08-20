@@ -2214,9 +2214,27 @@ escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
 escapeBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
 
+local escapeDebounce = false
+
 escapeBtn.MouseButton1Click:Connect(function()
+    if escapeDebounce then return end
+    escapeDebounce = true
     isEvading = true -- 🔥 Protect our props first
     
+    local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+    local originalPos = hrp and hrp.CFrame
+    
+    -- 🧠 INSTANT SMART PRE-CHECK (0 Seconds Delay)
+    local propsDetectedBefore = false
+    if hrp then
+        for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+            if obj.Name:match("Prop") and not obj.Name:match(lp.Name) then
+                propsDetectedBefore = true
+                break
+            end
+        end
+    end
+
     -- 🛡️ INSTANT SKY-VAULT: Force all our props to the sky before any wipe commands
     local com = workspace:FindFirstChild("WorkspaceCom")
     if com then
@@ -2236,12 +2254,31 @@ escapeBtn.MouseButton1Click:Connect(function()
     task.wait(0.2) -- Give the server 200ms to register our props are safe in the sky
     
     local houseData = getMyHouse()
-    local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-    local originalPos = hrp and hrp.CFrame
     
     if hrp and houseData then
         local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
-        hrp.CFrame = CFrame.new(safePos)
+        hrp.CFrame = CFrame.new(safePos) -- 🚀 INSTANT TP TO HOUSE
+        
+        -- ⏳ DYNAMIC SMART WAIT (Max 0.5s only if props were detected beforehand)
+        if propsDetectedBefore then
+            local maxWait = 0
+            while maxWait < 0.5 do
+                task.wait(0.05)
+                maxWait = maxWait + 0.05
+                
+                local propsFollowed = false
+                for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                    if obj.Name:match("Prop") and not obj.Name:match(lp.Name) then
+                        propsFollowed = true
+                        break
+                    end
+                end
+                
+                if propsFollowed then
+                    break -- Props aagaye! Turant wait tod do aur clear kardo
+                end
+            end
+        end
         
         if houseData.Remote then
             task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
@@ -2254,7 +2291,7 @@ escapeBtn.MouseButton1Click:Connect(function()
         sendNotif("⚠️ ALERT", "House Not Found! Deploying Global Wipe...", 2)
     end
 
-    -- 💥 UNIVERSAL MAP WIPE (Only clear OTHER houses)
+    -- 💥 UNIVERSAL MAP WIPE
     task.spawn(function()
         local myHouseData = getMyHouse()
         local myClearRemote = myHouseData and myHouseData.Remote
@@ -2267,8 +2304,9 @@ escapeBtn.MouseButton1Click:Connect(function()
                 end
             end
         end
-        task.wait(0.3) -- Wait for house wipes to completely finish
-        isEvading = false -- 🔥 Bring our robots back down safely
+        task.wait(0.3) 
+        isEvading = false 
+        escapeDebounce = false
     end)
 end)
 
