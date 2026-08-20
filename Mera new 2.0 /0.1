@@ -2223,90 +2223,96 @@ local escapeDebounce = false
 escapeBtn.MouseButton1Click:Connect(function()
     if escapeDebounce then return end
     escapeDebounce = true
-    isEvading = true 
     
-    local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-    local originalPos = hrp and hrp.CFrame
-    
-    local propsDetectedBefore = false
-    if hrp then
-        for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
-            if obj.Name:match("Prop") and not obj.Name:match(lp.Name) then
-                propsDetectedBefore = true
-                break
-            end
-        end
-    end
-
-    local com = workspace:FindFirstChild("WorkspaceCom")
-    if com then
-        for _, f in ipairs(com:GetChildren()) do
-            for _, c in ipairs(f:GetChildren()) do
-                if c.Name == "Prop" .. lp.Name then
-                    local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
-                    local r = c:FindFirstChild("SetCurrentCFrame")
-                    if pt and r then
-                        task.spawn(function() pcall(function() r:InvokeServer(CFrame.new(pt.Position.X, 15000, pt.Position.Z)) end) end)
-                    end
-                end
-            end
-        end
-    end
-    
-    task.wait(0.2) 
-    
-    local houseData = getMyHouse()
-    
-    if hrp and houseData then
-        local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
-        hrp.CFrame = CFrame.new(safePos) 
-        
-        if propsDetectedBefore then
-            local maxWait = 0
-            while maxWait < 0.7 do
-                task.wait(0.05)
-                maxWait = maxWait + 0.05
-                
-                local propsFollowed = false
-                for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
-                    if obj.Name:match("Prop") and not obj.Name:match(lp.Name) then
-                        propsFollowed = true
+    task.spawn(function()
+        local success, err = pcall(function()
+            isEvading = true 
+            local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
+            
+            local originalPos = hrp.CFrame
+            local propsDetectedBefore = false
+            
+            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                if string.sub(obj.Name, 1, 4) == "Prop" then
+                    local ownerName = string.sub(obj.Name, 5)
+                    if ownerName ~= "" and ownerName ~= lp.Name then
+                        propsDetectedBefore = true
                         break
                     end
                 end
+            end
+
+            local com = workspace:FindFirstChild("WorkspaceCom")
+            if com then
+                for _, f in ipairs(com:GetChildren()) do
+                    for _, c in ipairs(f:GetChildren()) do
+                        if c.Name == "Prop" .. lp.Name then
+                            local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
+                            local r = c:FindFirstChild("SetCurrentCFrame")
+                            if pt and r then
+                                task.spawn(function() pcall(function() r:InvokeServer(CFrame.new(pt.Position.X, 15000, pt.Position.Z)) end) end)
+                            end
+                        end
+                    end
+                end
+            end
+            task.wait(0.2) 
+            
+            local houseData = getMyHouse()
+            if houseData then
+                local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
+                hrp.CFrame = CFrame.new(safePos) 
                 
-                if propsFollowed then
-                    break 
+                if propsDetectedBefore then
+                    local maxWait = 0
+                    while maxWait < 0.7 do
+                        task.wait(0.05)
+                        maxWait = maxWait + 0.05
+                        local propsFollowed = false
+                        for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                            if string.sub(obj.Name, 1, 4) == "Prop" then
+                                local ownerName = string.sub(obj.Name, 5)
+                                if ownerName ~= "" and ownerName ~= lp.Name then
+                                    propsFollowed = true
+                                    break
+                                end
+                            end
+                        end
+                        if propsFollowed then break end
+                    end
                 end
-            end
-        end
-        
-        if houseData.Remote then
-            for i = 1, 20 do
-                task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
-                task.wait(0.01) 
-            end
-        end
-        
-        task.wait(0.05) 
-        hrp.CFrame = originalPos
-        sendNotif("🚀 BOOM!", "Evaded & Wiped Attackers!", 2)
-    else
-        sendNotif("⚠️ ALERT", "House Not Found! Deploying Global Wipe...", 2)
-    end
-
-    task.spawn(function()
-        local myHouseData = getMyHouse()
-        local myClearRemote = myHouseData and myHouseData.Remote
-
-        for _, obj in ipairs(workspace:GetDescendants()) do
-            if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
-                if obj ~= myClearRemote then 
-                    task.spawn(function() pcall(function() obj:InvokeServer() end) end)
-                    task.wait(0.01) 
+                
+                if houseData.Remote then
+                    for i = 1, 20 do
+                        task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+                        task.wait(0.01) 
+                    end
                 end
+                
+                task.wait(0.05) 
+                hrp.CFrame = originalPos
+                sendNotif("🚀 BOOM!", "Evaded & Wiped Attackers!", 2)
+            else
+                sendNotif("⚠️ ALERT", "House Not Found! Deploying Global Wipe...", 2)
             end
-        end
+
+            task.spawn(function()
+                local myHouseData = getMyHouse()
+                local myClearRemote = myHouseData and myHouseData.Remote
+
+                for _, obj in ipairs(workspace:GetDescendants()) do
+                    if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
+                        if obj ~= myClearRemote then 
+                            task.spawn(function() pcall(function() obj:InvokeServer() end) end)
+                            task.wait(0.01) 
+                        end
+                    end
+                end
+            end)
+        end)
+        
+        if not success then warn("TXR Error:", err) end
         task.wait(0.3) 
         isEvading = false 
         escapeDebounce = false
@@ -2327,160 +2333,167 @@ local banTrapDebounce = false
 banTrapBtn.MouseButton1Click:Connect(function()
     if banTrapDebounce then return end
     banTrapDebounce = true
-    isEvading = true 
     
-    local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-    local originalPos = hrp and hrp.CFrame
-    
-    local attackersToBan = {}
-    local propsDetectedBefore = false
-    
-    if hrp then
-        -- Advanced Scan 1: Wide Radius Check
-        for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
-            local attackerName = string.match(obj.Name, "^Prop(.+)")
-            if attackerName and attackerName ~= lp.Name then
-                propsDetectedBefore = true
-                local p = Players:FindFirstChild(attackerName)
-                if p then attackersToBan[p] = true end
-            end
-            local pModel = obj:FindFirstAncestorOfClass("Model")
-            if pModel and pModel ~= lp.Character then
-                local p = Players:GetPlayerFromCharacter(pModel)
-                if p then
-                    propsDetectedBefore = true
-                    attackersToBan[p] = true
+    task.spawn(function()
+        local success, err = pcall(function()
+            isEvading = true 
+            local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
+            
+            local originalPos = hrp.CFrame
+            local attackersToBan = {}
+            local propsDetectedBefore = false
+            
+            -- Scan 1: Area
+            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                if string.sub(obj.Name, 1, 4) == "Prop" then
+                    local ownerName = string.sub(obj.Name, 5)
+                    if ownerName ~= "" and ownerName ~= lp.Name then
+                        propsDetectedBefore = true
+                        local p = Players:FindFirstChild(ownerName)
+                        if p then attackersToBan[p] = true end
+                    end
+                end
+                local pModel = obj:FindFirstAncestorOfClass("Model")
+                if pModel and pModel ~= lp.Character then
+                    local p = Players:GetPlayerFromCharacter(pModel)
+                    if p then
+                        propsDetectedBefore = true
+                        attackersToBan[p] = true
+                    end
                 end
             end
-        end
-        
-        -- Advanced Scan 2: Welds / Head / Face / Sit checks
-        for _, desc in ipairs(lp.Character:GetDescendants()) do
-            if desc:IsA("Weld") or desc:IsA("SeatWeld") then
-                local p1 = desc.Part1
-                local p0 = desc.Part0
-                for _, pt in pairs({p0, p1}) do
-                    if pt and not pt:IsDescendantOf(lp.Character) then
-                        local match = string.match(pt.Name, "^Prop(.+)")
-                        if match and match ~= lp.Name then
-                            propsDetectedBefore = true
-                            local p = Players:FindFirstChild(match)
-                            if p then attackersToBan[p] = true end
-                        end
-                        local pModel = pt:FindFirstAncestorOfClass("Model")
-                        if pModel and pModel ~= lp.Character then
-                            local p = Players:GetPlayerFromCharacter(pModel)
-                            if p then
-                                propsDetectedBefore = true
-                                attackersToBan[p] = true
+            
+            -- Scan 2: Welds & Face Attachments
+            for _, desc in ipairs(lp.Character:GetDescendants()) do
+                if desc:IsA("Weld") or desc:IsA("SeatWeld") then
+                    local safeParts = {}
+                    if desc.Part0 then table.insert(safeParts, desc.Part0) end
+                    if desc.Part1 then table.insert(safeParts, desc.Part1) end
+                    
+                    for _, pt in ipairs(safeParts) do
+                        if not pt:IsDescendantOf(lp.Character) then
+                            if string.sub(pt.Name, 1, 4) == "Prop" then
+                                local ownerName = string.sub(pt.Name, 5)
+                                if ownerName ~= "" and ownerName ~= lp.Name then
+                                    propsDetectedBefore = true
+                                    local p = Players:FindFirstChild(ownerName)
+                                    if p then attackersToBan[p] = true end
+                                end
+                            end
+                            local pModel = pt:FindFirstAncestorOfClass("Model")
+                            if pModel and pModel ~= lp.Character then
+                                local p = Players:GetPlayerFromCharacter(pModel)
+                                if p then
+                                    propsDetectedBefore = true
+                                    attackersToBan[p] = true
+                                end
                             end
                         end
                     end
                 end
             end
-        end
-    end
 
-    -- 🛡️ INSTANT SKY-VAULT
-    local com = workspace:FindFirstChild("WorkspaceCom")
-    if com then
-        for _, f in ipairs(com:GetChildren()) do
-            for _, c in ipairs(f:GetChildren()) do
-                if c.Name == "Prop" .. lp.Name then
-                    local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
-                    local r = c:FindFirstChild("SetCurrentCFrame")
-                    if pt and r then
-                        task.spawn(function() pcall(function() r:InvokeServer(CFrame.new(pt.Position.X, 15000, pt.Position.Z)) end) end)
-                    end
-                end
-            end
-        end
-    end
-    task.wait(0.2)
-
-    local houseData = getMyHouse()
-    
-    if hrp and houseData then
-        local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
-        hrp.CFrame = CFrame.new(safePos) 
-        
-        -- ⏳ DYNAMIC WAIT (Max 0.7s)
-        if propsDetectedBefore then
-            local maxWait = 0
-            while maxWait < 0.7 do
-                task.wait(0.05)
-                maxWait = maxWait + 0.05
-                local propsFollowed = false
-                for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
-                    local attackerName = string.match(obj.Name, "^Prop(.+)")
-                    if attackerName and attackerName ~= lp.Name then
-                        local p = Players:FindFirstChild(attackerName)
-                        if p then attackersToBan[p] = true end
-                        propsFollowed = true
-                    end
-                    local pModel = obj:FindFirstAncestorOfClass("Model")
-                    if pModel and pModel ~= lp.Character then
-                        local p = Players:GetPlayerFromCharacter(pModel)
-                        if p then
-                            attackersToBan[p] = true
-                            propsFollowed = true
+            -- Sky Vault
+            local com = workspace:FindFirstChild("WorkspaceCom")
+            if com then
+                for _, f in ipairs(com:GetChildren()) do
+                    for _, c in ipairs(f:GetChildren()) do
+                        if c.Name == "Prop" .. lp.Name then
+                            local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
+                            local r = c:FindFirstChild("SetCurrentCFrame")
+                            if pt and r then
+                                task.spawn(function() pcall(function() r:InvokeServer(CFrame.new(pt.Position.X, 15000, pt.Position.Z)) end) end)
+                            end
                         end
                     end
                 end
-                if propsFollowed then break end
             end
-        end
-        
-        -- 🚫 INSTANT BAN TRAP
-        if houseData.Disallow then
-            for attacker, _ in pairs(attackersToBan) do
-                if attacker and attacker.Parent then
-                    task.spawn(function() pcall(function() houseData.Disallow:FireServer(attacker) end) end)
+            task.wait(0.2)
+
+            local houseData = getMyHouse()
+            if houseData then
+                local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
+                hrp.CFrame = CFrame.new(safePos) 
+                
+                if propsDetectedBefore then
+                    local maxWait = 0
+                    while maxWait < 0.7 do
+                        task.wait(0.05)
+                        maxWait = maxWait + 0.05
+                        local propsFollowed = false
+                        for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                            if string.sub(obj.Name, 1, 4) == "Prop" then
+                                local ownerName = string.sub(obj.Name, 5)
+                                if ownerName ~= "" and ownerName ~= lp.Name then
+                                    local p = Players:FindFirstChild(ownerName)
+                                    if p then attackersToBan[p] = true end
+                                    propsFollowed = true
+                                end
+                            end
+                            local pModel = obj:FindFirstAncestorOfClass("Model")
+                            if pModel and pModel ~= lp.Character then
+                                local p = Players:GetPlayerFromCharacter(pModel)
+                                if p then
+                                    attackersToBan[p] = true
+                                    propsFollowed = true
+                                end
+                            end
+                        end
+                        if propsFollowed then break end
+                    end
                 end
-            end
-        end
-
-        -- 🔥 AGGRESSIVE HOUSE CLEAR
-        if houseData.Remote then
-            for i = 1, 20 do
-                task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
-                task.wait(0.01)
-            end
-        end
-        
-        task.wait(0.05) 
-        hrp.CFrame = originalPos
-
-        -- 🔓 UNBAN TRAP RESET
-        if houseData.Allow then
-            for attacker, _ in pairs(attackersToBan) do
-                if attacker and attacker.Parent then
-                    task.spawn(function()
-                        task.wait(0.5)
-                        pcall(function() houseData.Allow:FireServer(attacker) end)
-                    end)
+                
+                if houseData.Disallow then
+                    for attacker, _ in pairs(attackersToBan) do
+                        if attacker and attacker.Parent then
+                            task.spawn(function() pcall(function() houseData.Disallow:FireServer(attacker) end) end)
+                        end
+                    end
                 end
-            end
-        end
-        
-        sendNotif("🚫 BAN TRAP", "Attackers Banned, Wiped & Trap Reset!", 2)
-    else
-        sendNotif("⚠️ ALERT", "House Not Found! Cannot Trigger Trap.", 2)
-    end
 
-    -- 💥 UNIVERSAL MAP WIPE
-    task.spawn(function()
-        local myHouseData = getMyHouse()
-        local myClearRemote = myHouseData and myHouseData.Remote
-
-        for _, obj in ipairs(workspace:GetDescendants()) do
-            if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
-                if obj ~= myClearRemote then 
-                    task.spawn(function() pcall(function() obj:InvokeServer() end) end)
-                    task.wait(0.01) 
+                if houseData.Remote then
+                    for i = 1, 20 do
+                        task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+                        task.wait(0.01)
+                    end
                 end
+                
+                task.wait(0.05) 
+                hrp.CFrame = originalPos
+
+                if houseData.Allow then
+                    for attacker, _ in pairs(attackersToBan) do
+                        if attacker and attacker.Parent then
+                            task.spawn(function()
+                                task.wait(0.5)
+                                pcall(function() houseData.Allow:FireServer(attacker) end)
+                            end)
+                        end
+                    end
+                end
+                
+                sendNotif("🚫 BAN TRAP", "Attackers Banned, Wiped & Trap Reset!", 2)
+            else
+                sendNotif("⚠️ ALERT", "House Not Found! Cannot Trigger Trap.", 2)
             end
-        end
+
+            task.spawn(function()
+                local myHouseData = getMyHouse()
+                local myClearRemote = myHouseData and myHouseData.Remote
+
+                for _, obj in ipairs(workspace:GetDescendants()) do
+                    if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
+                        if obj ~= myClearRemote then 
+                            task.spawn(function() pcall(function() obj:InvokeServer() end) end)
+                            task.wait(0.01) 
+                        end
+                    end
+                end
+            end)
+        end)
+        
+        if not success then warn("TXR Error:", err) end
         task.wait(0.3) 
         isEvading = false 
         banTrapDebounce = false
@@ -3573,76 +3586,422 @@ Players.PlayerRemoving:Connect(function(plr)
     end
 end)
 
--- =================================================================
--- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND) 🚀
--- =================================================================
+-- =========================================================
+-- 🚀 FIXED UNIVERSAL FAST TP & MASSIVE MAP WIPE (NO BAN)
+-- =========================================================
+local escapeBtn = createMainBtn("🚀 FAST TP & MASSIVE CLEAR", nil, false)
+escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
+escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
+escapeBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
+
+local escapeDebounce = false
+
+escapeBtn.MouseButton1Click:Connect(function()
+    if escapeDebounce then return end
+    escapeDebounce = true
+    
+    task.spawn(function()
+        local success, err = pcall(function()
+            isEvading = true 
+            local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
+            
+            local originalPos = hrp.CFrame
+            local propsDetectedBefore = false
+            
+            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                if string.sub(obj.Name, 1, 4) == "Prop" then
+                    local ownerName = string.sub(obj.Name, 5)
+                    if ownerName ~= "" and ownerName ~= lp.Name then
+                        propsDetectedBefore = true
+                        break
+                    end
+                end
+            end
+
+            local com = workspace:FindFirstChild("WorkspaceCom")
+            if com then
+                for _, f in ipairs(com:GetChildren()) do
+                    for _, c in ipairs(f:GetChildren()) do
+                        if c.Name == "Prop" .. lp.Name then
+                            local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
+                            local r = c:FindFirstChild("SetCurrentCFrame")
+                            if pt and r then
+                                task.spawn(function() pcall(function() r:InvokeServer(CFrame.new(pt.Position.X, 15000, pt.Position.Z)) end) end)
+                            end
+                        end
+                    end
+                end
+            end
+            task.wait(0.2) 
+            
+            local houseData = getMyHouse()
+            if houseData then
+                local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
+                hrp.CFrame = CFrame.new(safePos) 
+                
+                if propsDetectedBefore then
+                    local maxWait = 0
+                    while maxWait < 0.7 do
+                        task.wait(0.05)
+                        maxWait = maxWait + 0.05
+                        
+                        local propsFollowed = false
+                        for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                            if string.sub(obj.Name, 1, 4) == "Prop" then
+                                local ownerName = string.sub(obj.Name, 5)
+                                if ownerName ~= "" and ownerName ~= lp.Name then
+                                    propsFollowed = true
+                                    break
+                                end
+                            end
+                        end
+                        if propsFollowed then break end
+                    end
+                end
+                
+                if houseData.Remote then
+                    for i = 1, 20 do
+                        task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+                        task.wait(0.01) 
+                    end
+                end
+                
+                task.wait(0.05) 
+                hrp.CFrame = originalPos
+                sendNotif("🚀 BOOM!", "Evaded & Wiped Attackers!", 2)
+            else
+                sendNotif("⚠️ ALERT", "House Not Found! Deploying Global Wipe...", 2)
+            end
+
+            task.spawn(function()
+                local myHouseData = getMyHouse()
+                local myClearRemote = myHouseData and myHouseData.Remote
+
+                for _, obj in ipairs(workspace:GetDescendants()) do
+                    if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
+                        if obj ~= myClearRemote then 
+                            task.spawn(function() pcall(function() obj:InvokeServer() end) end)
+                            task.wait(0.01) 
+                        end
+                    end
+                end
+            end)
+        end)
+        
+        if not success then warn("TXR Error:", err) end
+        task.wait(0.3) 
+        isEvading = false 
+        escapeDebounce = false
+    end)
+end)
+
+-- =========================================================
+-- 🚫 ADVANCED SMART BAN TRAP (NEW BUTTON) 🚫
+-- =========================================================
+local banTrapBtn = createMainBtn("🚫 SMART BAN TRAP", nil, false)
+banTrapBtn.BackgroundColor3 = Color3.fromRGB(130, 0, 200)
+banTrapBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+banTrapBtn:SetAttribute("BaseColor", Color3.fromRGB(130, 0, 200))
+banTrapBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
+
+local banTrapDebounce = false
+
+banTrapBtn.MouseButton1Click:Connect(function()
+    if banTrapDebounce then return end
+    banTrapDebounce = true
+    
+    task.spawn(function()
+        local success, err = pcall(function()
+            isEvading = true 
+            local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
+            
+            local originalPos = hrp.CFrame
+            local attackersToBan = {}
+            local propsDetectedBefore = false
+            
+            -- Scan 1: Area Radius Check
+            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                if string.sub(obj.Name, 1, 4) == "Prop" then
+                    local ownerName = string.sub(obj.Name, 5)
+                    if ownerName ~= "" and ownerName ~= lp.Name then
+                        propsDetectedBefore = true
+                        local p = Players:FindFirstChild(ownerName)
+                        if p then attackersToBan[p] = true end
+                    end
+                end
+                local pModel = obj:FindFirstAncestorOfClass("Model")
+                if pModel and pModel ~= lp.Character then
+                    local p = Players:GetPlayerFromCharacter(pModel)
+                    if p then
+                        propsDetectedBefore = true
+                        attackersToBan[p] = true
+                    end
+                end
+            end
+            
+            -- Scan 2: Welds & Face/Head Attachments 
+            for _, desc in ipairs(lp.Character:GetDescendants()) do
+                if desc:IsA("Weld") or desc:IsA("SeatWeld") then
+                    local safeParts = {}
+                    if desc.Part0 then table.insert(safeParts, desc.Part0) end
+                    if desc.Part1 then table.insert(safeParts, desc.Part1) end
+                    
+                    for _, pt in ipairs(safeParts) do
+                        if not pt:IsDescendantOf(lp.Character) then
+                            if string.sub(pt.Name, 1, 4) == "Prop" then
+                                local ownerName = string.sub(pt.Name, 5)
+                                if ownerName ~= "" and ownerName ~= lp.Name then
+                                    propsDetectedBefore = true
+                                    local p = Players:FindFirstChild(ownerName)
+                                    if p then attackersToBan[p] = true end
+                                end
+                            end
+                            local pModel = pt:FindFirstAncestorOfClass("Model")
+                            if pModel and pModel ~= lp.Character then
+                                local p = Players:GetPlayerFromCharacter(pModel)
+                                if p then
+                                    propsDetectedBefore = true
+                                    attackersToBan[p] = true
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+
+            -- Sky Vault
+            local com = workspace:FindFirstChild("WorkspaceCom")
+            if com then
+                for _, f in ipairs(com:GetChildren()) do
+                    for _, c in ipairs(f:GetChildren()) do
+                        if c.Name == "Prop" .. lp.Name then
+                            local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
+                            local r = c:FindFirstChild("SetCurrentCFrame")
+                            if pt and r then
+                                task.spawn(function() pcall(function() r:InvokeServer(CFrame.new(pt.Position.X, 15000, pt.Position.Z)) end) end)
+                            end
+                        end
+                    end
+                end
+            end
+            task.wait(0.2)
+
+            local houseData = getMyHouse()
+            if houseData then
+                local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
+                hrp.CFrame = CFrame.new(safePos) 
+                
+                if propsDetectedBefore then
+                    local maxWait = 0
+                    while maxWait < 0.7 do
+                        task.wait(0.05)
+                        maxWait = maxWait + 0.05
+                        local propsFollowed = false
+                        for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                            if string.sub(obj.Name, 1, 4) == "Prop" then
+                                local ownerName = string.sub(obj.Name, 5)
+                                if ownerName ~= "" and ownerName ~= lp.Name then
+                                    local p = Players:FindFirstChild(ownerName)
+                                    if p then attackersToBan[p] = true end
+                                    propsFollowed = true
+                                end
+                            end
+                            local pModel = obj:FindFirstAncestorOfClass("Model")
+                            if pModel and pModel ~= lp.Character then
+                                local p = Players:GetPlayerFromCharacter(pModel)
+                                if p then
+                                    attackersToBan[p] = true
+                                    propsFollowed = true
+                                end
+                            end
+                        end
+                        if propsFollowed then break end
+                    end
+                end
+                
+                if houseData.Disallow then
+                    for attacker, _ in pairs(attackersToBan) do
+                        if attacker and attacker.Parent then
+                            task.spawn(function() pcall(function() houseData.Disallow:FireServer(attacker) end) end)
+                        end
+                    end
+                end
+
+                if houseData.Remote then
+                    for i = 1, 20 do
+                        task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+                        task.wait(0.01)
+                    end
+                end
+                
+                task.wait(0.05) 
+                hrp.CFrame = originalPos
+
+                if houseData.Allow then
+                    for attacker, _ in pairs(attackersToBan) do
+                        if attacker and attacker.Parent then
+                            task.spawn(function()
+                                task.wait(0.5)
+                                pcall(function() houseData.Allow:FireServer(attacker) end)
+                            end)
+                        end
+                    end
+                end
+                
+                sendNotif("🚫 BAN TRAP", "Attackers Banned, Wiped & Trap Reset!", 2)
+            else
+                sendNotif("⚠️ ALERT", "House Not Found! Cannot Trigger Trap.", 2)
+            end
+
+            task.spawn(function()
+                local myHouseData = getMyHouse()
+                local myClearRemote = myHouseData and myHouseData.Remote
+
+                for _, obj in ipairs(workspace:GetDescendants()) do
+                    if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
+                        if obj ~= myClearRemote then 
+                            task.spawn(function() pcall(function() obj:InvokeServer() end) end)
+                            task.wait(0.01) 
+                        end
+                    end
+                end
+            end)
+        end)
+        
+        if not success then warn("TXR Error:", err) end
+        task.wait(0.3) 
+        isEvading = false 
+        banTrapDebounce = false
+    end)
+end)
+
+
 local isSmartClearing = false
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if _G.TXR_InstanceID ~= currentExecutionID then return end
     if not gameProcessed and input.KeyCode == Enum.KeyCode.F5 and not isSmartClearing then
         isSmartClearing = true
-        local houseData = getMyHouse()
-        local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
         
-        if hrp and houseData then
-            local originalPos = hrp.CFrame
-            local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
-            
-            -- 1. Instant teleport to house (Safe Zone)
-            hrp.CFrame = CFrame.new(safePos)
-            
-            -- Trigger house clear remote aggressively 20 times just in case
-            if houseData.Remote then
-                for i = 1, 20 do
-                    task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
-                    task.wait(0.01)
-                end
-            end
-
-            task.spawn(function()
-                local isCleared = false
-                local safetyCounter = 0
+        task.spawn(function()
+            local success, err = pcall(function()
+                local houseData = getMyHouse()
+                local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
                 
-                -- 2. Wait and detect unauthorized props coming with you
-                while not isCleared and safetyCounter < 70 do
-                    task.wait(0.01) -- Mili-second loop (ekdam fast)
-                    safetyCounter = safetyCounter + 1
+                if hrp and houseData then
+                    local originalPos = hrp.CFrame
+                    local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
                     
-                    local foundProp = false
-                    -- Scan for any prop near the player (radius 25)
-                    local com = workspace:FindFirstChild("WorkspaceCom")
-                    if com then
-                        for _, f in ipairs(com:GetChildren()) do
-                            for _, c in ipairs(f:GetChildren()) do
-                                -- Check if prop is NOT ours
-                                if c.Name:match("^Prop") and not c.Name:match("^Prop" .. lp.Name) then
-                                    local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
-                                    if pt and (pt.Position - hrp.Position).Magnitude < 25 then
-                                        foundProp = true
-                                        break
-                                    end
-                                end
+                    local attackersToBan = {}
+                    for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                        if string.sub(obj.Name, 1, 4) == "Prop" then
+                            local ownerName = string.sub(obj.Name, 5)
+                            if ownerName ~= "" and ownerName ~= lp.Name then
+                                local p = Players:FindFirstChild(ownerName)
+                                if p then attackersToBan[p] = true end
                             end
-                            if foundProp then break end
+                        end
+                        local pModel = obj:FindFirstAncestorOfClass("Model")
+                        if pModel and pModel ~= lp.Character then
+                            local p = Players:GetPlayerFromCharacter(pModel)
+                            if p then attackersToBan[p] = true end
                         end
                     end
 
-                    -- 3. If no props detected near us, it's totally clear!
-                    if not foundProp then
-                        isCleared = true
+                    for _, desc in ipairs(lp.Character:GetDescendants()) do
+                        if desc:IsA("Weld") or desc:IsA("SeatWeld") then
+                            local safeParts = {}
+                            if desc.Part0 then table.insert(safeParts, desc.Part0) end
+                            if desc.Part1 then table.insert(safeParts, desc.Part1) end
+                            
+                            for _, pt in ipairs(safeParts) do
+                                if not pt:IsDescendantOf(lp.Character) then
+                                    if string.sub(pt.Name, 1, 4) == "Prop" then
+                                        local ownerName = string.sub(pt.Name, 5)
+                                        if ownerName ~= "" and ownerName ~= lp.Name then
+                                            local p = Players:FindFirstChild(ownerName)
+                                            if p then attackersToBan[p] = true end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+
+                    hrp.CFrame = CFrame.new(safePos)
+                    
+                    local isCleared = false
+                    local safetyCounter = 0
+                    
+                    while not isCleared and safetyCounter < 70 do
+                        task.wait(0.01) 
+                        safetyCounter = safetyCounter + 1
+                        
+                        local foundProp = false
+                        local com = workspace:FindFirstChild("WorkspaceCom")
+                        if com then
+                            for _, f in ipairs(com:GetChildren()) do
+                                for _, c in ipairs(f:GetChildren()) do
+                                    if string.sub(c.Name, 1, 4) == "Prop" and string.sub(c.Name, 5) ~= lp.Name then
+                                        local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
+                                        if pt and (pt.Position - hrp.Position).Magnitude < 25 then
+                                            local ownerName = string.sub(c.Name, 5)
+                                            local p = Players:FindFirstChild(ownerName)
+                                            if p then attackersToBan[p] = true end
+                                            foundProp = true
+                                            break
+                                        end
+                                    end
+                                end
+                                if foundProp then break end
+                            end
+                        end
+
+                        if not foundProp then
+                            isCleared = true
+                        end
+                    end
+                    
+                    if houseData.Disallow then
+                        for attacker, _ in pairs(attackersToBan) do
+                            if attacker and attacker.Parent then
+                                task.spawn(function() pcall(function() houseData.Disallow:FireServer(attacker) end) end)
+                            end
+                        end
+                    end
+
+                    if houseData.Remote then
+                        for i = 1, 20 do
+                            task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+                            task.wait(0.01)
+                        end
+                    end
+
+                    hrp.CFrame = originalPos
+                    
+                    if houseData.Allow then
+                        for attacker, _ in pairs(attackersToBan) do
+                            if attacker and attacker.Parent then
+                                task.spawn(function()
+                                    task.wait(0.5)
+                                    pcall(function() houseData.Allow:FireServer(attacker) end)
+                                end)
+                            end
+                        end
+                    end
+
+                    sendNotif("SMART CLEAR", "Bang Props Banned & Cleared!", 2)
+                else
+                    if not houseData then
+                        sendNotif("ERROR", "House not found! Please claim a house first.", 2)
                     end
                 end
-                
-                -- 4. Instantly teleport back to old position usi speed se
-                hrp.CFrame = originalPos
-                isSmartClearing = false
-                sendNotif("SMART CLEAR", "Bang Props Cleared & Returned Instantly!", 2)
             end)
-        else
-            if not houseData then
-                sendNotif("ERROR", "House not found! Please claim a house first.", 2)
-            end
+            
+            if not success then warn("TXR Error:", err) end
             isSmartClearing = false
-        end
+        end)
     end
 end)
