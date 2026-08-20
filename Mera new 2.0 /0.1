@@ -2225,24 +2225,15 @@ escapeBtn.MouseButton1Click:Connect(function()
     local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
     local originalPos = hrp and hrp.CFrame
     
-    -- 🧠 ADVANCED SMART DETECTION: 1.5s Active Wait for Fast/Slow Robots
-    local detectionTime = 0
+    -- 🧠 INSTANT SMART DETECTION (0 Seconds Delay Here)
     local propsDetected = false
-    
     if hrp then
-        while detectionTime < 1.5 do
-            local found = false
-            -- Advanced check for enemy props near player (increased radius to 40 for advance scan)
-            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
-                if obj.Name:match("Prop") and not obj.Name:match(lp.Name) then
-                    found = true
-                    propsDetected = true
-                end
+        local checkRadius = 40
+        for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, checkRadius)) do
+            if obj.Name:match("Prop") and not obj.Name:match(lp.Name) then
+                propsDetected = true
+                break
             end
-            
-            -- Wait full 1.5 sec even if found, to catch fast teleporting and slow robots together
-            task.wait(0.1)
-            detectionTime = detectionTime + 0.1
         end
     end
 
@@ -2268,7 +2259,14 @@ escapeBtn.MouseButton1Click:Connect(function()
     
     if hrp and houseData then
         local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
-        hrp.CFrame = CFrame.new(safePos)
+        hrp.CFrame = CFrame.new(safePos) -- 🚀 INSTANT TP TO HOUSE
+        
+        -- ⏳ CONDITIONAL WAIT AT HOUSE
+        if propsDetected then
+            task.wait(1) -- House me 1 second ka delay agar aas paas robots the
+        else
+            task.wait(0.1) -- Minimal wait agar robots nahi the
+        end
         
         if houseData.Remote then
             task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
