@@ -2223,12 +2223,11 @@ local escapeDebounce = false
 escapeBtn.MouseButton1Click:Connect(function()
     if escapeDebounce then return end
     escapeDebounce = true
-    isEvading = true -- 🔥 Protect our props first
+    isEvading = true 
     
     local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
     local originalPos = hrp and hrp.CFrame
     
-    -- 🧠 INSTANT SMART PRE-CHECK (0 Seconds Delay)
     local propsDetectedBefore = false
     if hrp then
         for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
@@ -2239,7 +2238,6 @@ escapeBtn.MouseButton1Click:Connect(function()
         end
     end
 
-    -- 🛡️ INSTANT SKY-VAULT: Force all our props to the sky before any wipe commands
     local com = workspace:FindFirstChild("WorkspaceCom")
     if com then
         for _, f in ipairs(com:GetChildren()) do
@@ -2255,15 +2253,14 @@ escapeBtn.MouseButton1Click:Connect(function()
         end
     end
     
-    task.wait(0.2) -- Give the server 200ms to register our props are safe in the sky
+    task.wait(0.2) 
     
     local houseData = getMyHouse()
     
     if hrp and houseData then
         local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
-        hrp.CFrame = CFrame.new(safePos) -- 🚀 INSTANT TP TO HOUSE
+        hrp.CFrame = CFrame.new(safePos) 
         
-        -- ⏳ DYNAMIC SMART WAIT (Max 0.7s only if props were detected beforehand)
         if propsDetectedBefore then
             local maxWait = 0
             while maxWait < 0.7 do
@@ -2279,16 +2276,15 @@ escapeBtn.MouseButton1Click:Connect(function()
                 end
                 
                 if propsFollowed then
-                    break -- Props aagaye! Turant wait tod do aur clear kardo
+                    break 
                 end
             end
         end
         
-        -- 🔥 AGGRESSIVE HOUSE CLEAR (Spam 20 times fast)
         if houseData.Remote then
             for i = 1, 20 do
                 task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
-                task.wait(0.01) -- Staggered ultra-fast spam
+                task.wait(0.01) 
             end
         end
         
@@ -2299,7 +2295,6 @@ escapeBtn.MouseButton1Click:Connect(function()
         sendNotif("⚠️ ALERT", "House Not Found! Deploying Global Wipe...", 2)
     end
 
-    -- 💥 UNIVERSAL MAP WIPE
     task.spawn(function()
         local myHouseData = getMyHouse()
         local myClearRemote = myHouseData and myHouseData.Remote
