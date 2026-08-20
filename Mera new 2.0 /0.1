@@ -96,10 +96,8 @@ local function getMyHouse()
                     local houseModel = picked:FindFirstChild("HouseModel")
                     if houseModel then
                         local clearRemote = houseModel:FindFirstChild("Permissions:ClearProps", true)
-                        local disallowRemote = houseModel:FindFirstChild("Permissions:Disallow", true)
-                        local allowRemote = houseModel:FindFirstChild("Permissions:Allow", true)
                         if clearRemote and clearRemote:IsA("RemoteFunction") then
-                            return {Lot = lot, Remote = clearRemote, Disallow = disallowRemote, Allow = allowRemote, Type = "Normal"}
+                            return {Lot = lot, Remote = clearRemote, Type = "Normal"}
                         end
                     end
                 end
@@ -113,10 +111,8 @@ local function getMyHouse()
             local parentLot = desc.Parent
             if parentLot then
                 local clearRemote = parentLot:FindFirstChild("Permissions:ClearProps", true)
-                local disallowRemote = parentLot:FindFirstChild("Permissions:Disallow", true)
-                local allowRemote = parentLot:FindFirstChild("Permissions:Allow", true)
                 if clearRemote and clearRemote:IsA("RemoteFunction") then
-                    return {Lot = parentLot, Remote = clearRemote, Disallow = disallowRemote, Allow = allowRemote, Type = "Apartment"}
+                    return {Lot = parentLot, Remote = clearRemote, Type = "Apartment"}
                 end
             end
         end
@@ -2210,9 +2206,9 @@ houseProtBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🚀 FIXED UNIVERSAL FAST TP, BAN TRAP & MASSIVE MAP WIPE
+-- 🚀 FIXED UNIVERSAL FAST TP & MASSIVE MAP WIPE
 -- =========================================================
-local escapeBtn = createMainBtn("🚀 FAST TP & BAN TRAP", nil, false)
+local escapeBtn = createMainBtn("🚀 FAST TP & MASSIVE CLEAR", nil, false)
 escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
 escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
@@ -2230,22 +2226,11 @@ escapeBtn.MouseButton1Click:Connect(function()
     
     -- 🧠 INSTANT SMART PRE-CHECK (0 Seconds Delay)
     local propsDetectedBefore = false
-    local preAttackers = {}
     if hrp then
         for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
-            local attackerName = string.match(obj.Name, "^Prop(.+)")
-            if attackerName and attackerName ~= lp.Name then
+            if obj.Name:match("Prop") and not obj.Name:match(lp.Name) then
                 propsDetectedBefore = true
-                local p = Players:FindFirstChild(attackerName)
-                if p then preAttackers[p] = true end
-            end
-            local pModel = obj:FindFirstAncestorOfClass("Model")
-            if pModel and pModel ~= lp.Character then
-                local p = Players:GetPlayerFromCharacter(pModel)
-                if p then
-                    propsDetectedBefore = true
-                    preAttackers[p] = true
-                end
+                break
             end
         end
     end
@@ -2275,9 +2260,6 @@ escapeBtn.MouseButton1Click:Connect(function()
         hrp.CFrame = CFrame.new(safePos) -- 🚀 INSTANT TP TO HOUSE
         
         -- ⏳ DYNAMIC SMART WAIT (Max 0.7s only if props were detected beforehand)
-        local attackersToBan = {}
-        for p, _ in pairs(preAttackers) do attackersToBan[p] = true end
-
         if propsDetectedBefore then
             local maxWait = 0
             while maxWait < 0.7 do
@@ -2286,37 +2268,18 @@ escapeBtn.MouseButton1Click:Connect(function()
                 
                 local propsFollowed = false
                 for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
-                    local attackerName = string.match(obj.Name, "^Prop(.+)")
-                    if attackerName and attackerName ~= lp.Name then
-                        local p = Players:FindFirstChild(attackerName)
-                        if p then attackersToBan[p] = true end
+                    if obj.Name:match("Prop") and not obj.Name:match(lp.Name) then
                         propsFollowed = true
-                    end
-                    local pModel = obj:FindFirstAncestorOfClass("Model")
-                    if pModel and pModel ~= lp.Character then
-                        local p = Players:GetPlayerFromCharacter(pModel)
-                        if p then
-                            attackersToBan[p] = true
-                            propsFollowed = true
-                        end
+                        break
                     end
                 end
                 
                 if propsFollowed then
-                    break -- Props/Players aagaye! Turant wait tod do aur clear kardo
+                    break -- Props aagaye! Turant wait tod do aur clear kardo
                 end
             end
         end
         
-        -- 🚫 BAN ATTACKERS INSTANTLY
-        if houseData.Disallow then
-            for attacker, _ in pairs(attackersToBan) do
-                if attacker and attacker.Parent then
-                    task.spawn(function() pcall(function() houseData.Disallow:FireServer(attacker) end) end)
-                end
-            end
-        end
-
         -- 🔥 AGGRESSIVE HOUSE CLEAR (Spam 20 times fast)
         if houseData.Remote then
             for i = 1, 20 do
@@ -2327,20 +2290,7 @@ escapeBtn.MouseButton1Click:Connect(function()
         
         task.wait(0.05) 
         hrp.CFrame = originalPos
-
-        -- 🔓 UNBAN ATTACKERS (Reset trap for next time)
-        if houseData.Allow then
-            for attacker, _ in pairs(attackersToBan) do
-                if attacker and attacker.Parent then
-                    task.spawn(function()
-                        task.wait(0.5) -- Slight wait ensure they are wiped properly
-                        pcall(function() houseData.Allow:FireServer(attacker) end)
-                    end)
-                end
-            end
-        end
-
-        sendNotif("🚀 BOOM!", "Evaded, Banned & Wiped Attackers!", 2)
+        sendNotif("🚀 BOOM!", "Evaded & Wiped Attackers!", 2)
     else
         sendNotif("⚠️ ALERT", "House Not Found! Deploying Global Wipe...", 2)
     end
@@ -3464,90 +3414,55 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
             local originalPos = hrp.CFrame
             local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
             
-            -- 1. Pre-check attackers before jumping
-            local attackersToBan = {}
-            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
-                local attackerName = string.match(obj.Name, "^Prop(.+)")
-                if attackerName and attackerName ~= lp.Name then
-                    local p = Players:FindFirstChild(attackerName)
-                    if p then attackersToBan[p] = true end
-                end
-                local pModel = obj:FindFirstAncestorOfClass("Model")
-                if pModel and pModel ~= lp.Character then
-                    local p = Players:GetPlayerFromCharacter(pModel)
-                    if p then attackersToBan[p] = true end
+            -- 1. Instant teleport to house (Safe Zone)
+            hrp.CFrame = CFrame.new(safePos)
+            
+            -- Trigger house clear remote aggressively 20 times just in case
+            if houseData.Remote then
+                for i = 1, 20 do
+                    task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+                    task.wait(0.01)
                 end
             end
 
-            -- 2. Instant teleport to house (Safe Zone)
-            hrp.CFrame = CFrame.new(safePos)
-            
             task.spawn(function()
                 local isCleared = false
                 local safetyCounter = 0
                 
-                -- 3. Wait and detect unauthorized props coming with you
-                while not isCleared and safetyCounter < 70 do
+                -- 2. Wait and detect unauthorized props coming with you
+                while not isCleared and safetyCounter < 50 do
                     task.wait(0.01) -- Mili-second loop (ekdam fast)
                     safetyCounter = safetyCounter + 1
                     
                     local foundProp = false
-                    for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
-                        local attackerName = string.match(obj.Name, "^Prop(.+)")
-                        if attackerName and attackerName ~= lp.Name then
-                            local p = Players:FindFirstChild(attackerName)
-                            if p then attackersToBan[p] = true end
-                            foundProp = true
-                        end
-                        local pModel = obj:FindFirstAncestorOfClass("Model")
-                        if pModel and pModel ~= lp.Character then
-                            local p = Players:GetPlayerFromCharacter(pModel)
-                            if p then 
-                                attackersToBan[p] = true 
-                                foundProp = true
+                    -- Scan for any prop near the player (radius 25)
+                    local com = workspace:FindFirstChild("WorkspaceCom")
+                    if com then
+                        for _, f in ipairs(com:GetChildren()) do
+                            for _, c in ipairs(f:GetChildren()) do
+                                -- Check if prop is NOT ours
+                                if c.Name:match("^Prop") and not c.Name:match("^Prop" .. lp.Name) then
+                                    local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
+                                    if pt and (pt.Position - hrp.Position).Magnitude < 25 then
+                                        foundProp = true
+                                        break
+                                    end
+                                end
                             end
+                            if foundProp then break end
                         end
                     end
 
-                    if foundProp then
+                    -- 3. If no props detected near us, it's totally clear!
+                    if not foundProp then
                         isCleared = true
                     end
                 end
                 
-                -- 4. 🚫 BAN
-                if houseData.Disallow then
-                    for attacker, _ in pairs(attackersToBan) do
-                        if attacker and attacker.Parent then
-                            task.spawn(function() pcall(function() houseData.Disallow:FireServer(attacker) end) end)
-                        end
-                    end
-                end
-
-                -- Trigger house clear remote aggressively 20 times just in case
-                if houseData.Remote then
-                    for i = 1, 20 do
-                        task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
-                        task.wait(0.01)
-                    end
-                end
-
-                -- 5. Instantly teleport back to old position usi speed se
+                -- 4. Instantly teleport back to old position usi speed se
                 hrp.CFrame = originalPos
-                
-                -- 6. 🔓 UNBAN (Trap Reset)
-                if houseData.Allow then
-                    for attacker, _ in pairs(attackersToBan) do
-                        if attacker and attacker.Parent then
-                            task.spawn(function()
-                                task.wait(0.5)
-                                pcall(function() houseData.Allow:FireServer(attacker) end)
-                            end)
-                        end
-                    end
-                end
-
                 isSmartClearing = false
-                sendNotif("SMART CLEAR", "Bang Props Banned & Cleared!", 2)
+                sendNotif("SMART CLEAR", "Bang Props Cleared & Returned Instantly!", 2)
             end)
         else
             if not houseData then
