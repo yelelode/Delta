@@ -2224,65 +2224,26 @@ escapeBtn.MouseButton1Click:Connect(function()
     
     local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
     local originalPos = hrp and hrp.CFrame
-    local houseData = getMyHouse()
     
-    -- 🧠 ADVANCED MULTI-TIER PROXIMITY & HOUSE SCANNER (FULL 1.5s STABLE SCAN)
-    local scanStartTime = tick()
+    -- 🧠 ADVANCED SMART DETECTION: 1.5s Active Wait for Fast/Slow Robots
+    local detectionTime = 0
     local propsDetected = false
     
-    while (tick() - scanStartTime) < 1.5 do
-        local found = false
-        
-        -- 1. Scan near player body (Radius 45 for slow/fast bots)
-        if hrp then
-            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 45)) do
-                local parentName = obj.Parent and obj.Parent.Name or ""
-                if (obj.Name:match("Prop") or parentName:match("Prop") or obj.Name:match("Robot") or parentName:match("Robot") or obj.Name:match("Screen")) and not obj.Name:match(lp.Name) and not parentName:match(lp.Name) then
+    if hrp then
+        while detectionTime < 1.5 do
+            local found = false
+            -- Advanced check for enemy props near player (increased radius to 40 for advance scan)
+            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                if obj.Name:match("Prop") and not obj.Name:match(lp.Name) then
                     found = true
-                    break
+                    propsDetected = true
                 end
             end
+            
+            -- Wait full 1.5 sec even if found, to catch fast teleporting and slow robots together
+            task.wait(0.1)
+            detectionTime = detectionTime + 0.1
         end
-        
-        -- 2. Scan WorkspaceCom for fast teleporting & slow creeping props
-        if not found then
-            local com = workspace:FindFirstChild("WorkspaceCom")
-            if com then
-                for _, folder in ipairs(com:GetChildren()) do
-                    if folder.Name ~= "Prop" .. lp.Name then
-                        for _, c in ipairs(folder:GetChildren()) do
-                            if hrp and (c:IsA("BasePart") or c:IsA("Model")) then
-                                local cPos = c:IsA("BasePart") and c.Position or (c.PrimaryPart and c.PrimaryPart.Position)
-                                if cPos and (cPos - hrp.Position).Magnitude < 50 then
-                                    found = true
-                                    break
-                                end
-                            end
-                        end
-                    end
-                    if found then break end
-                end
-            end
-        end
-        
-        -- 3. Scan our house boundary area
-        if not found and houseData and houseData.Lot then
-            local housePos = houseData.Lot.WorldPivot.Position
-            for _, obj in ipairs(workspace:GetPartBoundsInBox(CFrame.new(housePos), Vector3.new(120, 80, 120))) do
-                local parentName = obj.Parent and obj.Parent.Name or ""
-                if (obj.Name:match("Prop") or parentName:match("Prop") or obj.Name:match("Robot") or parentName:match("Robot")) and not obj.Name:match(lp.Name) and not parentName:match(lp.Name) then
-                    found = true
-                    break
-                end
-            end
-        end
-        
-        if found then
-            propsDetected = true
-            break
-        end
-        
-        task.wait(0.1)
     end
 
     -- 🛡️ INSTANT SKY-VAULT: Force all our props to the sky before any wipe commands
@@ -2302,6 +2263,8 @@ escapeBtn.MouseButton1Click:Connect(function()
     end
     
     task.wait(0.2) -- Give the server 200ms to register our props are safe in the sky
+    
+    local houseData = getMyHouse()
     
     if hrp and houseData then
         local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
