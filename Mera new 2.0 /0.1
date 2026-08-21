@@ -3584,6 +3584,114 @@ Players.PlayerRemoving:Connect(function(plr)
     end
 end)
 
+-- =========================================================
+-- 👻 PLAN B: QUANTUM PHANTOM (INVISIBLE DECOY SPOOFER) 👻
+-- =========================================================
+local phantomBtn = createMainBtn("👻 PLAN B: GHOST CLONE", "Phantom", false)
+phantomBtn.BackgroundColor3 = Color3.fromRGB(130, 0, 255)
+phantomBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+phantomBtn:SetAttribute("BaseColor", Color3.fromRGB(130, 0, 255))
+phantomBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
+
+local isPhantomEnabled = false
+local decoyRoot = nil
+local decoyHead = nil
+local phantomLoop = nil
+
+local function togglePhantom(state)
+    local char = lp.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    if not char or not hum then return end
+
+    if state then
+        -- 1. Neck Safety (Taki Head spoof karne pe character mare nahi)
+        hum.RequiresNeck = false
+
+        -- 2. Find Real Parts & Rename them to hide from advanced scripts
+        local realRoot = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("TrueRoot")
+        local realHead = char:FindFirstChild("Head") or char:FindFirstChild("TrueHead")
+        
+        if realRoot then realRoot.Name = "TrueRoot" end
+        if realHead then realHead.Name = "TrueHead" end
+
+        -- 3. Create the Invisible Clone (Badi scripts isko hi asli player samjhengi)
+        decoyRoot = Instance.new("Part")
+        decoyRoot.Name = "HumanoidRootPart" -- Script bait
+        decoyRoot.Size = Vector3.new(2, 2, 1)
+        decoyRoot.Transparency = 1 -- Invisible Clone
+        decoyRoot.CanCollide = false
+        decoyRoot.Massless = true
+        decoyRoot.Parent = char
+
+        decoyHead = Instance.new("Part")
+        decoyHead.Name = "Head" -- Headbang scripts ke liye bait
+        decoyHead.Size = Vector3.new(1, 1, 1)
+        decoyHead.Transparency = 1
+        decoyHead.CanCollide = false
+        decoyHead.Massless = true
+        decoyHead.Parent = char
+
+        -- 4. Animate the Clone (Taki prediction scripts fail na ho)
+        phantomLoop = RunService.Heartbeat:Connect(function()
+            if not char or not realRoot or not decoyRoot or not decoyHead then return end
+            
+            -- 🔥 CLONE POSITION: Tere piche 20 studs door aur 5 studs upar!
+            -- Attackers ke robots yahan aake attack karenge hawa me!
+            local fakeCFrame = realRoot.CFrame * CFrame.new(0, 5, 20)
+            decoyRoot.CFrame = fakeCFrame
+            decoyHead.CFrame = fakeCFrame * CFrame.new(0, 1.5, 0)
+
+            -- Fake Velocity: Badi scripts prediction use karti hain, hum unko fake velocity feed karenge
+            decoyRoot.AssemblyLinearVelocity = realRoot.AssemblyLinearVelocity
+            decoyHead.AssemblyLinearVelocity = realRoot.AssemblyLinearVelocity
+        end)
+
+        sendNotif("👻 GHOST CLONE", "Decoy Deployed! Attackers will hit thin air.", 3)
+    else
+        -- OFF: Restore everything back to normal
+        if phantomLoop then phantomLoop:Disconnect(); phantomLoop = nil end
+        
+        if decoyRoot then decoyRoot:Destroy(); decoyRoot = nil end
+        if decoyHead then decoyHead:Destroy(); decoyHead = nil end
+
+        local trueRoot = char:FindFirstChild("TrueRoot")
+        local trueHead = char:FindFirstChild("TrueHead")
+        
+        if trueRoot then trueRoot.Name = "HumanoidRootPart" end
+        if trueHead then trueHead.Name = "Head" end
+        
+        hum.RequiresNeck = true
+        sendNotif("👻 GHOST CLONE", "Real character restored.", 2)
+    end
+end
+
+phantomBtn.MouseButton1Click:Connect(function() 
+    isPhantomEnabled = not isPhantomEnabled
+    activeModes["Phantom"] = isPhantomEnabled
+    
+    local accent = phantomBtn:FindFirstChild("Accent")
+    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    if isPhantomEnabled then 
+        TweenService:Create(phantomBtn, tInfo1, {BackgroundColor3 = Color3.fromRGB(150, 0, 255), TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+        if accent then TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
+        togglePhantom(true)
+    else 
+        TweenService:Create(phantomBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() end 
+        togglePhantom(false)
+    end
+end)
+
+lp.CharacterAdded:Connect(function(newChar)
+    newChar:WaitForChild("HumanoidRootPart")
+    if isPhantomEnabled then
+        task.wait(0.5)
+        togglePhantom(true)
+    end
+end)
+
 -- =================================================================
 -- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND) 🚀
 -- =================================================================
