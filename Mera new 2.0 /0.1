@@ -3585,9 +3585,9 @@ Players.PlayerRemoving:Connect(function(plr)
 end)
 
 -- =========================================================
--- 🔫 AUTO GUN FIRE ENGINE (LETHAL FORCE)
+-- 🔫 AUTO TURRET ENGINE (PROP ORIGIN SPOOFER)
 -- =========================================================
-local autoFireBtn = createMainBtn("🔫 AUTO GUN KILLER", "AutoFire", false)
+local autoFireBtn = createMainBtn("🔫 AUTO TURRET KILLER", "AutoFire", false)
 autoFireBtn.BackgroundColor3 = Color3.fromRGB(200, 30, 30)
 autoFireBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 autoFireBtn:SetAttribute("BaseColor", Color3.fromRGB(200, 30, 30))
@@ -3600,22 +3600,20 @@ local function toggleAutoFire(state)
     if state then
         local gunFireTick = 0
         autoFireLoop = RunService.Heartbeat:Connect(function()
-            -- Sirf tab chalega jab Inject ON hoga
             if not isSystemActive then return end
             
             local now = os.clock()
-            if now - gunFireTick > 0.08 then -- Firing Speed (0.08 seconds)
+            if now - gunFireTick > 0.08 then -- Firing Speed
                 gunFireTick = now
                 
                 local char = lp.Character
                 local tool = char and char:FindFirstChildOfClass("Tool")
                 
-                -- Check if holding a Gun
+                -- Check if holding a real Gun (To bypass anti-cheat)
                 if tool and tool:FindFirstChild("Handle") then
                     local gunRemote = ReplicatedStorage:FindFirstChild("RE") and ReplicatedStorage.RE:FindFirstChild("1Gu1n")
                     
                     if gunRemote then
-                        -- Har selected target par loop run karke fire karega
                         for plr, _ in pairs(selectedPlayers) do
                             if plr ~= lp and plr.Character and plr.Character:FindFirstChild("Head") then
                                 local targetHead = plr.Character.Head
@@ -3624,36 +3622,59 @@ local function toggleAutoFire(state)
                                 local mEffect = scriptLoc and scriptLoc:FindFirstChild("MuzzleEffect")
                                 local hEffect = scriptLoc and scriptLoc:FindFirstChild("HitEffect")
                                 
-                                task.spawn(function()
-                                    pcall(function()
-                                        -- Fire exactly like your remote spy data
-                                        gunRemote:FireServer(
-                                            plr, 
-                                            targetHead, 
-                                            handle, 
-                                            targetHead.Position, 
-                                            handle.Position, 
-                                            mEffect, 
-                                            hEffect, 
-                                            103595219378299, 
-                                            140181997495870, 
-                                            {false}, 
-                                            {25, Vector3.new(0.25, 0.25, 100), BrickColor.new('Bright yellow'), 0.25, Enum.Material.SmoothPlastic, 0.25}, 
-                                            true, 
-                                            false
-                                        )
-                                    end)
-                                end)
+                                -- 🔥 MAGIC: Find the orbiting Props for this target
+                                if assignedRemotes[plr] then
+                                    for _, remote in pairs(assignedRemotes[plr]) do
+                                        if typeof(remote) == "Instance" and remote.Parent then
+                                            local propPart = remote.Parent:IsA("Model") and (remote.Parent.PrimaryPart or remote.Parent:FindFirstChildWhichIsA("BasePart")) or (remote.Parent:IsA("BasePart") and remote.Parent or nil)
+                                            
+                                            if propPart then
+                                                -- 🔥 ULLU BANANE WALI TRICK: Goli prop se niklegi!
+                                                local fakeOrigin = propPart.Position
+                                                
+                                                -- Prop ka apna click animation bhi chalu kar do (agar usme ClickDetector hai)
+                                                pcall(function()
+                                                    local clickDet = remote.Parent:FindFirstChildWhichIsA("ClickDetector", true)
+                                                    if clickDet and fireclickdetector then
+                                                        fireclickdetector(clickDet)
+                                                    end
+                                                end)
+
+                                                -- Spoofed Gun Fire Remote
+                                                task.spawn(function()
+                                                    pcall(function()
+                                                        gunRemote:FireServer(
+                                                            plr, 
+                                                            targetHead, 
+                                                            handle, 
+                                                            targetHead.Position, 
+                                                            fakeOrigin, -- 🔥 INSTEAD OF HANDLE, WE USE PROP POSITION!
+                                                            mEffect, 
+                                                            hEffect, 
+                                                            103595219378299, 
+                                                            140181997495870, 
+                                                            {false}, 
+                                                            {25, Vector3.new(0.25, 0.25, 100), BrickColor.new('Bright yellow'), 0.25, Enum.Material.SmoothPlastic, 0.25}, 
+                                                            true, 
+                                                            false
+                                                        )
+                                                    end)
+                                                end)
+                                            end
+                                        end
+                                    end
+                                end
+                                
                             end
                         end
                     end
                 end
             end
         end)
-        sendNotif("🔫 LETHAL FORCE", "Auto Gun Fire Active! Equip a gun.", 2)
+        sendNotif("🔫 TURRET MODE", "Turrets Active! Equip a gun to power them.", 2)
     else
         if autoFireLoop then autoFireLoop:Disconnect(); autoFireLoop = nil end
-        sendNotif("🔫 LETHAL FORCE", "Auto Gun Fire Deactivated.", 2)
+        sendNotif("🔫 TURRET MODE", "Turrets Deactivated.", 2)
     end
 end
 
@@ -3676,7 +3697,7 @@ autoFireBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- =================================================================
+-end- =================================================================
 -- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND) 🚀
 -- =================================================================
 local isSmartClearing = false
