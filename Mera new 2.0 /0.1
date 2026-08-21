@@ -2344,7 +2344,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
             local attackersToBan = {}
             local propsDetectedBefore = false
             
-            -- Scan 1: Area Radius Check
             for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
                 if string.sub(obj.Name, 1, 4) == "Prop" then
                     local ownerName = string.sub(obj.Name, 5)
@@ -2364,7 +2363,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
             
-            -- Scan 2: Welds & Face/Head Attachments 
             for _, desc in ipairs(lp.Character:GetDescendants()) do
                 if desc:IsA("Weld") or desc:IsA("SeatWeld") then
                     local safeParts = {}
@@ -2372,7 +2370,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
                     if desc.Part1 then table.insert(safeParts, desc.Part1) end
                     
                     for _, pt in ipairs(safeParts) do
-                        if not pt:IsDescendantOf(lp.Character) then
+                        if pt and pt.Parent and not pt:IsDescendantOf(lp.Character) then
                             if string.sub(pt.Name, 1, 4) == "Prop" then
                                 local ownerName = string.sub(pt.Name, 5)
                                 if ownerName ~= "" and ownerName ~= lp.Name then
@@ -2394,7 +2392,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
 
-            -- Sky Vault
             local com = workspace:FindFirstChild("WorkspaceCom")
             if com then
                 for _, f in ipairs(com:GetChildren()) do
@@ -2701,7 +2698,7 @@ local function dispatchRemote(remote, targetCFrame)
         end
 
         if inDangerZone then
-            targetCFrame = targetCFrame * CFrame.new(0, 15000, 0)
+            targetCFrame = targetCFrame + Vector3.new(400, -250, 400) -- 🔥 AMBUSH: Hide underground and far away
             isEmergency = true
         end
     end
@@ -2858,7 +2855,7 @@ RunService.Heartbeat:Connect(function(dt)
             targetSafeOffsets[plr] = Vector3.new(0, 0, 0)
             
             if isEvading then
-                targetSafeOffsets[plr] = Vector3.new(0, 15000, 0) -- 🔥 Hide in sky during evasion wipe
+                targetSafeOffsets[plr] = Vector3.new(0, 15000, 0) 
             elseif activeModes["HouseProt"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
                 local tRoot = plr.Character.HumanoidRootPart
                 local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
@@ -2890,7 +2887,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
 
                 if inDangerZone then
-                    targetSafeOffsets[plr] = Vector3.new(0, 15000, 0)
+                    targetSafeOffsets[plr] = Vector3.new(400, -250, 400) -- 🔥 AMBUSH: Hide underground and far away
                 end
             end
         end
@@ -2903,12 +2900,9 @@ RunService.Heartbeat:Connect(function(dt)
             local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
             local rawVelocity = tRoot.AssemblyLinearVelocity
             
-            -- [🔥 TXR V18.26 FIX: ANTI-VELOCITY SPOOF DETECTOR 🔥]
-            -- Fake speed ya fling hone pe velocity bohot high ho jati hai
             if rawVelocity.Magnitude > 150 or rawVelocity.Y > 100 or rawVelocity.Y < -100 then 
                 rawVelocity = Vector3.new(0, 0, 0)
             end
-            -- [🔥 END FIX 🔥]
 
             if not targetVelocities[plr] then targetVelocities[plr] = rawVelocity end
             
@@ -3036,7 +3030,7 @@ RunService.Heartbeat:Connect(function(dt)
                     
                     if isSeated or voidedPlayers[plr] then
                         voidedPlayers[plr] = true
-                        task.spawn(function() pcall(function() remote:InvokeServer(CFrame.new(0, 15000, 0)) end) end)
+                        task.spawn(function() pcall(function() remote:InvokeServer(CFrame.new(400, -250, 400)) end) end)
                     else
                         local propsForThisTarget = math.min(4, math.ceil(#freeRemotes / tCount))
                         local localChairIndex = (idx - 1) % propsForThisTarget
