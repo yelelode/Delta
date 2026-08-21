@@ -2209,6 +2209,33 @@ houseProtBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+local siegeBtn = createMainBtn("🚧 BORDER SIEGE (ANTI-BLOCK)", "BorderSiege", false)
+local isSiegeEnabled = false
+activeModes["BorderSiege"] = false
+
+siegeBtn.MouseButton1Click:Connect(function() 
+    isSiegeEnabled = not isSiegeEnabled
+    activeModes["BorderSiege"] = isSiegeEnabled
+    local accent = siegeBtn:FindFirstChild("Accent")
+    
+    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    if isSiegeEnabled then 
+        TweenService:Create(siegeBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+        end
+        sendNotif("🚧 SIEGE MODE", "Robots will now wait outside blocked zones.", 2)
+    else 
+        TweenService:Create(siegeBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+        end 
+        sendNotif("🚧 SIEGE MODE", "Anti-Block Siege deactivated.", 2)
+    end
+end)
+
 -- =========================================================
 -- 🚀 FIXED UNIVERSAL FAST TP & MASSIVE MAP WIPE (NO BAN)
 -- =========================================================
@@ -2344,7 +2371,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
             local attackersToBan = {}
             local propsDetectedBefore = false
             
-            -- Scan 1: Area Radius Check
             for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
                 if string.sub(obj.Name, 1, 4) == "Prop" then
                     local ownerName = string.sub(obj.Name, 5)
@@ -2364,7 +2390,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
             
-            -- Scan 2: Welds & Face/Head Attachments 
             for _, desc in ipairs(lp.Character:GetDescendants()) do
                 if desc:IsA("Weld") or desc:IsA("SeatWeld") then
                     local safeParts = {}
@@ -2394,7 +2419,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
 
-            -- Sky Vault
             local com = workspace:FindFirstChild("WorkspaceCom")
             if com then
                 for _, f in ipairs(com:GetChildren()) do
@@ -2670,10 +2694,51 @@ end
 local lastRemoteFireTimes = {}
 local FIRE_INTERVAL = 0.035 
 
-local function dispatchRemote(remote, targetCFrame)
+local function dispatchRemote(remote, targetCFrame, targetPlayer)
     if not remote or not remote.Parent then return end
     
     local isEmergency = false
+    
+    if activeModes["BorderSiege"] and targetPlayer then
+        pcall(function()
+            local targetLot = nil
+            local lotsFolder = workspace:FindFirstChild("001_Lots")
+            if lotsFolder then
+                for _, lot in ipairs(lotsFolder:GetChildren()) do
+                    local picked = lot:FindFirstChild("HousePickedByPlayer")
+                    if picked and (tostring(picked.Value) == targetPlayer.Name or picked.Value == targetPlayer) then
+                        targetLot = lot
+                        break
+                    end
+                end
+            end
+            
+            if targetLot then
+                local lotCF, lotSize = targetLot:GetBoundingBox()
+                lotSize = lotSize + Vector3.new(30, 1500, 30) 
+                
+                local localPos = lotCF:PointToObjectSpace(targetCFrame.Position)
+                local halfX = lotSize.X / 2
+                local halfY = lotSize.Y / 2
+                local halfZ = lotSize.Z / 2
+                
+                if math.abs(localPos.X) < halfX and math.abs(localPos.Y) < halfY and math.abs(localPos.Z) < halfZ then
+                    local distX = halfX - math.abs(localPos.X)
+                    local distZ = halfZ - math.abs(localPos.Z)
+                    
+                    if distX < distZ then
+                        localPos = Vector3.new((halfX + 1.5) * math.sign(localPos.X), localPos.Y, localPos.Z)
+                    else
+                        localPos = Vector3.new(localPos.X, localPos.Y, (halfZ + 1.5) * math.sign(localPos.Z))
+                    end
+                    
+                    local safeWorldPos = lotCF:PointToWorldSpace(localPos)
+                    targetCFrame = CFrame.new(safeWorldPos) * (targetCFrame - targetCFrame.Position)
+                end
+            end
+        end)
+    end
+
     if activeModes["HouseProt"] then
         local checkPos = targetCFrame.Position
         local params = OverlapParams.new()
@@ -2702,7 +2767,7 @@ local function dispatchRemote(remote, targetCFrame)
         end
 
         if inDangerZone then
-            targetCFrame = CFrame.new(120, -350, 150) -- 🔥 AMBUSH: Hide completely under School
+            targetCFrame = CFrame.new(120, -350, 150) 
             isEmergency = true
         end
     end
@@ -2860,39 +2925,6 @@ RunService.Heartbeat:Connect(function(dt)
             
             if isEvading then
                 targetSafeOffsets[plr] = Vector3.new(0, 15000, 0) 
-            elseif activeModes["HouseProt"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                local tRoot = plr.Character.HumanoidRootPart
-                local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
-                local checkPos = tRoot.Position + pOffset
-                
-                local params = OverlapParams.new()
-                local ignoreList = {lp.Character}
-                for _, p in ipairs(Players:GetPlayers()) do
-                    if p.Character then table.insert(ignoreList, p.Character) end
-                end
-                if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
-                if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
-                params.FilterDescendantsInstances = ignoreList
-                params.FilterType = Enum.RaycastFilterType.Exclude
-
-                local inDangerZone = false
-                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(4, 250, 4), params)
-                for _, hitInst in ipairs(partsInBubble) do
-                    local currentInst = hitInst
-                    while currentInst and currentInst ~= workspace do
-                        local lowerName = string.lower(currentInst.Name)
-                        if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") or string.find(lowerName, "ban") then
-                            inDangerZone = true
-                            break
-                        end
-                        currentInst = currentInst.Parent
-                    end
-                    if inDangerZone then break end
-                end
-
-                if inDangerZone then
-                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position -- 🔥 AMBUSH: Hide underground at school
-                end
             end
         end
 
@@ -2964,10 +2996,10 @@ RunService.Heartbeat:Connect(function(dt)
                 local headDist = 1.0 + (1.5 * rScale) - (((1.5 * rScale)) * snapPower)
                 
                 if assignedRemotes[plr].h_front then 
-                    dispatchRemote(assignedRemotes[plr].h_front, headLockCFrame * CFrame.new(0, headY, -headDist)) 
+                    dispatchRemote(assignedRemotes[plr].h_front, headLockCFrame * CFrame.new(0, headY, -headDist), plr) 
                 end
                 if assignedRemotes[plr].h_back then 
-                    dispatchRemote(assignedRemotes[plr].h_back, headLockCFrame * CFrame.new(0, headY, headDist) * CFrame.Angles(0, math.rad(180), 0)) 
+                    dispatchRemote(assignedRemotes[plr].h_back, headLockCFrame * CFrame.new(0, headY, headDist) * CFrame.Angles(0, math.rad(180), 0), plr) 
                 end
             end
 
@@ -2989,10 +3021,10 @@ RunService.Heartbeat:Connect(function(dt)
                 local lPos = centerGroundPos - (dynamicBaseCFrame.RightVector * robotSmoothDist)
                 local rPos = centerGroundPos + (dynamicBaseCFrame.RightVector * robotSmoothDist)
                 
-                if assignedRemotes[plr].front then dispatchRemote(assignedRemotes[plr].front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                if assignedRemotes[plr].back then dispatchRemote(assignedRemotes[plr].back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                if assignedRemotes[plr].left then dispatchRemote(assignedRemotes[plr].left, CFrame.lookAt(lPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                if assignedRemotes[plr].right then dispatchRemote(assignedRemotes[plr].right, CFrame.lookAt(rPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].front then dispatchRemote(assignedRemotes[plr].front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0), plr) end
+                if assignedRemotes[plr].back then dispatchRemote(assignedRemotes[plr].back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0), plr) end
+                if assignedRemotes[plr].left then dispatchRemote(assignedRemotes[plr].left, CFrame.lookAt(lPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0), plr) end
+                if assignedRemotes[plr].right then dispatchRemote(assignedRemotes[plr].right, CFrame.lookAt(rPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0), plr) end
             end
 
             if activeModes["MultiRobot"] then
@@ -3011,8 +3043,8 @@ RunService.Heartbeat:Connect(function(dt)
                 local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * smoothDist)
                 local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * smoothDist)
                 
-                if assignedRemotes[plr].m_front then dispatchRemote(assignedRemotes[plr].m_front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                if assignedRemotes[plr].m_back then dispatchRemote(assignedRemotes[plr].m_back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].m_front then dispatchRemote(assignedRemotes[plr].m_front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0), plr) end
+                if assignedRemotes[plr].m_back then dispatchRemote(assignedRemotes[plr].m_back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0), plr) end
             end
         end
 
@@ -3064,7 +3096,7 @@ RunService.Heartbeat:Connect(function(dt)
                                 * CFrame.new(sweepX, (-2.6 + airLiftOffset + heightLayer) + verticalWave, sweepZ) 
                                 * CFrame.Angles(math.sin(blitzTime) * 0.4, blitzTime * 2.5, math.cos(blitzTime) * 0.4)
                             
-                            dispatchRemote(remote, dynamicChairCFrame)
+                            dispatchRemote(remote, dynamicChairCFrame, plr)
                         end
                     end
                 end
@@ -3096,7 +3128,7 @@ RunService.Heartbeat:Connect(function(dt)
                         local rSmooth = rBaseDist - ((rBaseDist - 1.5) * rSnap)
                         
                         local propPos = ringCenterPos + Vector3.new(math.sin(angleRad) * rSmooth, 0, math.cos(angleRad) * rSmooth)
-                        dispatchRemote(remote, CFrame.lookAt(propPos, ringCenterPos) * CFrame.Angles(0, math.rad(180), 0))
+                        dispatchRemote(remote, CFrame.lookAt(propPos, ringCenterPos) * CFrame.Angles(0, math.rad(180), 0), plr)
                     end
                 end
             elseif activeModes["Orbit"] then
@@ -3178,7 +3210,7 @@ RunService.Heartbeat:Connect(function(dt)
                         z = math.sin(radRatio + smoothAngle) * currentRadius 
                     end
                     
-                    dispatchRemote(remote, dynamicOrbitBase * CFrame.new(Vector3.new(x, y, z)) * CFrame.Angles(smoothSelfAngle, smoothSelfAngle, smoothSelfAngle))
+                    dispatchRemote(remote, dynamicOrbitBase * CFrame.new(Vector3.new(x, y, z)) * CFrame.Angles(smoothSelfAngle, smoothSelfAngle, smoothSelfAngle), plr)
                 end
             end
         end
@@ -3584,9 +3616,6 @@ Players.PlayerRemoving:Connect(function(plr)
     end
 end)
 
--- =================================================================
--- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND) 🚀
--- =================================================================
 local isSmartClearing = false
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if _G.TXR_InstanceID ~= currentExecutionID then return end
