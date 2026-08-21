@@ -596,8 +596,10 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         local tool = char and char:FindFirstChildOfClass("Tool")
         
         if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
-            task.delay(0.05, function() 
-                if tick() - lastGameSpawnTime > 0.5 then 
+            -- 🔥 SMART COOLDOWN FIX FOR MIXING PROPS 🔥
+            -- Delay increased to 0.25 so Brookhaven native spawn isn't blocked
+            task.delay(0.25, function() 
+                if tick() - lastGameSpawnTime > 0.3 then 
                     local propName, propCategory = getActivePropData()
                     spawnProp(propName, propCategory) 
                 end 
