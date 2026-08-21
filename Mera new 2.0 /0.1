@@ -2344,6 +2344,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
             local attackersToBan = {}
             local propsDetectedBefore = false
             
+            -- Scan 1: Area Radius Check
             for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
                 if string.sub(obj.Name, 1, 4) == "Prop" then
                     local ownerName = string.sub(obj.Name, 5)
@@ -2363,6 +2364,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
             
+            -- Scan 2: Welds & Face/Head Attachments 
             for _, desc in ipairs(lp.Character:GetDescendants()) do
                 if desc:IsA("Weld") or desc:IsA("SeatWeld") then
                     local safeParts = {}
@@ -2370,7 +2372,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
                     if desc.Part1 then table.insert(safeParts, desc.Part1) end
                     
                     for _, pt in ipairs(safeParts) do
-                        if pt and pt.Parent and not pt:IsDescendantOf(lp.Character) then
+                        if not pt:IsDescendantOf(lp.Character) then
                             if string.sub(pt.Name, 1, 4) == "Prop" then
                                 local ownerName = string.sub(pt.Name, 5)
                                 if ownerName ~= "" and ownerName ~= lp.Name then
@@ -2392,6 +2394,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
 
+            -- Sky Vault
             local com = workspace:FindFirstChild("WorkspaceCom")
             if com then
                 for _, f in ipairs(com:GetChildren()) do
@@ -2498,118 +2501,132 @@ banTrapBtn.MouseButton1Click:Connect(function()
 end)
 
 
-local toggleRow = Instance.new("Frame", mainList)
-toggleRow.Size = UDim2.new(1, 0, 0, 42)
-toggleRow.BackgroundTransparency = 1
-toggleRow.LayoutOrder = getOrder()
-toggleRow.ZIndex = 7
-
-local startBtn = Instance.new("TextButton", toggleRow)
-startBtn.Size = UDim2.new(0.48, 0, 1, 0)
-startBtn.BackgroundColor3 = Colors.Primary
-startBtn.Text = "▶ INJECT"
-startBtn.TextColor3 = Colors.TextDark
-startBtn.Font = Enum.Font.GothamBlack
-startBtn.TextSize = 11
-startBtn.AutoButtonColor = false
-startBtn.ZIndex = 8
-
-local startCorner = Instance.new("UICorner", startBtn)
-startCorner.CornerRadius = UDim.new(0, 8)
-applySmartHover(startBtn, nil)
-
-local stopBtn = Instance.new("TextButton", toggleRow)
-stopBtn.Size = UDim2.new(0.48, 0, 1, 0)
-stopBtn.Position = UDim2.new(0.52, 0, 0, 0)
-stopBtn.BackgroundColor3 = Colors.Surface
-stopBtn.BackgroundTransparency = 0.5
-stopBtn.Text = "⏹ HALT"
-stopBtn.TextColor3 = Colors.Danger
-stopBtn.Font = Enum.Font.GothamBold
-stopBtn.TextSize = 11
-stopBtn.AutoButtonColor = false
-stopBtn.ZIndex = 8
-
-local stopCorner = Instance.new("UICorner", stopBtn)
-stopCorner.CornerRadius = UDim.new(0, 8)
-applySmartHover(stopBtn, nil)
-
-local stopStroke = Instance.new("UIStroke", stopBtn)
-stopStroke.Color = Colors.Danger
-stopStroke.Thickness = 1
-stopStroke.Transparency = 0.5
-crispText(startBtn)
-crispText(stopBtn)
-
-startBtn.MouseButton1Click:Connect(function() 
-    if isSystemActive then 
-        return 
-    end 
-    
-    isSystemActive = true
-    table.clear(assignedRemotes)
-    table.clear(voidedPlayers)
-    table.clear(targetVelocities)
-    
-    local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Colors.PrimaryDark, TextColor3 = Colors.Text}):Play()
-    TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Colors.Danger, TextColor3 = Colors.TextDark}):Play()
-    TweenService:Create(stopStroke, tInfo, {Transparency = 1}):Play()
-    
-    if isSoundEnabled then 
-        task.spawn(PlayRobotBangMusic) 
-    end
-    
-    task.spawn(function() 
-        sendNotif("ENGINE CORE", "V18.26 Matrix Core Activated.", 2)
-        clearProps()
-        task.wait(0.4)
+local isSmartClearing = false
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if _G.TXR_InstanceID ~= currentExecutionID then return end
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.F5 and not isSmartClearing then
+        isSmartClearing = true
         
-        local propName, propCategory = getActivePropData()
-        local count = (propName == "FurnitureBleachers") and 15 or 25
+        task.spawn(function()
+            local success, err = pcall(function()
+                local houseData = getMyHouse()
+                local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+                
+                if hrp and houseData then
+                    local originalPos = hrp.CFrame
+                    local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
+                    
+                    local attackersToBan = {}
+                    for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                        if string.sub(obj.Name, 1, 4) == "Prop" then
+                            local ownerName = string.sub(obj.Name, 5)
+                            if ownerName ~= "" and ownerName ~= lp.Name then
+                                local p = Players:FindFirstChild(ownerName)
+                                if p then attackersToBan[p] = true end
+                            end
+                        end
+                        local pModel = obj:FindFirstAncestorOfClass("Model")
+                        if pModel and pModel ~= lp.Character then
+                            local p = Players:GetPlayerFromCharacter(pModel)
+                            if p then attackersToBan[p] = true end
+                        end
+                    end
 
-        if activeModes["Chair"] and (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"] or activeModes["Orbit"] or activeModes["Ring"]) then
-            for i = 1, 10 do 
-                spawnProp("FurnitureBleachers", "Furniture")
-                task.wait(0.01) 
-            end
-            task.wait(0.05)
-            for i = 1, 15 do 
-                spawnProp(customPropName, customPropCategory)
-                task.wait(0.01) 
-            end
-        else
-            for i = 1, count do 
-                spawnProp(propName, propCategory)
-                task.wait(0.01) 
-            end
-        end
-    end) 
-end)
+                    for _, desc in ipairs(lp.Character:GetDescendants()) do
+                        if desc:IsA("Weld") or desc:IsA("SeatWeld") then
+                            local safeParts = {}
+                            if desc.Part0 then table.insert(safeParts, desc.Part0) end
+                            if desc.Part1 then table.insert(safeParts, desc.Part1) end
+                            
+                            for _, pt in ipairs(safeParts) do
+                                if not pt:IsDescendantOf(lp.Character) then
+                                    if string.sub(pt.Name, 1, 4) == "Prop" then
+                                        local ownerName = string.sub(pt.Name, 5)
+                                        if ownerName ~= "" and ownerName ~= lp.Name then
+                                            local p = Players:FindFirstChild(ownerName)
+                                            if p then attackersToBan[p] = true end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
 
--- 🔥 NEW: FIXED STOP BUTTON LOGIC WITH AUTO-WIPE 🔥
-stopBtn.MouseButton1Click:Connect(function()
-    if not isSystemActive then return end
-    isSystemActive = false
-    table.clear(assignedRemotes)
-    
-    local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Colors.Primary, TextColor3 = Colors.TextDark}):Play()
-    TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Danger}):Play()
-    TweenService:Create(stopStroke, tInfo, {Transparency = 0.5}):Play()
-    
-    if isSoundEnabled then 
-        task.spawn(StopRobotBangMusic) 
+                    hrp.CFrame = CFrame.new(safePos)
+                    
+                    local isCleared = false
+                    local safetyCounter = 0
+                    
+                    while not isCleared and safetyCounter < 70 do
+                        task.wait(0.01) 
+                        safetyCounter = safetyCounter + 1
+                        
+                        local foundProp = false
+                        local com = workspace:FindFirstChild("WorkspaceCom")
+                        if com then
+                            for _, f in ipairs(com:GetChildren()) do
+                                for _, c in ipairs(f:GetChildren()) do
+                                    if string.sub(c.Name, 1, 4) == "Prop" and string.sub(c.Name, 5) ~= lp.Name then
+                                        local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
+                                        if pt and (pt.Position - hrp.Position).Magnitude < 25 then
+                                            local ownerName = string.sub(c.Name, 5)
+                                            local p = Players:FindFirstChild(ownerName)
+                                            if p then attackersToBan[p] = true end
+                                            foundProp = true
+                                            break
+                                        end
+                                    end
+                                end
+                                if foundProp then break end
+                            end
+                        end
+
+                        if not foundProp then
+                            isCleared = true
+                        end
+                    end
+                    
+                    if houseData.Disallow then
+                        for attacker, _ in pairs(attackersToBan) do
+                            if attacker and attacker.Parent then
+                                task.spawn(function() pcall(function() houseData.Disallow:FireServer(attacker) end) end)
+                            end
+                        end
+                    end
+
+                    if houseData.Remote then
+                        for i = 1, 20 do
+                            task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+                            task.wait(0.01)
+                        end
+                    end
+
+                    hrp.CFrame = originalPos
+                    
+                    if houseData.Allow then
+                        for attacker, _ in pairs(attackersToBan) do
+                            if attacker and attacker.Parent then
+                                task.spawn(function()
+                                    task.wait(0.5)
+                                    pcall(function() houseData.Allow:FireServer(attacker) end)
+                                end)
+                            end
+                        end
+                    end
+
+                    sendNotif("SMART CLEAR", "Bang Props Banned & Cleared!", 2)
+                else
+                    if not houseData then
+                        sendNotif("ERROR", "House not found! Please claim a house first.", 2)
+                    end
+                end
+            end)
+            
+            if not success then warn("TXR Error:", err) end
+            isSmartClearing = false
+        end)
     end
-    
-    task.spawn(function()
-        clearProps()
-        sendNotif("SYSTEM HALTED", "All props wiped automatically.", 2)
-    end)
 end)
-
-local lastRemoteScan = 0
-local cachedRemotes = {}
 
 local function getAvailableRemotes()
     if tick() - lastRemoteScan < 0.25 then
@@ -2698,7 +2715,7 @@ local function dispatchRemote(remote, targetCFrame)
         end
 
         if inDangerZone then
-            targetCFrame = targetCFrame + Vector3.new(400, -250, 400) -- 🔥 AMBUSH: Hide underground and far away
+            targetCFrame = CFrame.new(120, -350, 150) -- 🔥 AMBUSH: Hide completely under School
             isEmergency = true
         end
     end
@@ -2887,7 +2904,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
 
                 if inDangerZone then
-                    targetSafeOffsets[plr] = Vector3.new(400, -250, 400) -- 🔥 AMBUSH: Hide underground and far away
+                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position -- 🔥 AMBUSH: Hide underground at school
                 end
             end
         end
@@ -3030,7 +3047,7 @@ RunService.Heartbeat:Connect(function(dt)
                     
                     if isSeated or voidedPlayers[plr] then
                         voidedPlayers[plr] = true
-                        task.spawn(function() pcall(function() remote:InvokeServer(CFrame.new(400, -250, 400)) end) end)
+                        task.spawn(function() pcall(function() remote:InvokeServer(CFrame.new(120, -350, 150)) end) end)
                     else
                         local propsForThisTarget = math.min(4, math.ceil(#freeRemotes / tCount))
                         local localChairIndex = (idx - 1) % propsForThisTarget
