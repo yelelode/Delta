@@ -519,7 +519,7 @@ end
 -- ✨ FIXED CLEAR PROPS METHOD FOR INJECT BUG & STOP WIPE
 -- =========================================================
 local function clearProps() 
-    lastClearTime = tick()
+    lastClearTime = tick() -- Tracker for new feature
     
     -- 1. Aggressive Main Clear Request
     task.spawn(function()
@@ -612,7 +612,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- 🚨 AUTO-DETECT BAN ZONE 🚨
+-- 🚨 AUTO-DETECT BAN ZONE (EVALUATES DELETED PROPS) 🚨
 task.spawn(function()
     local com = workspace:WaitForChild("WorkspaceCom")
     while _G.TXR_InstanceID == currentExecutionID do
@@ -1519,9 +1519,6 @@ cmConfirm.MouseButton1Click:Connect(function()
     if _G.TXR_ESP_GUI then 
         _G.TXR_ESP_GUI:Destroy() 
     end 
-    if _G.TXR_THREAT_ESP then 
-        _G.TXR_THREAT_ESP:Destroy() 
-    end
 end)
 
 minimizeBtn.MouseButton1Click:Connect(function() 
@@ -2059,12 +2056,20 @@ local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false)
 local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false)
 local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR", "Chair", false)
 
--- 🔥 NEW BUTTON FOR ANTI-BAN EVADE (AMBUSH) 🔥
+-- 🔥 NEW: ANTI-BAN EVADE (AMBUSH) 🔥
 local antiBanEvadeBtn = createMainBtn("🛡️ ANTI-BAN EVADE (AMBUSH)", "AntiBanEvade", false)
 antiBanEvadeBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 50)
 antiBanEvadeBtn.TextColor3 = Color3.fromRGB(150, 255, 150)
 antiBanEvadeBtn:SetAttribute("BaseColor", Color3.fromRGB(30, 80, 50))
 antiBanEvadeBtn:SetAttribute("BaseText", Color3.fromRGB(150, 255, 150))
+
+local houseProtBtn = createMainBtn("🏠 HOUSE DEFENSE (ANTI-DELETE)", "HouseProt", false)
+local isHouseProtEnabled = true
+activeModes["HouseProt"] = true
+houseProtBtn.BackgroundColor3 = Colors.ActiveTint
+houseProtBtn.TextColor3 = Colors.Primary
+local houseAccent = houseProtBtn:FindFirstChild("Accent")
+if houseAccent then houseAccent.Size = UDim2.new(0, 4, 0.7, 0) end
 
 local modeBtns = { 
     ["Orbit"] = {btn = orbitBtn}, 
@@ -2072,8 +2077,7 @@ local modeBtns = {
     ["MultiRobot"] = {btn = multiBtn}, 
     ["Ring"] = {btn = ringBtn}, 
     ["HeadBang"] = {btn = headBtn}, 
-    ["Chair"] = {btn = chairBtn},
-    ["AntiBanEvade"] = {btn = antiBanEvadeBtn}
+    ["Chair"] = {btn = chairBtn}
 }
 
 local function syncComboUI()
@@ -2089,7 +2093,9 @@ local function syncComboUI()
                 TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
             end
         else 
-            TweenService:Create(btn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+            local baseCol = btn:GetAttribute("BaseColor") or Colors.Surface
+            local textCol = btn:GetAttribute("BaseText") or Colors.Text
+            TweenService:Create(btn, tInfo1, {BackgroundColor3 = baseCol, TextColor3 = textCol}):Play()
             if accent then 
                 TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
             end
@@ -2099,29 +2105,85 @@ end
 
 for key, data in pairs(modeBtns) do
     data.btn.MouseButton1Click:Connect(function()
-        if key == "AntiBanEvade" then
-            activeModes["AntiBanEvade"] = not activeModes["AntiBanEvade"]
-        else
-            if activeModes[key] then 
-                activeModes[key] = false
-                for i, v in ipairs(modeQueue) do 
-                    if v == key then 
-                        table.remove(modeQueue, i) 
-                        break 
-                    end 
-                end
-            else 
-                if #modeQueue >= 2 then 
-                    local oldest = table.remove(modeQueue, 1)
-                    activeModes[oldest] = false 
-                end
-                activeModes[key] = true
-                table.insert(modeQueue, key) 
+        if activeModes[key] then 
+            activeModes[key] = false
+            for i, v in ipairs(modeQueue) do 
+                if v == key then 
+                    table.remove(modeQueue, i) 
+                    break 
+                end 
             end
+        else 
+            if #modeQueue >= 2 then 
+                local oldest = table.remove(modeQueue, 1)
+                activeModes[oldest] = false 
+            end
+            activeModes[key] = true
+            table.insert(modeQueue, key) 
         end
         syncComboUI()
     end)
 end
+
+-- 🔥 MUTUAL EXCLUSION LOGIC FOR ANTI-BAN EVADE 🔥
+antiBanEvadeBtn.MouseButton1Click:Connect(function()
+    activeModes["AntiBanEvade"] = not activeModes["AntiBanEvade"]
+    
+    if activeModes["AntiBanEvade"] then
+        -- TURN OFF HOUSE DEFENSE
+        isHouseProtEnabled = false
+        activeModes["HouseProt"] = false
+        local hpAccent = houseProtBtn:FindFirstChild("Accent")
+        TweenService:Create(houseProtBtn, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if hpAccent then TweenService:Create(hpAccent, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0)}):Play() end
+
+        local accent = antiBanEvadeBtn:FindFirstChild("Accent")
+        TweenService:Create(antiBanEvadeBtn, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+        if accent then TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
+        sendNotif("🛡️ EVADE", "Ambush Activated. House Defense OFF.", 2)
+    else
+        local accent = antiBanEvadeBtn:FindFirstChild("Accent")
+        local baseCol = antiBanEvadeBtn:GetAttribute("BaseColor") or Colors.Surface
+        local textCol = antiBanEvadeBtn:GetAttribute("BaseText") or Colors.Text
+        TweenService:Create(antiBanEvadeBtn, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = baseCol, TextColor3 = textCol}):Play()
+        if accent then TweenService:Create(accent, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0)}):Play() end
+        sendNotif("🛡️ EVADE", "Ambush Deactivated.", 2)
+    end
+end)
+
+-- 🔥 MUTUAL EXCLUSION LOGIC FOR HOUSE DEFENSE 🔥
+houseProtBtn.MouseButton1Click:Connect(function() 
+    isHouseProtEnabled = not isHouseProtEnabled
+    activeModes["HouseProt"] = isHouseProtEnabled
+    
+    if isHouseProtEnabled then
+        -- TURN OFF ANTI-BAN EVADE
+        activeModes["AntiBanEvade"] = false
+        local abAccent = antiBanEvadeBtn:FindFirstChild("Accent")
+        local baseCol = antiBanEvadeBtn:GetAttribute("BaseColor") or Colors.Surface
+        local textCol = antiBanEvadeBtn:GetAttribute("BaseText") or Colors.Text
+        TweenService:Create(antiBanEvadeBtn, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = baseCol, TextColor3 = textCol}):Play()
+        if abAccent then TweenService:Create(abAccent, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0)}):Play() end
+    end
+    
+    local accent = houseProtBtn:FindFirstChild("Accent")
+    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    if isHouseProtEnabled then 
+        TweenService:Create(houseProtBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+        end
+        sendNotif("🏠 SECURITY", "House Defense Activated.", 2)
+    else 
+        TweenService:Create(houseProtBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+        end 
+        sendNotif("🏠 SECURITY", "House Defense Deactivated.", 2)
+    end
+end)
 
 local espBtn = createMainBtn("👁️ TACTICAL ESP (HUD)", "ESP", false)
 espBtn.MouseButton1Click:Connect(function() 
@@ -2217,38 +2279,6 @@ shieldBtn.MouseButton1Click:Connect(function()
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
         sendNotif("🛡️ SECURITY", "God Shield Deactivated.", 2)
-    end
-end)
-
-local houseProtBtn = createMainBtn("🏠 HOUSE DEFENSE (ANTI-DELETE)", "HouseProt", false)
-local isHouseProtEnabled = true
-activeModes["HouseProt"] = true
-
-houseProtBtn.BackgroundColor3 = Colors.ActiveTint
-houseProtBtn.TextColor3 = Colors.Primary
-local houseAccent = houseProtBtn:FindFirstChild("Accent")
-if houseAccent then houseAccent.Size = UDim2.new(0, 4, 0.7, 0) end
-
-houseProtBtn.MouseButton1Click:Connect(function() 
-    isHouseProtEnabled = not isHouseProtEnabled
-    activeModes["HouseProt"] = isHouseProtEnabled
-    local accent = houseProtBtn:FindFirstChild("Accent")
-    
-    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-    
-    if isHouseProtEnabled then 
-        TweenService:Create(houseProtBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
-        if accent then 
-            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
-        end
-        sendNotif("🏠 SECURITY", "House Defense Activated.", 2)
-    else 
-        TweenService:Create(houseProtBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
-        if accent then 
-            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
-        end 
-        sendNotif("🏠 SECURITY", "House Defense Deactivated.", 2)
     end
 end)
 
@@ -2717,30 +2747,42 @@ local function dispatchRemote(remote, targetCFrame)
     if not remote or not remote.Parent then return end
     
     local isEmergency = false
-    
+
+    -- 🔥 ANTI BAN EVADE LOGIC 🔥
     if activeModes["AntiBanEvade"] then
         local checkPos = targetCFrame.Position
-        local inDangerZone = false
-        local lotsFolder = workspace:FindFirstChild("001_Lots")
-        if lotsFolder then
-            for _, lot in ipairs(lotsFolder:GetChildren()) do
-                local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
-                if ownerVal and tostring(ownerVal.Value) ~= "" and tostring(ownerVal.Value) ~= lp.Name then
-                    local lotCenter = lot.WorldPivot.Position
-                    local dist = (Vector3.new(checkPos.X, lotCenter.Y, checkPos.Z) - Vector3.new(lotCenter.X, lotCenter.Y, lotCenter.Z)).Magnitude
-                    if dist <= SAFE_BAN_DISTANCE then
-                        inDangerZone = true
-                        break
-                    end
-                end
-            end
+        local params = OverlapParams.new()
+        local ignoreList = {lp.Character}
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p.Character then table.insert(ignoreList, p.Character) end
         end
+        if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
+        if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
+        params.FilterDescendantsInstances = ignoreList
+        params.FilterType = Enum.RaycastFilterType.Exclude
+
+        local inDangerZone = false
+        local partsInBubble = workspace:GetPartBoundsInRadius(checkPos, SAFE_BAN_DISTANCE, params)
+        for _, hitInst in ipairs(partsInBubble) do
+            local currentInst = hitInst
+            while currentInst and currentInst ~= workspace do
+                local lowerName = string.lower(currentInst.Name)
+                if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") or string.find(lowerName, "ban") then
+                    inDangerZone = true
+                    break
+                end
+                currentInst = currentInst.Parent
+            end
+            if inDangerZone then break end
+        end
+
         if inDangerZone then
             targetCFrame = CFrame.new(120, -350, 150)
             isEmergency = true
         end
     end
-
+    
+    -- 🔥 ORIGINAL HOUSE DEFENSE LOGIC 🔥
     if not isEmergency and activeModes["HouseProt"] then
         local checkPos = targetCFrame.Position
         local params = OverlapParams.new()
@@ -2927,6 +2969,40 @@ RunService.Heartbeat:Connect(function(dt)
             
             if isEvading then
                 targetSafeOffsets[plr] = Vector3.new(0, 15000, 0) 
+            elseif activeModes["AntiBanEvade"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                local tRoot = plr.Character.HumanoidRootPart
+                local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
+                local checkPos = tRoot.Position + pOffset
+                
+                local params = OverlapParams.new()
+                local ignoreList = {lp.Character}
+                for _, p in ipairs(Players:GetPlayers()) do
+                    if p.Character then table.insert(ignoreList, p.Character) end
+                end
+                if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
+                if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
+                params.FilterDescendantsInstances = ignoreList
+                params.FilterType = Enum.RaycastFilterType.Exclude
+
+                local inDangerZone = false
+                local partsInBubble = workspace:GetPartBoundsInRadius(checkPos, SAFE_BAN_DISTANCE, params)
+                for _, hitInst in ipairs(partsInBubble) do
+                    local currentInst = hitInst
+                    while currentInst and currentInst ~= workspace do
+                        local lowerName = string.lower(currentInst.Name)
+                        if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") or string.find(lowerName, "ban") then
+                            inDangerZone = true
+                            break
+                        end
+                        currentInst = currentInst.Parent
+                    end
+                    if inDangerZone then break end
+                end
+
+                if inDangerZone then
+                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
+                end
+
             elseif activeModes["HouseProt"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
                 local tRoot = plr.Character.HumanoidRootPart
                 local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
@@ -2958,7 +3034,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
 
                 if inDangerZone then
-                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position -- 🔥 AMBUSH: Hide underground at school
+                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position 
                 end
             end
         end
