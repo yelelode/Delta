@@ -519,7 +519,8 @@ end
 -- ✨ FIXED CLEAR PROPS METHOD FOR INJECT BUG & STOP WIPE
 -- =========================================================
 local function clearProps() 
-    lastClearTime = tick() -- Tracker for new feature
+    lastClearTime = tick()
+    
     -- 1. Aggressive Main Clear Request
     task.spawn(function()
         pcall(function() 
@@ -611,7 +612,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- 🚨 AUTO-DETECT BAN ZONE (EVALUATES DELETED PROPS) 🚨
+-- 🚨 AUTO-DETECT BAN ZONE 🚨
 task.spawn(function()
     local com = workspace:WaitForChild("WorkspaceCom")
     while _G.TXR_InstanceID == currentExecutionID do
@@ -1518,6 +1519,9 @@ cmConfirm.MouseButton1Click:Connect(function()
     if _G.TXR_ESP_GUI then 
         _G.TXR_ESP_GUI:Destroy() 
     end 
+    if _G.TXR_THREAT_ESP then 
+        _G.TXR_THREAT_ESP:Destroy() 
+    end
 end)
 
 minimizeBtn.MouseButton1Click:Connect(function() 
@@ -2055,7 +2059,7 @@ local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false)
 local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false)
 local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR", "Chair", false)
 
--- 🔥 NEW: ANTI-BAN EVADE (AMBUSH) 🔥
+-- 🔥 NEW BUTTON FOR ANTI-BAN EVADE (AMBUSH) 🔥
 local antiBanEvadeBtn = createMainBtn("🛡️ ANTI-BAN EVADE (AMBUSH)", "AntiBanEvade", false)
 antiBanEvadeBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 50)
 antiBanEvadeBtn.TextColor3 = Color3.fromRGB(150, 255, 150)
@@ -2085,9 +2089,7 @@ local function syncComboUI()
                 TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
             end
         else 
-            local baseCol = btn:GetAttribute("BaseColor") or Colors.Surface
-            local textCol = btn:GetAttribute("BaseText") or Colors.Text
-            TweenService:Create(btn, tInfo1, {BackgroundColor3 = baseCol, TextColor3 = textCol}):Play()
+            TweenService:Create(btn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
             if accent then 
                 TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
             end
@@ -2716,9 +2718,9 @@ local function dispatchRemote(remote, targetCFrame)
     
     local isEmergency = false
     
-    -- 🔥 NEW: ANTI BAN EVADE (EKDUM SEPARATE LOGIC) 🔥
     if activeModes["AntiBanEvade"] then
         local checkPos = targetCFrame.Position
+        local inDangerZone = false
         local lotsFolder = workspace:FindFirstChild("001_Lots")
         if lotsFolder then
             for _, lot in ipairs(lotsFolder:GetChildren()) do
@@ -2727,17 +2729,19 @@ local function dispatchRemote(remote, targetCFrame)
                     local lotCenter = lot.WorldPivot.Position
                     local dist = (Vector3.new(checkPos.X, lotCenter.Y, checkPos.Z) - Vector3.new(lotCenter.X, lotCenter.Y, lotCenter.Z)).Magnitude
                     if dist <= SAFE_BAN_DISTANCE then
-                        targetCFrame = CFrame.new(120, -350, 150)
-                        isEmergency = true
+                        inDangerZone = true
                         break
                     end
                 end
             end
         end
+        if inDangerZone then
+            targetCFrame = CFrame.new(120, -350, 150)
+            isEmergency = true
+        end
     end
 
-    -- 🔥 ORIGINAL: HOUSE DEFENSE (EKDUM SEPARATE LOGIC) 🔥
-    if activeModes["HouseProt"] and not isEmergency then
+    if not isEmergency and activeModes["HouseProt"] then
         local checkPos = targetCFrame.Position
         local params = OverlapParams.new()
         local ignoreList = {lp.Character}
@@ -2923,34 +2927,7 @@ RunService.Heartbeat:Connect(function(dt)
             
             if isEvading then
                 targetSafeOffsets[plr] = Vector3.new(0, 15000, 0) 
-            elseif activeModes["AntiBanEvade"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                -- 🔥 ANTI-BAN EVADE LOGIC (SEPARATE) 🔥
-                local tRoot = plr.Character.HumanoidRootPart
-                local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
-                local checkPos = tRoot.Position + pOffset
-                
-                local inDangerZone = false
-                local lotsFolder = workspace:FindFirstChild("001_Lots")
-                if lotsFolder then
-                    for _, lot in ipairs(lotsFolder:GetChildren()) do
-                        local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
-                        if ownerVal and tostring(ownerVal.Value) ~= "" and tostring(ownerVal.Value) ~= lp.Name then
-                            local lotCenter = lot.WorldPivot.Position
-                            local dist = (Vector3.new(checkPos.X, lotCenter.Y, checkPos.Z) - Vector3.new(lotCenter.X, lotCenter.Y, lotCenter.Z)).Magnitude
-                            if dist <= SAFE_BAN_DISTANCE then
-                                inDangerZone = true
-                                break
-                            end
-                        end
-                    end
-                end
-
-                if inDangerZone then
-                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
-                end
-
             elseif activeModes["HouseProt"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                -- 🔥 ORIGINAL HOUSE DEFENSE LOGIC (SEPARATE) 🔥
                 local tRoot = plr.Character.HumanoidRootPart
                 local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
                 local checkPos = tRoot.Position + pOffset
@@ -2981,7 +2958,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
 
                 if inDangerZone then
-                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position 
+                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position -- 🔥 AMBUSH: Hide underground at school
                 end
             end
         end
