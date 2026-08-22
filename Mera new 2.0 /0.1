@@ -187,8 +187,10 @@ local targetVelocities = {}
 local customPropName = "ScreensRobotBig"
 local customPropCategory = "Screens"
 local lastGameSpawnTime = 0
+
+-- 🔥 NAYE VARIABLES EKDUM ALAG SE 🔥
+local SAFE_BAN_DISTANCE = 85 
 local lastClearTime = 0
-local SAFE_BAN_DISTANCE = 85
 
 -- ✨ UI INTERACTION STATES FOR DOF FOCUS ✨
 local uiHoverCount = 0
@@ -517,7 +519,7 @@ end
 -- ✨ FIXED CLEAR PROPS METHOD FOR INJECT BUG & STOP WIPE
 -- =========================================================
 local function clearProps() 
-    lastClearTime = tick()
+    lastClearTime = tick() -- Tracker for new feature
     -- 1. Aggressive Main Clear Request
     task.spawn(function()
         pcall(function() 
@@ -609,7 +611,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- 🚨 AUTO-DETECT BAN ZONE 🚨
+-- 🚨 AUTO-DETECT BAN ZONE (EVALUATES DELETED PROPS) 🚨
 task.spawn(function()
     local com = workspace:WaitForChild("WorkspaceCom")
     while _G.TXR_InstanceID == currentExecutionID do
@@ -2053,7 +2055,7 @@ local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false)
 local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false)
 local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR", "Chair", false)
 
--- 🔥 THE NEW BUTTON FOR ANTI-BAN EVADE (AMBUSH) 🔥
+-- 🔥 NEW: ANTI-BAN EVADE (AMBUSH) 🔥
 local antiBanEvadeBtn = createMainBtn("🛡️ ANTI-BAN EVADE (AMBUSH)", "AntiBanEvade", false)
 antiBanEvadeBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 50)
 antiBanEvadeBtn.TextColor3 = Color3.fromRGB(150, 255, 150)
@@ -2083,7 +2085,9 @@ local function syncComboUI()
                 TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
             end
         else 
-            TweenService:Create(btn, tInfo1, {BackgroundColor3 = btn:GetAttribute("BaseColor"), TextColor3 = btn:GetAttribute("BaseText")}):Play()
+            local baseCol = btn:GetAttribute("BaseColor") or Colors.Surface
+            local textCol = btn:GetAttribute("BaseText") or Colors.Text
+            TweenService:Create(btn, tInfo1, {BackgroundColor3 = baseCol, TextColor3 = textCol}):Play()
             if accent then 
                 TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
             end
@@ -2270,7 +2274,7 @@ escapeBtn.MouseButton1Click:Connect(function()
             local originalPos = hrp.CFrame
             local propsDetectedBefore = false
             
-            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, SAFE_BAN_DISTANCE)) do
+            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
                 if string.sub(obj.Name, 1, 4) == "Prop" then
                     local ownerName = string.sub(obj.Name, 5)
                     if ownerName ~= "" and ownerName ~= lp.Name then
@@ -2307,7 +2311,7 @@ escapeBtn.MouseButton1Click:Connect(function()
                         task.wait(0.05)
                         maxWait = maxWait + 0.05
                         local propsFollowed = false
-                        for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, SAFE_BAN_DISTANCE)) do
+                        for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
                             if string.sub(obj.Name, 1, 4) == "Prop" then
                                 local ownerName = string.sub(obj.Name, 5)
                                 if ownerName ~= "" and ownerName ~= lp.Name then
@@ -2382,7 +2386,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
             local propsDetectedBefore = false
             
             -- Scan 1: Area Radius Check
-            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, SAFE_BAN_DISTANCE)) do
+            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
                 if string.sub(obj.Name, 1, 4) == "Prop" then
                     local ownerName = string.sub(obj.Name, 5)
                     if ownerName ~= "" and ownerName ~= lp.Name then
@@ -2459,7 +2463,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
                         task.wait(0.05)
                         maxWait = maxWait + 0.05
                         local propsFollowed = false
-                        for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, SAFE_BAN_DISTANCE)) do
+                        for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
                             if string.sub(obj.Name, 1, 4) == "Prop" then
                                 local ownerName = string.sub(obj.Name, 5)
                                 if ownerName ~= "" and ownerName ~= lp.Name then
@@ -2712,51 +2716,52 @@ local function dispatchRemote(remote, targetCFrame)
     
     local isEmergency = false
     
-    if activeModes["HouseProt"] or activeModes["AntiBanEvade"] then
+    -- 🔥 NEW: ANTI BAN EVADE (EKDUM SEPARATE LOGIC) 🔥
+    if activeModes["AntiBanEvade"] then
         local checkPos = targetCFrame.Position
-        local inDangerZone = false
-
-        if activeModes["AntiBanEvade"] then
-            local lotsFolder = workspace:FindFirstChild("001_Lots")
-            if lotsFolder then
-                for _, lot in ipairs(lotsFolder:GetChildren()) do
-                    local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
-                    if ownerVal and tostring(ownerVal.Value) ~= "" and tostring(ownerVal.Value) ~= lp.Name then
-                        local lotCenter = lot.WorldPivot.Position
-                        local dist = (Vector3.new(checkPos.X, lotCenter.Y, checkPos.Z) - Vector3.new(lotCenter.X, lotCenter.Y, lotCenter.Z)).Magnitude
-                        if dist <= SAFE_BAN_DISTANCE then
-                            inDangerZone = true
-                            break
-                        end
+        local lotsFolder = workspace:FindFirstChild("001_Lots")
+        if lotsFolder then
+            for _, lot in ipairs(lotsFolder:GetChildren()) do
+                local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
+                if ownerVal and tostring(ownerVal.Value) ~= "" and tostring(ownerVal.Value) ~= lp.Name then
+                    local lotCenter = lot.WorldPivot.Position
+                    local dist = (Vector3.new(checkPos.X, lotCenter.Y, checkPos.Z) - Vector3.new(lotCenter.X, lotCenter.Y, lotCenter.Z)).Magnitude
+                    if dist <= SAFE_BAN_DISTANCE then
+                        targetCFrame = CFrame.new(120, -350, 150)
+                        isEmergency = true
+                        break
                     end
                 end
             end
         end
+    end
 
-        if not inDangerZone and activeModes["HouseProt"] then
-            local params = OverlapParams.new()
-            local ignoreList = {lp.Character}
-            for _, p in ipairs(Players:GetPlayers()) do
-                if p.Character then table.insert(ignoreList, p.Character) end
-            end
-            if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
-            if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
-            params.FilterDescendantsInstances = ignoreList
-            params.FilterType = Enum.RaycastFilterType.Exclude
-            
-            local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(4, 250, 4), params)
-            for _, hitInst in ipairs(partsInBubble) do
-                local currentInst = hitInst
-                while currentInst and currentInst ~= workspace do
-                    local lowerName = string.lower(currentInst.Name)
-                    if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") or string.find(lowerName, "ban") then
-                        inDangerZone = true
-                        break
-                    end
-                    currentInst = currentInst.Parent
+    -- 🔥 ORIGINAL: HOUSE DEFENSE (EKDUM SEPARATE LOGIC) 🔥
+    if activeModes["HouseProt"] and not isEmergency then
+        local checkPos = targetCFrame.Position
+        local params = OverlapParams.new()
+        local ignoreList = {lp.Character}
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p.Character then table.insert(ignoreList, p.Character) end
+        end
+        if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
+        if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
+        params.FilterDescendantsInstances = ignoreList
+        params.FilterType = Enum.RaycastFilterType.Exclude
+        
+        local inDangerZone = false
+        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(4, 250, 4), params)
+        for _, hitInst in ipairs(partsInBubble) do
+            local currentInst = hitInst
+            while currentInst and currentInst ~= workspace do
+                local lowerName = string.lower(currentInst.Name)
+                if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") or string.find(lowerName, "ban") then
+                    inDangerZone = true
+                    break
                 end
-                if inDangerZone then break end
+                currentInst = currentInst.Parent
             end
+            if inDangerZone then break end
         end
 
         if inDangerZone then
@@ -2918,58 +2923,65 @@ RunService.Heartbeat:Connect(function(dt)
             
             if isEvading then
                 targetSafeOffsets[plr] = Vector3.new(0, 15000, 0) 
-            elseif (activeModes["HouseProt"] or activeModes["AntiBanEvade"]) and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            elseif activeModes["AntiBanEvade"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                -- 🔥 ANTI-BAN EVADE LOGIC (SEPARATE) 🔥
                 local tRoot = plr.Character.HumanoidRootPart
                 local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
                 local checkPos = tRoot.Position + pOffset
                 
                 local inDangerZone = false
-
-                if activeModes["AntiBanEvade"] then
-                    local lotsFolder = workspace:FindFirstChild("001_Lots")
-                    if lotsFolder then
-                        for _, lot in ipairs(lotsFolder:GetChildren()) do
-                            local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
-                            if ownerVal and tostring(ownerVal.Value) ~= "" and tostring(ownerVal.Value) ~= lp.Name then
-                                local lotCenter = lot.WorldPivot.Position
-                                local dist = (Vector3.new(checkPos.X, lotCenter.Y, checkPos.Z) - Vector3.new(lotCenter.X, lotCenter.Y, lotCenter.Z)).Magnitude
-                                if dist <= SAFE_BAN_DISTANCE then
-                                    inDangerZone = true
-                                    break
-                                end
-                            end
-                        end
-                    end
-                end
-
-                if not inDangerZone and activeModes["HouseProt"] then
-                    local params = OverlapParams.new()
-                    local ignoreList = {lp.Character}
-                    for _, p in ipairs(Players:GetPlayers()) do
-                        if p.Character then table.insert(ignoreList, p.Character) end
-                    end
-                    if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
-                    if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
-                    params.FilterDescendantsInstances = ignoreList
-                    params.FilterType = Enum.RaycastFilterType.Exclude
-
-                    local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(4, 250, 4), params)
-                    for _, hitInst in ipairs(partsInBubble) do
-                        local currentInst = hitInst
-                        while currentInst and currentInst ~= workspace do
-                            local lowerName = string.lower(currentInst.Name)
-                            if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") or string.find(lowerName, "ban") then
+                local lotsFolder = workspace:FindFirstChild("001_Lots")
+                if lotsFolder then
+                    for _, lot in ipairs(lotsFolder:GetChildren()) do
+                        local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
+                        if ownerVal and tostring(ownerVal.Value) ~= "" and tostring(ownerVal.Value) ~= lp.Name then
+                            local lotCenter = lot.WorldPivot.Position
+                            local dist = (Vector3.new(checkPos.X, lotCenter.Y, checkPos.Z) - Vector3.new(lotCenter.X, lotCenter.Y, lotCenter.Z)).Magnitude
+                            if dist <= SAFE_BAN_DISTANCE then
                                 inDangerZone = true
                                 break
                             end
-                            currentInst = currentInst.Parent
                         end
-                        if inDangerZone then break end
                     end
                 end
 
                 if inDangerZone then
-                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position -- 🔥 AMBUSH: Hide underground at school
+                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
+                end
+
+            elseif activeModes["HouseProt"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                -- 🔥 ORIGINAL HOUSE DEFENSE LOGIC (SEPARATE) 🔥
+                local tRoot = plr.Character.HumanoidRootPart
+                local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
+                local checkPos = tRoot.Position + pOffset
+                
+                local params = OverlapParams.new()
+                local ignoreList = {lp.Character}
+                for _, p in ipairs(Players:GetPlayers()) do
+                    if p.Character then table.insert(ignoreList, p.Character) end
+                end
+                if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
+                if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
+                params.FilterDescendantsInstances = ignoreList
+                params.FilterType = Enum.RaycastFilterType.Exclude
+
+                local inDangerZone = false
+                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(4, 250, 4), params)
+                for _, hitInst in ipairs(partsInBubble) do
+                    local currentInst = hitInst
+                    while currentInst and currentInst ~= workspace do
+                        local lowerName = string.lower(currentInst.Name)
+                        if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") or string.find(lowerName, "ban") then
+                            inDangerZone = true
+                            break
+                        end
+                        currentInst = currentInst.Parent
+                    end
+                    if inDangerZone then break end
+                end
+
+                if inDangerZone then
+                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position 
                 end
             end
         end
@@ -3681,7 +3693,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
                     
                     local attackersToBan = {}
-                    for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, SAFE_BAN_DISTANCE)) do
+                    for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
                         if string.sub(obj.Name, 1, 4) == "Prop" then
                             local ownerName = string.sub(obj.Name, 5)
                             if ownerName ~= "" and ownerName ~= lp.Name then
@@ -3732,7 +3744,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                                 for _, c in ipairs(f:GetChildren()) do
                                     if string.sub(c.Name, 1, 4) == "Prop" and string.sub(c.Name, 5) ~= lp.Name then
                                         local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
-                                        if pt and (pt.Position - hrp.Position).Magnitude < SAFE_BAN_DISTANCE then
+                                        if pt and (pt.Position - hrp.Position).Magnitude < 25 then
                                             local ownerName = string.sub(c.Name, 5)
                                             local p = Players:FindFirstChild(ownerName)
                                             if p then attackersToBan[p] = true end
