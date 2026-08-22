@@ -2752,6 +2752,35 @@ end
 local lastRemoteFireTimes = {}
 local FIRE_INTERVAL = 0.035 
 
+-- 🔥 NEW CACHE SYSTEM FOR ANTI-BAN EVADE TO FIX LAG/FREEZE 🔥
+local lotCache = {}
+local lastLotUpdate = 0
+
+local function isPosInDangerZone(checkPos)
+    if tick() - lastLotUpdate > 2 then
+        lotCache = {}
+        local lotsFolder = workspace:FindFirstChild("001_Lots")
+        if lotsFolder then
+            for _, lot in ipairs(lotsFolder:GetChildren()) do
+                local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
+                if ownerVal and tostring(ownerVal.Value) ~= "" and tostring(ownerVal.Value) ~= lp.Name then
+                    local lotCFrame, lotSize = lot:GetBoundingBox()
+                    table.insert(lotCache, {CFrame = lotCFrame, Size = lotSize})
+                end
+            end
+        end
+        lastLotUpdate = tick()
+    end
+    
+    for _, data in ipairs(lotCache) do
+        local localPos = data.CFrame:PointToObjectSpace(checkPos)
+        if math.abs(localPos.X) <= (data.Size.X / 2) + 5 and math.abs(localPos.Z) <= (data.Size.Z / 2) + 5 then
+            return true
+        end
+    end
+    return false
+end
+
 local function dispatchRemote(remote, targetCFrame)
     if not remote or not remote.Parent then return end
     
@@ -2760,23 +2789,7 @@ local function dispatchRemote(remote, targetCFrame)
     -- 🔥 NAYA EVASION CHECK (Anti-Ban Evade button ke liye) 🔥
     if activeModes["AntiBanEvade"] then
         local checkPos = targetCFrame.Position
-        local inDangerZone = false
-        local lotsFolder = workspace:FindFirstChild("001_Lots")
-        if lotsFolder then
-            for _, lot in ipairs(lotsFolder:GetChildren()) do
-                local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
-                if ownerVal and tostring(ownerVal.Value) ~= "" and tostring(ownerVal.Value) ~= lp.Name then
-                    local lotCFrame, lotSize = lot:GetBoundingBox()
-                    local localPos = lotCFrame:PointToObjectSpace(checkPos)
-                    if math.abs(localPos.X) <= (lotSize.X / 2) + 5 and math.abs(localPos.Z) <= (lotSize.Z / 2) + 5 then
-                        inDangerZone = true
-                        break
-                    end
-                end
-            end
-        end
-
-        if inDangerZone then
+        if isPosInDangerZone(checkPos) then
             targetCFrame = CFrame.new(120, -350, 150)
             isEmergency = true
         end
@@ -2974,23 +2987,7 @@ RunService.Heartbeat:Connect(function(dt)
                 local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
                 local checkPos = tRoot.Position + pOffset
                 
-                local inDangerZone = false
-                local lotsFolder = workspace:FindFirstChild("001_Lots")
-                if lotsFolder then
-                    for _, lot in ipairs(lotsFolder:GetChildren()) do
-                        local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
-                        if ownerVal and tostring(ownerVal.Value) ~= "" and tostring(ownerVal.Value) ~= lp.Name then
-                            local lotCFrame, lotSize = lot:GetBoundingBox()
-                            local localPos = lotCFrame:PointToObjectSpace(checkPos)
-                            if math.abs(localPos.X) <= (lotSize.X / 2) + 5 and math.abs(localPos.Z) <= (lotSize.Z / 2) + 5 then
-                                inDangerZone = true
-                                break
-                            end
-                        end
-                    end
-                end
-
-                if inDangerZone then
+                if isPosInDangerZone(checkPos) then
                     targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
                 end
 
