@@ -113,14 +113,22 @@ local function getMyHouse()
     
     -- Agar normal Lot nahi mila, toh Apartments me dhundho (Global Workspace scan for our owner tag)
     for _, desc in ipairs(workspace:GetDescendants()) do
-        if desc.Name == "HousePickedByPlayer" and (tostring(desc.Value) == lp.Name or desc.Value == lp) then
-            local parentLot = desc.Parent
-            if parentLot then
-                local clearRemote = parentLot:FindFirstChild("Permissions:ClearProps", true)
-                local disallowRemote = parentLot:FindFirstChild("Permissions:Disallow", true)
-                local allowRemote = parentLot:FindFirstChild("Permissions:Allow", true)
-                if clearRemote and clearRemote:IsA("RemoteFunction") then
-                    return {Lot = parentLot, Remote = clearRemote, Disallow = disallowRemote, Allow = allowRemote, Type = "Apartment"}
+        if desc.Name == "HousePickedByPlayer" then
+            local isOwner = false
+            pcall(function() 
+                if tostring(desc.Value) == lp.Name or desc.Value == lp then 
+                    isOwner = true 
+                end 
+            end)
+            if isOwner then
+                local parentLot = desc.Parent
+                if parentLot then
+                    local clearRemote = parentLot:FindFirstChild("Permissions:ClearProps", true)
+                    local disallowRemote = parentLot:FindFirstChild("Permissions:Disallow", true)
+                    local allowRemote = parentLot:FindFirstChild("Permissions:Allow", true)
+                    if clearRemote and clearRemote:IsA("RemoteFunction") then
+                        return {Lot = parentLot, Remote = clearRemote, Disallow = disallowRemote, Allow = allowRemote, Type = "Apartment"}
+                    end
                 end
             end
         end
@@ -2752,34 +2760,44 @@ end
 local lastRemoteFireTimes = {}
 local FIRE_INTERVAL = 0.035 
 
--- 🔥 NEW EXACT ZONE DEFENSE SYSTEM (NO +5 BUFFER) 🔥
+-- 🔥 NEW EXACT ZONE DEFENSE SYSTEM (CRASH-PROOF PCALL FIX) 🔥
 local lotCache = {}
 local lastLotUpdate = 0
 
 local function isExactPosInDangerZone(checkPos)
-    if tick() - lastLotUpdate > 2 then
-        lotCache = {}
-        local lotsFolder = workspace:FindFirstChild("001_Lots")
-        if lotsFolder then
-            for _, lot in ipairs(lotsFolder:GetChildren()) do
-                local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
-                if ownerVal and tostring(ownerVal.Value) ~= "" and tostring(ownerVal.Value) ~= lp.Name then
-                    local lotCFrame, lotSize = lot:GetBoundingBox()
-                    table.insert(lotCache, {CFrame = lotCFrame, Size = lotSize})
+    local inDanger = false
+    pcall(function()
+        if tick() - lastLotUpdate > 2 then
+            lotCache = {}
+            local lotsFolder = workspace:FindFirstChild("001_Lots")
+            if lotsFolder then
+                for _, lot in ipairs(lotsFolder:GetChildren()) do
+                    local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
+                    if ownerVal then
+                        local ownerName = ""
+                        pcall(function() ownerName = tostring(ownerVal.Value) end)
+                        
+                        if ownerName ~= "" and ownerName ~= "nil" and ownerName ~= lp.Name then
+                            local lotCFrame, lotSize = lot:GetBoundingBox()
+                            local sX = math.clamp(lotSize.X, 10, 300)
+                            local sZ = math.clamp(lotSize.Z, 10, 300)
+                            table.insert(lotCache, {CFrame = lotCFrame, SizeX = sX, SizeZ = sZ})
+                        end
+                    end
                 end
             end
+            lastLotUpdate = tick()
         end
-        lastLotUpdate = tick()
-    end
-    
-    for _, data in ipairs(lotCache) do
-        local localPos = data.CFrame:PointToObjectSpace(checkPos)
-        -- Y-check lagaya gaya hai taaki aasmaan/zameen ke neeche (safe vault) ko danger zone na maane
-        if math.abs(localPos.X) <= (data.Size.X / 2) and math.abs(localPos.Z) <= (data.Size.Z / 2) and math.abs(localPos.Y) <= 150 then
-            return true
+        
+        for _, data in ipairs(lotCache) do
+            local localPos = data.CFrame:PointToObjectSpace(checkPos)
+            if math.abs(localPos.X) <= (data.SizeX / 2) and math.abs(localPos.Z) <= (data.SizeZ / 2) and math.abs(localPos.Y) <= 150 then
+                inDanger = true
+                break
+            end
         end
-    end
-    return false
+    end)
+    return inDanger
 end
 
 local function dispatchRemote(remote, targetCFrame)
@@ -2789,11 +2807,13 @@ local function dispatchRemote(remote, targetCFrame)
 
     -- 🔥 NAYA EXACT ZONE DEFENSE CHECK 🔥
     if activeModes["ExactZoneDef"] then
-        local checkPos = targetCFrame.Position
-        if isExactPosInDangerZone(checkPos) then
-            targetCFrame = CFrame.new(120, -350, 150)
-            isEmergency = true
-        end
+        pcall(function()
+            local checkPos = targetCFrame.Position
+            if isExactPosInDangerZone(checkPos) then
+                targetCFrame = CFrame.new(120, -350, 150)
+                isEmergency = true
+            end
+        end)
     end
     
     if not isEmergency and activeModes["HouseProt"] then
@@ -2854,8 +2874,8 @@ local function dispatchRemote(remote, targetCFrame)
     end)
     
     local now = tick()
-    -- 🔥 FIX: isEmergency se network bypass hata diya taaki infinite loops/freezes na aayein! 🔥
-    if not lastRemoteFireTimes[remote] or (now - lastRemoteFireTimes[remote]) >= FIRE_INTERVAL then
+    local interval = isEmergency and 0.05 or FIRE_INTERVAL
+    if not lastRemoteFireTimes[remote] or (now - lastRemoteFireTimes[remote]) >= interval then
         lastRemoteFireTimes[remote] = now
         task.spawn(function() 
             pcall(function() remote:InvokeServer(targetCFrame) end) 
@@ -2984,18 +3004,24 @@ RunService.Heartbeat:Connect(function(dt)
             if isEvading then
                 targetSafeOffsets[plr] = Vector3.new(0, 15000, 0) 
             elseif activeModes["ExactZoneDef"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                -- 🔥 EXACT ZONE DEFENSE LOGIC 🔥
-                local tRoot = plr.Character.HumanoidRootPart
-                local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
-                local checkPos = tRoot.Position + pOffset
-                
-                if isExactPosInDangerZone(checkPos) then
-                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
-                end
+                pcall(function()
+                    local tRoot = plr.Character.HumanoidRootPart
+                    local rawVel = targetVelocities[plr] or tRoot.AssemblyLinearVelocity
+                    if rawVel.Magnitude ~= rawVel.Magnitude then rawVel = Vector3.new(0,0,0) end
+                    
+                    local pOffset = rawVel * predictionTime
+                    local checkPos = tRoot.Position + pOffset
+                    
+                    if isExactPosInDangerZone(checkPos) then
+                        targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
+                    end
+                end)
 
             elseif activeModes["HouseProt"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
                 local tRoot = plr.Character.HumanoidRootPart
                 local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
+                if pOffset.X ~= pOffset.X then pOffset = Vector3.new(0,0,0) end
+                
                 local checkPos = tRoot.Position + pOffset
                 
                 local params = OverlapParams.new()
@@ -3037,7 +3063,7 @@ RunService.Heartbeat:Connect(function(dt)
             local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
             local rawVelocity = tRoot.AssemblyLinearVelocity
             
-            if rawVelocity.Magnitude > 150 or rawVelocity.Y > 100 or rawVelocity.Y < -100 then 
+            if rawVelocity.Magnitude > 150 or rawVelocity.Y > 100 or rawVelocity.Y < -100 or rawVelocity.Magnitude ~= rawVelocity.Magnitude then 
                 rawVelocity = Vector3.new(0, 0, 0)
             end
 
@@ -3053,6 +3079,8 @@ RunService.Heartbeat:Connect(function(dt)
             end
             
             local predictedOffset = targetVelocities[plr] * predictionTime
+            if predictedOffset.Magnitude ~= predictedOffset.Magnitude then predictedOffset = Vector3.new(0,0,0) end
+            
             local bodyPos = bodyPart.Position + predictedOffset + targetSafeOffsets[plr]
             
             local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
@@ -3741,9 +3769,13 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     if lotsFolder then
                         for _, lot in ipairs(lotsFolder:GetChildren()) do
                             local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
-                            if ownerVal and tostring(ownerVal.Value) == lp.Name then
-                                myLot = lot
-                                break
+                            if ownerVal then
+                                local ownerName = ""
+                                pcall(function() ownerName = tostring(ownerVal.Value) end)
+                                if ownerName == lp.Name then
+                                    myLot = lot
+                                    break
+                                end
                             end
                         end
                     end
