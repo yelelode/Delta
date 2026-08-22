@@ -2774,7 +2774,8 @@ local function isExactPosInDangerZone(checkPos)
     
     for _, data in ipairs(lotCache) do
         local localPos = data.CFrame:PointToObjectSpace(checkPos)
-        if math.abs(localPos.X) <= (data.Size.X / 2) and math.abs(localPos.Z) <= (data.Size.Z / 2) then
+        -- Y-check lagaya gaya hai taaki aasmaan/zameen ke neeche (safe vault) ko danger zone na maane
+        if math.abs(localPos.X) <= (data.Size.X / 2) and math.abs(localPos.Z) <= (data.Size.Z / 2) and math.abs(localPos.Y) <= 150 then
             return true
         end
     end
@@ -2853,7 +2854,8 @@ local function dispatchRemote(remote, targetCFrame)
     end)
     
     local now = tick()
-    if isEmergency or not lastRemoteFireTimes[remote] or (now - lastRemoteFireTimes[remote]) >= FIRE_INTERVAL then
+    -- 🔥 FIX: isEmergency se network bypass hata diya taaki infinite loops/freezes na aayein! 🔥
+    if not lastRemoteFireTimes[remote] or (now - lastRemoteFireTimes[remote]) >= FIRE_INTERVAL then
         lastRemoteFireTimes[remote] = now
         task.spawn(function() 
             pcall(function() remote:InvokeServer(targetCFrame) end) 
