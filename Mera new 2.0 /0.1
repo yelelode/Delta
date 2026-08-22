@@ -2772,15 +2772,25 @@ local function isExactPosInDangerZone(checkPos)
             local lotsFolder = workspace:FindFirstChild("001_Lots")
             if lotsFolder then
                 for _, lot in ipairs(lotsFolder:GetChildren()) do
-                    local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
-                    if ownerVal then
-                        local ownerName = ""
-                        pcall(function() ownerName = tostring(ownerVal.Value) end)
-                        
-                        if ownerName ~= "" and ownerName ~= "nil" and ownerName ~= lp.Name then
+                    local isMyLot = string.find(string.lower(lot.Name), string.lower(lp.Name))
+                    if not isMyLot then
+                        local isOccupied = false
+                        if lot:FindFirstChild("HouseModel") then
+                            isOccupied = true
+                        else
+                            local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
+                            if ownerVal and ownerVal:IsA("ValueBase") then
+                                local val = tostring(ownerVal.Value)
+                                if val ~= "" and val ~= "nil" then
+                                    isOccupied = true
+                                end
+                            end
+                        end
+
+                        if isOccupied then
                             local lotCFrame, lotSize = lot:GetBoundingBox()
-                            local sX = math.clamp(lotSize.X, 10, 300)
-                            local sZ = math.clamp(lotSize.Z, 10, 300)
+                            local sX = math.clamp(lotSize.X, 10, 400)
+                            local sZ = math.clamp(lotSize.Z, 10, 400)
                             table.insert(lotCache, {CFrame = lotCFrame, SizeX = sX, SizeZ = sZ})
                         end
                     end
@@ -2791,9 +2801,11 @@ local function isExactPosInDangerZone(checkPos)
         
         for _, data in ipairs(lotCache) do
             local localPos = data.CFrame:PointToObjectSpace(checkPos)
-            if math.abs(localPos.X) <= (data.SizeX / 2) and math.abs(localPos.Z) <= (data.SizeZ / 2) and math.abs(localPos.Y) <= 150 then
-                inDanger = true
-                break
+            if math.abs(localPos.X) <= (data.SizeX / 2) and math.abs(localPos.Z) <= (data.SizeZ / 2) then
+                if checkPos.Y > -100 then
+                    inDanger = true
+                    break
+                end
             end
         end
     end)
@@ -2807,13 +2819,10 @@ local function dispatchRemote(remote, targetCFrame)
 
     -- 🔥 NAYA EXACT ZONE DEFENSE CHECK 🔥
     if activeModes["ExactZoneDef"] then
-        pcall(function()
-            local checkPos = targetCFrame.Position
-            if isExactPosInDangerZone(checkPos) then
-                targetCFrame = CFrame.new(120, -350, 150)
-                isEmergency = true
-            end
-        end)
+        if isExactPosInDangerZone(targetCFrame.Position) then
+            targetCFrame = CFrame.new(120, -350, 150)
+            isEmergency = true
+        end
     end
     
     if not isEmergency and activeModes["HouseProt"] then
@@ -3768,14 +3777,9 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     local lotsFolder = workspace:FindFirstChild("001_Lots")
                     if lotsFolder then
                         for _, lot in ipairs(lotsFolder:GetChildren()) do
-                            local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
-                            if ownerVal then
-                                local ownerName = ""
-                                pcall(function() ownerName = tostring(ownerVal.Value) end)
-                                if ownerName == lp.Name then
-                                    myLot = lot
-                                    break
-                                end
+                            if string.find(string.lower(lot.Name), string.lower(lp.Name)) then
+                                myLot = lot
+                                break
                             end
                         end
                     end
