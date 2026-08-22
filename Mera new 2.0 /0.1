@@ -2772,27 +2772,19 @@ local function isExactPosInDangerZone(checkPos)
             local lotsFolder = workspace:FindFirstChild("001_Lots")
             if lotsFolder then
                 for _, lot in ipairs(lotsFolder:GetChildren()) do
-                    local isMyLot = string.find(string.lower(lot.Name), string.lower(lp.Name))
+                    local isMyLot = false
+                    pcall(function()
+                        if lp.Name and string.find(string.lower(lot.Name), string.lower(lp.Name)) then
+                            isMyLot = true
+                        end
+                    end)
+                    
+                    -- 🔥 Ab har dusre ghar ko (khali ho ya nahi) Danger Zone maanenge!
                     if not isMyLot then
-                        local isOccupied = false
-                        if lot:FindFirstChild("HouseModel") then
-                            isOccupied = true
-                        else
-                            local ownerVal = lot:FindFirstChild("HousePickedByPlayer")
-                            if ownerVal and ownerVal:IsA("ValueBase") then
-                                local val = tostring(ownerVal.Value)
-                                if val ~= "" and val ~= "nil" then
-                                    isOccupied = true
-                                end
-                            end
-                        end
-
-                        if isOccupied then
-                            local lotCFrame, lotSize = lot:GetBoundingBox()
-                            local sX = math.clamp(lotSize.X, 10, 400)
-                            local sZ = math.clamp(lotSize.Z, 10, 400)
-                            table.insert(lotCache, {CFrame = lotCFrame, SizeX = sX, SizeZ = sZ})
-                        end
+                        local lotCFrame, lotSize = lot:GetBoundingBox()
+                        local sX = math.clamp(lotSize.X, 10, 400)
+                        local sZ = math.clamp(lotSize.Z, 10, 400)
+                        table.insert(lotCache, {CFrame = lotCFrame, SizeX = sX, SizeZ = sZ})
                     end
                 end
             end
@@ -2819,10 +2811,13 @@ local function dispatchRemote(remote, targetCFrame)
 
     -- 🔥 NAYA EXACT ZONE DEFENSE CHECK 🔥
     if activeModes["ExactZoneDef"] then
-        if isExactPosInDangerZone(targetCFrame.Position) then
-            targetCFrame = CFrame.new(120, -350, 150)
-            isEmergency = true
-        end
+        pcall(function()
+            local checkPos = targetCFrame.Position
+            if isExactPosInDangerZone(checkPos) then
+                targetCFrame = CFrame.new(120, -350, 150)
+                isEmergency = true
+            end
+        end)
     end
     
     if not isEmergency and activeModes["HouseProt"] then
@@ -3777,7 +3772,13 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     local lotsFolder = workspace:FindFirstChild("001_Lots")
                     if lotsFolder then
                         for _, lot in ipairs(lotsFolder:GetChildren()) do
-                            if string.find(string.lower(lot.Name), string.lower(lp.Name)) then
+                            local isMine = false
+                            pcall(function()
+                                if lp.Name and string.find(string.lower(lot.Name), string.lower(lp.Name)) then
+                                    isMine = true
+                                end
+                            end)
+                            if isMine then
                                 myLot = lot
                                 break
                             end
