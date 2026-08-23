@@ -2211,6 +2211,64 @@ houseProtBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+local isVisualZoneEnabled = false
+activeModes["VisualZone"] = false
+local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES", "VisualZone", false)
+visualZoneBtn.BackgroundColor3 = Colors.Surface
+visualZoneBtn.TextColor3 = Colors.Text
+
+visualZoneBtn.MouseButton1Click:Connect(function()
+    isVisualZoneEnabled = not isVisualZoneEnabled
+    activeModes["VisualZone"] = isVisualZoneEnabled
+    local accent = visualZoneBtn:FindFirstChild("Accent")
+    
+    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    if isVisualZoneEnabled then 
+        TweenService:Create(visualZoneBtn, tInfo1, {BackgroundColor3 = Color3.fromRGB(150, 20, 20), TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+        end
+        sendNotif("🛑 ZONES", "Ban Zones Visible.", 2)
+        
+        local lotsFolder = workspace:FindFirstChild("001_Lots")
+        if lotsFolder then
+            for _, lot in ipairs(lotsFolder:GetChildren()) do
+                local lotCFrame, lotSize = lot:GetBoundingBox()
+                local boxPart = Instance.new("Part")
+                boxPart.Name = "AsliBanZone_TXR"
+                boxPart.Anchored = true
+                boxPart.CanCollide = false
+                boxPart.Size = Vector3.new(lotSize.X, 150, lotSize.Z)
+                boxPart.CFrame = lotCFrame * CFrame.new(0, 25, 0)
+                boxPart.Material = Enum.Material.ForceField
+                boxPart.Color = Color3.fromRGB(255, 0, 0)
+                boxPart.Transparency = 0.8
+                boxPart.Parent = workspace
+                
+                local highlight = Instance.new("Highlight")
+                highlight.Adornee = boxPart
+                highlight.FillTransparency = 1
+                highlight.OutlineColor = Color3.fromRGB(255, 0, 0)
+                highlight.Parent = boxPart
+            end
+        end
+    else 
+        TweenService:Create(visualZoneBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+        end 
+        sendNotif("🛑 ZONES", "Ban Zones Hidden.", 2)
+        
+        for _, obj in ipairs(workspace:GetChildren()) do
+            if obj.Name == "AsliBanZone_TXR" then
+                obj:Destroy()
+            end
+        end
+    end
+end)
+
 -- =========================================================
 -- 🚀 FIXED UNIVERSAL FAST TP & MASSIVE MAP WIPE (NO BAN)
 -- =========================================================
@@ -2697,7 +2755,7 @@ local function dispatchRemote(remote, targetCFrame)
             local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
             while currentInst and currentInst ~= workspace do
                 local lowerName = string.lower(currentInst.Name)
-                if string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
+                if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
                     inDangerZone = true
                     break
                 end
@@ -2888,7 +2946,7 @@ RunService.Heartbeat:Connect(function(dt)
                     local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
                     while currentInst and currentInst ~= workspace do
                         local lowerName = string.lower(currentInst.Name)
-                        if string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
+                        if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
                             inDangerZone = true
                             break
                         end
