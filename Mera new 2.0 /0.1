@@ -2689,8 +2689,8 @@ local function dispatchRemote(remote, targetCFrame)
         params.FilterType = Enum.RaycastFilterType.Exclude
         
         local inDangerZone = false
-        -- ULTRA ADVANCED BAN BUFFER (36 Studs horizontal Box, Infinite Vertical Pillar for Jump-Fix)
-        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(36, 100000, 36), params)
+        -- PERFECT BAN BUFFER (Strict 6 Studs horizontal Box, Infinite Vertical Pillar for Jump-Fix)
+        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
         for _, hitInst in ipairs(partsInBubble) do
             local currentInst = hitInst
             local bName = string.lower(hitInst.Name)
@@ -2881,7 +2881,7 @@ RunService.Heartbeat:Connect(function(dt)
                 params.FilterType = Enum.RaycastFilterType.Exclude
 
                 local inDangerZone = false
-                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(36, 100000, 36), params)
+                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
                 for _, hitInst in ipairs(partsInBubble) do
                     local currentInst = hitInst
                     local bName = string.lower(hitInst.Name)
