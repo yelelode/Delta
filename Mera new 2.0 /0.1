@@ -1762,37 +1762,17 @@ end)
 
 refreshPlayers()
 
-local geometries = {
-    {Name = "Standard Orbit", Bio = "Normal smooth standard circular orbit"},
-    {Name = "Spin", Bio = "Fast standard circular spin"},
-    {Name = "Reverse Spin", Bio = "Counter-clockwise circular spin"},
-    {Name = "Bobbing Orbit", Bio = "Circular orbit with wave bobbing"},
-    {Name = "Vertical Halo", Bio = "Vertical ring rotation around player"},
-    {Name = "Atom", Bio = "Multi-axis atomic electron orbit"},
-    {Name = "Galaxy Spiral", Bio = "Dynamic swirling galactic spiral"},
-    {Name = "Crown", Bio = "Floating royal crown formation"},
-    {Name = "DNA", Bio = "Double helix DNA strand motion"},
-    {Name = "Snake Body", Bio = "Slithering snake-like trailing motion"},
-    {Name = "Wings", Bio = "Angel wings formation on sides"},
-    {Name = "BlackHole Vortex", Bio = "God-level collapsing inward vortex"},
-    {Name = "Quantum Pulsar", Bio = "God-level rhythmic expanding pulse"},
-    {Name = "Hyper Wave", Bio = "God-level high-speed sweeping waves"},
-    {Name = "Supernova Explosion", Bio = "God-level rapid expanding star burst orbit"},
-    {Name = "Matrix Grid", Bio = "God-level rigid cybernetic grid matrix motion"},
-    {Name = "Eclipse Shadowing", Bio = "God-level dark trailing lunar eclipse orbit"}
-}
-
+local geometries = {"Standard Orbit", "Spin", "Reverse Spin", "Bobbing Orbit", "Vertical Halo", "Atom", "Galaxy Spiral", "Crown", "DNA", "Snake Body", "Wings", "BlackHole Vortex", "Quantum Pulsar", "Hyper Wave", "Supernova Explosion", "Matrix Grid", "Eclipse Shadowing"}
 for _, geo in ipairs(geometries) do
     local btn = Instance.new("TextButton", geoScroll)
-    btn.Size = UDim2.new(1, 0, 0, 44)
+    btn.Size = UDim2.new(1, 0, 0, 36)
     btn.BackgroundColor3 = Colors.Surface
     btn.BackgroundTransparency = 0.4
-    btn.Text = "   ⚡ " .. geo.Name .. "\n      └ " .. geo.Bio
+    btn.Text = "   ⚡ " .. geo
     btn.TextColor3 = Colors.Text
     btn.Font = Enum.Font.GothamMedium
-    btn.TextSize = 10
+    btn.TextSize = 11
     btn.TextXAlignment = Enum.TextXAlignment.Left
-    btn.TextYAlignment = Enum.TextYAlignment.Center
     btn.AutoButtonColor = false
     btn.LayoutOrder = getOrder()
     btn.ZIndex = 23
@@ -1804,9 +1784,9 @@ for _, geo in ipairs(geometries) do
     crispText(btn)
     
     btn.MouseButton1Click:Connect(function() 
-        activeGeometry = geo.Name
+        activeGeometry = geo
         isSubMenuOpen = false
-        sendNotif("Engine", "Lock: " .. geo.Name, 2)
+        sendNotif("Engine", "Lock: " .. geo, 2)
         
         local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
         TweenService:Create(geoMenu, tInfo, {Position = UDim2.fromScale(1.2, 0)}):Play()
@@ -1816,9 +1796,8 @@ for _, geo in ipairs(geometries) do
 end
 
 local function createMainBtn(text, modeKey, isMenuOpener)
-    local isMultiLine = string.find(text, "\n") ~= nil
     local btn = Instance.new("TextButton", mainList)
-    btn.Size = UDim2.new(1, 0, 0, isMultiLine and 50 or 42)
+    btn.Size = UDim2.new(1, 0, 0, 42)
     btn.BackgroundColor3 = Colors.Surface
     btn.BackgroundTransparency = 0.4
     btn.Text = "   " .. text
@@ -1826,7 +1805,6 @@ local function createMainBtn(text, modeKey, isMenuOpener)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 11
     btn.TextXAlignment = Enum.TextXAlignment.Left
-    btn.TextYAlignment = Enum.TextYAlignment.Center
     btn.AutoButtonColor = false
     btn.LayoutOrder = getOrder()
     btn.ZIndex = 7
@@ -2027,7 +2005,7 @@ end
 local getRadius = createSlider("ORBIT RADIUS", 2, 100, 15, "")
 local getSpeedMs = createSlider("ENGINE YIELD", 10, 300, 50, " %") 
 
-local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS\n      └ Select and lock target players for engine", nil, true)
+local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true)
 openTargetBtn.MouseButton1Click:Connect(function() 
     mainList.Visible = false
     isSubMenuOpen = true
@@ -2036,7 +2014,7 @@ openTargetBtn.MouseButton1Click:Connect(function()
     animateWaterfall(playerScroll)
 end)
 
-local openGeoBtn = createMainBtn("📐 GEOMETRY CORE\n      └ Choose orbit and movement patterns", nil, true)
+local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true)
 openGeoBtn.MouseButton1Click:Connect(function() 
     mainList.Visible = false
     isSubMenuOpen = true
@@ -2045,12 +2023,12 @@ openGeoBtn.MouseButton1Click:Connect(function()
     animateWaterfall(geoScroll)
 end)
 
-local orbitBtn = createMainBtn("🪐 QUANTUM ORBIT\n      └ Orbits selected targets using geometry core", "Orbit", false)
-local robotBtn = createMainBtn("🤖 RADIAL SURROUND\n      └ 4 robots surround and lock target tightly", "Robot", false)
-local multiBtn = createMainBtn("🤖 DUAL SYSTEM\n      └ Dual robot front-back tracking protection", "MultiRobot", false)
-local ringBtn = createMainBtn("⭕ ACCELERATOR RING\n      └ Tight circular ring formation around target", "Ring", false)
-local headBtn = createMainBtn("🧠 CRANIAL FORCE\n      └ Locks tight vibration force on head", "HeadBang", false)
-local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR\n      └ Dynamic chair blitz trapping targets safely", "Chair", false)
+local orbitBtn = createMainBtn("🪐 QUANTUM ORBIT", "Orbit", false)
+local robotBtn = createMainBtn("🤖 RADIAL SURROUND", "Robot", false)
+local multiBtn = createMainBtn("🤖 DUAL SYSTEM", "MultiRobot", false)
+local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false)
+local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false)
+local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR", "Chair", false)
 
 local modeBtns = { 
     ["Orbit"] = {btn = orbitBtn}, 
@@ -2104,7 +2082,7 @@ for key, data in pairs(modeBtns) do
     end)
 end
 
-local espBtn = createMainBtn("👁️ TACTICAL ESP (HUD)\n      └ Shows players info, distance, and IP telemetry", "ESP", false)
+local espBtn = createMainBtn("👁️ TACTICAL ESP (HUD)", "ESP", false)
 espBtn.MouseButton1Click:Connect(function() 
     activeModes["ESP"] = not activeModes["ESP"] 
     local accent = espBtn:FindFirstChild("Accent")
@@ -2125,7 +2103,7 @@ espBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local rainbowBtn = createMainBtn("🌈 Neon Pulse Glow\n      └ Applies RGB neon glow colors to props and tools", "Rainbow", false)
+local rainbowBtn = createMainBtn("🌈 Neon Pulse Glow", "Rainbow", false)
 rainbowBtn.MouseButton1Click:Connect(function() 
     isRainbowEnabled = not isRainbowEnabled
     activeModes["Rainbow"] = isRainbowEnabled
@@ -2149,7 +2127,7 @@ rainbowBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local soundBtn = createMainBtn("🔊 Dynamic Audio Hook\n      └ Injects background music and audio effects", "Sound", false)
+local soundBtn = createMainBtn("🔊 Dynamic Audio Hook", "Sound", false)
 soundBtn.MouseButton1Click:Connect(function() 
     isSoundEnabled = not isSoundEnabled
     activeModes["Sound"] = isSoundEnabled
@@ -2177,7 +2155,7 @@ soundBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local shieldBtn = createMainBtn("🛡️ GOD SHIELD (ANTI-TOUCH/SIT)\n      └ Prevents unwanted sitting and prop collisions", "Shield", false)
+local shieldBtn = createMainBtn("ANTI SIT", "Shield", false)
 shieldBtn.MouseButton1Click:Connect(function() 
     isGodShieldEnabled = not isGodShieldEnabled
     activeModes["Shield"] = isGodShieldEnabled
@@ -2191,17 +2169,17 @@ shieldBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
-        sendNotif("🛡️ SECURITY", "God Shield Activated.", 2)
+        sendNotif("🛡️ SECURITY", "Anti Sit Activated.", 2)
     else 
         TweenService:Create(shieldBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
-        sendNotif("🛡️ SECURITY", "God Shield Deactivated.", 2)
+        sendNotif("🛡️ SECURITY", "Anti Sit Deactivated.", 2)
     end
 end)
 
-local houseProtBtn = createMainBtn("🏠 HOUSE DEFENSE (ANTI-DELETE)\n      └ Protects house and auto-redirects attacks", "HouseProt", false)
+local houseProtBtn = createMainBtn("ANTI DELATE ROBOTS", "HouseProt", false)
 local isHouseProtEnabled = true
 activeModes["HouseProt"] = true
 
@@ -2223,19 +2201,19 @@ houseProtBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
-        sendNotif("🏠 SECURITY", "House Defense Activated.", 2)
+        sendNotif("🏠 SECURITY", "Anti Delate Robots Activated.", 2)
     else 
         TweenService:Create(houseProtBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
-        sendNotif("🏠 SECURITY", "House Defense Deactivated.", 2)
+        sendNotif("🏠 SECURITY", "Anti Delate Robots Deactivated.", 2)
     end
 end)
 
 local isVisualZoneEnabled = false
 activeModes["VisualZone"] = false
-local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES\n      └ Visualizes ban zones with clear anime atmosphere", "VisualZone", false)
+local visualZoneBtn = createMainBtn("SHOW BAN ZONES ( if target active Props ban )", "VisualZone", false)
 visualZoneBtn.BackgroundColor3 = Colors.Surface
 visualZoneBtn.TextColor3 = Colors.Text
 
@@ -2408,9 +2386,9 @@ visualZoneBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🚀 FIXED UNIVERSAL FAST TP & MASSIVE MAP WIPE (NO BAN)
+-- 🚀 ANTI ROBOTS (PREVIOUS FAST TP & MASSIVE CLEAR)
 -- =========================================================
-local escapeBtn = createMainBtn("🚀 FAST TP & MASSIVE CLEAR\n      └ Teleports to safety and wipes map props instantly", nil, false)
+local escapeBtn = createMainBtn("ANTI ROBOTS", nil, false)
 escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
 escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
@@ -2518,9 +2496,9 @@ escapeBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🚫 ADVANCED SMART BAN TRAP (NEW BUTTON) 🚫
+-- 🚫 ANTI BANG (PREVIOUS SMART BAN TRAP) 🚫
 -- =========================================================
-local banTrapBtn = createMainBtn("🚫 SMART BAN TRAP\n      └ Automatically bans and clears nearby attackers", nil, false)
+local banTrapBtn = createMainBtn("ANTI BANG", nil, false)
 banTrapBtn.BackgroundColor3 = Color3.fromRGB(130, 0, 200)
 banTrapBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 banTrapBtn:SetAttribute("BaseColor", Color3.fromRGB(130, 0, 200))
@@ -2671,7 +2649,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
                     end
                 end
                 
-                sendNotif("🚫 BAN TRAP", "Attackers Banned, Wiped & Trap Reset!", 2)
+                sendNotif("🚫 ANTI BANG", "Attackers Banned, Wiped & Trap Reset!", 2)
             else
                 sendNotif("⚠️ ALERT", "House Not Found! Cannot Trigger Trap.", 2)
             end
@@ -3690,7 +3668,8 @@ RunService.Heartbeat:Connect(function()
     if not myRoot then return end
     
     local currentFrameThreats = {}
-    for _, part in ipairs(workspace:GetPartBoundsInRadius(myRoot.Position, 8)) do
+    local partsInRadius = workspace:GetPartBoundsInRadius(myRoot.Position, 8)
+    for _, part in ipairs(partsInRadius) do
         if part:IsA("BasePart") and not part:IsDescendantOf(myChar) then
             local currentInst = part
             local attackerName = nil
