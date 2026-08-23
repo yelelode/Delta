@@ -406,13 +406,17 @@ local function PlayRobotBangMusic()
             task.wait(0.35) 
         end
         
-        -- 🔥 EXACT WORKING REMOTES FROM YOUR WORKING SCRIPT 🔥
-        pcall(function() RE["1Player1sCa1r"]:FireServer("VehicleMusicText", soundId, true) end)
-        pcall(function() RE["1Player1sCa1r"]:FireServer("Music", soundId, true) end)
-        pcall(function() RE["1NoMoto1rVehicle1s"]:FireServer("PickingScooterMusicText", soundId, true) end)
-        pcall(function() RE.PlayerToolEvent:FireServer("ToolMusicText", soundId, true) end)
-        pcall(function() RE.Props:FireServer("PropMusicText", soundId, true) end)
-        pcall(function() RE["1Hors1eRemot1e"]:FireServer("HorseMusicText", soundId, true) end)
+        -- 🔥 PERFECTED NEW MUSIC BYPASS INCORPORATED HERE 🔥
+        local t1 = { RE:FindFirstChild("1Player1sHous1e"), RE:FindFirstChild("1Player1sCa1r"), RE:FindFirstChild("1NoMoto1rVehicle1s"), RE:FindFirstChild("PlayerToolEvent"), RE:FindFirstChild("Props"), RE:FindFirstChild("1Hors1eRemot1e") }
+        local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
+
+        for k, v in pairs(t1) do
+            if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
+        end
+        task.wait(0.25)
+        for k, v in pairs(t1) do
+            if v then pcall(function() v:FireServer(t2[k], soundId, true) end) end
+        end
     end)
     sendNotif("⚡ TXR SOUND", "Audio Core Injected!", 2)
 end
@@ -421,12 +425,13 @@ local function StopRobotBangMusic()
     local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
-        -- 🔥 EXACT WORKING STOP REMOTES 🔥
-        pcall(function() RE["1Player1sCa1r"]:FireServer("MusicStop", "", true) end)
-        pcall(function() RE["1Player1sHous1e"]:FireServer("PickingHouseMusicStop", "", true) end)
-        pcall(function() RE["1Hors1eRemot1e"]:FireServer("HorseMusicStop", "", true) end)
-        pcall(function() RE.Props:FireServer("PropMusicStop", "", true) end)
-        pcall(function() RE.PlayerToolEvent:FireServer("ToolMusicStop", "", true) end)
+        -- 🔥 PERFECTED NEW MUSIC STOP METHOD INCORPORATED HERE 🔥
+        local t1 = { RE:FindFirstChild("1Player1sHous1e"), RE:FindFirstChild("1Player1sCa1r"), RE:FindFirstChild("1NoMoto1rVehicle1s"), RE:FindFirstChild("PlayerToolEvent"), RE:FindFirstChild("Props"), RE:FindFirstChild("1Hors1eRemot1e") }
+        local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
+
+        for k, v in pairs(t1) do
+            if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
+        end
 
         if lp.Character then
             local hum = lp.Character:FindFirstChildOfClass("Humanoid")
