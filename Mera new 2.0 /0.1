@@ -144,7 +144,7 @@ task.spawn(function()
     end)
 end)
 
--- 👑 GOD-LEVEL LUXURY GOLDEN SHINE & GLITCH OWNER BILLBOARD OVER CHARACTER 👑
+-- 👑 GOD-LEVEL PROFESSIONAL DISTANCE-SCALED OWNER BILLBOARD 👑
 task.spawn(function()
     local function applyOwnerCrown(character)
         if not character then return end
@@ -154,82 +154,43 @@ task.spawn(function()
 
         local billboard = Instance.new("BillboardGui")
         billboard.Name = "AshuOwnerCrown"
-        billboard.Size = UDim2.new(0, 260, 0, 80)
-        billboard.StudsOffset = Vector3.new(0, 3.3, 0)
+        -- Professional Distance scaling setup
+        billboard.Size = UDim2.new(0, 160, 0, 50)
+        billboard.StudsOffset = Vector3.new(0, 3.0, 0)
         billboard.AlwaysOnTop = true
+        billboard.MaxDistance = 120 -- Dur jaane par automatically hide/fade ho jayega
         billboard.Adornee = head
         billboard.Parent = head
 
-        local mainFrame = Instance.new("Frame", billboard)
-        mainFrame.Size = UDim2.fromScale(1, 1)
-        mainFrame.BackgroundTransparency = 1
-
-        -- Left Crown Emoji
-        local leftCrown = Instance.new("TextLabel", mainFrame)
-        leftCrown.Size = UDim2.new(0, 45, 1, 0)
-        leftCrown.Position = UDim2.new(0, 10, 0, 0)
-        leftCrown.BackgroundTransparency = 1
-        leftCrown.Text = "👑"
-        leftCrown.TextSize = 26
-        local lStroke = Instance.new("UIStroke", leftCrown)
-        lStroke.Thickness = 2
-        lStroke.Color = Color3.new(0, 0, 0)
-
-        -- Sharp Owner Text Label (Zalgo / Glitch Style provided by user)
-        local ownerLabel = Instance.new("TextLabel", mainFrame)
-        ownerLabel.Size = UDim2.new(1, -110, 1, 0)
-        ownerLabel.Position = UDim2.new(0, 55, 0, 0)
+        local ownerLabel = Instance.new("TextLabel", billboard)
+        ownerLabel.Size = UDim2.fromScale(1, 1)
         ownerLabel.BackgroundTransparency = 1
-        ownerLabel.Text = "̴̨ͥ͐͟Ŏ̏̅͊ͥ͊́́͠҉w̌ͥ̄͗̅̾n̛̈͗ͭ́͒̎͑ͫ͐͐̚̕̕͟ȅ̸̡͆̌̄r̄̀̂͌ͨ̀"
+        ownerLabel.Text = "OWNER"
         ownerLabel.Font = Enum.Font.GothamBlack
-        ownerLabel.TextSize = 27
+        ownerLabel.TextSize = 26
         ownerLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
         
         local oStroke = Instance.new("UIStroke", ownerLabel)
         oStroke.Thickness = 3
         oStroke.Color = Color3.new(0, 0, 0)
 
-        -- Moving Shine/Reflection Gradient
+        -- Moving Shine Gradient
         local oGrad = Instance.new("UIGradient", ownerLabel)
         oGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 150, 0)),
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 120, 0)),
             ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 150, 0))
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 120, 0))
         })
 
-        -- Right Crown Emoji
-        local rightCrown = Instance.new("TextLabel", mainFrame)
-        rightCrown.Size = UDim2.new(0, 45, 1, 0)
-        rightCrown.Position = UDim2.new(1, -55, 0, 0)
-        rightCrown.BackgroundTransparency = 1
-        rightCrown.Text = "👑"
-        rightCrown.TextSize = 26
-        local rStroke = Instance.new("UIStroke", rightCrown)
-        rStroke.Thickness = 2
-        rStroke.Color = Color3.new(0, 0, 0)
-
-        -- Slow-Fast Golden Pulse & Gloss Sweep Animation Loop
+        -- Slow-Fast Pulse & Gloss Sweep Animation Loop
         task.spawn(function()
             local t = 0
             while billboard and billboard.Parent do
                 t = t + 0.05
+                local pulse = (math.sin(t * 3.5) + 1) / 2
                 
-                -- Dhire Fast Dhire Fast Pulse for Crown Shine
-                local pulse = math.abs(math.sin(t * 3.5))
-                
-                -- Crown Size Bouncing Effect
-                local crownSize = 24 + (pulse * 8)
-                leftCrown.TextSize = crownSize
-                rightCrown.TextSize = crownSize
-                
-                -- Crown Golden Stroke Glow Effect (Bypasses Emoji color limit)
-                local strokeGlow = Color3.new(0, 0, 0):Lerp(Color3.fromRGB(255, 215, 0), pulse * 0.9)
-                lStroke.Color = strokeGlow
-                rStroke.Color = strokeGlow
-                lStroke.Thickness = 1 + (pulse * 3)
-                rStroke.Thickness = 1 + (pulse * 3)
-                
-                -- Sweep shine across text
+                local goldVal = Color3.fromRGB(255, math.floor(190 + pulse * 65), math.floor(50 + pulse * 80))
+                ownerLabel.TextColor3 = goldVal
                 oGrad.Offset = Vector2.new(math.sin(t * 2.5) * 1.5, 0)
                 
                 task.wait(0.03)
