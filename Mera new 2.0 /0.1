@@ -144,7 +144,7 @@ task.spawn(function()
     end)
 end)
 
--- 👑 GOD-LEVEL PROFESSIONAL SMOOTH DISTANCE-SCALED OWNER BILLBOARD 👑
+-- 👑 ADVANCED MOVEMENT-RESPONSIVE DYNAMIC OWNER BILLBOARD 👑
 task.spawn(function()
     local function applyOwnerCrown(character)
         if not character then return end
@@ -154,8 +154,8 @@ task.spawn(function()
 
         local billboard = Instance.new("BillboardGui")
         billboard.Name = "AshuOwnerCrown"
-        billboard.Size = UDim2.new(0, 140, 0, 45)
-        billboard.StudsOffset = Vector3.new(0, 2.8, 0)
+        billboard.Size = UDim2.new(0, 150, 0, 45)
+        billboard.StudsOffset = Vector3.new(0, 2.9, 0)
         billboard.AlwaysOnTop = true
         billboard.MaxDistance = 250
         billboard.Adornee = head
@@ -164,16 +164,16 @@ task.spawn(function()
         local ownerLabel = Instance.new("TextLabel", billboard)
         ownerLabel.Size = UDim2.fromScale(1, 1)
         ownerLabel.BackgroundTransparency = 1
-        ownerLabel.Text = "OWNER"
+        ownerLabel.Text = "ᴏᴡɴᴇʀ"
         ownerLabel.Font = Enum.Font.GothamBlack
-        ownerLabel.TextSize = 25
+        ownerLabel.TextSize = 27
         ownerLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
         
         local oStroke = Instance.new("UIStroke", ownerLabel)
-        oStroke.Thickness = 3
+        oStroke.Thickness = 3.2
         oStroke.Color = Color3.new(0, 0, 0)
 
-        -- Moving Shine Gradient
+        -- Dynamic Moving Shine Gradient
         local oGrad = Instance.new("UIGradient", ownerLabel)
         oGrad.Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 120, 0)),
@@ -181,26 +181,38 @@ task.spawn(function()
             ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 120, 0))
         })
 
-        -- Slow-Fast Pulse & Gloss Sweep Animation Loop with Smart Scaling
         local camera = workspace.CurrentCamera
+        local hrp = character:FindFirstChild("HumanoidRootPart")
+
+        -- Advanced Movement-Responsive Loop
         task.spawn(function()
             local t = 0
             while billboard and billboard.Parent do
-                t = t + 0.05
-                local pulse = (math.sin(t * 3.5) + 1) / 2
+                local dt = task.wait(0.03)
+                t = t + dt
                 
-                local goldVal = Color3.fromRGB(255, math.floor(190 + pulse * 65), math.floor(50 + pulse * 80))
-                ownerLabel.TextColor3 = goldVal
-                oGrad.Offset = Vector2.new(math.sin(t * 2.5) * 1.5, 0)
-                
-                -- Smart Professional Scale (Gets very slightly larger far away so it's readable, but never blows up)
-                if camera and head then
-                    local dist = (camera.CFrame.Position - head.Position).Magnitude
-                    local scaleFactor = math.clamp(dist / 25, 0.85, 1.25)
-                    billboard.Size = UDim2.new(0, 140 * scaleFactor, 0, 45 * scaleFactor)
+                -- Detect movement speed for dynamic shine response
+                local moveSpeed = 0
+                if hrp then
+                    moveSpeed = hrp.AssemblyLinearVelocity.Magnitude
                 end
                 
-                task.wait(0.03)
+                -- Shine speeds up when moving, smooth pulse when standing
+                local speedMultiplier = 2.5 + math.clamp(moveSpeed * 0.08, 0, 4)
+                
+                local pulse = (math.sin(t * speedMultiplier) + 1) / 2
+                local goldVal = Color3.fromRGB(255, math.floor(190 + pulse * 65), math.floor(50 + pulse * 80))
+                ownerLabel.TextColor3 = goldVal
+                
+                -- Shine sweep movement based on velocity/time
+                oGrad.Offset = Vector2.new(math.sin(t * (speedMultiplier * 0.8)) * 1.8, 0)
+                
+                -- Controlled professional distance scaling (prevents oversized ugly tags)
+                if camera and head then
+                    local dist = (camera.CFrame.Position - head.Position).Magnitude
+                    local scaleFactor = math.clamp(1 + (dist / 120), 1, 1.12)
+                    billboard.Size = UDim2.new(0, 150 * scaleFactor, 0, 45 * scaleFactor)
+                end
             end
         end)
     end
