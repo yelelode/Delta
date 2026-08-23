@@ -381,49 +381,30 @@ local function onPlayerJoinAlert(plr)
 end
 Players.PlayerAdded:Connect(onPlayerJoinAlert)
 
-local activeAudioInstance = nil
-
 local function PlayRobotBangMusic()
     local soundId = "134489447055645" 
     local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
-        -- 🔥 DIRECT SOUNDSERVICE AUDIO BACKUP 🔥
-        if not activeAudioInstance or not activeAudioInstance.Parent then
-            activeAudioInstance = Instance.new("Sound")
-            activeAudioInstance.Name = "TXR_DynamicAudioHook"
-            activeAudioInstance.SoundId = "rbxassetid://" .. soundId
-            activeAudioInstance.Volume = 2.0
-            activeAudioInstance.Looped = true
-            activeAudioInstance.Parent = game:GetService("SoundService")
-            activeAudioInstance:Play()
-        else
-            activeAudioInstance:Play()
-        end
-
-        -- 🔥 SKATE / SEGWAY SPAWN FIX FOR AUDIO HOOK 🔥
         local spawnVehicle = DynamicRemotes.SpawnVehicle or RE:FindFirstChild("1NoMoto1rVehicle1s")
         if spawnVehicle then 
             spawnVehicle:FireServer("SegwaySmall")
-            task.wait(0.3) 
+            task.wait(0.3) -- 🔥 MUST WAIT FOR SEGWAY TO SPAWN 🔥
         end
         
-        -- 🔥 EXACT NEW UPDATE MUSIC REMOTES 🔥
-        pcall(function() RE["1Player1sCa1r"]:FireServer("VehicleMusicText", soundId, true) end)
-        pcall(function() RE["1Player1sCa1r"]:FireServer("Music", soundId, true) end)
-        pcall(function() RE["1NoMoto1rVehicle1s"]:FireServer("PickingScooterMusicText", soundId, true) end)
-        pcall(function() RE.PlayerToolEvent:FireServer("ToolMusicText", soundId, true) end)
-        pcall(function() RE.Props:FireServer("PropMusicText", soundId, true) end)
-        pcall(function() RE["1Hors1eRemot1e"]:FireServer("HorseMusicText", soundId, true) end)
+        local t1 = { RE:FindFirstChild("1Player1sHous1e"), RE:FindFirstChild("1Player1sCa1r"), RE:FindFirstChild("1NoMoto1rVehicle1s"), RE:FindFirstChild("PlayerToolEvent"), RE:FindFirstChild("Props"), RE:FindFirstChild("1Hors1eRemot1e") }
+        local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
 
-        for _, remote in ipairs(RE:GetChildren()) do
-            if remote:IsA("RemoteEvent") then 
-                pcall(function() 
-                    remote:FireServer("PickingScooterMusicText", soundId, true)
-                    remote:FireServer("ToolMusicText", soundId, true)
-                    remote:FireServer("Music", soundId, true) 
-                end) 
-            end
+        -- Reset all audio to "0" first to bypass new Brookhaven patch
+        for k, v in pairs(t1) do
+            if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
+        end
+        
+        task.wait(0.25)
+        
+        -- Fire new actual audio
+        for k, v in pairs(t1) do
+            if v then pcall(function() v:FireServer(t2[k], soundId, true) end) end
         end
     end)
     sendNotif("⚡ TXR SOUND", "Audio Core Injected!", 2)
@@ -433,18 +414,12 @@ local function StopRobotBangMusic()
     local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
-        if activeAudioInstance then
-            activeAudioInstance:Stop()
-            activeAudioInstance:Destroy()
-            activeAudioInstance = nil
-        end
+        local t1 = { RE:FindFirstChild("1Player1sHous1e"), RE:FindFirstChild("1Player1sCa1r"), RE:FindFirstChild("1NoMoto1rVehicle1s"), RE:FindFirstChild("PlayerToolEvent"), RE:FindFirstChild("Props"), RE:FindFirstChild("1Hors1eRemot1e") }
+        local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
 
-        -- 🔥 EXACT NEW UPDATE MUSIC STOP REMOTES 🔥
-        pcall(function() RE["1Player1sHous1e"]:FireServer("PickingHouseMusicStop", "", true) end)
-        pcall(function() RE["1Hors1eRemot1e"]:FireServer("HorseMusicStop", "", true) end)
-        pcall(function() RE.Props:FireServer("PropMusicStop", "", true) end)
-        pcall(function() RE.PlayerToolEvent:FireServer("ToolMusicStop", "", true) end)
-        pcall(function() RE["1Player1sCa1r"]:FireServer("MusicStop", "", true) end)
+        for k, v in pairs(t1) do
+            if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
+        end
 
         if lp.Character then
             local hum = lp.Character:FindFirstChildOfClass("Humanoid")
@@ -463,16 +438,6 @@ local function StopRobotBangMusic()
         end
         
         task.wait(0.25)
-        
-        for _, remote in ipairs(RE:GetChildren()) do
-            if remote:IsA("RemoteEvent") then 
-                pcall(function() 
-                    remote:FireServer("PickingScooterMusicText", "0", true)
-                    remote:FireServer("ToolMusicText", "0", true)
-                    remote:FireServer("Music", "0", true) 
-                end) 
-            end
-        end
         
         local despawnVehicle = DynamicRemotes.DespawnVehicle or RE:FindFirstChild("1DeSpawnVehi1cle")
         if despawnVehicle then 
