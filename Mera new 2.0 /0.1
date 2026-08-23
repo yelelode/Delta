@@ -144,7 +144,7 @@ task.spawn(function()
     end)
 end)
 
--- 👑 GOD-LEVEL PROFESSIONAL DISTANCE-SCALED OWNER BILLBOARD 👑
+-- 👑 GOD-LEVEL PROFESSIONAL SMOOTH DISTANCE-SCALED OWNER BILLBOARD 👑
 task.spawn(function()
     local function applyOwnerCrown(character)
         if not character then return end
@@ -154,11 +154,10 @@ task.spawn(function()
 
         local billboard = Instance.new("BillboardGui")
         billboard.Name = "AshuOwnerCrown"
-        -- Fixed professional pixel dimensions so it never blows up in size
-        billboard.Size = UDim2.new(0, 150, 0, 45)
+        billboard.Size = UDim2.new(0, 140, 0, 45)
         billboard.StudsOffset = Vector3.new(0, 2.8, 0)
         billboard.AlwaysOnTop = true
-        billboard.MaxDistance = 250 -- Ensures visibility from afar without cluttering
+        billboard.MaxDistance = 250
         billboard.Adornee = head
         billboard.Parent = head
 
@@ -182,7 +181,8 @@ task.spawn(function()
             ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 120, 0))
         })
 
-        -- Slow-Fast Pulse & Gloss Sweep Animation Loop
+        -- Slow-Fast Pulse & Gloss Sweep Animation Loop with Smart Scaling
+        local camera = workspace.CurrentCamera
         task.spawn(function()
             local t = 0
             while billboard and billboard.Parent do
@@ -192,6 +192,13 @@ task.spawn(function()
                 local goldVal = Color3.fromRGB(255, math.floor(190 + pulse * 65), math.floor(50 + pulse * 80))
                 ownerLabel.TextColor3 = goldVal
                 oGrad.Offset = Vector2.new(math.sin(t * 2.5) * 1.5, 0)
+                
+                -- Smart Professional Scale (Gets very slightly larger far away so it's readable, but never blows up)
+                if camera and head then
+                    local dist = (camera.CFrame.Position - head.Position).Magnitude
+                    local scaleFactor = math.clamp(dist / 25, 0.85, 1.25)
+                    billboard.Size = UDim2.new(0, 140 * scaleFactor, 0, 45 * scaleFactor)
+                end
                 
                 task.wait(0.03)
             end
