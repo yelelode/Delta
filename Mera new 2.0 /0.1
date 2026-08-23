@@ -2689,14 +2689,13 @@ local function dispatchRemote(remote, targetCFrame)
         params.FilterType = Enum.RaycastFilterType.Exclude
         
         local inDangerZone = false
-        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(4, 250, 4), params)
+        -- Perfect Ban Radius Buffer (12 Studs) to match Brookhaven's road extension
+        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(12, 250, 12), params)
         for _, hitInst in ipairs(partsInBubble) do
             local currentInst = hitInst
-            local bName = string.lower(hitInst.Name)
-            local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
             while currentInst and currentInst ~= workspace do
                 local lowerName = string.lower(currentInst.Name)
-                if string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
+                if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") or string.find(lowerName, "ban") then
                     inDangerZone = true
                     break
                 end
@@ -2880,14 +2879,12 @@ RunService.Heartbeat:Connect(function(dt)
                 params.FilterType = Enum.RaycastFilterType.Exclude
 
                 local inDangerZone = false
-                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(4, 250, 4), params)
+                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(12, 250, 12), params)
                 for _, hitInst in ipairs(partsInBubble) do
                     local currentInst = hitInst
-                    local bName = string.lower(hitInst.Name)
-                    local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
                     while currentInst and currentInst ~= workspace do
                         local lowerName = string.lower(currentInst.Name)
-                        if string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
+                        if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") or string.find(lowerName, "ban") then
                             inDangerZone = true
                             break
                         end
