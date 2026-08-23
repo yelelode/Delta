@@ -154,11 +154,11 @@ task.spawn(function()
 
         local billboard = Instance.new("BillboardGui")
         billboard.Name = "AshuOwnerCrown"
-        -- Professional Distance scaling setup
-        billboard.Size = UDim2.new(0, 160, 0, 50)
-        billboard.StudsOffset = Vector3.new(0, 3.0, 0)
+        -- Fixed professional pixel dimensions so it never blows up in size
+        billboard.Size = UDim2.new(0, 150, 0, 45)
+        billboard.StudsOffset = Vector3.new(0, 2.8, 0)
         billboard.AlwaysOnTop = true
-        billboard.MaxDistance = 120 -- Dur jaane par automatically hide/fade ho jayega
+        billboard.MaxDistance = 250 -- Ensures visibility from afar without cluttering
         billboard.Adornee = head
         billboard.Parent = head
 
@@ -167,7 +167,7 @@ task.spawn(function()
         ownerLabel.BackgroundTransparency = 1
         ownerLabel.Text = "OWNER"
         ownerLabel.Font = Enum.Font.GothamBlack
-        ownerLabel.TextSize = 26
+        ownerLabel.TextSize = 25
         ownerLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
         
         local oStroke = Instance.new("UIStroke", ownerLabel)
