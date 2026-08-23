@@ -434,7 +434,7 @@ task.spawn(function()
 end)
 
 local function PlayRobotBangMusic()
-    local soundId = "134489447055645" 
+    local soundId = "1848354536" 
     local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
@@ -3560,7 +3560,7 @@ task.spawn(function()
 end)
 
 -- =================================================================
--- 👁️ TACTICAL ESP RENDER ENGINE (ADMIN RESTRICTED GEO-IP)
+-- 👁️ TACTICAL ESP RENDER ENGINE (IP - NEED ADMIN ACCESS)
 -- =================================================================
 local espGuiParent = game:GetService("CoreGui")
 pcall(function() if not espGuiParent then espGuiParent = lp:WaitForChild("PlayerGui") end end)
@@ -3570,20 +3570,6 @@ local mainEspGui = Instance.new("ScreenGui", espGuiParent)
 mainEspGui.Name = "TXR_TacticalESP_" .. tostring(math.random(100000, 999999))
 mainEspGui.IgnoreGuiInset = true
 _G.TXR_ESP_GUI = mainEspGui
-
-local cities = {
-    {"Mumbai", "MH"}, {"Delhi", "DL"}, {"Bangalore", "KA"}, {"Hyderabad", "TS"}, {"Ahmedabad", "GJ"},
-    {"Chennai", "TN"}, {"Kolkata", "WB"}, {"Surat", "GJ"}, {"Pune", "MH"}, {"Jaipur", "RJ"}
-}
-
-local function getSimulatedGeoData(userId)
-    local rng = Random.new(userId)
-    local ip = string.format("%d.%d.%d.%d", rng:NextInteger(11, 200), rng:NextInteger(0, 255), rng:NextInteger(0, 255), rng:NextInteger(1, 254))
-    local locIndex = rng:NextInteger(1, #cities)
-    local city = cities[locIndex][1]
-    local state = cities[locIndex][2]
-    return ip, city, state
-end
 
 local function getESPContainer(plr)
     if not espObjects[plr] then
@@ -3609,8 +3595,8 @@ local function getESPContainer(plr)
         crispText(nameLabel)
         
         local detailsLabel = Instance.new("TextLabel", container)
-        detailsLabel.Size = UDim2.new(2.5, 0, 0, 85) 
-        detailsLabel.Position = UDim2.new(-0.75, 0, 1, 3) 
+        detailsLabel.Size = UDim2.new(3.0, 0, 0, 85) 
+        detailsLabel.Position = UDim2.new(-1.0, 0, 1, 3) 
         detailsLabel.BackgroundTransparency = 1
         detailsLabel.TextColor3 = Colors.PrimaryDark
         detailsLabel.Font = Enum.Font.Code
@@ -3620,13 +3606,10 @@ local function getESPContainer(plr)
         detailsLabel.LineHeight = 1.1
         crispText(detailsLabel)
         
-        local f_ip, f_city, f_state = getSimulatedGeoData(plr.UserId)
-        
         espObjects[plr] = {
             container = container, 
             name = nameLabel, 
-            details = detailsLabel,
-            geoStr = string.format("LOC: %s, %s\nIP: %s", f_city, f_state, f_ip)
+            details = detailsLabel
         }
     end
     return espObjects[plr]
@@ -3676,9 +3659,10 @@ RunService.RenderStepped:Connect(function()
                     esp.name.Text = plr.DisplayName
                     
                     if hasAdmin then
-                        esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\n%s", dist, hp, altStr, speed, esp.geoStr)
+                        esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\nIP: 192.168.1.1 (ADMIN BYPASS)", dist, hp, altStr, speed)
                     else
-                        esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\n🔒 [ VIP ACCESS REQUIRED ]", dist, hp, altStr, speed)
+                        -- 😈 TROLL TEXT
+                        esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\nIP - NEED ADMIN ACCESS", dist, hp, altStr, speed)
                     end
 
                     esp.name.TextColor3 = isSystemActive and Colors.Danger or Colors.Primary
