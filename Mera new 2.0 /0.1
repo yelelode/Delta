@@ -126,7 +126,6 @@ task.spawn(function()
         end)
     end
 
-    -- Check if Ashu Papa is already in server when script loads
     local ashuFound = false
     for _, p in ipairs(Players:GetPlayers()) do
         if p.UserId == CREATOR_USER_ID then
@@ -138,7 +137,6 @@ task.spawn(function()
         showAshuNotification("👑 Ashu papa hai server me 👑")
     end
 
-    -- Listen for Ashu Papa joining later
     Players.PlayerAdded:Connect(function(newPlr)
         if newPlr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
             showAshuNotification("👑 ASHU PAPA Aagae tere server me 👑")
@@ -146,18 +144,18 @@ task.spawn(function()
     end)
 end)
 
--- 👑 KING CROWN BILLBOARD EMOJI OVER ASHU PAPA'S CHARACTER 👑
+-- 👑 GOD-LEVEL OWNER CROWN BILLBOARD OVER ASHU PAPA'S CHARACTER 👑
 task.spawn(function()
-    local function applyKingCrown(character)
+    local function applyOwnerCrown(character)
         if not character then return end
         local head = character:WaitForChild("Head", 5)
         if not head then return end
-        if head:FindFirstChild("AshuKingCrown") then return end
+        if head:FindFirstChild("AshuOwnerCrown") then return end
 
         local billboard = Instance.new("BillboardGui")
-        billboard.Name = "AshuKingCrown"
-        billboard.Size = UDim2.new(0, 100, 0, 50)
-        billboard.StudsOffset = Vector3.new(0, 2.5, 0)
+        billboard.Name = "AshuOwnerCrown"
+        billboard.Size = UDim2.new(0, 140, 0, 60)
+        billboard.StudsOffset = Vector3.new(0, 2.7, 0)
         billboard.AlwaysOnTop = true
         billboard.Adornee = head
         billboard.Parent = head
@@ -165,26 +163,33 @@ task.spawn(function()
         local label = Instance.new("TextLabel", billboard)
         label.Size = UDim2.fromScale(1, 1)
         label.BackgroundTransparency = 1
-        label.Text = "👑 KING 👑"
-        label.TextColor3 = Color3.fromRGB(255, 215, 0)
-        label.Font = Enum.Font.GothamBlack
-        label.TextSize = 22
+        label.Text = "👑 OWNER 👑"
+        label.TextColor3 = Color3.fromRGB(0, 255, 200) -- Cyber Neon Accent
+        label.Font = Enum.Font.Arcade -- God-Level Arcade / Cyber Font
+        label.TextSize = 28
         
         local stroke = Instance.new("UIStroke", label)
-        stroke.Thickness = 2
+        stroke.Thickness = 3
         stroke.Color = Color3.new(0, 0, 0)
+
+        local grad = Instance.new("UIGradient", label)
+        grad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 200)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 215, 0)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 50, 255))
+        })
     end
 
     for _, p in ipairs(Players:GetPlayers()) do
         if p.UserId == CREATOR_USER_ID then
-            if p.Character then applyKingCrown(p.Character) end
-            p.CharacterAdded:Connect(applyKingCrown)
+            if p.Character then applyOwnerCrown(p.Character) end
+            p.CharacterAdded:Connect(applyOwnerCrown)
         end
     end
 
     Players.PlayerAdded:Connect(function(p)
         if p.UserId == CREATOR_USER_ID then
-            p.CharacterAdded:Connect(applyKingCrown)
+            p.CharacterAdded:Connect(applyOwnerCrown)
         end
     end)
 end)
@@ -4128,7 +4133,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     sendNotif("SMART CLEAR", "Bang Props Banned & Cleared!", 2)
                 else
                     if not houseData then
-                        sendNotif("ERROR", "House not found! Please claim a house first.", 2)
+                        sendNotif("ERROR", "House not found! Please claim a house first., 2")
                     end
                 end
             end)
