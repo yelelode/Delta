@@ -2244,7 +2244,7 @@ visualZoneBtn.MouseButton1Click:Connect(function()
             task.delay(8, function() pcall(function() sound:Destroy() end) end)
         end)
 
-        -- PERSISTENT DARK & RED GENJUTSU LIGHTING
+        -- PERSISTENT DARK & RED GENJUTSU LIGHTING (PROFESSIONAL TUNE)
         task.spawn(function()
             local lighting = game:GetService("Lighting")
             if not genjutsuCC or not genjutsuCC.Parent then
@@ -2257,13 +2257,28 @@ visualZoneBtn.MouseButton1Click:Connect(function()
                 genjutsuCC.Saturation = 0
             end
             
+            -- SLOW 3.5s TWEEN FOR TSUKUYOMI - Balanced brightness so road doesn't go pitch black
             local ccTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
             TweenService:Create(genjutsuCC, ccTweenInfo, {
-                TintColor = Color3.fromRGB(255, 60, 60), 
-                Brightness = -0.15,                      
-                Contrast = 0.6,                          
-                Saturation = -0.85                       
+                TintColor = Color3.fromRGB(255, 85, 85),  -- Perfect Red Tint
+                Brightness = -0.05,                       -- Light dark (Road visibility maintained)
+                Contrast = 0.15,                          -- Smooth shadows, no black crush
+                Saturation = -0.3                         -- Desaturated but visible
             }):Play()
+            
+            -- 15% LIGHT RED FOG (ATMOSPHERE) FOR DEPTH
+            if not lighting:FindFirstChild("TXR_Tsukuyomi_Atmosphere") then
+                local atmos = Instance.new("Atmosphere")
+                atmos.Name = "TXR_Tsukuyomi_Atmosphere"
+                atmos.Density = 0
+                atmos.Color = Color3.fromRGB(255, 30, 30)
+                atmos.Decay = Color3.fromRGB(100, 10, 10)
+                atmos.Glare = 0.3
+                atmos.Haze = 2
+                atmos.Parent = lighting
+                
+                TweenService:Create(atmos, ccTweenInfo, {Density = 0.15}):Play()
+            end
         end)
         
         local lotsFolder = workspace:FindFirstChild("001_Lots")
@@ -2288,7 +2303,7 @@ visualZoneBtn.MouseButton1Click:Connect(function()
                 highlight.OutlineTransparency = 1
                 highlight.Parent = boxPart
 
-                -- SLOWER, DRAMATIC ANIMATION BOX GROWING FROM GROUND
+                -- SLOWER, DRAMATIC ANIMATION BOX GROWING FROM GROUND (3.5 SECONDS)
                 local boxTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
                 TweenService:Create(boxPart, boxTweenInfo, {
                     Size = Vector3.new(lotSize.X, 200, lotSize.Z), 
@@ -2308,7 +2323,8 @@ visualZoneBtn.MouseButton1Click:Connect(function()
         end 
         sendNotif("🛑 ZONES", "Genjutsu Released.", 2)
         
-        -- REVERT LIGHTING TO NORMAL
+        -- REVERT LIGHTING & FOG TO NORMAL
+        local lighting = game:GetService("Lighting")
         if genjutsuCC then
             local ccTweenInfo = TweenInfo.new(2.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
             local revertTween = TweenService:Create(genjutsuCC, ccTweenInfo, {
@@ -2321,6 +2337,13 @@ visualZoneBtn.MouseButton1Click:Connect(function()
             revertTween.Completed:Connect(function() 
                 pcall(function() genjutsuCC:Destroy() genjutsuCC = nil end) 
             end)
+        end
+        
+        local atmos = lighting:FindFirstChild("TXR_Tsukuyomi_Atmosphere")
+        if atmos then
+            local t = TweenService:Create(atmos, TweenInfo.new(2.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Density = 0})
+            t:Play()
+            t.Completed:Connect(function() pcall(function() atmos:Destroy() end) end)
         end
 
         for _, obj in ipairs(workspace:GetChildren()) do
