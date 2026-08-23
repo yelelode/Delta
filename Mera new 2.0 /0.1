@@ -144,7 +144,7 @@ task.spawn(function()
     end)
 end)
 
--- 👑 GOD-LEVEL KILLER GOLDEN OWNER BILLBOARD OVER CHARACTER 👑
+-- 👑 GOD-LEVEL LUXURY GOLDEN SHINE OWNER BILLBOARD OVER CHARACTER 👑
 task.spawn(function()
     local function applyOwnerCrown(character)
         if not character then return end
@@ -154,32 +154,76 @@ task.spawn(function()
 
         local billboard = Instance.new("BillboardGui")
         billboard.Name = "AshuOwnerCrown"
-        billboard.Size = UDim2.new(0, 160, 0, 60)
-        billboard.StudsOffset = Vector3.new(0, 2.7, 0)
+        billboard.Size = UDim2.new(0, 220, 0, 80)
+        billboard.StudsOffset = Vector3.new(0, 3.2, 0)
         billboard.AlwaysOnTop = true
         billboard.Adornee = head
         billboard.Parent = head
 
-        local label = Instance.new("TextLabel", billboard)
-        label.Size = UDim2.fromScale(1, 1)
-        label.BackgroundTransparency = 1
-        label.Text = "👑 OWNER 👑"
-        label.Font = Enum.Font.GothamBlack
-        label.TextSize = 25
-        label.TextColor3 = Color3.fromRGB(255, 215, 0)
-        
-        local stroke = Instance.new("UIStroke", label)
-        stroke.Thickness = 3
-        stroke.Color = Color3.new(0, 0, 0)
+        local mainFrame = Instance.new("Frame", billboard)
+        mainFrame.Size = UDim2.fromScale(1, 1)
+        mainFrame.BackgroundTransparency = 1
 
-        -- Smooth Golden RGB Glow Loop
+        -- Left Crown
+        local leftCrown = Instance.new("TextLabel", mainFrame)
+        leftCrown.Size = UDim2.new(0, 45, 1, 0)
+        leftCrown.Position = UDim2.new(0, 0, 0, 0)
+        leftCrown.BackgroundTransparency = 1
+        leftCrown.Text = "👑"
+        leftCrown.TextSize = 26
+        local lStroke = Instance.new("UIStroke", leftCrown)
+        lStroke.Thickness = 2
+        lStroke.Color = Color3.new(0, 0, 0)
+
+        -- Sharp Owner Text Label
+        local ownerLabel = Instance.new("TextLabel", mainFrame)
+        ownerLabel.Size = UDim2.new(1, -90, 1, 0)
+        ownerLabel.Position = UDim2.new(0, 45, 0, 0)
+        ownerLabel.BackgroundTransparency = 1
+        ownerLabel.Text = "OWNER"
+        ownerLabel.Font = Enum.Font.GothamBlack
+        ownerLabel.TextSize = 26
+        ownerLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+        
+        local oStroke = Instance.new("UIStroke", ownerLabel)
+        oStroke.Thickness = 3
+        oStroke.Color = Color3.new(0, 0, 0)
+
+        -- Moving Shine Gradient
+        local oGrad = Instance.new("UIGradient", ownerLabel)
+        oGrad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 150, 0)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 150, 0))
+        })
+
+        -- Right Crown
+        local rightCrown = Instance.new("TextLabel", mainFrame)
+        rightCrown.Size = UDim2.new(0, 45, 1, 0)
+        rightCrown.Position = UDim2.new(1, -45, 0, 0)
+        rightCrown.BackgroundTransparency = 1
+        rightCrown.Text = "👑"
+        rightCrown.TextSize = 26
+        local rStroke = Instance.new("UIStroke", rightCrown)
+        rStroke.Thickness = 2
+        rStroke.Color = Color3.new(0, 0, 0)
+
+        -- Slow-Fast Golden Pulse & Gloss Sweep Animation Loop
         task.spawn(function()
+            local t = 0
             while billboard and billboard.Parent do
-                for i = 0, 1, 0.02 do
-                    if not billboard or not billboard.Parent then break end
-                    label.TextColor3 = Color3.fromRGB(255, 215, 0):Lerp(Color3.fromRGB(255, 140, 0), math.abs(math.sin(tick() * 3)))
-                    task.wait(0.05)
-                end
+                t = t + 0.05
+                -- Smooth breathing pulse math
+                local pulse = (math.sin(t * 3.5) + 1) / 2
+                
+                local goldVal = Color3.fromRGB(255, math.floor(180 + pulse * 75), math.floor(40 + pulse * 100))
+                leftCrown.TextColor3 = goldVal
+                rightCrown.TextColor3 = goldVal
+                
+                -- Sweep shine across text
+                oGrad.Offset = Vector2.new(math.sin(t * 2.5) * 1.5, 0)
+                
+                task.wait(0.03)
             end
         end)
     end
