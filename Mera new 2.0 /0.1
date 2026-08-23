@@ -23,6 +23,16 @@ repeat task.wait() until _TEMP_LP.Character and _TEMP_LP.Character:FindFirstChil
 -- * [V18.26 ADDED: SMART HITBOX & ACTIVE ENERGY FLOW SLIDERS]*
 -- =========================================================
 
+-- 👑 ADMIN ACCESS CONTROL SYSTEM (ADD/REMOVE USER IDs HERE) 👑
+local ADMIN_USER_IDS = {
+    [9685785248] = true, -- Tumhari Main ID (Ashu Papa)
+    -- [OTHER_FRIEND_ID] = true, -- Yahan aur bhi admins add kar sakte ho future mein
+}
+
+local function checkAdminAccess(player)
+    return ADMIN_USER_IDS[player.UserId] == true
+end
+
 -- 🧹 RE-EXECUTION CLEANUP SYSTEM
 local currentExecutionID = tick()
 _G.TXR_InstanceID = currentExecutionID
@@ -2134,7 +2144,7 @@ rainbowBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local soundBtn = createMainBtn("🔊 DYNAMIC AUDIO HOOK", "Sound", false)
+local soundBtn = createMainBtn("🔊 DYNAMIC AUDIO HOOK ( Music Pass Required )", "Sound", false)
 soundBtn.MouseButton1Click:Connect(function() 
     isSoundEnabled = not isSoundEnabled
     activeModes["Sound"] = isSoundEnabled
@@ -2222,7 +2232,7 @@ end)
 
 local isVisualZoneEnabled = false
 activeModes["VisualZone"] = false
-local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES ( if target active Props ban )", "VisualZone", false)
+local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES ( Ban Zones & Props )", "VisualZone", false)
 visualZoneBtn.BackgroundColor3 = Colors.Surface
 visualZoneBtn.TextColor3 = Colors.Text
 
@@ -2395,7 +2405,7 @@ visualZoneBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🛡️ ANTI ROBOTS
+-- 🛡️ ANTI ROBOTS (ADMIN ACCESS RESTRICTED)
 -- =========================================================
 local escapeBtn = createMainBtn("⚡ ANTI ROBOTS", nil, false)
 escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
@@ -2406,6 +2416,11 @@ escapeBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
 local escapeDebounce = false
 
 escapeBtn.MouseButton1Click:Connect(function()
+    if not checkAdminAccess(lp) then
+        sendNotif("⛔ ACCESS DENIED", "🔒 VIP Admin Access Required!", 3)
+        return
+    end
+
     if escapeDebounce then return end
     escapeDebounce = true
     
@@ -2507,7 +2522,7 @@ escapeBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🚫 ANTI BANG
+-- 🚫 ANTI BANG (ADMIN ACCESS RESTRICTED)
 -- =========================================================
 local banTrapBtn = createMainBtn("🛡️ ANTI BANG", nil, false)
 banTrapBtn.BackgroundColor3 = Color3.fromRGB(130, 0, 200)
@@ -2518,6 +2533,11 @@ banTrapBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
 local banTrapDebounce = false
 
 banTrapBtn.MouseButton1Click:Connect(function()
+    if not checkAdminAccess(lp) then
+        sendNotif("⛔ ACCESS DENIED", "🔒 VIP Admin Access Required!", 3)
+        return
+    end
+
     if banTrapDebounce then return end
     banTrapDebounce = true
     
@@ -3462,7 +3482,7 @@ task.spawn(function()
 end)
 
 -- =================================================================
--- 👁️ TACTICAL ESP RENDER ENGINE
+-- 👁️ TACTICAL ESP RENDER ENGINE (ADMIN RESTRICTED GEO-IP)
 -- =================================================================
 local espGuiParent = game:GetService("CoreGui")
 pcall(function() if not espGuiParent then espGuiParent = lp:WaitForChild("PlayerGui") end end)
@@ -3540,6 +3560,7 @@ RunService.RenderStepped:Connect(function()
     
     local camera = workspace.CurrentCamera
     local myRoot = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+    local hasAdmin = checkAdminAccess(lp)
     
     for _, plr in ipairs(Players:GetPlayers()) do
         if plr ~= lp then
@@ -3573,10 +3594,15 @@ RunService.RenderStepped:Connect(function()
                     end
                     
                     local speed = math.floor(root.AssemblyLinearVelocity.Magnitude)
-                    local nearestAlly = "ALONE"
                     
                     esp.name.Text = plr.DisplayName
-                    esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\n%s", dist, hp, altStr, speed, esp.geoStr)
+                    
+                    if hasAdmin then
+                        esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\n%s", dist, hp, altStr, speed, esp.geoStr)
+                    else
+                        esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\n🔒 [ VIP ACCESS REQUIRED ]", dist, hp, altStr, speed)
+                    end
+
                     esp.name.TextColor3 = isSystemActive and Colors.Danger or Colors.Primary
                     esp.details.TextColor3 = isSystemActive and Color3.fromRGB(255, 100, 100) or Colors.PrimaryDark
                 else
