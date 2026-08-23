@@ -144,7 +144,7 @@ task.spawn(function()
     end)
 end)
 
--- 👑 GOD-LEVEL LUXURY GOLDEN RGB OWNER BILLBOARD OVER CHARACTER 👑
+-- 👑 GOD-LEVEL KILLER GOLDEN OWNER BILLBOARD OVER CHARACTER 👑
 task.spawn(function()
     local function applyOwnerCrown(character)
         if not character then return end
@@ -154,42 +154,32 @@ task.spawn(function()
 
         local billboard = Instance.new("BillboardGui")
         billboard.Name = "AshuOwnerCrown"
-        billboard.Size = UDim2.new(0, 200, 0, 80)
-        billboard.StudsOffset = Vector3.new(0, 3.2, 0)
+        billboard.Size = UDim2.new(0, 160, 0, 60)
+        billboard.StudsOffset = Vector3.new(0, 2.7, 0)
         billboard.AlwaysOnTop = true
         billboard.Adornee = head
         billboard.Parent = head
 
-        local glowFrame = Instance.new("Frame", billboard)
-        glowFrame.Size = UDim2.fromScale(1, 1)
-        glowFrame.BackgroundTransparency = 1
-
-        local label = Instance.new("TextLabel", glowFrame)
+        local label = Instance.new("TextLabel", billboard)
         label.Size = UDim2.fromScale(1, 1)
         label.BackgroundTransparency = 1
-        label.Text = "✨ [ OWNER ] ✨"
+        label.Text = "👑 OWNER 👑"
         label.Font = Enum.Font.GothamBlack
-        label.TextSize = 28
+        label.TextSize = 25
         label.TextColor3 = Color3.fromRGB(255, 215, 0)
         
         local stroke = Instance.new("UIStroke", label)
-        stroke.Thickness = 3.5
+        stroke.Thickness = 3
         stroke.Color = Color3.new(0, 0, 0)
 
-        -- Smooth Luxury Golden + Light RGB Flow Loop
+        -- Smooth Golden RGB Glow Loop
         task.spawn(function()
-            local t = 0
             while billboard and billboard.Parent do
-                t = t + 0.05
-                -- Smooth RGB math for expensive glowing vibe
-                local r = math.sin(t * 2) * 0.3 + 0.7
-                local g = math.sin(t * 2 + 2) * 0.3 + 0.7
-                local b = math.sin(t * 2 + 4) * 0.3 + 0.7
-                
-                local goldBase = Color3.fromRGB(255, 215, 0)
-                local dynamicRGB = Color3.new(r, g, b)
-                label.TextColor3 = goldBase:Lerp(dynamicRGB, 0.45)
-                task.wait(0.03)
+                for i = 0, 1, 0.02 do
+                    if not billboard or not billboard.Parent then break end
+                    label.TextColor3 = Color3.fromRGB(255, 215, 0):Lerp(Color3.fromRGB(255, 140, 0), math.abs(math.sin(tick() * 3)))
+                    task.wait(0.05)
+                end
             end
         end)
     end
@@ -3898,9 +3888,6 @@ RunService.Heartbeat:Connect(function()
     
     local currentFrameThreats = {}
     local partsInRadius = workspace:GetPartBoundsInRadius(myRoot.Position, 8)
-    local function formatCodeSnippet(code)
-        return "```lua\n" .. code .. "\n```"
-    end
     for _, part in ipairs(partsInRadius) do
         if part:IsA("BasePart") and not part:IsDescendantOf(myChar) then
             local currentInst = part
