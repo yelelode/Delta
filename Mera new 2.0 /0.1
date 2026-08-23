@@ -381,11 +381,26 @@ local function onPlayerJoinAlert(plr)
 end
 Players.PlayerAdded:Connect(onPlayerJoinAlert)
 
+local activeAudioInstance = nil
+
 local function PlayRobotBangMusic()
-    local soundId = "134489447055645" 
+    local soundId = "rbxassetid://134489447055645" 
     local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
+        -- 🔥 DIRECT LOCAL & SOUNDSERVICE AUDIO FIX FOR BROOKHAVEN PATCH 🔥
+        if not activeAudioInstance or not activeAudioInstance.Parent then
+            activeAudioInstance = Instance.new("Sound")
+            activeAudioInstance.Name = "TXR_DynamicAudioHook"
+            activeAudioInstance.SoundId = soundId
+            activeAudioInstance.Volume = 2.0
+            activeAudioInstance.Looped = true
+            activeAudioInstance.Parent = game:GetService("SoundService")
+            activeAudioInstance:Play()
+        else
+            activeAudioInstance:Play()
+        end
+
         local spawnVehicle = DynamicRemotes.SpawnVehicle or RE:FindFirstChild("1NoMoto1rVehicle1s")
         if spawnVehicle then 
             spawnVehicle:FireServer("SegwaySmall")
@@ -409,6 +424,12 @@ local function StopRobotBangMusic()
     local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
+        if activeAudioInstance then
+            activeAudioInstance:Stop()
+            activeAudioInstance:Destroy()
+            activeAudioInstance = nil
+        end
+
         if lp.Character then
             local hum = lp.Character:FindFirstChildOfClass("Humanoid")
             if hum then 
