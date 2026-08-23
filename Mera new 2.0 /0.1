@@ -39,10 +39,6 @@ if _G.TXR_ESP_GUI and _G.TXR_ESP_GUI.Parent then
     _G.TXR_ESP_GUI:Destroy() 
 end
 
-if _G.TXR_THREAT_ESP and _G.TXR_THREAT_ESP.Parent then 
-    _G.TXR_THREAT_ESP:Destroy() 
-end
-
 pcall(function() 
     local repStorage = game:GetService("ReplicatedStorage")
     local reFolder = repStorage:WaitForChild("RE")
@@ -113,22 +109,14 @@ local function getMyHouse()
     
     -- Agar normal Lot nahi mila, toh Apartments me dhundho (Global Workspace scan for our owner tag)
     for _, desc in ipairs(workspace:GetDescendants()) do
-        if desc.Name == "HousePickedByPlayer" then
-            local isOwner = false
-            pcall(function() 
-                if tostring(desc.Value) == lp.Name or desc.Value == lp then 
-                    isOwner = true 
-                end 
-            end)
-            if isOwner then
-                local parentLot = desc.Parent
-                if parentLot then
-                    local clearRemote = parentLot:FindFirstChild("Permissions:ClearProps", true)
-                    local disallowRemote = parentLot:FindFirstChild("Permissions:Disallow", true)
-                    local allowRemote = parentLot:FindFirstChild("Permissions:Allow", true)
-                    if clearRemote and clearRemote:IsA("RemoteFunction") then
-                        return {Lot = parentLot, Remote = clearRemote, Disallow = disallowRemote, Allow = allowRemote, Type = "Apartment"}
-                    end
+        if desc.Name == "HousePickedByPlayer" and (tostring(desc.Value) == lp.Name or desc.Value == lp) then
+            local parentLot = desc.Parent
+            if parentLot then
+                local clearRemote = parentLot:FindFirstChild("Permissions:ClearProps", true)
+                local disallowRemote = parentLot:FindFirstChild("Permissions:Disallow", true)
+                local allowRemote = parentLot:FindFirstChild("Permissions:Allow", true)
+                if clearRemote and clearRemote:IsA("RemoteFunction") then
+                    return {Lot = parentLot, Remote = clearRemote, Disallow = disallowRemote, Allow = allowRemote, Type = "Apartment"}
                 end
             end
         end
@@ -199,10 +187,6 @@ local targetVelocities = {}
 local customPropName = "ScreensRobotBig"
 local customPropCategory = "Screens"
 local lastGameSpawnTime = 0
-
--- 🔥 NAYE VARIABLES EKDUM ALAG SE 🔥
-local SAFE_BAN_DISTANCE = 85 
-local lastClearTime = 0
 
 -- ✨ UI INTERACTION STATES FOR DOF FOCUS ✨
 local uiHoverCount = 0
@@ -531,8 +515,6 @@ end
 -- ✨ FIXED CLEAR PROPS METHOD FOR INJECT BUG & STOP WIPE
 -- =========================================================
 local function clearProps() 
-    lastClearTime = tick() -- Tracker for new feature
-    
     -- 1. Aggressive Main Clear Request
     task.spawn(function()
         pcall(function() 
@@ -614,34 +596,14 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         local tool = char and char:FindFirstChildOfClass("Tool")
         
         if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
+            -- 🔥 SMART COOLDOWN FIX FOR MIXING PROPS 🔥
+            -- Delay increased to 0.25 so Brookhaven native spawn isn't blocked
             task.delay(0.25, function() 
                 if tick() - lastGameSpawnTime > 0.3 then 
                     local propName, propCategory = getActivePropData()
                     spawnProp(propName, propCategory) 
                 end 
             end)
-        end
-    end
-end)
-
--- 🚨 AUTO-DETECT BAN ZONE (EVALUATES DELETED PROPS) 🚨
-task.spawn(function()
-    local com = workspace:WaitForChild("WorkspaceCom")
-    while _G.TXR_InstanceID == currentExecutionID do
-        task.wait(1.5)
-        if isSystemActive and not activeModes["ExactZoneDef"] and (tick() - lastClearTime > 3) and (tick() - lastGameSpawnTime > 3) then
-            local currentProps = 0
-            for _, f in ipairs(com:GetChildren()) do
-                for _, c in ipairs(f:GetChildren()) do
-                    if c.Name == "Prop" .. lp.Name then
-                        currentProps = currentProps + 1
-                    end
-                end
-            end
-            if currentProps == 0 and next(assignedRemotes) ~= nil then
-                sendNotif("⚠️ BAN ZONE DETECTED", "Your props got deleted! Turn ON 'EXACT ZONE DEFENSE' below.", 5)
-                lastClearTime = tick() 
-            end
         end
     end
 end)
@@ -2068,28 +2030,13 @@ local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false)
 local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false)
 local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR", "Chair", false)
 
--- 🔥 NEW BUTTON FOR EXACT ZONE DEFENSE 🔥
-local exactZoneBtn = createMainBtn("🛑 EXACT ZONE DEFENSE", "ExactZoneDef", false)
-exactZoneBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 20)
-exactZoneBtn.TextColor3 = Color3.fromRGB(255, 200, 200)
-exactZoneBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 20))
-exactZoneBtn:SetAttribute("BaseText", Color3.fromRGB(255, 200, 200))
-
-local houseProtBtn = createMainBtn("🏠 HOUSE DEFENSE (ANTI-DELETE)", "HouseProt", false)
-local isHouseProtEnabled = true
-activeModes["HouseProt"] = true
-houseProtBtn.BackgroundColor3 = Colors.ActiveTint
-houseProtBtn.TextColor3 = Colors.Primary
-local houseAccent = houseProtBtn:FindFirstChild("Accent")
-if houseAccent then houseAccent.Size = UDim2.new(0, 4, 0.7, 0) end
-
 local modeBtns = { 
     ["Orbit"] = {btn = orbitBtn}, 
     ["Robot"] = {btn = robotBtn}, 
     ["MultiRobot"] = {btn = multiBtn}, 
     ["Ring"] = {btn = ringBtn}, 
     ["HeadBang"] = {btn = headBtn}, 
-    ["Chair"] = {btn = chairBtn}
+    ["Chair"] = {btn = chairBtn} 
 }
 
 local function syncComboUI()
@@ -2105,7 +2052,7 @@ local function syncComboUI()
                 TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
             end
         else 
-            TweenService:Create(btn, tInfo1, {BackgroundColor3 = btn:GetAttribute("BaseColor"), TextColor3 = btn:GetAttribute("BaseText")}):Play()
+            TweenService:Create(btn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
             if accent then 
                 TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
             end
@@ -2134,73 +2081,6 @@ for key, data in pairs(modeBtns) do
         syncComboUI()
     end)
 end
-
--- 🔥 MUTUAL EXCLUSION LOGIC 🔥
-exactZoneBtn.MouseButton1Click:Connect(function()
-    activeModes["ExactZoneDef"] = not activeModes["ExactZoneDef"]
-    if activeModes["ExactZoneDef"] then
-        isHouseProtEnabled = false
-        activeModes["HouseProt"] = false
-        sendNotif("🛑 EXACT ZONE", "Exact Zone Defense Activated. House Def OFF.", 2)
-    else
-        sendNotif("🛑 EXACT ZONE", "Exact Zone Defense Deactivated.", 2)
-    end
-    
-    local accent = exactZoneBtn:FindFirstChild("Accent")
-    if activeModes["ExactZoneDef"] then 
-        TweenService:Create(exactZoneBtn, TweenInfo.new(0.45), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
-        if accent then TweenService:Create(accent, TweenInfo.new(0.5), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
-    else 
-        local baseCol = exactZoneBtn:GetAttribute("BaseColor") or Colors.Surface
-        local textCol = exactZoneBtn:GetAttribute("BaseText") or Colors.Text
-        TweenService:Create(exactZoneBtn, TweenInfo.new(0.45), {BackgroundColor3 = baseCol, TextColor3 = textCol}):Play()
-        if accent then TweenService:Create(accent, TweenInfo.new(0.45), {Size = UDim2.new(0, 0, 0, 0)}):Play() end
-    end
-    
-    local hpAccent = houseProtBtn:FindFirstChild("Accent")
-    if activeModes["HouseProt"] then 
-        TweenService:Create(houseProtBtn, TweenInfo.new(0.45), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
-        if hpAccent then TweenService:Create(hpAccent, TweenInfo.new(0.5), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
-    else 
-        local baseCol = houseProtBtn:GetAttribute("BaseColor") or Colors.Surface
-        local textCol = houseProtBtn:GetAttribute("BaseText") or Colors.Text
-        TweenService:Create(houseProtBtn, TweenInfo.new(0.45), {BackgroundColor3 = baseCol, TextColor3 = textCol}):Play()
-        if hpAccent then TweenService:Create(hpAccent, TweenInfo.new(0.45), {Size = UDim2.new(0, 0, 0, 0)}):Play() end
-    end
-end)
-
-houseProtBtn.MouseButton1Click:Connect(function() 
-    isHouseProtEnabled = not isHouseProtEnabled
-    activeModes["HouseProt"] = isHouseProtEnabled
-    if activeModes["HouseProt"] then
-        activeModes["ExactZoneDef"] = false
-        sendNotif("🏠 SECURITY", "House Defense Activated. Exact Zone OFF.", 2)
-    else
-        sendNotif("🏠 SECURITY", "House Defense Deactivated.", 2)
-    end
-    
-    local hpAccent = houseProtBtn:FindFirstChild("Accent")
-    if activeModes["HouseProt"] then 
-        TweenService:Create(houseProtBtn, TweenInfo.new(0.45), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
-        if hpAccent then TweenService:Create(hpAccent, TweenInfo.new(0.5), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
-    else 
-        local baseCol = houseProtBtn:GetAttribute("BaseColor") or Colors.Surface
-        local textCol = houseProtBtn:GetAttribute("BaseText") or Colors.Text
-        TweenService:Create(houseProtBtn, TweenInfo.new(0.45), {BackgroundColor3 = baseCol, TextColor3 = textCol}):Play()
-        if hpAccent then TweenService:Create(hpAccent, TweenInfo.new(0.45), {Size = UDim2.new(0, 0, 0, 0)}):Play() end
-    end
-    
-    local ezAccent = exactZoneBtn:FindFirstChild("Accent")
-    if activeModes["ExactZoneDef"] then 
-        TweenService:Create(exactZoneBtn, TweenInfo.new(0.45), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
-        if ezAccent then TweenService:Create(ezAccent, TweenInfo.new(0.5), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
-    else 
-        local baseCol = exactZoneBtn:GetAttribute("BaseColor") or Colors.Surface
-        local textCol = exactZoneBtn:GetAttribute("BaseText") or Colors.Text
-        TweenService:Create(exactZoneBtn, TweenInfo.new(0.45), {BackgroundColor3 = baseCol, TextColor3 = textCol}):Play()
-        if ezAccent then TweenService:Create(ezAccent, TweenInfo.new(0.45), {Size = UDim2.new(0, 0, 0, 0)}):Play() end
-    end
-end)
 
 local espBtn = createMainBtn("👁️ TACTICAL ESP (HUD)", "ESP", false)
 espBtn.MouseButton1Click:Connect(function() 
@@ -2296,6 +2176,38 @@ shieldBtn.MouseButton1Click:Connect(function()
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
         sendNotif("🛡️ SECURITY", "God Shield Deactivated.", 2)
+    end
+end)
+
+local houseProtBtn = createMainBtn("🏠 HOUSE DEFENSE (ANTI-DELETE)", "HouseProt", false)
+local isHouseProtEnabled = true
+activeModes["HouseProt"] = true
+
+houseProtBtn.BackgroundColor3 = Colors.ActiveTint
+houseProtBtn.TextColor3 = Colors.Primary
+local houseAccent = houseProtBtn:FindFirstChild("Accent")
+if houseAccent then houseAccent.Size = UDim2.new(0, 4, 0.7, 0) end
+
+houseProtBtn.MouseButton1Click:Connect(function() 
+    isHouseProtEnabled = not isHouseProtEnabled
+    activeModes["HouseProt"] = isHouseProtEnabled
+    local accent = houseProtBtn:FindFirstChild("Accent")
+    
+    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    if isHouseProtEnabled then 
+        TweenService:Create(houseProtBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+        end
+        sendNotif("🏠 SECURITY", "House Defense Activated.", 2)
+    else 
+        TweenService:Create(houseProtBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+        end 
+        sendNotif("🏠 SECURITY", "House Defense Deactivated.", 2)
     end
 end)
 
@@ -2760,67 +2672,11 @@ end
 local lastRemoteFireTimes = {}
 local FIRE_INTERVAL = 0.035 
 
--- 🔥 NEW EXACT ZONE DEFENSE SYSTEM (CRASH-PROOF PCALL FIX) 🔥
-local lotCache = {}
-local lastLotUpdate = 0
-
-local function isExactPosInDangerZone(checkPos)
-    local inDanger = false
-    pcall(function()
-        if tick() - lastLotUpdate > 2 then
-            lotCache = {}
-            local lotsFolder = workspace:FindFirstChild("001_Lots")
-            if lotsFolder then
-                for _, lot in ipairs(lotsFolder:GetChildren()) do
-                    local isMyLot = false
-                    pcall(function()
-                        if lp.Name and string.find(string.lower(lot.Name), string.lower(lp.Name)) then
-                            isMyLot = true
-                        end
-                    end)
-                    
-                    -- 🔥 Ab har dusre ghar ko (khali ho ya nahi) Danger Zone maanenge!
-                    if not isMyLot then
-                        local lotCFrame, lotSize = lot:GetBoundingBox()
-                        local sX = math.clamp(lotSize.X, 10, 400)
-                        local sZ = math.clamp(lotSize.Z, 10, 400)
-                        table.insert(lotCache, {CFrame = lotCFrame, SizeX = sX, SizeZ = sZ})
-                    end
-                end
-            end
-            lastLotUpdate = tick()
-        end
-        
-        for _, data in ipairs(lotCache) do
-            local localPos = data.CFrame:PointToObjectSpace(checkPos)
-            if math.abs(localPos.X) <= (data.SizeX / 2) and math.abs(localPos.Z) <= (data.SizeZ / 2) then
-                if checkPos.Y > -100 then
-                    inDanger = true
-                    break
-                end
-            end
-        end
-    end)
-    return inDanger
-end
-
 local function dispatchRemote(remote, targetCFrame)
     if not remote or not remote.Parent then return end
     
     local isEmergency = false
-
-    -- 🔥 NAYA EXACT ZONE DEFENSE CHECK 🔥
-    if activeModes["ExactZoneDef"] then
-        pcall(function()
-            local checkPos = targetCFrame.Position
-            if isExactPosInDangerZone(checkPos) then
-                targetCFrame = CFrame.new(120, -350, 150)
-                isEmergency = true
-            end
-        end)
-    end
-    
-    if not isEmergency and activeModes["HouseProt"] then
+    if activeModes["HouseProt"] then
         local checkPos = targetCFrame.Position
         local params = OverlapParams.new()
         local ignoreList = {lp.Character}
@@ -2836,9 +2692,11 @@ local function dispatchRemote(remote, targetCFrame)
         local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(4, 250, 4), params)
         for _, hitInst in ipairs(partsInBubble) do
             local currentInst = hitInst
+            local bName = string.lower(hitInst.Name)
+            local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
             while currentInst and currentInst ~= workspace do
                 local lowerName = string.lower(currentInst.Name)
-                if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") or string.find(lowerName, "ban") then
+                if string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
                     inDangerZone = true
                     break
                 end
@@ -2848,7 +2706,7 @@ local function dispatchRemote(remote, targetCFrame)
         end
 
         if inDangerZone then
-            targetCFrame = CFrame.new(120, -350, 150)
+            targetCFrame = CFrame.new(120, -350, 150) -- 🔥 AMBUSH: Hide completely under School
             isEmergency = true
         end
     end
@@ -2878,8 +2736,7 @@ local function dispatchRemote(remote, targetCFrame)
     end)
     
     local now = tick()
-    local interval = isEmergency and 0.05 or FIRE_INTERVAL
-    if not lastRemoteFireTimes[remote] or (now - lastRemoteFireTimes[remote]) >= interval then
+    if isEmergency or not lastRemoteFireTimes[remote] or (now - lastRemoteFireTimes[remote]) >= FIRE_INTERVAL then
         lastRemoteFireTimes[remote] = now
         task.spawn(function() 
             pcall(function() remote:InvokeServer(targetCFrame) end) 
@@ -3007,25 +2864,9 @@ RunService.Heartbeat:Connect(function(dt)
             
             if isEvading then
                 targetSafeOffsets[plr] = Vector3.new(0, 15000, 0) 
-            elseif activeModes["ExactZoneDef"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                pcall(function()
-                    local tRoot = plr.Character.HumanoidRootPart
-                    local rawVel = targetVelocities[plr] or tRoot.AssemblyLinearVelocity
-                    if rawVel.Magnitude ~= rawVel.Magnitude then rawVel = Vector3.new(0,0,0) end
-                    
-                    local pOffset = rawVel * predictionTime
-                    local checkPos = tRoot.Position + pOffset
-                    
-                    if isExactPosInDangerZone(checkPos) then
-                        targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
-                    end
-                end)
-
             elseif activeModes["HouseProt"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
                 local tRoot = plr.Character.HumanoidRootPart
                 local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
-                if pOffset.X ~= pOffset.X then pOffset = Vector3.new(0,0,0) end
-                
                 local checkPos = tRoot.Position + pOffset
                 
                 local params = OverlapParams.new()
@@ -3042,9 +2883,11 @@ RunService.Heartbeat:Connect(function(dt)
                 local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(4, 250, 4), params)
                 for _, hitInst in ipairs(partsInBubble) do
                     local currentInst = hitInst
+                    local bName = string.lower(hitInst.Name)
+                    local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
                     while currentInst and currentInst ~= workspace do
                         local lowerName = string.lower(currentInst.Name)
-                        if string.find(lowerName, "house") or string.find(lowerName, "plot") or string.find(lowerName, "pool") or string.find(lowerName, "ban") then
+                        if string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
                             inDangerZone = true
                             break
                         end
@@ -3054,7 +2897,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
 
                 if inDangerZone then
-                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position 
+                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position -- 🔥 AMBUSH: Hide underground at school
                 end
             end
         end
@@ -3067,7 +2910,7 @@ RunService.Heartbeat:Connect(function(dt)
             local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
             local rawVelocity = tRoot.AssemblyLinearVelocity
             
-            if rawVelocity.Magnitude > 150 or rawVelocity.Y > 100 or rawVelocity.Y < -100 or rawVelocity.Magnitude ~= rawVelocity.Magnitude then 
+            if rawVelocity.Magnitude > 150 or rawVelocity.Y > 100 or rawVelocity.Y < -100 then 
                 rawVelocity = Vector3.new(0, 0, 0)
             end
 
@@ -3083,8 +2926,6 @@ RunService.Heartbeat:Connect(function(dt)
             end
             
             local predictedOffset = targetVelocities[plr] * predictionTime
-            if predictedOffset.Magnitude ~= predictedOffset.Magnitude then predictedOffset = Vector3.new(0,0,0) end
-            
             local bodyPos = bodyPart.Position + predictedOffset + targetSafeOffsets[plr]
             
             local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
@@ -3768,36 +3609,18 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
                     
                     local attackersToBan = {}
-                    local myLot
-                    local lotsFolder = workspace:FindFirstChild("001_Lots")
-                    if lotsFolder then
-                        for _, lot in ipairs(lotsFolder:GetChildren()) do
-                            local isMine = false
-                            pcall(function()
-                                if lp.Name and string.find(string.lower(lot.Name), string.lower(lp.Name)) then
-                                    isMine = true
-                                end
-                            end)
-                            if isMine then
-                                myLot = lot
-                                break
+                    for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                        if string.sub(obj.Name, 1, 4) == "Prop" then
+                            local ownerName = string.sub(obj.Name, 5)
+                            if ownerName ~= "" and ownerName ~= lp.Name then
+                                local p = Players:FindFirstChild(ownerName)
+                                if p then attackersToBan[p] = true end
                             end
                         end
-                    end
-                    
-                    if myLot then
-                        local lotCFrame, lotSize = myLot:GetBoundingBox()
-                        for _, obj in ipairs(workspace:GetDescendants()) do
-                            if obj:IsA("BasePart") and string.sub(obj.Name, 1, 4) == "Prop" then
-                                local ownerName = string.sub(obj.Name, 5)
-                                if ownerName ~= "" and ownerName ~= lp.Name then
-                                    local localPos = lotCFrame:PointToObjectSpace(obj.Position)
-                                    if math.abs(localPos.X) <= (lotSize.X / 2) and math.abs(localPos.Z) <= (lotSize.Z / 2) then
-                                        local p = Players:FindFirstChild(ownerName)
-                                        if p then attackersToBan[p] = true end
-                                    end
-                                end
-                            end
+                        local pModel = obj:FindFirstAncestorOfClass("Model")
+                        if pModel and pModel ~= lp.Character then
+                            local p = Players:GetPlayerFromCharacter(pModel)
+                            if p then attackersToBan[p] = true end
                         end
                     end
 
@@ -3832,21 +3655,17 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                         
                         local foundProp = false
                         local com = workspace:FindFirstChild("WorkspaceCom")
-                        if com and myLot then
-                            local lotCFrame, lotSize = myLot:GetBoundingBox()
+                        if com then
                             for _, f in ipairs(com:GetChildren()) do
                                 for _, c in ipairs(f:GetChildren()) do
                                     if string.sub(c.Name, 1, 4) == "Prop" and string.sub(c.Name, 5) ~= lp.Name then
                                         local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
-                                        if pt then
-                                            local localPos = lotCFrame:PointToObjectSpace(pt.Position)
-                                            if math.abs(localPos.X) <= (lotSize.X / 2) and math.abs(localPos.Z) <= (lotSize.Z / 2) then
-                                                local ownerName = string.sub(c.Name, 5)
-                                                local p = Players:FindFirstChild(ownerName)
-                                                if p then attackersToBan[p] = true end
-                                                foundProp = true
-                                                break
-                                            end
+                                        if pt and (pt.Position - hrp.Position).Magnitude < 25 then
+                                            local ownerName = string.sub(c.Name, 5)
+                                            local p = Players:FindFirstChild(ownerName)
+                                            if p then attackersToBan[p] = true end
+                                            foundProp = true
+                                            break
                                         end
                                     end
                                 end
