@@ -381,12 +381,64 @@ local function onPlayerJoinAlert(plr)
 end
 Players.PlayerAdded:Connect(onPlayerJoinAlert)
 
+-- 🔊 VOLUME BOOSTER LOOP (BACKGROUND TASK)
+local MAX_VOLUME = 10
+local function maxVolume(obj)
+    if not obj then return end
+    if obj:IsA("Sound") then
+        obj.Volume = MAX_VOLUME
+        return
+    end
+    for _, v in ipairs(obj:GetDescendants()) do
+        if v:IsA("Sound") then
+            v.Volume = MAX_VOLUME
+        end
+    end
+end
+
+task.spawn(function()
+    while task.wait(0.2) do
+        pcall(function()
+            local vehicles = workspace:FindFirstChild("Vehicles")
+            if vehicles then
+                for _, vehicle in ipairs(vehicles:GetChildren()) do
+                    if vehicle.Name:lower():find(lp.Name:lower(), 1, true) then
+                        local body = vehicle:FindFirstChild("Body")
+                        if body then
+                            local turbo = body:FindFirstChild("TurboPosition")
+                            if turbo then
+                                local emitter = turbo:FindFirstChild("SoundEmmiter")
+                                maxVolume(emitter)
+                            end
+                        end
+                    end
+                end
+            end
+
+            local playerModel = workspace:FindFirstChild(lp.Name)
+            if playerModel then
+                local noMotor = playerModel:FindFirstChild("NoMotorVehicleModel")
+                if noMotor then maxVolume(noMotor) end
+                
+                local boombox = playerModel:FindFirstChild("Boombox")
+                if boombox then
+                    local handle = boombox:FindFirstChild("Handle")
+                    if handle then
+                        local playersChoice = handle:FindFirstChild("PlayersChoice")
+                        maxVolume(playersChoice)
+                    end
+                end
+            end
+        end)
+    end
+end)
+
 local function PlayRobotBangMusic()
-    local soundId = "134489447055645" 
+    local soundId = "1848354536" 
     local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
-        -- 🔥 EXACT GAMEPASS BYPASS FROM WORKING SCRIPT 🔥
+        -- 🔥 GAMEPASS BYPASS 🔥
         pcall(function()
             local args = {
                 "shopInteraction",
@@ -399,21 +451,31 @@ local function PlayRobotBangMusic()
             ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("TelemetryClientInteraction"):FireServer(unpack(args))
         end)
 
-        -- 🔥 EXACT SKATE / SEGWAY SPAWN METHOD 🔥
+        -- 🔥 SPAWN BOARD / SEGWAY FIRST 🔥
         local spawnVehicle = DynamicRemotes.SpawnVehicle or RE:FindFirstChild("1NoMoto1rVehicle1s")
         if spawnVehicle then 
             spawnVehicle:FireServer("SegwaySmall")
-            task.wait(0.35) 
         end
         
-        -- 🔥 PERFECTED NEW MUSIC BYPASS INCORPORATED HERE 🔥
-        local t1 = { RE:FindFirstChild("1Player1sHous1e"), RE:FindFirstChild("1Player1sCa1r"), RE:FindFirstChild("1NoMoto1rVehicle1s"), RE:FindFirstChild("PlayerToolEvent"), RE:FindFirstChild("Props"), RE:FindFirstChild("1Hors1eRemot1e") }
+        task.wait(0.35)
+        
+        -- 🔥 EXACT WORKING METHOD FROM NOTHING MUSIC SCRIPT 🔥
+        local t1 = { 
+            RE:FindFirstChild("1Player1sHous1e"), 
+            RE:FindFirstChild("1Player1sCa1r"), 
+            RE:FindFirstChild("1NoMoto1rVehicle1s"), 
+            RE:FindFirstChild("PlayerToolEvent"), 
+            RE:FindFirstChild("Props"), 
+            RE:FindFirstChild("1Hors1eRemot1e") 
+        }
         local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
 
         for k, v in pairs(t1) do
             if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
         end
+        
         task.wait(0.25)
+
         for k, v in pairs(t1) do
             if v then pcall(function() v:FireServer(t2[k], soundId, true) end) end
         end
@@ -425,8 +487,14 @@ local function StopRobotBangMusic()
     local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
-        -- 🔥 PERFECTED NEW MUSIC STOP METHOD INCORPORATED HERE 🔥
-        local t1 = { RE:FindFirstChild("1Player1sHous1e"), RE:FindFirstChild("1Player1sCa1r"), RE:FindFirstChild("1NoMoto1rVehicle1s"), RE:FindFirstChild("PlayerToolEvent"), RE:FindFirstChild("Props"), RE:FindFirstChild("1Hors1eRemot1e") }
+        local t1 = { 
+            RE:FindFirstChild("1Player1sHous1e"), 
+            RE:FindFirstChild("1Player1sCa1r"), 
+            RE:FindFirstChild("1NoMoto1rVehicle1s"), 
+            RE:FindFirstChild("PlayerToolEvent"), 
+            RE:FindFirstChild("Props"), 
+            RE:FindFirstChild("1Hors1eRemot1e") 
+        }
         local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
 
         for k, v in pairs(t1) do
@@ -2173,18 +2241,14 @@ soundBtn.MouseButton1Click:Connect(function()
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
         sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Activated.", 2)
-        if isSystemActive then 
-            task.spawn(PlayRobotBangMusic) 
-        end
+        task.spawn(PlayRobotBangMusic) -- 🔥 AUTOMATICALLY SPAWN BOARD + START MUSIC ON TOGGLE!
     else 
         TweenService:Create(soundBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end
         sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Deactivated.", 2)
-        if isSystemActive then 
-            task.spawn(StopRobotBangMusic) 
-        end 
+        task.spawn(StopRobotBangMusic) 
     end
 end)
 
