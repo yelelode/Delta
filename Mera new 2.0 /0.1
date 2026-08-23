@@ -171,7 +171,7 @@ local propsCache = {}
 local autoRejoinTargets = {} 
 local activeModes = {}
 local modeQueue = {} 
-local activeGeometry = "Spin"
+local activeGeometry = "Standard Orbit"
 local isRainbowEnabled = false
 local isSoundEnabled = false
 local isSystemActive = false
@@ -1335,7 +1335,7 @@ task.spawn(function()
     end)
 end)
 
-local openBtnScale = Instance.new("UIScale", openBtnContainer)
+local openBtnScale = Instance.new("UIScale", openBtn)
 openBtnScale.Scale = 1
 
 local openPulseTweenInfo = TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
@@ -1762,17 +1762,34 @@ end)
 
 refreshPlayers()
 
-local geometries = {"Spin", "Reverse Spin", "Bobbing Orbit", "Vertical Halo", "Atom", "Galaxy Spiral", "Crown", "DNA", "Snake Body", "Wings"}
+local geometries = {
+    {Name = "Standard Orbit", Bio = "Normal smooth standard circular orbit"},
+    {Name = "Spin", Bio = "Fast standard circular spin"},
+    {Name = "Reverse Spin", Bio = "Counter-clockwise circular spin"},
+    {Name = "Bobbing Orbit", Bio = "Circular orbit with wave bobbing"},
+    {Name = "Vertical Halo", Bio = "Vertical ring rotation around player"},
+    {Name = "Atom", Bio = "Multi-axis atomic electron orbit"},
+    {Name = "Galaxy Spiral", Bio = "Dynamic swirling galactic spiral"},
+    {Name = "Crown", Bio = "Floating royal crown formation"},
+    {Name = "DNA", Bio = "Double helix DNA strand motion"},
+    {Name = "Snake Body", Bio = "Slithering snake-like trailing motion"},
+    {Name = "Wings", Bio = "Angel wings formation on sides"},
+    {Name = "BlackHole Vortex", Bio = "God-level collapsing inward vortex"},
+    {Name = "Quantum Pulsar", Bio = "God-level rhythmic expanding pulse"},
+    {Name = "Hyper Wave", Bio = "God-level high-speed sweeping waves"}
+}
+
 for _, geo in ipairs(geometries) do
     local btn = Instance.new("TextButton", geoScroll)
-    btn.Size = UDim2.new(1, 0, 0, 36)
+    btn.Size = UDim2.new(1, 0, 0, 44)
     btn.BackgroundColor3 = Colors.Surface
     btn.BackgroundTransparency = 0.4
-    btn.Text = "   ⚡ " .. geo
+    btn.Text = "   ⚡ " .. geo.Name .. "\n      └ " .. geo.Bio
     btn.TextColor3 = Colors.Text
     btn.Font = Enum.Font.GothamMedium
-    btn.TextSize = 11
+    btn.TextSize = 10
     btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.TextYAlignment = Enum.TextYAlignment.Center
     btn.AutoButtonColor = false
     btn.LayoutOrder = getOrder()
     btn.ZIndex = 23
@@ -1784,9 +1801,9 @@ for _, geo in ipairs(geometries) do
     crispText(btn)
     
     btn.MouseButton1Click:Connect(function() 
-        activeGeometry = geo
+        activeGeometry = geo.Name
         isSubMenuOpen = false
-        sendNotif("Engine", "Lock: " .. geo, 2)
+        sendNotif("Engine", "Lock: " .. geo.Name, 2)
         
         local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
         TweenService:Create(geoMenu, tInfo, {Position = UDim2.fromScale(1.2, 0)}):Play()
@@ -3307,7 +3324,10 @@ RunService.Heartbeat:Connect(function(dt)
                     local x, y, z = 0, 0, 0
                     local radRatio = (myLocalIdx / propsForThisTarget) * math.pi * 2 
                     
-                    if activeGeometry == "Spin" then 
+                    if activeGeometry == "Standard Orbit" then
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        z = math.sin(radRatio + smoothAngle) * currentRadius
+                    elseif activeGeometry == "Spin" then 
                         x = math.cos(radRatio + smoothAngle) * currentRadius
                         z = math.sin(radRatio + smoothAngle) * currentRadius
                     elseif activeGeometry == "Reverse Spin" then 
@@ -3354,6 +3374,19 @@ RunService.Heartbeat:Connect(function(dt)
                         x = side * (1 + wingProgress * currentRadius)
                         y = 0.5 + (wingProgress * currentRadius * 0.8) + math.sin(smoothAngle + wingProgress * 2) * 0.5
                         z = 1.5 + (wingProgress * 0.5)
+                    elseif activeGeometry == "BlackHole Vortex" then
+                        local dynR = currentRadius * (0.5 + 0.5 * math.sin(smoothAngle * 2 + radRatio))
+                        x = math.cos(radRatio + smoothAngle * 2) * dynR
+                        z = math.sin(radRatio + smoothAngle * 2) * dynR
+                        y = math.sin(smoothAngle + radRatio) * 2
+                    elseif activeGeometry == "Quantum Pulsar" then
+                        local pulseR = currentRadius * (0.8 + 0.4 * math.sin(smoothAngle * 3))
+                        x = math.cos(radRatio + smoothAngle) * pulseR
+                        z = math.sin(radRatio + smoothAngle) * pulseR
+                    elseif activeGeometry == "Hyper Wave" then
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        z = math.sin(radRatio + smoothAngle) * currentRadius
+                        y = math.sin(smoothAngle * 3 + radRatio * 2) * 3
                     else 
                         x = math.cos(radRatio + smoothAngle) * currentRadius
                         z = math.sin(radRatio + smoothAngle) * currentRadius 
