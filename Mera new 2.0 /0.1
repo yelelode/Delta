@@ -1776,7 +1776,10 @@ local geometries = {
     {Name = "Wings", Bio = "Angel wings formation on sides"},
     {Name = "BlackHole Vortex", Bio = "God-level collapsing inward vortex"},
     {Name = "Quantum Pulsar", Bio = "God-level rhythmic expanding pulse"},
-    {Name = "Hyper Wave", Bio = "God-level high-speed sweeping waves"}
+    {Name = "Hyper Wave", Bio = "God-level high-speed sweeping waves"},
+    {Name = "Supernova Explosion", Bio = "God-level rapid expanding star burst orbit"},
+    {Name = "Matrix Grid", Bio = "God-level rigid cybernetic grid matrix motion"},
+    {Name = "Eclipse Shadowing", Bio = "God-level dark trailing lunar eclipse orbit"}
 }
 
 for _, geo in ipairs(geometries) do
@@ -1813,8 +1816,9 @@ for _, geo in ipairs(geometries) do
 end
 
 local function createMainBtn(text, modeKey, isMenuOpener)
+    local isMultiLine = string.find(text, "\n") ~= nil
     local btn = Instance.new("TextButton", mainList)
-    btn.Size = UDim2.new(1, 0, 0, 42)
+    btn.Size = UDim2.new(1, 0, 0, isMultiLine and 50 or 42)
     btn.BackgroundColor3 = Colors.Surface
     btn.BackgroundTransparency = 0.4
     btn.Text = "   " .. text
@@ -1822,6 +1826,7 @@ local function createMainBtn(text, modeKey, isMenuOpener)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 11
     btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.TextYAlignment = Enum.TextYAlignment.Center
     btn.AutoButtonColor = false
     btn.LayoutOrder = getOrder()
     btn.ZIndex = 7
@@ -2022,7 +2027,7 @@ end
 local getRadius = createSlider("ORBIT RADIUS", 2, 100, 15, "")
 local getSpeedMs = createSlider("ENGINE YIELD", 10, 300, 50, " %") 
 
-local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true)
+local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS\n      └ Select and lock target players for engine", nil, true)
 openTargetBtn.MouseButton1Click:Connect(function() 
     mainList.Visible = false
     isSubMenuOpen = true
@@ -2031,7 +2036,7 @@ openTargetBtn.MouseButton1Click:Connect(function()
     animateWaterfall(playerScroll)
 end)
 
-local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true)
+local openGeoBtn = createMainBtn("📐 GEOMETRY CORE\n      └ Choose orbit and movement patterns", nil, true)
 openGeoBtn.MouseButton1Click:Connect(function() 
     mainList.Visible = false
     isSubMenuOpen = true
@@ -2040,12 +2045,12 @@ openGeoBtn.MouseButton1Click:Connect(function()
     animateWaterfall(geoScroll)
 end)
 
-local orbitBtn = createMainBtn("🪐 QUANTUM ORBIT", "Orbit", false)
-local robotBtn = createMainBtn("🤖 RADIAL SURROUND", "Robot", false)
-local multiBtn = createMainBtn("🤖 DUAL SYSTEM", "MultiRobot", false)
-local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false)
-local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false)
-local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR", "Chair", false)
+local orbitBtn = createMainBtn("🪐 QUANTUM ORBIT\n      └ Orbits selected targets using geometry core", "Orbit", false)
+local robotBtn = createMainBtn("🤖 RADIAL SURROUND\n      └ 4 robots surround and lock target tightly", "Robot", false)
+local multiBtn = createMainBtn("🤖 DUAL SYSTEM\n      └ Dual robot front-back tracking protection", "MultiRobot", false)
+local ringBtn = createMainBtn("⭕ ACCELERATOR RING\n      └ Tight circular ring formation around target", "Ring", false)
+local headBtn = createMainBtn("🧠 CRANIAL FORCE\n      └ Locks tight vibration force on head", "HeadBang", false)
+local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR\n      └ Dynamic chair blitz trapping targets safely", "Chair", false)
 
 local modeBtns = { 
     ["Orbit"] = {btn = orbitBtn}, 
@@ -2099,7 +2104,7 @@ for key, data in pairs(modeBtns) do
     end)
 end
 
-local espBtn = createMainBtn("👁️ TACTICAL ESP (HUD)", "ESP", false)
+local espBtn = createMainBtn("👁️ TACTICAL ESP (HUD)\n      └ Shows players info, distance, and IP telemetry", "ESP", false)
 espBtn.MouseButton1Click:Connect(function() 
     activeModes["ESP"] = not activeModes["ESP"] 
     local accent = espBtn:FindFirstChild("Accent")
@@ -2120,7 +2125,7 @@ espBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local rainbowBtn = createMainBtn("🌈 Neon Pulse Glow", "Rainbow", false)
+local rainbowBtn = createMainBtn("🌈 Neon Pulse Glow\n      └ Applies RGB neon glow colors to props and tools", "Rainbow", false)
 rainbowBtn.MouseButton1Click:Connect(function() 
     isRainbowEnabled = not isRainbowEnabled
     activeModes["Rainbow"] = isRainbowEnabled
@@ -2144,7 +2149,7 @@ rainbowBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local soundBtn = createMainBtn("🔊 Dynamic Audio Hook", "Sound", false)
+local soundBtn = createMainBtn("🔊 Dynamic Audio Hook\n      └ Injects background music and audio effects", "Sound", false)
 soundBtn.MouseButton1Click:Connect(function() 
     isSoundEnabled = not isSoundEnabled
     activeModes["Sound"] = isSoundEnabled
@@ -2172,7 +2177,7 @@ soundBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local shieldBtn = createMainBtn("🛡️ GOD SHIELD (ANTI-TOUCH/SIT)", "Shield", false)
+local shieldBtn = createMainBtn("🛡️ GOD SHIELD (ANTI-TOUCH/SIT)\n      └ Prevents unwanted sitting and prop collisions", "Shield", false)
 shieldBtn.MouseButton1Click:Connect(function() 
     isGodShieldEnabled = not isGodShieldEnabled
     activeModes["Shield"] = isGodShieldEnabled
@@ -2196,7 +2201,7 @@ shieldBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local houseProtBtn = createMainBtn("🏠 HOUSE DEFENSE (ANTI-DELETE)", "HouseProt", false)
+local houseProtBtn = createMainBtn("🏠 HOUSE DEFENSE (ANTI-DELETE)\n      └ Protects house and auto-redirects attacks", "HouseProt", false)
 local isHouseProtEnabled = true
 activeModes["HouseProt"] = true
 
@@ -2230,7 +2235,7 @@ end)
 
 local isVisualZoneEnabled = false
 activeModes["VisualZone"] = false
-local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES", "VisualZone", false)
+local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES\n      └ Visualizes ban zones with clear anime atmosphere", "VisualZone", false)
 visualZoneBtn.BackgroundColor3 = Colors.Surface
 visualZoneBtn.TextColor3 = Colors.Text
 
@@ -2405,7 +2410,7 @@ end)
 -- =========================================================
 -- 🚀 FIXED UNIVERSAL FAST TP & MASSIVE MAP WIPE (NO BAN)
 -- =========================================================
-local escapeBtn = createMainBtn("🚀 FAST TP & MASSIVE CLEAR", nil, false)
+local escapeBtn = createMainBtn("🚀 FAST TP & MASSIVE CLEAR\n      └ Teleports to safety and wipes map props instantly", nil, false)
 escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
 escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
@@ -2515,7 +2520,7 @@ end)
 -- =========================================================
 -- 🚫 ADVANCED SMART BAN TRAP (NEW BUTTON) 🚫
 -- =========================================================
-local banTrapBtn = createMainBtn("🚫 SMART BAN TRAP", nil, false)
+local banTrapBtn = createMainBtn("🚫 SMART BAN TRAP\n      └ Automatically bans and clears nearby attackers", nil, false)
 banTrapBtn.BackgroundColor3 = Color3.fromRGB(130, 0, 200)
 banTrapBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 banTrapBtn:SetAttribute("BaseColor", Color3.fromRGB(130, 0, 200))
@@ -3387,6 +3392,22 @@ RunService.Heartbeat:Connect(function(dt)
                         x = math.cos(radRatio + smoothAngle) * currentRadius
                         z = math.sin(radRatio + smoothAngle) * currentRadius
                         y = math.sin(smoothAngle * 3 + radRatio * 2) * 3
+                    elseif activeGeometry == "Supernova Explosion" then
+                        local expR = currentRadius * (0.3 + math.abs(math.sin(smoothAngle * 4)))
+                        x = math.cos(radRatio + smoothAngle) * expR
+                        z = math.sin(radRatio + smoothAngle) * expR
+                        y = math.sin(smoothAngle * 2) * 2
+                    elseif activeGeometry == "Matrix Grid" then
+                        local gridCol = math.fmod(myLocalIdx, 4) - 1.5
+                        local gridRow = math.floor((myLocalIdx - 1) / 4) - 1
+                        x = gridCol * (currentRadius * 0.3)
+                        z = gridRow * (currentRadius * 0.3)
+                        y = math.sin(smoothAngle + myLocalIdx) * 1.5
+                    elseif activeGeometry == "Eclipse Shadowing" then
+                        local ellipR = currentRadius * 1.3
+                        x = math.cos(radRatio + smoothAngle) * ellipR
+                        z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
+                        y = math.cos(smoothAngle * 2) * 1.2
                     else 
                         x = math.cos(radRatio + smoothAngle) * currentRadius
                         z = math.sin(radRatio + smoothAngle) * currentRadius 
