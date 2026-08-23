@@ -210,40 +210,48 @@ task.spawn(function()
 end)
 
 --------------------------------------------------
--- 🔥 RGB + 【ＴＸＲＨＵＢ】 RP NAME & BIO SYSTEM (60s LOOP)
+-- 🔥 ADVANCED RED & BLACK SMOOTH RGB + 【ＴＸＲＨＵＢ】 SYSTEM (60s NAME LOOP)
 --------------------------------------------------
 task.spawn(function()
     pcall(function()
         local Ocean = ReplicatedStorage:WaitForChild("RE", 10)
         local River = Ocean:WaitForChild("1RPNam1eColo1r", 10)
-        StringEvent = Ocean:WaitForChild("1RPNam1eTex1t", 10)
+        local StringEvent = Ocean:WaitForChild("1RPNam1eTex1t", 10)
         
-        local function applyRP()
-            pcall(function()
-                StringEvent:FireServer("RolePlayName", "【ＴＸＲＨＵＢ】")
-                StringEvent:FireServer("RolePlayBio", "TXR Quantum Core Active | Welcome " .. lp.DisplayName)
-            end)
-        end
+        -- Bio set only ONCE at start (without TXR Quantum Core text)
+        pcall(function()
+            StringEvent:FireServer("RolePlayName", "【ＴＸＲＨＵＢ】")
+            StringEvent:FireServer("RolePlayBio", "Welcome " .. lp.DisplayName)
+        end)
         
-        applyRP()
-        
-        -- 60 Seconds loop refresher + RGB Color cycle
-        local hue = 0
         local tickCounter = 0
+        local t = 0
         
-        while task.wait(0.5) do
-            tickCounter = tickCounter + 0.5
+        while task.wait(0.3) do
+            tickCounter = tickCounter + 0.3
+            t = t + 0.3
             
             pcall(function()
-                hue = (hue + 0.02) % 1
-                local rgbColor = Color3.fromHSV(hue, 1, 1)
-                River:FireServer("PickingRPNameColor", rgbColor)
-                River:FireServer("PickingRPBioColor", rgbColor)
+                -- Smooth Red & Black opposing wave effect (ulta/aage bhagne wala smooth effect)
+                local nameFactor = (math.sin(t * 2.5) + 1) / 2
+                local bioFactor = (math.cos(t * 2.5) + 1) / 2
+                
+                local redColor = Color3.fromRGB(255, 0, 0)
+                local blackColor = Color3.fromRGB(20, 0, 0) -- Deep dark black-red so text remains visible
+                
+                local nameRgb = redColor:Lerp(blackColor, nameFactor)
+                local bioRgb = redColor:Lerp(blackColor, bioFactor)
+                
+                River:FireServer("PickingRPNameColor", nameRgb)
+                River:FireServer("PickingRPBioColor", bioRgb)
             end)
             
+            -- Re-apply RP Name every 60 seconds
             if tickCounter >= 60 then
                 tickCounter = 0
-                applyRP()
+                pcall(function()
+                    StringEvent:FireServer("RolePlayName", "【ＴＸＲＨＵＢ】")
+                end)
             end
         end
     end)
@@ -2402,7 +2410,7 @@ soundBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then 
         TweenService:Create(soundBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
         if accent then 
-            TweenService:Create(soundBtn, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
         sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Activated.", 2)
         task.spawn(PlayRobotBangMusic) -- 🔥 AUTOMATICALLY SPAWN BOARD + START MUSIC ON TOGGLE!
