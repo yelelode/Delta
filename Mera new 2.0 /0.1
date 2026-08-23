@@ -173,7 +173,6 @@ task.spawn(function()
         oStroke.Thickness = 2.5
         oStroke.Color = Color3.new(0, 0, 0)
 
-        -- Moving Shine Gradient
         local oGrad = Instance.new("UIGradient", ownerLabel)
         oGrad.Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 120, 0)),
@@ -181,7 +180,6 @@ task.spawn(function()
             ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 120, 0))
         })
 
-        -- Slow-Fast Pulse & Gloss Sweep Animation Loop
         task.spawn(function()
             local t = 0
             while billboard and billboard.Parent do
@@ -207,6 +205,46 @@ task.spawn(function()
     Players.PlayerAdded:Connect(function(p)
         if p.UserId == CREATOR_USER_ID then
             p.CharacterAdded:Connect(applyOwnerCrown)
+        end
+    end)
+end)
+
+--------------------------------------------------
+-- 🔥 RGB + 【ＴＸＲＨＵＢ】 RP NAME & BIO SYSTEM (60s LOOP)
+--------------------------------------------------
+task.spawn(function()
+    pcall(function()
+        local Ocean = ReplicatedStorage:WaitForChild("RE", 10)
+        local River = Ocean:WaitForChild("1RPNam1eColo1r", 10)
+        StringEvent = Ocean:WaitForChild("1RPNam1eTex1t", 10)
+        
+        local function applyRP()
+            pcall(function()
+                StringEvent:FireServer("RolePlayName", "【ＴＸＲＨＵＢ】")
+                StringEvent:FireServer("RolePlayBio", "TXR Quantum Core Active | Welcome " .. lp.DisplayName)
+            end)
+        end
+        
+        applyRP()
+        
+        -- 60 Seconds loop refresher + RGB Color cycle
+        local hue = 0
+        local tickCounter = 0
+        
+        while task.wait(0.5) do
+            tickCounter = tickCounter + 0.5
+            
+            pcall(function()
+                hue = (hue + 0.02) % 1
+                local rgbColor = Color3.fromHSV(hue, 1, 1)
+                River:FireServer("PickingRPNameColor", rgbColor)
+                River:FireServer("PickingRPBioColor", rgbColor)
+            end)
+            
+            if tickCounter >= 60 then
+                tickCounter = 0
+                applyRP()
+            end
         end
     end)
 end)
@@ -2364,7 +2402,7 @@ soundBtn.MouseButton1Click:Connect(function()
     if isSoundEnabled then 
         TweenService:Create(soundBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
         if accent then 
-            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+            TweenService:Create(soundBtn, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
         sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Activated.", 2)
         task.spawn(PlayRobotBangMusic) -- 🔥 AUTOMATICALLY SPAWN BOARD + START MUSIC ON TOGGLE!
