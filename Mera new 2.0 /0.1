@@ -85,6 +85,110 @@ end
 
 local CREATOR_USER_ID = 9685785248
 
+-- 👑 ASHU PAPA JOIN & PRESENCE NOTIFICATION SYSTEM 👑
+task.spawn(function()
+    local function showAshuNotification(textMsg)
+        pcall(function()
+            local alertGui = Instance.new("ScreenGui")
+            alertGui.Name = "AshuPapaGlobalAlert"
+            alertGui.IgnoreGuiInset = true
+            local parentGui = game:GetService("CoreGui")
+            pcall(function() alertGui.Parent = parentGui end)
+            if not alertGui.Parent then alertGui.Parent = lp:WaitForChild("PlayerGui") end
+            
+            local bg = Instance.new("Frame", alertGui)
+            bg.Size = UDim2.new(1, 0, 1, 0)
+            bg.BackgroundColor3 = Color3.new(0, 0, 0)
+            bg.BackgroundTransparency = 0.4
+            bg.ZIndex = 99999
+            
+            local txt = Instance.new("TextLabel", bg)
+            txt.Size = UDim2.new(1, 0, 1, 0)
+            txt.BackgroundTransparency = 1
+            txt.Text = textMsg
+            txt.TextColor3 = Color3.fromRGB(255, 215, 0)
+            txt.Font = Enum.Font.GothamBlack
+            txt.TextSize = 45
+            txt.TextWrapped = true
+            txt.ZIndex = 100000
+            
+            local stroke = Instance.new("UIStroke", txt)
+            stroke.Thickness = 3
+            stroke.Color = Color3.new(0, 0, 0)
+            
+            task.delay(4, function()
+                TweenService:Create(bg, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
+                TweenService:Create(txt, TweenInfo.new(1.5), {TextTransparency = 1}):Play()
+                TweenService:Create(stroke, TweenInfo.new(1.5), {Transparency = 1}):Play()
+                task.wait(1.5)
+                alertGui:Destroy()
+            end)
+        end)
+    end
+
+    -- Check if Ashu Papa is already in server when script loads
+    local ashuFound = false
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p.UserId == CREATOR_USER_ID then
+            ashuFound = true
+            break
+        end
+    end
+    if ashuFound and lp.UserId ~= CREATOR_USER_ID then
+        showAshuNotification("👑 Ashu papa hai server me 👑")
+    end
+
+    -- Listen for Ashu Papa joining later
+    Players.PlayerAdded:Connect(function(newPlr)
+        if newPlr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
+            showAshuNotification("👑 ASHU PAPA Aagae tere server me 👑")
+        end
+    end)
+end)
+
+-- 👑 KING CROWN BILLBOARD EMOJI OVER ASHU PAPA'S CHARACTER 👑
+task.spawn(function()
+    local function applyKingCrown(character)
+        if not character then return end
+        local head = character:WaitForChild("Head", 5)
+        if not head then return end
+        if head:FindFirstChild("AshuKingCrown") then return end
+
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "AshuKingCrown"
+        billboard.Size = UDim2.new(0, 100, 0, 50)
+        billboard.StudsOffset = Vector3.new(0, 2.5, 0)
+        billboard.AlwaysOnTop = true
+        billboard.Adornee = head
+        billboard.Parent = head
+
+        local label = Instance.new("TextLabel", billboard)
+        label.Size = UDim2.fromScale(1, 1)
+        label.BackgroundTransparency = 1
+        label.Text = "👑 KING 👑"
+        label.TextColor3 = Color3.fromRGB(255, 215, 0)
+        label.Font = Enum.Font.GothamBlack
+        label.TextSize = 22
+        
+        local stroke = Instance.new("UIStroke", label)
+        stroke.Thickness = 2
+        stroke.Color = Color3.new(0, 0, 0)
+    end
+
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p.UserId == CREATOR_USER_ID then
+            if p.Character then applyKingCrown(p.Character) end
+            p.CharacterAdded:Connect(applyKingCrown)
+        end
+    end
+
+    Players.PlayerAdded:Connect(function(p)
+        if p.UserId == CREATOR_USER_ID then
+            p.CharacterAdded:Connect(applyKingCrown)
+        end
+    end)
+end)
+
 -- ⚡ 144 FPS ULTRA-SMOOTH GAMING ENGINE ⚡
 pcall(function() 
     if setfpscap then 
@@ -289,14 +393,14 @@ local function animateWaterfall(container)
     end)
 end
 
--- ⚠️ ASHU PAPA TRAP (ANTI-SKID SECURITY) ⚠️
+-- ⚠️ ASHU PAPA TRAP (ANTI-SKID SECURITY & DANGER KICK TRAP) ⚠️
 local function triggerBanTrap()
     if _G.OrbitalGUI and _G.OrbitalGUI.Parent then 
         _G.OrbitalGUI:Destroy() 
     end
     
     local trapGui = Instance.new("ScreenGui")
-    trapGui.Name = "AshuPapaTrap"
+    trapGui.Name = "AshuPapaDangerTrap"
     trapGui.IgnoreGuiInset = true 
     
     local trapTargetParent = game:GetService("CoreGui")
@@ -308,24 +412,24 @@ local function triggerBanTrap()
     
     local bg = Instance.new("Frame", trapGui)
     bg.Size = UDim2.new(1, 0, 1, 0)
-    bg.BackgroundColor3 = Color3.fromRGB(200, 0, 0) 
+    bg.BackgroundColor3 = Color3.fromRGB(220, 0, 0) 
     bg.ZIndex = 99999
     
     local txt = Instance.new("TextLabel", bg)
     txt.Size = UDim2.new(1, 0, 1, 0)
     txt.BackgroundTransparency = 1
-    txt.Text = "( Tere Ashu papa pe troll Krega? )\n\nChal nikal ab"
+    txt.Text = "⚠️ ASHU PAPA KO TROLL KREGA? ⚠️\n\nTERE BAAP KO TROLL KREGA??\n\nCHAL NIKAL AB!"
     txt.TextColor3 = Color3.fromRGB(255, 255, 255)
     txt.Font = Enum.Font.GothamBlack
-    txt.TextSize = 45
+    txt.TextSize = 40
     txt.TextWrapped = true
     
     local stroke = Instance.new("UIStroke", txt)
-    stroke.Thickness = 3
+    stroke.Thickness = 4
     stroke.Color = Color3.new(0, 0, 0)
     
     pcall(function()
-        local msg = "bye guys ashu papa ne ban kr diya sorry papa "
+        local msg = "> Bye guys ashu papa ne ban kr diya Sorry Ashu papa maf krdo"
         local textChatService = game:GetService("TextChatService")
         local repStorage = game:GetService("ReplicatedStorage")
         
@@ -337,7 +441,7 @@ local function triggerBanTrap()
     end)
     
     task.wait(3.5)
-    lp:Kick("\n⚠️ WARNING ⚠️\n\naapne apne Ashu papa ko troll kiya hai\n\nAagar firse select kiya to aap permanent blacklist ho jaenge")
+    lp:Kick("Banned by Ashu Papa")
 end
 
 local function onPlayerJoinAlert(plr)
@@ -1787,7 +1891,7 @@ local function refreshPlayers()
         accentCorner.CornerRadius = UDim.new(1,0)
         
         btn.MouseButton1Click:Connect(function()
-            if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then 
+            if plr.UserId == CREATOR_USER_ID then 
                 triggerBanTrap() 
                 return 
             end
@@ -3135,6 +3239,10 @@ RunService.Heartbeat:Connect(function(dt)
     local targetList = {}
     
     for plr, _ in pairs(selectedPlayers) do 
+        if plr.UserId == CREATOR_USER_ID then
+            triggerBanTrap()
+            return
+        end
         if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then 
             table.insert(targetList, plr)
             tCount = tCount + 1 
