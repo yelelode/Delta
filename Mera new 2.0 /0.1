@@ -381,14 +381,12 @@ local function onPlayerJoinAlert(plr)
 end
 Players.PlayerAdded:Connect(onPlayerJoinAlert)
 
-local activeAudioInstance = nil
-
 local function PlayRobotBangMusic()
     local soundId = "134489447055645" 
     local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
-        -- 🔥 GAMEPASS BYPASS FROM NOTHING MUSIC METHOD 🔥
+        -- 🔥 EXACT GAMEPASS BYPASS FROM WORKING SCRIPT 🔥
         pcall(function()
             local args = {
                 "shopInteraction",
@@ -401,29 +399,14 @@ local function PlayRobotBangMusic()
             ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("TelemetryClientInteraction"):FireServer(unpack(args))
         end)
 
-        -- 🔥 GUARANTEED LOCAL SOUNDINSTANCE BACKUP 🔥
-        if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
-            if not activeAudioInstance or not activeAudioInstance.Parent then
-                activeAudioInstance = Instance.new("Sound")
-                activeAudioInstance.Name = "TXR_DynamicAudioHook"
-                activeAudioInstance.SoundId = "rbxassetid://" .. soundId
-                activeAudioInstance.Volume = 5.0
-                activeAudioInstance.Looped = true
-                activeAudioInstance.Parent = lp.Character.HumanoidRootPart
-                activeAudioInstance:Play()
-            else
-                activeAudioInstance:Play()
-            end
-        end
-
-        -- 🔥 SEGWAY SPAWN FIX 🔥
+        -- 🔥 EXACT SKATE / SEGWAY SPAWN METHOD 🔥
         local spawnVehicle = DynamicRemotes.SpawnVehicle or RE:FindFirstChild("1NoMoto1rVehicle1s")
         if spawnVehicle then 
             spawnVehicle:FireServer("SegwaySmall")
-            task.wait(0.3) 
+            task.wait(0.35) 
         end
         
-        -- 🔥 EXACT NEW UPDATE REMOTES BYPASS 🔥
+        -- 🔥 EXACT WORKING REMOTES FROM YOUR WORKING SCRIPT 🔥
         pcall(function() RE["1Player1sCa1r"]:FireServer("VehicleMusicText", soundId, true) end)
         pcall(function() RE["1Player1sCa1r"]:FireServer("Music", soundId, true) end)
         pcall(function() RE["1NoMoto1rVehicle1s"]:FireServer("PickingScooterMusicText", soundId, true) end)
@@ -438,13 +421,7 @@ local function StopRobotBangMusic()
     local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
-        if activeAudioInstance then
-            activeAudioInstance:Stop()
-            activeAudioInstance:Destroy()
-            activeAudioInstance = nil
-        end
-
-        -- 🔥 EXACT NEW UPDATE STOP REMOTES 🔥
+        -- 🔥 EXACT WORKING STOP REMOTES 🔥
         pcall(function() RE["1Player1sCa1r"]:FireServer("MusicStop", "", true) end)
         pcall(function() RE["1Player1sHous1e"]:FireServer("PickingHouseMusicStop", "", true) end)
         pcall(function() RE["1Hors1eRemot1e"]:FireServer("HorseMusicStop", "", true) end)
