@@ -1786,7 +1786,7 @@ for _, geo in ipairs(geometries) do
     btn.MouseButton1Click:Connect(function() 
         activeGeometry = geo
         isSubMenuOpen = false
-        sendNotif("Engine", "Lock: " .. geo, 2)
+        sendNotif("📐 GEOMETRY CORE", "Lock: " .. geo, 2)
         
         local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
         TweenService:Create(geoMenu, tInfo, {Position = UDim2.fromScale(1.2, 0)}):Play()
@@ -2009,6 +2009,7 @@ local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true)
 openTargetBtn.MouseButton1Click:Connect(function() 
     mainList.Visible = false
     isSubMenuOpen = true
+    sendNotif("👥 TARGETS", "Opening Matrix Targets Menu.", 2)
     local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     TweenService:Create(playerMenu, tInfo, {Position = UDim2.fromScale(0, 0)}):Play() 
     animateWaterfall(playerScroll)
@@ -2018,6 +2019,7 @@ local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true)
 openGeoBtn.MouseButton1Click:Connect(function() 
     mainList.Visible = false
     isSubMenuOpen = true
+    sendNotif("📐 GEOMETRY", "Opening Geometry Core Menu.", 2)
     local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     TweenService:Create(geoMenu, tInfo, {Position = UDim2.fromScale(0, 0)}):Play() 
     animateWaterfall(geoScroll)
@@ -2079,6 +2081,7 @@ for key, data in pairs(modeBtns) do
             table.insert(modeQueue, key) 
         end
         syncComboUI()
+        sendNotif("⚙️ ENGINE MODE", key .. " mode " .. (activeModes[key] and "Activated" or "Deactivated"), 2)
     end)
 end
 
@@ -2095,11 +2098,13 @@ espBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
+        sendNotif("👁️ ESP CORE", "Tactical ESP Activated.", 2)
     else 
         TweenService:Create(espBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
+        sendNotif("👁️ ESP CORE", "Tactical ESP Deactivated.", 2)
     end
 end)
 
@@ -2118,12 +2123,14 @@ rainbowBtn.MouseButton1Click:Connect(function()
             accent.BackgroundColor3 = Colors.Purple
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
+        sendNotif("🌈 NEON GLOW", "Neon Pulse Glow Activated.", 2)
     else 
         TweenService:Create(rainbowBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             accent.BackgroundColor3 = Colors.Primary
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
+        sendNotif("🌈 NEON GLOW", "Neon Pulse Glow Deactivated.", 2)
     end
 end)
 
@@ -2141,6 +2148,7 @@ soundBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
+        sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Activated.", 2)
         if isSystemActive then 
             task.spawn(PlayRobotBangMusic) 
         end
@@ -2149,6 +2157,7 @@ soundBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end
+        sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Deactivated.", 2)
         if isSystemActive then 
             task.spawn(StopRobotBangMusic) 
         end 
