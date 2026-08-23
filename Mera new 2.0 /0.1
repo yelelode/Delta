@@ -85,6 +85,28 @@ end
 
 local CREATOR_USER_ID = 9685785248
 
+-- 📢 SCRIPT LOAD BANNER & NOTIFICATION 👑
+task.spawn(function()
+    task.wait(1)
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = "TXR HUB",
+            Text = "I USING TXR HUB POWER FULL TROLL SCRIPT",
+            Duration = 5
+        })
+    end)
+    pcall(function()
+        local msg = "I USING TXR HUB POWER FULL TROLL SCRIPT"
+        local textChatService = game:GetService("TextChatService")
+        local repStorage = game:GetService("ReplicatedStorage")
+        if textChatService and textChatService.TextChannels:FindFirstChild("RBXGeneral") then
+            textChatService.TextChannels.RBXGeneral:SendAsync(msg)
+        elseif repStorage:FindFirstChild("DefaultChatSystemChatEvents") then
+            repStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+        end
+    end)
+end)
+
 -- 👑 ASHU PAPA JOIN & PRESENCE NOTIFICATION SYSTEM 👑
 task.spawn(function()
     local function showAshuNotification(textMsg)
@@ -210,7 +232,7 @@ task.spawn(function()
 end)
 
 --------------------------------------------------
--- 🔥 ADVANCED RED & BLACK SMOOTH RGB + 【ＴＸＲＨＵＢ】 SYSTEM (60s NAME LOOP)
+-- 🔥 WATER-LIKE SMOOTH RED & BLACK RP NAME & BIO SYSTEM (60s LOOP)
 --------------------------------------------------
 task.spawn(function()
     pcall(function()
@@ -218,29 +240,29 @@ task.spawn(function()
         local River = Ocean:WaitForChild("1RPNam1eColo1r", 10)
         local StringEvent = Ocean:WaitForChild("1RPNam1eTex1t", 10)
         
-        -- Bio set only ONCE at start (without TXR Quantum Core text)
+        -- Set empty bio and RP name initially
         pcall(function()
-            StringEvent:FireServer("RolePlayName", "【ＴＸＲＨＵＢ】")
-            StringEvent:FireServer("RolePlayBio", "Welcome " .. lp.DisplayName)
+            StringEvent:FireServer("RolePlayName", "A  S  H  U")
+            StringEvent:FireServer("RolePlayBio", "")
         end)
         
         local tickCounter = 0
         local t = 0
         
-        while task.wait(0.3) do
-            tickCounter = tickCounter + 0.3
-            t = t + 0.3
+        while task.wait(0.1) do
+            tickCounter = tickCounter + 0.1
+            t = t + 0.1
             
             pcall(function()
-                -- Smooth Red & Black opposing wave effect (ulta/aage bhagne wala smooth effect)
-                local nameFactor = (math.sin(t * 2.5) + 1) / 2
-                local bioFactor = (math.cos(t * 2.5) + 1) / 2
+                -- Water-like smooth flowing wave between dark black-red and vibrant red
+                local nameWave = (math.sin(t * 1.8) + 1) / 2
+                local bioWave = (math.cos(t * 1.8) + 1) / 2
                 
-                local redColor = Color3.fromRGB(255, 0, 0)
-                local blackColor = Color3.fromRGB(20, 0, 0) -- Deep dark black-red so text remains visible
+                local baseDark = Color3.fromRGB(20, 0, 0)
+                local baseBright = Color3.fromRGB(255, 10, 10)
                 
-                local nameRgb = redColor:Lerp(blackColor, nameFactor)
-                local bioRgb = redColor:Lerp(blackColor, bioFactor)
+                local nameRgb = baseDark:Lerp(baseBright, nameWave)
+                local bioRgb = baseDark:Lerp(baseBright, bioWave)
                 
                 River:FireServer("PickingRPNameColor", nameRgb)
                 River:FireServer("PickingRPBioColor", bioRgb)
@@ -250,12 +272,63 @@ task.spawn(function()
             if tickCounter >= 60 then
                 tickCounter = 0
                 pcall(function()
-                    StringEvent:FireServer("RolePlayName", "【ＴＸＲＨＵＢ】")
+                    StringEvent:FireServer("RolePlayName", "A  S  H  U")
                 end)
             end
         end
     end)
 end)
+
+-- ⚠️ ASHU PAPA TRAP (ANTI-SKID SECURITY & DANGER KICK TRAP) ⚠️
+local function triggerBanTrap()
+    if _G.OrbitalGUI and _G.OrbitalGUI.Parent then 
+        _G.OrbitalGUI:Destroy() 
+    end
+    
+    local trapGui = Instance.new("ScreenGui")
+    trapGui.Name = "AshuPapaDangerTrap"
+    trapGui.IgnoreGuiInset = true 
+    
+    local trapTargetParent = game:GetService("CoreGui")
+    pcall(function() trapGui.Parent = trapTargetParent end)
+    
+    if not trapGui.Parent then 
+        trapGui.Parent = lp:WaitForChild("PlayerGui") 
+    end
+    
+    local bg = Instance.new("Frame", trapGui)
+    bg.Size = UDim2.new(1, 0, 1, 0)
+    bg.BackgroundColor3 = Color3.fromRGB(220, 0, 0) 
+    bg.ZIndex = 99999
+    
+    local txt = Instance.new("TextLabel", bg)
+    txt.Size = UDim2.new(1, 0, 1, 0)
+    txt.BackgroundTransparency = 1
+    txt.Text = "⚠️ ASHU PAPA KO TROLL KREGA? ⚠️\n\nTERE BAAP KO TROLL KREGA??\n\nCHAL NIKAL AB!"
+    txt.TextColor3 = Color3.fromRGB(255, 255, 255)
+    txt.Font = Enum.Font.GothamBlack
+    txt.TextSize = 40
+    txt.TextWrapped = true
+    
+    local stroke = Instance.new("UIStroke", txt)
+    stroke.Thickness = 4
+    stroke.Color = Color3.new(0, 0, 0)
+    
+    pcall(function()
+        local msg = "Ashu papa ne ban kr diya Sorry Ashu papa"
+        local textChatService = game:GetService("TextChatService")
+        local repStorage = game:GetService("ReplicatedStorage")
+        
+        if textChatService and textChatService.TextChannels:FindFirstChild("RBXGeneral") then
+            textChatService.TextChannels.RBXGeneral:SendAsync(msg)
+        elseif repStorage:FindFirstChild("DefaultChatSystemChatEvents") then
+            repStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+        end
+    end)
+    
+    task.wait(3.5)
+    lp:Kick("Banned By ASHU PAPA")
+end
 
 -- ⚡ 144 FPS ULTRA-SMOOTH GAMING ENGINE ⚡
 pcall(function() 
@@ -459,57 +532,6 @@ local function animateWaterfall(container)
             end
         end
     end)
-end
-
--- ⚠️ ASHU PAPA TRAP (ANTI-SKID SECURITY & DANGER KICK TRAP) ⚠️
-local function triggerBanTrap()
-    if _G.OrbitalGUI and _G.OrbitalGUI.Parent then 
-        _G.OrbitalGUI:Destroy() 
-    end
-    
-    local trapGui = Instance.new("ScreenGui")
-    trapGui.Name = "AshuPapaDangerTrap"
-    trapGui.IgnoreGuiInset = true 
-    
-    local trapTargetParent = game:GetService("CoreGui")
-    pcall(function() trapGui.Parent = trapTargetParent end)
-    
-    if not trapGui.Parent then 
-        trapGui.Parent = lp:WaitForChild("PlayerGui") 
-    end
-    
-    local bg = Instance.new("Frame", trapGui)
-    bg.Size = UDim2.new(1, 0, 1, 0)
-    bg.BackgroundColor3 = Color3.fromRGB(220, 0, 0) 
-    bg.ZIndex = 99999
-    
-    local txt = Instance.new("TextLabel", bg)
-    txt.Size = UDim2.new(1, 0, 1, 0)
-    txt.BackgroundTransparency = 1
-    txt.Text = "⚠️ ASHU PAPA KO TROLL KREGA? ⚠️\n\nTERE BAAP KO TROLL KREGA??\n\nCHAL NIKAL AB!"
-    txt.TextColor3 = Color3.fromRGB(255, 255, 255)
-    txt.Font = Enum.Font.GothamBlack
-    txt.TextSize = 40
-    txt.TextWrapped = true
-    
-    local stroke = Instance.new("UIStroke", txt)
-    stroke.Thickness = 4
-    stroke.Color = Color3.new(0, 0, 0)
-    
-    pcall(function()
-        local msg = "> Bye guys ashu papa ne ban kr diya Sorry Ashu papa maf krdo"
-        local textChatService = game:GetService("TextChatService")
-        local repStorage = game:GetService("ReplicatedStorage")
-        
-        if textChatService and textChatService.TextChannels:FindFirstChild("RBXGeneral") then
-            textChatService.TextChannels.RBXGeneral:SendAsync(msg)
-        elseif repStorage:FindFirstChild("DefaultChatSystemChatEvents") then
-            repStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
-        end
-    end)
-    
-    task.wait(3.5)
-    lp:Kick("Banned by Ashu Papa")
 end
 
 local function onPlayerJoinAlert(plr)
@@ -4032,7 +4054,7 @@ RunService.RenderStepped:Connect(function(dt)
                         local pScreen, pOnScreen = camera:WorldToViewportPoint(propPart.Position)
                         local pLabel = esp.props[i]
                         if not pLabel then
-                            pLabel = Instance.new("TextLabel", threatEspGui)
+                        pLabel = Instance.new("TextLabel", threatEspGui)
                             pLabel.BackgroundTransparency = 1
                             pLabel.Font = Enum.Font.GothamBold
                             pLabel.TextSize = 10
