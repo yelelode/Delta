@@ -2230,7 +2230,30 @@ visualZoneBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
-        sendNotif("🛑 ZONES", "Ban Zones Visible.", 2)
+        sendNotif("🛑 GENJUTSU", "Domain Expansion: Ban Zones Visible.", 2)
+        
+        -- ITACHI SOUND EFFECT
+        task.spawn(function()
+            local sound = Instance.new("Sound")
+            sound.SoundId = "rbxassetid://7288361610"
+            sound.Volume = 2
+            sound.Parent = game:GetService("SoundService")
+            sound:Play()
+            task.delay(6, function() pcall(function() sound:Destroy() end) end)
+        end)
+
+        -- ITACHI VISUAL RED FLASH (Screen Effect)
+        task.spawn(function()
+            local lighting = game:GetService("Lighting")
+            local cc = Instance.new("ColorCorrectionEffect")
+            cc.TintColor = Color3.fromRGB(255, 50, 50)
+            cc.Contrast = 0.5
+            cc.Parent = lighting
+            
+            local tween = TweenService:Create(cc, TweenInfo.new(1.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TintColor = Color3.fromRGB(255, 255, 255), Contrast = 0})
+            tween:Play()
+            tween.Completed:Connect(function() pcall(function() cc:Destroy() end) end)
+        end)
         
         local lotsFolder = workspace:FindFirstChild("001_Lots")
         if lotsFolder then
@@ -2240,18 +2263,31 @@ visualZoneBtn.MouseButton1Click:Connect(function()
                 boxPart.Name = "AsliBanZone_TXR"
                 boxPart.Anchored = true
                 boxPart.CanCollide = false
-                boxPart.Size = Vector3.new(lotSize.X, 150, lotSize.Z)
-                boxPart.CFrame = lotCFrame * CFrame.new(0, 25, 0)
+                boxPart.Size = Vector3.new(lotSize.X, 0, lotSize.Z) -- Start height at 0 for effect
+                boxPart.CFrame = lotCFrame
                 boxPart.Material = Enum.Material.ForceField
                 boxPart.Color = Color3.fromRGB(255, 0, 0)
-                boxPart.Transparency = 0.8
+                boxPart.Transparency = 1
                 boxPart.Parent = workspace
                 
                 local highlight = Instance.new("Highlight")
                 highlight.Adornee = boxPart
                 highlight.FillTransparency = 1
                 highlight.OutlineColor = Color3.fromRGB(255, 0, 0)
+                highlight.OutlineTransparency = 1
                 highlight.Parent = boxPart
+
+                -- ANIMATE BOX GROWING FROM GROUND
+                local boxTweenInfo = TweenInfo.new(1.2, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+                TweenService:Create(boxPart, boxTweenInfo, {
+                    Size = Vector3.new(lotSize.X, 150, lotSize.Z),
+                    CFrame = lotCFrame * CFrame.new(0, 25, 0),
+                    Transparency = 0.8
+                }):Play()
+                
+                TweenService:Create(highlight, boxTweenInfo, {
+                    OutlineTransparency = 0
+                }):Play()
             end
         end
     else 
@@ -2263,7 +2299,16 @@ visualZoneBtn.MouseButton1Click:Connect(function()
         
         for _, obj in ipairs(workspace:GetChildren()) do
             if obj.Name == "AsliBanZone_TXR" then
-                obj:Destroy()
+                -- FADE OUT AND SHRINK BEFORE DESTROYING
+                task.spawn(function()
+                    local h = obj:FindFirstChildOfClass("Highlight")
+                    if h then
+                        TweenService:Create(h, TweenInfo.new(0.3), {OutlineTransparency = 1}):Play()
+                    end
+                    local t = TweenService:Create(obj, TweenInfo.new(0.3), {Transparency = 1, Size = Vector3.new(obj.Size.X, 0, obj.Size.Z)})
+                    t:Play()
+                    t.Completed:Connect(function() pcall(function() obj:Destroy() end) end)
+                end)
             end
         end
     end
