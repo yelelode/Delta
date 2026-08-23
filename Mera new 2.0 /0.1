@@ -144,7 +144,7 @@ task.spawn(function()
     end)
 end)
 
--- 👑 GOD-LEVEL OWNER CROWN BILLBOARD OVER ASHU PAPA'S CHARACTER 👑
+-- 👑 GOD-LEVEL MEHENGA GOLDEN RGB OWNER BILLBOARD OVER CHARACTER 👑
 task.spawn(function()
     local function applyOwnerCrown(character)
         if not character then return end
@@ -154,30 +154,44 @@ task.spawn(function()
 
         local billboard = Instance.new("BillboardGui")
         billboard.Name = "AshuOwnerCrown"
-        billboard.Size = UDim2.new(0, 140, 0, 60)
-        billboard.StudsOffset = Vector3.new(0, 2.7, 0)
+        billboard.Size = UDim2.new(0, 180, 0, 70)
+        billboard.StudsOffset = Vector3.new(0, 3.1, 0)
         billboard.AlwaysOnTop = true
         billboard.Adornee = head
         billboard.Parent = head
 
-        local label = Instance.new("TextLabel", billboard)
+        -- Background Soft Glow Frame for Expensive Look
+        local glowFrame = Instance.new("Frame", billboard)
+        glowFrame.Size = UDim2.fromScale(1, 1)
+        glowFrame.BackgroundTransparency = 1
+        
+        local uic = Instance.new("UICorner", glowFrame)
+        uic.CornerRadius = UDim.new(0, 12)
+
+        local label = Instance.new("TextLabel", glowFrame)
         label.Size = UDim2.fromScale(1, 1)
         label.BackgroundTransparency = 1
         label.Text = "👑 OWNER 👑"
-        label.TextColor3 = Color3.fromRGB(0, 255, 200) -- Cyber Neon Accent
-        label.Font = Enum.Font.Arcade -- God-Level Arcade / Cyber Font
+        label.TextColor3 = Color3.fromRGB(255, 215, 0)
+        label.Font = Enum.Font.Arcade -- God-Level Cyber Font
         label.TextSize = 28
         
         local stroke = Instance.new("UIStroke", label)
         stroke.Thickness = 3
         stroke.Color = Color3.new(0, 0, 0)
 
-        local grad = Instance.new("UIGradient", label)
-        grad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 200)),
-            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 215, 0)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 50, 255))
-        })
+        -- Golden RGB Flow Loop
+        task.spawn(function()
+            local hue = 0
+            while billboard and billboard.Parent do
+                hue = (hue + 0.02) % 1
+                -- Dynamic Golden/Yellow/Orange/White High-End RGB Spectrum
+                local col1 = Color3.fromHSV(0.12, 0.9, 1) -- Golden
+                local col2 = Color3.fromHSV(0.08, 1, 1)   -- Bright Yellow Amber
+                label.TextColor3 = col1:Lerp(col2, math.abs(math.sin(tick() * 4)))
+                task.wait(0.05)
+            end
+        end)
     end
 
     for _, p in ipairs(Players:GetPlayers()) do
@@ -4133,7 +4147,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     sendNotif("SMART CLEAR", "Bang Props Banned & Cleared!", 2)
                 else
                     if not houseData then
-                        sendNotif("ERROR", "House not found! Please claim a house first., 2")
+                        sendNotif("ERROR", "House not found! Please claim a house first.", 2)
                     end
                 end
             end)
