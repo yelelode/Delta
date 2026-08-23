@@ -2002,8 +2002,8 @@ local function createSlider(name, min, max, defaultVal, suffix)
     end
 end
 
-local getRadius = createSlider("ORBIT RADIUS", 2, 100, 15, "")
-local getSpeedMs = createSlider("ENGINE YIELD", 10, 300, 50, " %") 
+local getRadius = createSlider("🪐 ORBIT RADIUS", 2, 100, 15, "")
+local getSpeedMs = createSlider("⚡ ENGINE YIELD", 10, 300, 50, " %") 
 
 local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true)
 openTargetBtn.MouseButton1Click:Connect(function() 
@@ -2103,7 +2103,7 @@ espBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local rainbowBtn = createMainBtn("🌈 Neon Pulse Glow", "Rainbow", false)
+local rainbowBtn = createMainBtn("🌈 NEON PULSE GLOW", "Rainbow", false)
 rainbowBtn.MouseButton1Click:Connect(function() 
     isRainbowEnabled = not isRainbowEnabled
     activeModes["Rainbow"] = isRainbowEnabled
@@ -2127,7 +2127,7 @@ rainbowBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local soundBtn = createMainBtn("🔊 Dynamic Audio Hook", "Sound", false)
+local soundBtn = createMainBtn("🔊 DYNAMIC AUDIO HOOK", "Sound", false)
 soundBtn.MouseButton1Click:Connect(function() 
     isSoundEnabled = not isSoundEnabled
     activeModes["Sound"] = isSoundEnabled
@@ -2155,7 +2155,7 @@ soundBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local shieldBtn = createMainBtn("ANTI SIT", "Shield", false)
+local shieldBtn = createMainBtn("🛡️ ANTI SIT", "Shield", false)
 shieldBtn.MouseButton1Click:Connect(function() 
     isGodShieldEnabled = not isGodShieldEnabled
     activeModes["Shield"] = isGodShieldEnabled
@@ -2179,7 +2179,7 @@ shieldBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local houseProtBtn = createMainBtn("ANTI DELATE ROBOTS", "HouseProt", false)
+local houseProtBtn = createMainBtn("🏠 ANTI DELATE ROBOTS", "HouseProt", false)
 local isHouseProtEnabled = true
 activeModes["HouseProt"] = true
 
@@ -2213,7 +2213,7 @@ end)
 
 local isVisualZoneEnabled = false
 activeModes["VisualZone"] = false
-local visualZoneBtn = createMainBtn("SHOW BAN ZONES ( if target active Props ban )", "VisualZone", false)
+local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES ( if target active Props ban )", "VisualZone", false)
 visualZoneBtn.BackgroundColor3 = Colors.Surface
 visualZoneBtn.TextColor3 = Colors.Text
 
@@ -2386,9 +2386,9 @@ visualZoneBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🚀 ANTI ROBOTS (PREVIOUS FAST TP & MASSIVE CLEAR)
+-- 🛡️ ANTI ROBOTS
 -- =========================================================
-local escapeBtn = createMainBtn("ANTI ROBOTS", nil, false)
+local escapeBtn = createMainBtn("⚡ ANTI ROBOTS", nil, false)
 escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
 escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
@@ -2409,7 +2409,8 @@ escapeBtn.MouseButton1Click:Connect(function()
             local originalPos = hrp.CFrame
             local propsDetectedBefore = false
             
-            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+            local partsInRadius = workspace:GetPartBoundsInRadius(hrp.Position, 40)
+            for _, obj in ipairs(partsInRadius) do
                 if string.sub(obj.Name, 1, 4) == "Prop" then
                     local ownerName = string.sub(obj.Name, 5)
                     if ownerName ~= "" and ownerName ~= lp.Name then
@@ -2446,7 +2447,8 @@ escapeBtn.MouseButton1Click:Connect(function()
                         task.wait(0.05)
                         maxWait = maxWait + 0.05
                         local propsFollowed = false
-                        for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                        local checkParts = workspace:GetPartBoundsInRadius(hrp.Position, 40)
+                        for _, obj in ipairs(checkParts) do
                             if string.sub(obj.Name, 1, 4) == "Prop" then
                                 local ownerName = string.sub(obj.Name, 5)
                                 if ownerName ~= "" and ownerName ~= lp.Name then
@@ -2496,9 +2498,9 @@ escapeBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🚫 ANTI BANG (PREVIOUS SMART BAN TRAP) 🚫
+-- 🚫 ANTI BANG
 -- =========================================================
-local banTrapBtn = createMainBtn("ANTI BANG", nil, false)
+local banTrapBtn = createMainBtn("🛡️ ANTI BANG", nil, false)
 banTrapBtn.BackgroundColor3 = Color3.fromRGB(130, 0, 200)
 banTrapBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 banTrapBtn:SetAttribute("BaseColor", Color3.fromRGB(130, 0, 200))
@@ -2521,7 +2523,8 @@ banTrapBtn.MouseButton1Click:Connect(function()
             local propsDetectedBefore = false
             
             -- Scan 1: Area Radius Check
-            for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+            local scanParts = workspace:GetPartBoundsInRadius(hrp.Position, 40)
+            for _, obj in ipairs(scanParts) do
                 if string.sub(obj.Name, 1, 4) == "Prop" then
                     local ownerName = string.sub(obj.Name, 5)
                     if ownerName ~= "" and ownerName ~= lp.Name then
@@ -2598,7 +2601,8 @@ banTrapBtn.MouseButton1Click:Connect(function()
                         task.wait(0.05)
                         maxWait = maxWait + 0.05
                         local propsFollowed = false
-                        for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                        local repeatScan = workspace:GetPartBoundsInRadius(hrp.Position, 40)
+                        for _, obj in ipairs(repeatScan) do
                             if string.sub(obj.Name, 1, 4) == "Prop" then
                                 local ownerName = string.sub(obj.Name, 5)
                                 if ownerName ~= "" and ownerName ~= lp.Name then
@@ -2677,7 +2681,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- ⚡ INJECT / HALT ENGINE CONTROLS
+-- ⚡ START / STOP ENGINE CONTROLS
 -- =========================================================
 local toggleRow = Instance.new("Frame", mainList)
 toggleRow.Size = UDim2.new(1, 0, 0, 42)
@@ -2688,7 +2692,7 @@ toggleRow.ZIndex = 7
 local startBtn = Instance.new("TextButton", toggleRow)
 startBtn.Size = UDim2.new(0.48, 0, 1, 0)
 startBtn.BackgroundColor3 = Colors.Primary
-startBtn.Text = "▶ INJECT"
+startBtn.Text = "▶ START"
 startBtn.TextColor3 = Colors.TextDark
 startBtn.Font = Enum.Font.GothamBlack
 startBtn.TextSize = 11
@@ -2704,7 +2708,7 @@ stopBtn.Size = UDim2.new(0.48, 0, 1, 0)
 stopBtn.Position = UDim2.new(0.52, 0, 0, 0)
 stopBtn.BackgroundColor3 = Colors.Surface
 stopBtn.BackgroundTransparency = 0.5
-stopBtn.Text = "⏹ HALT"
+stopBtn.Text = "⏹ STOP"
 stopBtn.TextColor3 = Colors.Danger
 stopBtn.Font = Enum.Font.GothamBold
 stopBtn.TextSize = 11
@@ -2950,7 +2954,8 @@ RunService.Stepped:Connect(function()
         end
 
         pcall(function()
-            for _, part in ipairs(workspace:GetPartBoundsInRadius(root.Position, 15)) do
+            local radiusParts = workspace:GetPartBoundsInRadius(root.Position, 15)
+            for _, part in ipairs(radiusParts) do
                 if part:IsA("BasePart") and not part:IsDescendantOf(char) and not part.Anchored then
                     pcall(function() 
                         part.CanCollide = false 
@@ -3817,7 +3822,8 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
                     
                     local attackersToBan = {}
-                    for _, obj in ipairs(workspace:GetPartBoundsInRadius(hrp.Position, 40)) do
+                    local boundParts = workspace:GetPartBoundsInRadius(hrp.Position, 40)
+                    for _, obj in ipairs(boundParts) do
                         if string.sub(obj.Name, 1, 4) == "Prop" then
                             local ownerName = string.sub(obj.Name, 5)
                             if ownerName ~= "" and ownerName ~= lp.Name then
