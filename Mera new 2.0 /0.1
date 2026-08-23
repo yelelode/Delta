@@ -144,7 +144,7 @@ task.spawn(function()
     end)
 end)
 
--- 👑 GOD-LEVEL LUXURY GOLDEN SHINE OWNER BILLBOARD OVER CHARACTER 👑
+-- 👑 GOD-LEVEL LUXURY GOLDEN SHINE & GLITCH OWNER BILLBOARD OVER CHARACTER 👑
 task.spawn(function()
     local function applyOwnerCrown(character)
         if not character then return end
@@ -154,8 +154,8 @@ task.spawn(function()
 
         local billboard = Instance.new("BillboardGui")
         billboard.Name = "AshuOwnerCrown"
-        billboard.Size = UDim2.new(0, 220, 0, 80)
-        billboard.StudsOffset = Vector3.new(0, 3.2, 0)
+        billboard.Size = UDim2.new(0, 260, 0, 80)
+        billboard.StudsOffset = Vector3.new(0, 3.3, 0)
         billboard.AlwaysOnTop = true
         billboard.Adornee = head
         billboard.Parent = head
@@ -164,10 +164,10 @@ task.spawn(function()
         mainFrame.Size = UDim2.fromScale(1, 1)
         mainFrame.BackgroundTransparency = 1
 
-        -- Left Crown
+        -- Left Crown Emoji
         local leftCrown = Instance.new("TextLabel", mainFrame)
         leftCrown.Size = UDim2.new(0, 45, 1, 0)
-        leftCrown.Position = UDim2.new(0, 0, 0, 0)
+        leftCrown.Position = UDim2.new(0, 10, 0, 0)
         leftCrown.BackgroundTransparency = 1
         leftCrown.Text = "👑"
         leftCrown.TextSize = 26
@@ -175,21 +175,21 @@ task.spawn(function()
         lStroke.Thickness = 2
         lStroke.Color = Color3.new(0, 0, 0)
 
-        -- Sharp Owner Text Label
+        -- Sharp Owner Text Label (Zalgo / Glitch Style provided by user)
         local ownerLabel = Instance.new("TextLabel", mainFrame)
-        ownerLabel.Size = UDim2.new(1, -90, 1, 0)
-        ownerLabel.Position = UDim2.new(0, 45, 0, 0)
+        ownerLabel.Size = UDim2.new(1, -110, 1, 0)
+        ownerLabel.Position = UDim2.new(0, 55, 0, 0)
         ownerLabel.BackgroundTransparency = 1
-        ownerLabel.Text = "OWNER"
+        ownerLabel.Text = "̴̨ͥ͐͟Ŏ̏̅͊ͥ͊́́͠҉w̌ͥ̄͗̅̾n̛̈͗ͭ́͒̎͑ͫ͐͐̚̕̕͟ȅ̸̡͆̌̄r̄̀̂͌ͨ̀"
         ownerLabel.Font = Enum.Font.GothamBlack
-        ownerLabel.TextSize = 26
+        ownerLabel.TextSize = 27
         ownerLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
         
         local oStroke = Instance.new("UIStroke", ownerLabel)
         oStroke.Thickness = 3
         oStroke.Color = Color3.new(0, 0, 0)
 
-        -- Moving Shine Gradient
+        -- Moving Shine/Reflection Gradient
         local oGrad = Instance.new("UIGradient", ownerLabel)
         oGrad.Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 150, 0)),
@@ -197,10 +197,10 @@ task.spawn(function()
             ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 150, 0))
         })
 
-        -- Right Crown
+        -- Right Crown Emoji
         local rightCrown = Instance.new("TextLabel", mainFrame)
         rightCrown.Size = UDim2.new(0, 45, 1, 0)
-        rightCrown.Position = UDim2.new(1, -45, 0, 0)
+        rightCrown.Position = UDim2.new(1, -55, 0, 0)
         rightCrown.BackgroundTransparency = 1
         rightCrown.Text = "👑"
         rightCrown.TextSize = 26
@@ -213,12 +213,21 @@ task.spawn(function()
             local t = 0
             while billboard and billboard.Parent do
                 t = t + 0.05
-                -- Smooth breathing pulse math
-                local pulse = (math.sin(t * 3.5) + 1) / 2
                 
-                local goldVal = Color3.fromRGB(255, math.floor(180 + pulse * 75), math.floor(40 + pulse * 100))
-                leftCrown.TextColor3 = goldVal
-                rightCrown.TextColor3 = goldVal
+                -- Dhire Fast Dhire Fast Pulse for Crown Shine
+                local pulse = math.abs(math.sin(t * 3.5))
+                
+                -- Crown Size Bouncing Effect
+                local crownSize = 24 + (pulse * 8)
+                leftCrown.TextSize = crownSize
+                rightCrown.TextSize = crownSize
+                
+                -- Crown Golden Stroke Glow Effect (Bypasses Emoji color limit)
+                local strokeGlow = Color3.new(0, 0, 0):Lerp(Color3.fromRGB(255, 215, 0), pulse * 0.9)
+                lStroke.Color = strokeGlow
+                rStroke.Color = strokeGlow
+                lStroke.Thickness = 1 + (pulse * 3)
+                rStroke.Thickness = 1 + (pulse * 3)
                 
                 -- Sweep shine across text
                 oGrad.Offset = Vector2.new(math.sin(t * 2.5) * 1.5, 0)
