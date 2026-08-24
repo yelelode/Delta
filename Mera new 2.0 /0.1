@@ -634,7 +634,7 @@ task.spawn(function()
 end)
 
 local function PlayRobotBangMusic()
-    local soundId = "134489447055645" 
+    local soundId = "1848354536" 
     local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
@@ -697,9 +697,40 @@ local function StopRobotBangMusic()
         }
         local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
 
-        for k, v in pairs(t1) do
-            if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
+        for i = 1, 3 do
+            for k, v in pairs(t1) do
+                if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
+            end
+            task.wait(0.05)
         end
+
+        pcall(function()
+            local playerModel = workspace:FindFirstChild(lp.Name)
+            if playerModel then
+                for _, s in ipairs(playerModel:GetDescendants()) do
+                    if s:IsA("Sound") then
+                        s:Stop()
+                        s.Volume = 0
+                        s.SoundId = ""
+                    end
+                end
+            end
+
+            local vehiclesFolder = workspace:FindFirstChild("Vehicles")
+            if vehiclesFolder then
+                for _, veh in ipairs(vehiclesFolder:GetChildren()) do
+                    if veh.Name:lower():find(lp.Name:lower(), 1, true) then
+                        for _, s in ipairs(veh:GetDescendants()) do
+                            if s:IsA("Sound") then
+                                s:Stop()
+                                s.Volume = 0
+                                s.SoundId = ""
+                            end
+                        end
+                    end
+                end
+            end
+        end)
 
         if lp.Character then
             local hum = lp.Character:FindFirstChildOfClass("Humanoid")
@@ -717,7 +748,7 @@ local function StopRobotBangMusic()
             end
         end
         
-        task.wait(0.25)
+        task.wait(0.15)
         
         local despawnVehicle = DynamicRemotes.DespawnVehicle or RE:FindFirstChild("1DeSpawnVehi1cle")
         if despawnVehicle then 
