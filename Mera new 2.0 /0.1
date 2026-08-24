@@ -438,7 +438,7 @@ local isRainbowEnabled = false
 local isSoundEnabled = false
 local isSystemActive = false
 local isGodShieldEnabled = false
-local isEvading = false -- 🔥 NEW FIX: Master void evasion lock
+local isEvading = false -- 🔥 Master void evasion lock
 local animTime = 0
 local angle = 0
 local selfAngle = 0 
@@ -582,225 +582,149 @@ local function onPlayerJoinAlert(plr)
 end
 Players.PlayerAdded:Connect(onPlayerJoinAlert)
 
--- 🔊 VOLUME BOOSTER LOOP (BACKGROUND TASK)
-local MAX_VOLUME = 10
-local function maxVolume(obj)
-    if not obj then return end
-    if obj:IsA("Sound") then
-        obj.Volume = MAX_VOLUME
-        return
-    end
-    for _, v in ipairs(obj:GetDescendants()) do
-        if v:IsA("Sound") then
-            v.Volume = MAX_VOLUME
-        end
-    end
-end
-
-task.spawn(function()
-    while task.wait(0.2) do
-        pcall(function()
-            local vehicles = workspace:FindFirstChild("Vehicles")
-            if vehicles then
-                for _, vehicle in ipairs(vehicles:GetChildren()) do
-                    if vehicle.Name:lower():find(lp.Name:lower(), 1, true) then
-                        local body = vehicle:FindFirstChild("Body")
-                        if body then
-                            local turbo = body:FindFirstChild("TurboPosition")
-                            if turbo then
-                                local emitter = turbo:FindFirstChild("SoundEmmiter")
-                                maxVolume(emitter)
-                            end
-                        end
-                    end
-                end
-            end
-
-            local playerModel = workspace:FindFirstChild(lp.Name)
-            if playerModel then
-                local noMotor = playerModel:FindFirstChild("NoMotorVehicleModel")
-                if noMotor then maxVolume(noMotor) end
-                
-                local boombox = playerModel:FindFirstChild("Boombox")
-                if boombox then
-                    local handle = boombox:FindFirstChild("Handle")
-                    if handle then
-                        local playersChoice = handle:FindFirstChild("PlayersChoice")
-                        maxVolume(playersChoice)
-                    end
-                end
-            end
-        end)
-    end
-end)
-
--- =========================================================
--- 🔊 AUDIO PLAYBACK ENGINE (BUFFER SAFE)
--- =========================================================
-local isAudioActive = false
-
-local function playCleanAudio(soundId, targetRemote, remoteEventName)
-    if isAudioActive then return end
-    isAudioActive = true
-
-    task.spawn(function()
-        -- Ensure asset loads cleanly without spamming server events
-        if targetRemote and remoteEventName then
-            pcall(function()
-                targetRemote:FireServer(remoteEventName, tostring(soundId), true)
-            end)
-        end
-    end)
-end
-
-local function stopCleanAudio(targetRemote, remoteEventName, localCharacter)
-    isAudioActive = false
-
-    task.spawn(function()
-        -- Send neutral state once
-        if targetRemote and remoteEventName then
-            pcall(function()
-                targetRemote:FireServer(remoteEventName, "0", true)
-            end)
-        end
-
-        -- Clean up locally rendered sounds
-        if localCharacter then
-            for _, descendant in ipairs(localCharacter:GetDescendants()) do
-                if descendant:IsA("Sound") then
-                    descendant:Stop()
-                    descendant.SoundId = ""
-                end
-            end
-        end
-    end)
-end
-
+-- 🔊 CLEANED & FIXED AUDIO CORE (NO CUTS / NO PUS-PUS)
+local isAudioInjecting = false
 local function PlayRobotBangMusic()
-    local soundId = "122929786531506" 
-    local RE = ReplicatedStorage:WaitForChild("RE")
+    if isAudioInjecting then return end
+    isAudioInjecting = true
     
-    pcall(function()
-        -- 🔥 GAMEPASS BYPASS 🔥
+    local soundId = "122929786531506" 
+    local RE = ReplicatedStorage:WaitForChild("RE", 10)
+    
+    task.spawn(function()
         pcall(function()
-            local args = {
-                "shopInteraction",
-                {
-                    id = 9066988,
-                    shop = "new",
-                    productType = "GamePass"
+            -- 🔥 GAMEPASS BYPASS 🔥
+            pcall(function()
+                local args = {
+                    "shopInteraction",
+                    {
+                        id = 9066988,
+                        shop = "new",
+                        productType = "GamePass"
+                    }
                 }
-            }
-            ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("TelemetryClientInteraction"):FireServer(unpack(args))
+                ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("TelemetryClientInteraction"):FireServer(unpack(args))
+            end)
+
+            -- 🔥 SPAWN BOARD / SEGWAY FIRST 🔥
+            local spawnVehicle = DynamicRemotes.SpawnVehicle or (RE and RE:FindFirstChild("1NoMoto1rVehicle1s"))
+            if spawnVehicle then 
+                spawnVehicle:FireServer("SegwaySmall")
+            end
+            
+            task.wait(0.4)
+            
+            -- Targeted Clean Injection
+            if RE then
+                local scooterRemote = RE:FindFirstChild("1NoMoto1rVehicle1s")
+                if scooterRemote then
+                    scooterRemote:FireServer("PickingScooterMusicText", soundId, true)
+                end
+                
+                local houseMusic = RE:FindFirstChild("1Player1sHous1e")
+                if houseMusic then
+                    houseMusic:FireServer("PickHouseMusicText", soundId, true)
+                end
+                
+                local carMusic = RE:FindFirstChild("1Player1sCa1r")
+                if carMusic then
+                    carMusic:FireServer("Music", soundId, true)
+                end
+
+                local toolMusic = RE:FindFirstChild("PlayerToolEvent")
+                if toolMusic then
+                    toolMusic:FireServer("ToolMusicText", soundId, true)
+                end
+
+                local propMusic = RE:FindFirstChild("Props")
+                if propMusic then
+                    propMusic:FireServer("PropMusicText", soundId, true)
+                end
+
+                local horseMusic = RE:FindFirstChild("1Hors1eRemot1e")
+                if horseMusic then
+                    horseMusic:FireServer("HorseMusicText", soundId, true)
+                end
+            end
         end)
-
-        -- 🔥 SPAWN BOARD / SEGWAY FIRST 🔥
-        local spawnVehicle = DynamicRemotes.SpawnVehicle or RE:FindFirstChild("1NoMoto1rVehicle1s")
-        if spawnVehicle then 
-            spawnVehicle:FireServer("SegwaySmall")
-        end
-        
-        task.wait(0.35)
-        
-        -- 🔥 EXACT WORKING METHOD FROM NOTHING MUSIC SCRIPT 🔥
-        local t1 = { 
-            RE:FindFirstChild("1Player1sHous1e"), 
-            RE:FindFirstChild("1Player1sCa1r"), 
-            RE:FindFirstChild("1NoMoto1rVehicle1s"), 
-            RE:FindFirstChild("PlayerToolEvent"), 
-            RE:FindFirstChild("Props"), 
-            RE:FindFirstChild("1Hors1eRemot1e") 
-        }
-        local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
-
-        for k, v in pairs(t1) do
-            if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
-        end
-        
-        task.wait(0.25)
-
-        for k, v in pairs(t1) do
-            if v then pcall(function() v:FireServer(t2[k], soundId, true) end) end
-        end
+        sendNotif("⚡ TXR SOUND", "Audio Core Injected!", 2)
+        task.wait(0.5)
+        isAudioInjecting = false
     end)
-    sendNotif("⚡ TXR SOUND", "Audio Core Injected!", 2)
 end
 
 local function StopRobotBangMusic()
-    local RE = ReplicatedStorage:WaitForChild("RE")
+    local RE = ReplicatedStorage:WaitForChild("RE", 5)
     
-    pcall(function()
-        local t1 = { 
-            RE:FindFirstChild("1Player1sHous1e"), 
-            RE:FindFirstChild("1Player1sCa1r"), 
-            RE:FindFirstChild("1NoMoto1rVehicle1s"), 
-            RE:FindFirstChild("PlayerToolEvent"), 
-            RE:FindFirstChild("Props"), 
-            RE:FindFirstChild("1Hors1eRemot1e") 
-        }
-        local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
+    task.spawn(function()
+        pcall(function()
+            local t1 = { 
+                RE and RE:FindFirstChild("1Player1sHous1e"), 
+                RE and RE:FindFirstChild("1Player1sCa1r"), 
+                RE and RE:FindFirstChild("1NoMoto1rVehicle1s"), 
+                RE and RE:FindFirstChild("PlayerToolEvent"), 
+                RE and RE:FindFirstChild("Props"), 
+                RE and RE:FindFirstChild("1Hors1eRemot1e") 
+            }
+            local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
 
-        for i = 1, 3 do
             for k, v in pairs(t1) do
                 if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
             end
-            task.wait(0.05)
-        end
 
-        pcall(function()
-            local playerModel = workspace:FindFirstChild(lp.Name)
-            if playerModel then
-                for _, s in ipairs(playerModel:GetDescendants()) do
-                    if s:IsA("Sound") then
-                        s:Stop()
-                        s.Volume = 0
-                        s.SoundId = ""
+            pcall(function()
+                local playerModel = workspace:FindFirstChild(lp.Name)
+                if playerModel then
+                    for _, s in ipairs(playerModel:GetDescendants()) do
+                        if s:IsA("Sound") then
+                            s:Stop()
+                            s.Volume = 0
+                            s.SoundId = ""
+                        end
                     end
                 end
-            end
 
-            local vehiclesFolder = workspace:FindFirstChild("Vehicles")
-            if vehiclesFolder then
-                for _, veh in ipairs(vehiclesFolder:GetChildren()) do
-                    if veh.Name:lower():find(lp.Name:lower(), 1, true) then
-                        for _, s in ipairs(veh:GetDescendants()) do
-                            if s:IsA("Sound") then
-                                s:Stop()
-                                s.Volume = 0
-                                s.SoundId = ""
+                local vehiclesFolder = workspace:FindFirstChild("Vehicles")
+                if vehiclesFolder then
+                    for _, veh in ipairs(vehiclesFolder:GetChildren()) do
+                        if veh.Name:lower():find(lp.Name:lower(), 1, true) then
+                            for _, s in ipairs(veh:GetDescendants()) do
+                                if s:IsA("Sound") then
+                                    s:Stop()
+                                    s.Volume = 0
+                                    s.SoundId = ""
+                                end
                             end
                         end
                     end
                 end
-            end
-        end)
+            end)
 
-        if lp.Character then
-            local hum = lp.Character:FindFirstChildOfClass("Humanoid")
-            if hum then 
-                hum.Sit = false
-                hum.Jump = true 
-            end
-            
-            for _, v in ipairs(lp.Character:GetDescendants()) do
-                if v.Name == "SeatWeld" or (v:IsA("Weld") and v.Part1 and string.match(v.Part1.Name, "Seat")) then 
-                    pcall(function() 
-                        v:Destroy() 
-                    end) 
+            if lp.Character then
+                local hum = lp.Character:FindFirstChildOfClass("Humanoid")
+                if hum then 
+                    hum.Sit = false
+                    hum.Jump = true 
+                end
+                
+                for _, v in ipairs(lp.Character:GetDescendants()) do
+                    if v.Name == "SeatWeld" or (v:IsA("Weld") and v.Part1 and string.match(v.Part1.Name, "Seat")) then 
+                        pcall(function() 
+                            v:Destroy() 
+                        end) 
+                    end
                 end
             end
-        end
-        
-        task.wait(0.15)
-        
-        local despawnVehicle = DynamicRemotes.DespawnVehicle or RE:FindFirstChild("1DeSpawnVehi1cle")
-        if despawnVehicle then 
-            pcall(function() 
-                despawnVehicle:FireServer() 
-            end) 
-        end
-        
-        task.spawn(function()
+            
+            task.wait(0.15)
+            
+            local despawnVehicle = DynamicRemotes.DespawnVehicle or (RE and RE:FindFirstChild("1DeSpawnVehi1cle"))
+            if despawnVehicle then 
+                pcall(function() 
+                    despawnVehicle:FireServer() 
+                end) 
+            end
+            
             local vehiclesFolder = workspace:FindFirstChild("Vehicles")
             if vehiclesFolder then 
                 for _, v in ipairs(vehiclesFolder:GetChildren()) do 
@@ -963,7 +887,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         
         if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
             -- 🔥 SMART COOLDOWN FIX FOR MIXING PROPS 🔥
-            -- Delay increased to 0.25 so Brookhaven native spawn isn't blocked
             task.delay(0.25, function() 
                 if tick() - lastGameSpawnTime > 0.3 then 
                     local propName, propCategory = getActivePropData()
@@ -1936,298 +1859,6 @@ local function getOrder()
     return layoutIdx 
 end
 
--- 🌟 🚀 HIGH-TECH DUAL TELEMETRY STATUS ROW (PAD-0001 FORMAT + ONLINE DUAL DISPLAY) 🚀 🌟
-local innerLiveRow = Instance.new("Frame", mainList)
-innerLiveRow.Size = UDim2.new(1, 0, 0, 36)
-innerLiveRow.BackgroundColor3 = Color3.fromRGB(12, 16, 26)
-innerLiveRow.BackgroundTransparency = 0.25
-innerLiveRow.LayoutOrder = getOrder()
-innerLiveRow.ZIndex = 7
-
-local innerLiveCorner = Instance.new("UICorner", innerLiveRow)
-innerLiveCorner.CornerRadius = UDim.new(0, 8)
-
-local innerLiveStroke = Instance.new("UIStroke", innerLiveRow)
-innerLiveStroke.Color = Colors.Primary
-innerLiveStroke.Thickness = 1.2
-innerLiveStroke.Transparency = 0.35
-
-local liveRowGrad = Instance.new("UIGradient", innerLiveRow)
-liveRowGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 25, 38)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(10, 14, 22)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 15, 35))
-})
-
-local pulseContainer = Instance.new("Frame", innerLiveRow)
-pulseContainer.Size = UDim2.fromOffset(18, 18)
-pulseContainer.Position = UDim2.new(0, 8, 0.5, -9)
-pulseContainer.BackgroundTransparency = 1
-pulseContainer.ZIndex = 8
-
-local liveSonarRing = Instance.new("Frame", pulseContainer)
-liveSonarRing.Size = UDim2.fromScale(1, 1)
-liveSonarRing.AnchorPoint = Vector2.new(0.5, 0.5)
-liveSonarRing.Position = UDim2.fromScale(0.5, 0.5)
-liveSonarRing.BackgroundTransparency = 1
-liveSonarRing.ZIndex = 8
-
-local sonarCorner = Instance.new("UICorner", liveSonarRing)
-sonarCorner.CornerRadius = UDim.new(1, 0)
-
-local sonarStroke = Instance.new("UIStroke", liveSonarRing)
-sonarStroke.Color = Color3.fromRGB(0, 255, 150)
-sonarStroke.Thickness = 1.5
-sonarStroke.Transparency = 0.2
-
-local liveDot = Instance.new("Frame", pulseContainer)
-liveDot.Size = UDim2.fromOffset(8, 8)
-liveDot.AnchorPoint = Vector2.new(0.5, 0.5)
-liveDot.Position = UDim2.fromScale(0.5, 0.5)
-liveDot.BackgroundColor3 = Color3.fromRGB(0, 255, 120)
-liveDot.BorderSizePixel = 0
-liveDot.ZIndex = 9
-
-local liveDotCorner = Instance.new("UICorner", liveDot)
-liveDotCorner.CornerRadius = UDim.new(1, 0)
-
-local liveDotGlow = Instance.new("UIStroke", liveDot)
-liveDotGlow.Color = Color3.fromRGB(0, 255, 120)
-liveDotGlow.Thickness = 2
-liveDotGlow.Transparency = 0.2
-
-task.spawn(function()
-    while liveDot and liveDot.Parent do
-        liveSonarRing.Size = UDim2.fromOffset(8, 8)
-        sonarStroke.Transparency = 0.1
-        
-        TweenService:Create(liveSonarRing, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-            Size = UDim2.fromOffset(22, 22)
-        }):Play()
-        TweenService:Create(sonarStroke, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-            Transparency = 1
-        }):Play()
-        
-        TweenService:Create(liveDot, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundTransparency = 0.6}):Play()
-        task.wait(0.6)
-        TweenService:Create(liveDot, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundTransparency = 0}):Play()
-        task.wait(0.6)
-    end
-end)
-
-local liveText = Instance.new("TextLabel", innerLiveRow)
-liveText.Size = UDim2.new(1, -34, 1, 0)
-liveText.Position = UDim2.new(0, 30, 0, 0)
-liveText.BackgroundTransparency = 1
-liveText.Text = "TOTAL: #0001  •  ONLINE: " .. tostring(#Players:GetPlayers())
-liveText.TextColor3 = Colors.Primary
-liveText.Font = Enum.Font.GothamBlack
-liveText.TextSize = 10
-liveText.TextXAlignment = Enum.TextXAlignment.Left
-liveText.ZIndex = 8
-crispText(liveText)
-
-local liveTextGrad = Instance.new("UIGradient", liveText)
-liveTextGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 200)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 50, 255))
-})
-
-task.spawn(function()
-    local t = 0
-    while innerLiveRow and innerLiveRow.Parent do
-        t = t + 0.05
-        liveTextGrad.Offset = Vector2.new(math.sin(t * 2) * 0.4, 0)
-        task.wait(0.03)
-    end
-end)
-
--- =========================================================
--- 📊 TELEMETRY & EXECUTION COUNTER COMPONENT
--- =========================================================
-local function initializeCounter(labelElement)
-    local namespace = "txr_quantum_v18_global"
-    local key = "total_runs"
-    local globalExecutions = 1
-
-    local function updateDisplay()
-        if labelElement and labelElement.Parent then
-            local serverCount = #Players:GetPlayers()
-            labelElement.Text = string.format("GLOBAL: #%04d  •  SERVER: %d", globalExecutions, serverCount)
-        end
-    end
-
-    -- Cross-environment HTTP request wrapper
-    local function fetchCount(endpoint)
-        local reqFn = (syn and syn.request) 
-            or (http and http.request) 
-            or http_request 
-            or request 
-            or (Fluxus and Fluxus.request)
-
-        if reqFn then
-            local success, response = pcall(function()
-                return reqFn({
-                    Url = endpoint,
-                    Method = "GET",
-                    Headers = { ["Content-Type"] = "application/json" }
-                })
-            end)
-            if success and response and (response.Body or response.body) then
-                return response.Body or response.body
-            end
-        elseif game.HttpGet then
-            local success, body = pcall(function()
-                return game:HttpGet(endpoint, true)
-            end)
-            if success then return body end
-        end
-        return nil
-    end
-
-    -- Fetch and update global telemetry
-    task.spawn(function()
-        local rawData = fetchCount("https://api.counterapi.dev/v1/" .. namespace .. "/" .. key .. "/up")
-        if rawData then
-            pcall(function()
-                local parsed = HttpService:JSONDecode(rawData)
-                if parsed and parsed.count then
-                    globalExecutions = tonumber(parsed.count) or globalExecutions
-                    updateDisplay()
-                end
-            end)
-        end
-    end)
-
-    -- Event listeners for local server presence
-    Players.PlayerAdded:Connect(updateDisplay)
-    Players.PlayerRemoving:Connect(function()
-        task.delay(0.2, updateDisplay)
-    end)
-
-    updateDisplay()
-end
-
-initializeCounter(liveText)
-
-task.spawn(function()
-    local namespace = "txr_hub_v18"
-    local key = "executions"
-    local displayedCount = 1
-
-    local function formatAdvancedCount(num)
-        local n = tonumber(num) or 1
-        return string.format("%04d", n)
-    end
-
-    local function getOnlineCount()
-        return #Players:GetPlayers()
-    end
-
-    local function updateDisplay(targetNum)
-        displayedCount = targetNum
-        liveText.Text = "TOTAL: #" .. formatAdvancedCount(displayedCount) .. "  •  ONLINE: " .. tostring(getOnlineCount())
-    end
-
-    local function animateNumberRoll(fromNum, toNum)
-        if fromNum == toNum then 
-            updateDisplay(toNum)
-            return 
-        end
-        local step = (toNum > fromNum) and 1 or -1
-        for current = fromNum, toNum, step do
-            updateDisplay(current)
-            task.wait(0.04)
-        end
-        updateDisplay(toNum)
-    end
-
-    local function universalGet(url)
-        local success, res = pcall(function()
-            if game.HttpGet then
-                return game:HttpGet(url)
-            elseif syn and syn.request then
-                local r = syn.request({Url = url, Method = "GET"})
-                return r and r.Body
-            elseif http_request then
-                local r = http_request({Url = url, Method = "GET"})
-                return r and r.Body
-            elseif request then
-                local r = request({Url = url, Method = "GET"})
-                return r and r.Body
-            end
-        end)
-        if success and res and type(res) == "string" and #res > 0 then
-            return res
-        end
-        return nil
-    end
-
-    updateDisplay(1)
-
-    pcall(function()
-        local upRes = universalGet("https://api.counterapi.dev/v1/" .. namespace .. "/" .. key .. "/up")
-        if upRes then
-            local data = HttpService:JSONDecode(upRes)
-            if data and data.count then
-                local serverCount = tonumber(data.count) or 1
-                task.spawn(function()
-                    animateNumberRoll(displayedCount, serverCount)
-                end)
-            end
-        end
-    end)
-
-    Players.PlayerAdded:Connect(function()
-        updateDisplay(displayedCount)
-    end)
-    Players.PlayerRemoving:Connect(function()
-        task.delay(0.2, function()
-            updateDisplay(displayedCount)
-        end)
-    end)
-
-    local function checkOwnerNotif()
-        if lp.UserId == CREATOR_USER_ID then
-            for _, player in ipairs(Players:GetPlayers()) do
-                if player ~= lp then
-                    sendNotif("👑 TXR HUB EXECUTION", player.DisplayName .. " (@" .. player.Name .. ") is using TXR HUB!", 4)
-                end
-            end
-            Players.PlayerAdded:Connect(function(newPlr)
-                if newPlr.UserId ~= CREATOR_USER_ID then
-                    sendNotif("👑 TXR HUB EXECUTION", newPlr.DisplayName .. " (@" .. newPlr.Name .. ") is using TXR HUB!", 4)
-                end
-            end)
-        end
-    end
-    checkOwnerNotif()
-
-    while task.wait(8) do
-        if innerLiveRow and innerLiveRow.Parent then
-            pcall(function()
-                local countRes = universalGet("https://api.counterapi.dev/v1/" .. namespace .. "/" .. key)
-                if countRes then
-                    local data = HttpService:JSONDecode(countRes)
-                    if data and data.count then
-                        local serverCount = tonumber(data.count) or displayedCount
-                        if serverCount ~= displayedCount then
-                            task.spawn(function()
-                                animateNumberRoll(displayedCount, serverCount)
-                            end)
-                        else
-                            updateDisplay(displayedCount)
-                        end
-                    end
-                else
-                    updateDisplay(displayedCount)
-                end
-            end)
-        end
-    end
-end)
-
 local function createMenu(titleStr)
     local menu = Instance.new("Frame", mainFrame)
     menu.Size = UDim2.fromScale(1, 1)
@@ -2808,7 +2439,7 @@ soundBtn.MouseButton1Click:Connect(function()
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
         sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Activated.", 2)
-        task.spawn(PlayRobotBangMusic) -- 🔥 AUTOMATICALLY SPAWN BOARD + START MUSIC ON TOGGLE!
+        task.spawn(PlayRobotBangMusic)
     else 
         TweenService:Create(soundBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
@@ -2921,16 +2552,14 @@ visualZoneBtn.MouseButton1Click:Connect(function()
                 genjutsuCC.Saturation = 0
             end
             
-            -- GRADUAL SMOOTH FADE IN (3.5s TWEEN)
             local ccTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
             TweenService:Create(genjutsuCC, ccTweenInfo, {
-                TintColor = Color3.fromRGB(255, 180, 180), -- Soft cinematic light red tint (clear visibility)
-                Brightness = 0.05,                        -- Bright & clear screen
-                Contrast = 0.15,                          -- Clean balanced contrast
-                Saturation = -0.2                         -- Subtle cinematic feel without washout
+                TintColor = Color3.fromRGB(255, 180, 180),
+                Brightness = 0.05,
+                Contrast = 0.15,
+                Saturation = -0.2
             }):Play()
 
-            -- SOFT GLOW BLOOM
             local bloom = lighting:FindFirstChild("TXR_Tsukuyomi_Bloom")
             if not bloom then
                 bloom = Instance.new("BloomEffect")
@@ -2942,18 +2571,17 @@ visualZoneBtn.MouseButton1Click:Connect(function()
             end
             TweenService:Create(bloom, ccTweenInfo, {Intensity = 0.4}):Play()
             
-            -- ✨ THIN LIGHT WHITE-RED FOG AT BOTTOM (ITACHI VIBE WITH FULL CLEAR VIEW)
             if not lighting:FindFirstChild("TXR_Tsukuyomi_Atmosphere") then
                 local atmos = Instance.new("Atmosphere")
                 atmos.Name = "TXR_Tsukuyomi_Atmosphere"
                 atmos.Density = 0
-                atmos.Color = Color3.fromRGB(255, 220, 220) -- Soft white-red fog
+                atmos.Color = Color3.fromRGB(255, 220, 220)
                 atmos.Decay = Color3.fromRGB(100, 50, 50)
                 atmos.Glare = 0.2
                 atmos.Haze = 2
                 atmos.Parent = lighting
                 
-                TweenService:Create(atmos, ccTweenInfo, {Density = 0.04}):Play() -- Extremely light fog so everything is crystal clear
+                TweenService:Create(atmos, ccTweenInfo, {Density = 0.04}):Play()
             end
         end)
         
@@ -2981,12 +2609,11 @@ visualZoneBtn.MouseButton1Click:Connect(function()
                 highlight.DepthMode = Enum.HighlightDepthMode.Occluded
                 highlight.Parent = boxPart
 
-                -- SMOOTH ANIMATION WITH 0.3 TRANSPARENCY (SEE-THROUGH & CLEAR)
                 local boxTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
                 TweenService:Create(boxPart, boxTweenInfo, {
                     Size = Vector3.new(lotSize.X, 600, lotSize.Z),
                     CFrame = lotCFrame * CFrame.new(0, 300, 0), 
-                    Transparency = 0.65 -- Highly transparent so nothing gets blocked from view
+                    Transparency = 0.65
                 }):Play()
                 
                 TweenService:Create(highlight, boxTweenInfo, {
@@ -3002,7 +2629,6 @@ visualZoneBtn.MouseButton1Click:Connect(function()
         end 
         sendNotif("🛑 ZONES", "Genjutsu Released Smoothly.", 2)
         
-        -- GRADUAL SMOOTH FADE OUT TO NORMAL LIGHTING
         local lighting = game:GetService("Lighting")
         local ccTweenInfo = TweenInfo.new(2.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
 
@@ -3330,7 +2956,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                         end
                     end
                     
-                    -- Fast attacker ban & instant break
                     if attackerArrived and maxWait >= 0.3 then 
                         break 
                     end
@@ -3580,7 +3205,6 @@ local function dispatchRemote(remote, targetCFrame)
         params.FilterType = Enum.RaycastFilterType.Exclude
         
         local inDangerZone = false
-        -- PERFECT BAN BUFFER (Strict 6 Studs horizontal Box, Infinite Vertical Pillar for Jump-Fix)
         local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
         for _, hitInst in ipairs(partsInBubble) do
             local currentInst = hitInst
@@ -3598,7 +3222,7 @@ local function dispatchRemote(remote, targetCFrame)
         end
 
         if inDangerZone then
-            targetCFrame = CFrame.new(120, -350, 150) -- 🔥 AMBUSH: Hide completely under School
+            targetCFrame = CFrame.new(120, -350, 150)
             isEmergency = true
         end
     end
@@ -3741,7 +3365,6 @@ RunService.Heartbeat:Connect(function(dt)
     local targetList = {}
     
     for plr, _ in pairs(selectedPlayers) do 
-        -- 👑 FIXED: Sirf tabhi ban trap chalega jab target creator ho aur chalane wala koi aur ho
         if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
             triggerBanTrap()
             return
@@ -3795,7 +3418,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
 
                 if inDangerZone then
-                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position -- 🔥 AMBUSH: Hide underground at school
+                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
                 end
             end
         end
@@ -3805,7 +3428,6 @@ RunService.Heartbeat:Connect(function(dt)
             local tHum = plr.Character:FindFirstChildOfClass("Humanoid")
             if type(assignedRemotes[plr]) ~= "table" then assignedRemotes[plr] = {} end
 
-            -- 🔄 DYNAMIC SEAMLESS MODE SWITCH & SLOT RELEASE FOR ALL MODES
             if not activeModes["HeadBang"] then
                 assignedRemotes[plr].h_front = nil
                 assignedRemotes[plr].h_back = nil
@@ -4291,7 +3913,6 @@ RunService.RenderStepped:Connect(function()
                     if hasAdmin then
                         esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\nIP: 192.168.1.1 (ADMIN BYPASS)", dist, hp, altStr, speed)
                     else
-                        -- 😈 TROLL TEXT
                         esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\nIP - NEED ADMIN ACCESS", dist, hp, altStr, speed)
                     end
 
@@ -4486,7 +4107,7 @@ RunService.RenderStepped:Connect(function(dt)
                         local pScreen, pOnScreen = camera:WorldToViewportPoint(propPart.Position)
                         local pLabel = esp.props[i]
                         if not pLabel then
-                        pLabel = Instance.new("TextLabel", threatEspGui)
+                            pLabel = Instance.new("TextLabel", threatEspGui)
                             pLabel.BackgroundTransparency = 1
                             pLabel.Font = Enum.Font.GothamBold
                             pLabel.TextSize = 10
