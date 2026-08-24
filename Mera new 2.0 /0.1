@@ -2,20 +2,15 @@
 -- 🛡️ TXR V18.26: QUANTUM ANTI-GLITCH & SAFE-BOOT ENGINE 🛡️
 -- =========================================================
 if not game:IsLoaded() then 
-    pcall(function() game.Loaded:Wait() end)
+    game.Loaded:Wait() 
 end
 
 local _TEMP_PLAYERS = game:GetService("Players")
 local _TEMP_LP = _TEMP_PLAYERS.LocalPlayer
-while not _TEMP_LP do
-    task.wait(0.05)
-    _TEMP_LP = _TEMP_PLAYERS.LocalPlayer
+if not _TEMP_LP.Character then
+    _TEMP_LP.CharacterAdded:Wait()
 end
-
-task.spawn(function()
-    local char = _TEMP_LP.Character or _TEMP_LP.CharacterAdded:Wait()
-    pcall(function() char:WaitForChild("HumanoidRootPart", 5) end)
-end)
+repeat task.wait() until _TEMP_LP.Character and _TEMP_LP.Character:FindFirstChild("HumanoidRootPart")
 -- =========================================================
 
 -- =========================================================
@@ -56,11 +51,9 @@ end
 
 pcall(function() 
     local repStorage = game:GetService("ReplicatedStorage")
-    local reFolder = repStorage:WaitForChild("RE", 5)
-    if reFolder then
-        local clearRemote = reFolder:WaitForChild("1Clea1rTool1s", 5)
-        if clearRemote then clearRemote:FireServer("ClearAllProps") end
-    end
+    local reFolder = repStorage:WaitForChild("RE")
+    local clearRemote = reFolder:WaitForChild("1Clea1rTool1s")
+    clearRemote:FireServer("ClearAllProps") 
 end)
 
 local Players = game:GetService("Players")
@@ -88,7 +81,7 @@ if gethui then
 end
 
 if not targetGuiParent then 
-    targetGuiParent = lp:WaitForChild("PlayerGui", 5) 
+    targetGuiParent = lp:WaitForChild("PlayerGui") 
 end
 
 local CREATOR_USER_ID = 9685785248
@@ -644,8 +637,14 @@ end)
 -- =========================================================
 -- 🔊 AUDIO PLAYBACK ENGINE (BUFFER SAFE)
 -- =========================================================
+local isAudioActive = false
+
 local function playCleanAudio(soundId, targetRemote, remoteEventName)
+    if isAudioActive then return end
+    isAudioActive = true
+
     task.spawn(function()
+        -- Ensure asset loads cleanly without spamming server events
         if targetRemote and remoteEventName then
             pcall(function()
                 targetRemote:FireServer(remoteEventName, tostring(soundId), true)
@@ -655,13 +654,17 @@ local function playCleanAudio(soundId, targetRemote, remoteEventName)
 end
 
 local function stopCleanAudio(targetRemote, remoteEventName, localCharacter)
+    isAudioActive = false
+
     task.spawn(function()
+        -- Send neutral state once
         if targetRemote and remoteEventName then
             pcall(function()
                 targetRemote:FireServer(remoteEventName, "0", true)
             end)
         end
 
+        -- Clean up locally rendered sounds
         if localCharacter then
             for _, descendant in ipairs(localCharacter:GetDescendants()) do
                 if descendant:IsA("Sound") then
@@ -675,8 +678,7 @@ end
 
 local function PlayRobotBangMusic()
     local soundId = "122929786531506" 
-    local RE = ReplicatedStorage:WaitForChild("RE", 5)
-    if not RE then return end
+    local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
         -- 🔥 GAMEPASS BYPASS 🔥
@@ -689,10 +691,7 @@ local function PlayRobotBangMusic()
                     productType = "GamePass"
                 }
             }
-            local remotesFolder = ReplicatedStorage:FindFirstChild("Remotes")
-            if remotesFolder and remotesFolder:FindFirstChild("TelemetryClientInteraction") then
-                remotesFolder.TelemetryClientInteraction:FireServer(unpack(args))
-            end
+            ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("TelemetryClientInteraction"):FireServer(unpack(args))
         end)
 
         -- 🔥 SPAWN BOARD / SEGWAY FIRST 🔥
@@ -703,46 +702,63 @@ local function PlayRobotBangMusic()
         
         task.wait(0.35)
         
-        -- 🔥 BUFFER-SAFE AUDIO INJECTION 🔥
-        local remotesMap = {
-            [RE:FindFirstChild("1Player1sHous1e")] = "PickHouseMusicText",
-            [RE:FindFirstChild("1Player1sCa1r")] = "Music",
-            [RE:FindFirstChild("1NoMoto1rVehicle1s")] = "PickingScooterMusicText",
-            [RE:FindFirstChild("PlayerToolEvent")] = "ToolMusicText",
-            [RE:FindFirstChild("Props")] = "PropMusicText",
-            [RE:FindFirstChild("1Hors1eRemot1e")] = "HorseMusicText"
+        -- 🔥 EXACT WORKING METHOD FROM NOTHING MUSIC SCRIPT 🔥
+        local t1 = { 
+            RE:FindFirstChild("1Player1sHous1e"), 
+            RE:FindFirstChild("1Player1sCa1r"), 
+            RE:FindFirstChild("1NoMoto1rVehicle1s"), 
+            RE:FindFirstChild("PlayerToolEvent"), 
+            RE:FindFirstChild("Props"), 
+            RE:FindFirstChild("1Hors1eRemot1e") 
         }
+        local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
 
-        for remote, evtName in pairs(remotesMap) do
-            if remote then
-                playCleanAudio(soundId, remote, evtName)
-            end
+        for k, v in pairs(t1) do
+            if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
+        end
+        
+        task.wait(0.25)
+
+        for k, v in pairs(t1) do
+            if v then pcall(function() v:FireServer(t2[k], soundId, true) end) end
         end
     end)
     sendNotif("⚡ TXR SOUND", "Audio Core Injected!", 2)
 end
 
 local function StopRobotBangMusic()
-    local RE = ReplicatedStorage:WaitForChild("RE", 5)
-    if not RE then return end
+    local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
-        local remotesMap = {
-            [RE:FindFirstChild("1Player1sHous1e")] = "PickHouseMusicText",
-            [RE:FindFirstChild("1Player1sCa1r")] = "Music",
-            [RE:FindFirstChild("1NoMoto1rVehicle1s")] = "PickingScooterMusicText",
-            [RE:FindFirstChild("PlayerToolEvent")] = "ToolMusicText",
-            [RE:FindFirstChild("Props")] = "PropMusicText",
-            [RE:FindFirstChild("1Hors1eRemot1e")] = "HorseMusicText"
+        local t1 = { 
+            RE:FindFirstChild("1Player1sHous1e"), 
+            RE:FindFirstChild("1Player1sCa1r"), 
+            RE:FindFirstChild("1NoMoto1rVehicle1s"), 
+            RE:FindFirstChild("PlayerToolEvent"), 
+            RE:FindFirstChild("Props"), 
+            RE:FindFirstChild("1Hors1eRemot1e") 
         }
+        local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
 
-        for remote, evtName in pairs(remotesMap) do
-            if remote then
-                stopCleanAudio(remote, evtName, lp.Character)
+        for i = 1, 3 do
+            for k, v in pairs(t1) do
+                if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
             end
+            task.wait(0.05)
         end
 
         pcall(function()
+            local playerModel = workspace:FindFirstChild(lp.Name)
+            if playerModel then
+                for _, s in ipairs(playerModel:GetDescendants()) do
+                    if s:IsA("Sound") then
+                        s:Stop()
+                        s.Volume = 0
+                        s.SoundId = ""
+                    end
+                end
+            end
+
             local vehiclesFolder = workspace:FindFirstChild("Vehicles")
             if vehiclesFolder then
                 for _, veh in ipairs(vehiclesFolder:GetChildren()) do
@@ -947,6 +963,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         
         if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
             -- 🔥 SMART COOLDOWN FIX FOR MIXING PROPS 🔥
+            -- Delay increased to 0.25 so Brookhaven native spawn isn't blocked
             task.delay(0.25, function() 
                 if tick() - lastGameSpawnTime > 0.3 then 
                     local propName, propCategory = getActivePropData()
@@ -2041,6 +2058,7 @@ local function initializeCounter(labelElement)
         end
     end
 
+    -- Cross-environment HTTP request wrapper
     local function fetchCount(endpoint)
         local reqFn = (syn and syn.request) 
             or (http and http.request) 
@@ -2068,6 +2086,7 @@ local function initializeCounter(labelElement)
         return nil
     end
 
+    -- Fetch and update global telemetry
     task.spawn(function()
         local rawData = fetchCount("https://api.counterapi.dev/v1/" .. namespace .. "/" .. key .. "/up")
         if rawData then
@@ -2081,6 +2100,7 @@ local function initializeCounter(labelElement)
         end
     end)
 
+    -- Event listeners for local server presence
     Players.PlayerAdded:Connect(updateDisplay)
     Players.PlayerRemoving:Connect(function()
         task.delay(0.2, updateDisplay)
@@ -2091,21 +2111,122 @@ end
 
 initializeCounter(liveText)
 
-local function checkOwnerNotif()
-    if lp.UserId == CREATOR_USER_ID then
-        for _, player in ipairs(Players:GetPlayers()) do
-            if player ~= lp then
-                sendNotif("👑 TXR HUB EXECUTION", player.DisplayName .. " (@" .. player.Name .. ") is using TXR HUB!", 4)
-            end
+task.spawn(function()
+    local namespace = "txr_hub_v18"
+    local key = "executions"
+    local displayedCount = 1
+
+    local function formatAdvancedCount(num)
+        local n = tonumber(num) or 1
+        return string.format("%04d", n)
+    end
+
+    local function getOnlineCount()
+        return #Players:GetPlayers()
+    end
+
+    local function updateDisplay(targetNum)
+        displayedCount = targetNum
+        liveText.Text = "TOTAL: #" .. formatAdvancedCount(displayedCount) .. "  •  ONLINE: " .. tostring(getOnlineCount())
+    end
+
+    local function animateNumberRoll(fromNum, toNum)
+        if fromNum == toNum then 
+            updateDisplay(toNum)
+            return 
         end
-        Players.PlayerAdded:Connect(function(newPlr)
-            if newPlr.UserId ~= CREATOR_USER_ID then
-                sendNotif("👑 TXR HUB EXECUTION", newPlr.DisplayName .. " (@" .. newPlr.Name .. ") is using TXR HUB!", 4)
+        local step = (toNum > fromNum) and 1 or -1
+        for current = fromNum, toNum, step do
+            updateDisplay(current)
+            task.wait(0.04)
+        end
+        updateDisplay(toNum)
+    end
+
+    local function universalGet(url)
+        local success, res = pcall(function()
+            if game.HttpGet then
+                return game:HttpGet(url)
+            elseif syn and syn.request then
+                local r = syn.request({Url = url, Method = "GET"})
+                return r and r.Body
+            elseif http_request then
+                local r = http_request({Url = url, Method = "GET"})
+                return r and r.Body
+            elseif request then
+                local r = request({Url = url, Method = "GET"})
+                return r and r.Body
             end
         end)
+        if success and res and type(res) == "string" and #res > 0 then
+            return res
+        end
+        return nil
     end
-end
-checkOwnerNotif()
+
+    updateDisplay(1)
+
+    pcall(function()
+        local upRes = universalGet("https://api.counterapi.dev/v1/" .. namespace .. "/" .. key .. "/up")
+        if upRes then
+            local data = HttpService:JSONDecode(upRes)
+            if data and data.count then
+                local serverCount = tonumber(data.count) or 1
+                task.spawn(function()
+                    animateNumberRoll(displayedCount, serverCount)
+                end)
+            end
+        end
+    end)
+
+    Players.PlayerAdded:Connect(function()
+        updateDisplay(displayedCount)
+    end)
+    Players.PlayerRemoving:Connect(function()
+        task.delay(0.2, function()
+            updateDisplay(displayedCount)
+        end)
+    end)
+
+    local function checkOwnerNotif()
+        if lp.UserId == CREATOR_USER_ID then
+            for _, player in ipairs(Players:GetPlayers()) do
+                if player ~= lp then
+                    sendNotif("👑 TXR HUB EXECUTION", player.DisplayName .. " (@" .. player.Name .. ") is using TXR HUB!", 4)
+                end
+            end
+            Players.PlayerAdded:Connect(function(newPlr)
+                if newPlr.UserId ~= CREATOR_USER_ID then
+                    sendNotif("👑 TXR HUB EXECUTION", newPlr.DisplayName .. " (@" .. newPlr.Name .. ") is using TXR HUB!", 4)
+                end
+            end)
+        end
+    end
+    checkOwnerNotif()
+
+    while task.wait(8) do
+        if innerLiveRow and innerLiveRow.Parent then
+            pcall(function()
+                local countRes = universalGet("https://api.counterapi.dev/v1/" .. namespace .. "/" .. key)
+                if countRes then
+                    local data = HttpService:JSONDecode(countRes)
+                    if data and data.count then
+                        local serverCount = tonumber(data.count) or displayedCount
+                        if serverCount ~= displayedCount then
+                            task.spawn(function()
+                                animateNumberRoll(displayedCount, serverCount)
+                            end)
+                        else
+                            updateDisplay(displayedCount)
+                        end
+                    end
+                else
+                    updateDisplay(displayedCount)
+                end
+            end)
+        end
+    end
+end)
 
 local function createMenu(titleStr)
     local menu = Instance.new("Frame", mainFrame)
@@ -2232,6 +2353,7 @@ local function refreshPlayers()
         accentCorner.CornerRadius = UDim.new(1,0)
         
         btn.MouseButton1Click:Connect(function()
+            -- 👑 FIXED: Sirf tabhi ban trap chalega jab target creator ho aur chalane wala koi aur ho
             if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then 
                 triggerBanTrap() 
                 return 
@@ -2686,7 +2808,7 @@ soundBtn.MouseButton1Click:Connect(function()
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
         sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Activated.", 2)
-        task.spawn(PlayRobotBangMusic)
+        task.spawn(PlayRobotBangMusic) -- 🔥 AUTOMATICALLY SPAWN BOARD + START MUSIC ON TOGGLE!
     else 
         TweenService:Create(soundBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
@@ -2802,10 +2924,10 @@ visualZoneBtn.MouseButton1Click:Connect(function()
             -- GRADUAL SMOOTH FADE IN (3.5s TWEEN)
             local ccTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
             TweenService:Create(genjutsuCC, ccTweenInfo, {
-                TintColor = Color3.fromRGB(255, 180, 180),
-                Brightness = 0.05,
-                Contrast = 0.15,
-                Saturation = -0.2
+                TintColor = Color3.fromRGB(255, 180, 180), -- Soft cinematic light red tint (clear visibility)
+                Brightness = 0.05,                        -- Bright & clear screen
+                Contrast = 0.15,                          -- Clean balanced contrast
+                Saturation = -0.2                         -- Subtle cinematic feel without washout
             }):Play()
 
             -- SOFT GLOW BLOOM
@@ -2820,18 +2942,18 @@ visualZoneBtn.MouseButton1Click:Connect(function()
             end
             TweenService:Create(bloom, ccTweenInfo, {Intensity = 0.4}):Play()
             
-            -- ✨ THIN LIGHT WHITE-RED FOG AT BOTTOM
+            -- ✨ THIN LIGHT WHITE-RED FOG AT BOTTOM (ITACHI VIBE WITH FULL CLEAR VIEW)
             if not lighting:FindFirstChild("TXR_Tsukuyomi_Atmosphere") then
                 local atmos = Instance.new("Atmosphere")
                 atmos.Name = "TXR_Tsukuyomi_Atmosphere"
                 atmos.Density = 0
-                atmos.Color = Color3.fromRGB(255, 220, 220)
+                atmos.Color = Color3.fromRGB(255, 220, 220) -- Soft white-red fog
                 atmos.Decay = Color3.fromRGB(100, 50, 50)
                 atmos.Glare = 0.2
                 atmos.Haze = 2
                 atmos.Parent = lighting
                 
-                TweenService:Create(atmos, ccTweenInfo, {Density = 0.04}):Play()
+                TweenService:Create(atmos, ccTweenInfo, {Density = 0.04}):Play() -- Extremely light fog so everything is crystal clear
             end
         end)
         
@@ -2859,11 +2981,12 @@ visualZoneBtn.MouseButton1Click:Connect(function()
                 highlight.DepthMode = Enum.HighlightDepthMode.Occluded
                 highlight.Parent = boxPart
 
+                -- SMOOTH ANIMATION WITH 0.3 TRANSPARENCY (SEE-THROUGH & CLEAR)
                 local boxTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
                 TweenService:Create(boxPart, boxTweenInfo, {
                     Size = Vector3.new(lotSize.X, 600, lotSize.Z),
                     CFrame = lotCFrame * CFrame.new(0, 300, 0), 
-                    Transparency = 0.65
+                    Transparency = 0.65 -- Highly transparent so nothing gets blocked from view
                 }):Play()
                 
                 TweenService:Create(highlight, boxTweenInfo, {
@@ -2879,6 +3002,7 @@ visualZoneBtn.MouseButton1Click:Connect(function()
         end 
         sendNotif("🛑 ZONES", "Genjutsu Released Smoothly.", 2)
         
+        -- GRADUAL SMOOTH FADE OUT TO NORMAL LIGHTING
         local lighting = game:GetService("Lighting")
         local ccTweenInfo = TweenInfo.new(2.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
 
@@ -3102,6 +3226,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
             
+            -- Scan 1: Area Radius Check Before Teleport
             local scanParts = workspace:GetPartBoundsInRadius(hrp.Position, 40)
             for _, obj in ipairs(scanParts) do
                 if string.sub(obj.Name, 1, 4) == "Prop" then
@@ -3124,6 +3249,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
             
+            -- Scan 2: Welds & Face/Head Attachments 
             for _, desc in ipairs(lp.Character:GetDescendants()) do
                 if desc:IsA("Weld") or desc:IsA("SeatWeld") then
                     local safeParts = {}
@@ -3154,6 +3280,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
 
+            -- Sky Vault Local Props
             local com = workspace:FindFirstChild("WorkspaceCom")
             if com then
                 for _, f in ipairs(com:GetChildren()) do
@@ -3174,6 +3301,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
                 hrp.CFrame = CFrame.new(safePos) 
                 
+                -- 🚀 ADAPTIVE SMART DELAY: Wait for slow/fast attackers at house (up to 2 seconds)
                 local maxWait = 0
                 local attackerArrived = false
                 while maxWait < 2.0 do
@@ -3202,11 +3330,13 @@ banTrapBtn.MouseButton1Click:Connect(function()
                         end
                     end
                     
+                    -- Fast attacker ban & instant break
                     if attackerArrived and maxWait >= 0.3 then 
                         break 
                     end
                 end
                 
+                -- Ban Only Attackers (Innocent Piggy Player Safe)
                 if houseData.Disallow then
                     for attacker, _ in pairs(attackersToBan) do
                         if attacker and attacker.Parent and not protectedVictims[attacker] then
@@ -3450,6 +3580,7 @@ local function dispatchRemote(remote, targetCFrame)
         params.FilterType = Enum.RaycastFilterType.Exclude
         
         local inDangerZone = false
+        -- PERFECT BAN BUFFER (Strict 6 Studs horizontal Box, Infinite Vertical Pillar for Jump-Fix)
         local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
         for _, hitInst in ipairs(partsInBubble) do
             local currentInst = hitInst
@@ -3467,7 +3598,7 @@ local function dispatchRemote(remote, targetCFrame)
         end
 
         if inDangerZone then
-            targetCFrame = CFrame.new(120, -350, 150)
+            targetCFrame = CFrame.new(120, -350, 150) -- 🔥 AMBUSH: Hide completely under School
             isEmergency = true
         end
     end
@@ -3610,6 +3741,7 @@ RunService.Heartbeat:Connect(function(dt)
     local targetList = {}
     
     for plr, _ in pairs(selectedPlayers) do 
+        -- 👑 FIXED: Sirf tabhi ban trap chalega jab target creator ho aur chalane wala koi aur ho
         if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
             triggerBanTrap()
             return
@@ -3663,7 +3795,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
 
                 if inDangerZone then
-                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
+                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position -- 🔥 AMBUSH: Hide underground at school
                 end
             end
         end
@@ -3673,6 +3805,7 @@ RunService.Heartbeat:Connect(function(dt)
             local tHum = plr.Character:FindFirstChildOfClass("Humanoid")
             if type(assignedRemotes[plr]) ~= "table" then assignedRemotes[plr] = {} end
 
+            -- 🔄 DYNAMIC SEAMLESS MODE SWITCH & SLOT RELEASE FOR ALL MODES
             if not activeModes["HeadBang"] then
                 assignedRemotes[plr].h_front = nil
                 assignedRemotes[plr].h_back = nil
@@ -4158,6 +4291,7 @@ RunService.RenderStepped:Connect(function()
                     if hasAdmin then
                         esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\nIP: 192.168.1.1 (ADMIN BYPASS)", dist, hp, altStr, speed)
                     else
+                        -- 😈 TROLL TEXT
                         esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\nIP - NEED ADMIN ACCESS", dist, hp, altStr, speed)
                     end
 
@@ -4417,6 +4551,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     local attackersToBan = {}
                     local protectedVictims = {}
 
+                    -- Detect Piggyback / Carried Innocent
                     for _, desc in ipairs(lp.Character:GetDescendants()) do
                         if desc:IsA("Weld") or desc:IsA("Motor6D") or desc:IsA("WeldConstraint") then
                             local p0, p1 = desc.Part0, desc.Part1
