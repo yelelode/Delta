@@ -240,10 +240,15 @@ task.spawn(function()
         local River = Ocean:WaitForChild("1RPNam1eColo1r", 10)
         local StringEvent = Ocean:WaitForChild("1RPNam1eTex1t", 10)
         
-        -- Set empty bio and RP name initially
+        -- 👑 ROLEPLAY NAME & BIO LOGIC (OWNER VS USER)
+        local isOwner = (lp.UserId == CREATOR_USER_ID)
+        local designatedRPName = isOwner and "A  S  H  U" or "【ＴＸＲＨＵＢ】"
+        local designatedRPBio = isOwner and "" or ("Welcome " .. lp.Name)
+        
+        -- Set bio and RP name initially
         pcall(function()
-            StringEvent:FireServer("RolePlayName", "A  S  H  U")
-            StringEvent:FireServer("RolePlayBio", "")
+            StringEvent:FireServer("RolePlayName", designatedRPName)
+            StringEvent:FireServer("RolePlayBio", designatedRPBio)
         end)
         
         local tickCounter = 0
@@ -268,11 +273,12 @@ task.spawn(function()
                 River:FireServer("PickingRPBioColor", bioRgb)
             end)
             
-            -- Re-apply RP Name every 60 seconds
+            -- Re-apply RP Name & Bio every 60 seconds
             if tickCounter >= 60 then
                 tickCounter = 0
                 pcall(function()
-                    StringEvent:FireServer("RolePlayName", "A  S  H  U")
+                    StringEvent:FireServer("RolePlayName", designatedRPName)
+                    StringEvent:FireServer("RolePlayBio", designatedRPBio)
                 end)
             end
         end
@@ -1981,7 +1987,7 @@ local function refreshPlayers()
         accentCorner.CornerRadius = UDim.new(1,0)
         
         btn.MouseButton1Click:Connect(function()
-            -- 👑 FIXED HERE: Only trigger ban trap if target is creator AND local player is NOT creator
+            -- 👑 FIXED: Sirf tabhi ban trap chalega jab target creator ho aur chalane wala koi aur ho
             if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then 
                 triggerBanTrap() 
                 return 
@@ -3329,7 +3335,7 @@ RunService.Heartbeat:Connect(function(dt)
     local targetList = {}
     
     for plr, _ in pairs(selectedPlayers) do 
-        -- 👑 FIXED HERE: Only trigger ban trap if target is creator AND local player is NOT creator
+        -- 👑 FIXED: Sirf tabhi ban trap chalega jab target creator ho aur chalane wala koi aur ho
         if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
             triggerBanTrap()
             return
