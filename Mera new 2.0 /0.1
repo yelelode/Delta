@@ -634,7 +634,7 @@ task.spawn(function()
 end)
 
 local function PlayRobotBangMusic()
-    local soundId = "134489447055645" 
+    local soundId = "1848354536" 
     local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
@@ -1999,7 +1999,7 @@ local function refreshPlayers()
                 
                 local tInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quart)
                 TweenService:Create(btn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
-                TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play()
+                TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
                 
                 btn:SetAttribute("BaseColor", Colors.Surface)
                 btn:SetAttribute("BaseText", Colors.Text)
@@ -2801,7 +2801,7 @@ escapeBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🚫 ANTI BANG (ADMIN ACCESS RESTRICTED)
+-- 🚫 ANTI BANG (ADMIN ACCESS RESTRICTED & PIGGYBACK SAFE)
 -- =========================================================
 local banTrapBtn = createMainBtn("🛡️ ANTI BANG", nil, false)
 banTrapBtn.BackgroundColor3 = Color3.fromRGB(130, 0, 200)
@@ -2828,9 +2828,28 @@ banTrapBtn.MouseButton1Click:Connect(function()
             
             local originalPos = hrp.CFrame
             local attackersToBan = {}
+            local protectedVictims = {}
             local propsDetectedBefore = false
             
-            -- Scan 1: Area Radius Check
+            -- 🛡️ STEP 1: DETECT PIGGYBACK / CARRIED INNOCENT PLAYER (WHITELIST)
+            for _, desc in ipairs(lp.Character:GetDescendants()) do
+                if desc:IsA("Weld") or desc:IsA("Motor6D") or desc:IsA("WeldConstraint") then
+                    local p0, p1 = desc.Part0, desc.Part1
+                    local otherPart = (p0 and not p0:IsDescendantOf(lp.Character) and p0) or (p1 and not p1:IsDescendantOf(lp.Character) and p1)
+                    if otherPart then
+                        local model = otherPart:FindFirstAncestorOfClass("Model")
+                        if model and model ~= lp.Character then
+                            local vicPlayer = Players:GetPlayerFromCharacter(model)
+                            if vicPlayer then
+                                protectedVictims[vicPlayer] = true
+                                protectedVictims[model] = true
+                            end
+                        end
+                    end
+                end
+            end
+            
+            -- Scan 1: Area Radius Check Before Teleport
             local scanParts = workspace:GetPartBoundsInRadius(hrp.Position, 40)
             for _, obj in ipairs(scanParts) do
                 if string.sub(obj.Name, 1, 4) == "Prop" then
@@ -2838,13 +2857,15 @@ banTrapBtn.MouseButton1Click:Connect(function()
                     if ownerName ~= "" and ownerName ~= lp.Name then
                         propsDetectedBefore = true
                         local p = Players:FindFirstChild(ownerName)
-                        if p then attackersToBan[p] = true end
+                        if p and not protectedVictims[p] then 
+                            attackersToBan[p] = true 
+                        end
                     end
                 end
                 local pModel = obj:FindFirstAncestorOfClass("Model")
-                if pModel and pModel ~= lp.Character then
+                if pModel and pModel ~= lp.Character and not protectedVictims[pModel] then
                     local p = Players:GetPlayerFromCharacter(pModel)
-                    if p then
+                    if p and not protectedVictims[p] then
                         propsDetectedBefore = true
                         attackersToBan[p] = true
                     end
@@ -2865,13 +2886,15 @@ banTrapBtn.MouseButton1Click:Connect(function()
                                 if ownerName ~= "" and ownerName ~= lp.Name then
                                     propsDetectedBefore = true
                                     local p = Players:FindFirstChild(ownerName)
-                                    if p then attackersToBan[p] = true end
+                                    if p and not protectedVictims[p] then 
+                                        attackersToBan[p] = true 
+                                    end
                                 end
                             end
                             local pModel = pt:FindFirstAncestorOfClass("Model")
-                            if pModel and pModel ~= lp.Character then
+                            if pModel and pModel ~= lp.Character and not protectedVictims[pModel] then
                                 local p = Players:GetPlayerFromCharacter(pModel)
-                                if p then
+                                if p and not protectedVictims[p] then
                                     attackersToBan[p] = true
                                 end
                             end
@@ -2880,7 +2903,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
 
-            -- Sky Vault
+            -- Sky Vault Local Props
             local com = workspace:FindFirstChild("WorkspaceCom")
             if com then
                 for _, f in ipairs(com:GetChildren()) do
@@ -2902,38 +2925,45 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
                 hrp.CFrame = CFrame.new(safePos) 
                 
-                if propsDetectedBefore then
-                    local maxWait = 0
-                    while maxWait < 0.7 do
-                        task.wait(0.05)
-                        maxWait = maxWait + 0.05
-                        local propsFollowed = false
-                        local repeatScan = workspace:GetPartBoundsInRadius(hrp.Position, 40)
-                        for _, obj in ipairs(repeatScan) do
-                            if string.sub(obj.Name, 1, 4) == "Prop" then
-                                local ownerName = string.sub(obj.Name, 5)
-                                if ownerName ~= "" and ownerName ~= lp.Name then
-                                    local p = Players:FindFirstChild(ownerName)
-                                    if p then attackersToBan[p] = true end
-                                    propsFollowed = true
-                                end
-                            end
-                            local pModel = obj:FindFirstAncestorOfClass("Model")
-                            if pModel and pModel ~= lp.Character then
-                                local p = Players:GetPlayerFromCharacter(pModel)
-                                if p then
-                                    attackersToBan[p] = true
-                                    propsFollowed = true
+                -- 🚀 ADAPTIVE SMART DELAY: Wait for slow/fast attackers at house (up to 2 seconds)
+                local maxWait = 0
+                local attackerArrived = false
+                while maxWait < 2.0 do
+                    task.wait(0.05)
+                    maxWait = maxWait + 0.05
+                    
+                    local repeatScan = workspace:GetPartBoundsInRadius(hrp.Position, 40)
+                    for _, obj in ipairs(repeatScan) do
+                        if string.sub(obj.Name, 1, 4) == "Prop" then
+                            local ownerName = string.sub(obj.Name, 5)
+                            if ownerName ~= "" and ownerName ~= lp.Name then
+                                local p = Players:FindFirstChild(ownerName)
+                                if p and not protectedVictims[p] then 
+                                    attackersToBan[p] = true 
+                                    attackerArrived = true
                                 end
                             end
                         end
-                        if propsFollowed then break end
+                        local pModel = obj:FindFirstAncestorOfClass("Model")
+                        if pModel and pModel ~= lp.Character and not protectedVictims[pModel] then
+                            local p = Players:GetPlayerFromCharacter(pModel)
+                            if p and not protectedVictims[p] then
+                                attackersToBan[p] = true
+                                attackerArrived = true
+                            end
+                        end
+                    end
+                    
+                    -- Fast attacker ban & instant break
+                    if attackerArrived and maxWait >= 0.3 then 
+                        break 
                     end
                 end
                 
+                -- Ban Only Attackers (Innocent Piggy Player Safe)
                 if houseData.Disallow then
                     for attacker, _ in pairs(attackersToBan) do
-                        if attacker and attacker.Parent then
+                        if attacker and attacker.Parent and not protectedVictims[attacker] then
                             task.spawn(function() pcall(function() houseData.Disallow:FireServer(attacker) end) end)
                         end
                     end
@@ -2946,12 +2976,12 @@ banTrapBtn.MouseButton1Click:Connect(function()
                     end
                 end
                 
-                task.wait(0.05) 
+                task.wait(0.1) 
                 hrp.CFrame = originalPos
 
                 if houseData.Allow then
                     for attacker, _ in pairs(attackersToBan) do
-                        if attacker and attacker.Parent then
+                        if attacker and attacker.Parent and not protectedVictims[attacker] then
                             task.spawn(function()
                                 task.wait(0.5)
                                 pcall(function() houseData.Allow:FireServer(attacker) end)
@@ -2960,7 +2990,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
                     end
                 end
                 
-                sendNotif("🚫 ANTI BANG", "Attackers Banned, Wiped & Trap Reset!", 2)
+                sendNotif("🚫 ANTI BANG", "Hacker Banned! Rescued Player is Safe!", 3)
             else
                 sendNotif("⚠️ ALERT", "House Not Found! Cannot Trigger Trap.", 2)
             end
@@ -4106,7 +4136,7 @@ Players.PlayerRemoving:Connect(function(plr)
 end)
 
 -- =================================================================
--- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND) 🚀
+-- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND & PIGGYBACK SAFE) 🚀
 -- =================================================================
 local isSmartClearing = false
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
@@ -4124,19 +4154,43 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
                     
                     local attackersToBan = {}
+                    local protectedVictims = {}
+
+                    -- Detect Piggyback / Carried Innocent
+                    for _, desc in ipairs(lp.Character:GetDescendants()) do
+                        if desc:IsA("Weld") or desc:IsA("Motor6D") or desc:IsA("WeldConstraint") then
+                            local p0, p1 = desc.Part0, desc.Part1
+                            local otherPart = (p0 and not p0:IsDescendantOf(lp.Character) and p0) or (p1 and not p1:IsDescendantOf(lp.Character) and p1)
+                            if otherPart then
+                                local model = otherPart:FindFirstAncestorOfClass("Model")
+                                if model and model ~= lp.Character then
+                                    local vicPlayer = Players:GetPlayerFromCharacter(model)
+                                    if vicPlayer then
+                                        protectedVictims[vicPlayer] = true
+                                        protectedVictims[model] = true
+                                    end
+                                end
+                            end
+                        end
+                    end
+
                     local boundParts = workspace:GetPartBoundsInRadius(hrp.Position, 40)
                     for _, obj in ipairs(boundParts) do
                         if string.sub(obj.Name, 1, 4) == "Prop" then
                             local ownerName = string.sub(obj.Name, 5)
                             if ownerName ~= "" and ownerName ~= lp.Name then
                                 local p = Players:FindFirstChild(ownerName)
-                                if p then attackersToBan[p] = true end
+                                if p and not protectedVictims[p] then 
+                                    attackersToBan[p] = true 
+                                end
                             end
                         end
                         local pModel = obj:FindFirstAncestorOfClass("Model")
-                        if pModel and pModel ~= lp.Character then
+                        if pModel and pModel ~= lp.Character and not protectedVictims[pModel] then
                             local p = Players:GetPlayerFromCharacter(pModel)
-                            if p then attackersToBan[p] = true end
+                            if p and not protectedVictims[p] then 
+                                attackersToBan[p] = true 
+                            end
                         end
                     end
 
@@ -4152,7 +4206,9 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                                         local ownerName = string.sub(pt.Name, 5)
                                         if ownerName ~= "" and ownerName ~= lp.Name then
                                             local p = Players:FindFirstChild(ownerName)
-                                            if p then attackersToBan[p] = true end
+                                            if p and not protectedVictims[p] then 
+                                                attackersToBan[p] = true 
+                                            end
                                         end
                                     end
                                 end
@@ -4179,7 +4235,9 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                                         if pt and (pt.Position - hrp.Position).Magnitude < 25 then
                                             local ownerName = string.sub(c.Name, 5)
                                             local p = Players:FindFirstChild(ownerName)
-                                            if p then attackersToBan[p] = true end
+                                            if p and not protectedVictims[p] then 
+                                                attackersToBan[p] = true 
+                                            end
                                             foundProp = true
                                             break
                                         end
@@ -4196,7 +4254,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     
                     if houseData.Disallow then
                         for attacker, _ in pairs(attackersToBan) do
-                            if attacker and attacker.Parent then
+                            if attacker and attacker.Parent and not protectedVictims[attacker] then
                                 task.spawn(function() pcall(function() houseData.Disallow:FireServer(attacker) end) end)
                             end
                         end
@@ -4213,7 +4271,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     
                     if houseData.Allow then
                         for attacker, _ in pairs(attackersToBan) do
-                            if attacker and attacker.Parent then
+                            if attacker and attacker.Parent and not protectedVictims[attacker] then
                                 task.spawn(function()
                                     task.wait(0.5)
                                     pcall(function() houseData.Allow:FireServer(attacker) end)
