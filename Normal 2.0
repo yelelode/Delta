@@ -232,7 +232,7 @@ task.spawn(function()
 end)
 
 --------------------------------------------------
--- 🔥 WATER-LIKE SMOOTH RED & BLACK RP NAME & BIO SYSTEM (60s LOOP)
+-- 🔥 WATER-LIKE SMOOTH RED & BLACK RP NAME & BIO SYSTEM (ANTI-TAG RE-FIRE FIX)
 --------------------------------------------------
 task.spawn(function()
     pcall(function()
@@ -245,19 +245,22 @@ task.spawn(function()
         local designatedRPName = isOwner and "A  S  H  U" or "【 TXR HUB 】"
         local designatedRPBio = isOwner and "" or ("Welcome " .. lp.Name)
         
-        -- Set bio and RP name initially
-        pcall(function()
-            StringEvent:FireServer("RolePlayName", designatedRPName)
-            StringEvent:FireServer("RolePlayBio", designatedRPBio)
+        local function applyRPText()
+            pcall(function()
+                StringEvent:FireServer("RolePlayName", designatedRPName)
+                StringEvent:FireServer("RolePlayBio", designatedRPBio)
+            end)
+        end
+        
+        applyRPText()
+        lp.CharacterAdded:Connect(function()
+            task.wait(1)
+            applyRPText()
         end)
         
-        local tickCounter = 0
         local t = 0
-        
         while task.wait(0.1) do
-            tickCounter = tickCounter + 0.1
             t = t + 0.1
-            
             pcall(function()
                 -- Water-like smooth flowing wave between dark black-red and vibrant red
                 local nameWave = (math.sin(t * 1.8) + 1) / 2
@@ -272,15 +275,6 @@ task.spawn(function()
                 River:FireServer("PickingRPNameColor", nameRgb)
                 River:FireServer("PickingRPBioColor", bioRgb)
             end)
-            
-            -- Re-apply RP Name & Bio every 60 seconds
-            if tickCounter >= 60 then
-                tickCounter = 0
-                pcall(function()
-                    StringEvent:FireServer("RolePlayName", designatedRPName)
-                    StringEvent:FireServer("RolePlayBio", designatedRPBio)
-                end)
-            end
         end
     end)
 end)
@@ -437,7 +431,7 @@ local isRainbowEnabled = false
 local isSoundEnabled = false
 local isSystemActive = false
 local isGodShieldEnabled = false
-local isEvading = false -- 🔥 NEW FIX: Master void evasion lock
+local isEvading = false 
 local animTime = 0
 local angle = 0
 local selfAngle = 0 
@@ -2442,12 +2436,12 @@ soundBtn.MouseButton1Click:Connect(function()
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
         sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Activated.", 2)
-        task.spawn(PlayRobotBangMusic) -- 🔥 AUTOMATICALLY SPAWN BOARD + START MUSIC ON TOGGLE!
+        task.spawn(PlayRobotBangMusic)
     else 
         TweenService:Create(soundBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
-        end
+        end 
         sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Deactivated.", 2)
         task.spawn(StopRobotBangMusic) 
     end
@@ -2532,7 +2526,6 @@ visualZoneBtn.MouseButton1Click:Connect(function()
         end
         sendNotif("🛑 TSUKUYOMI", "Domain Expansion: Clear Anime Genjutsu Active.", 3)
         
-        -- ITACHI SOUND EFFECT
         task.spawn(function()
             local sound = Instance.new("Sound")
             sound.SoundId = "rbxassetid://7288361610"
@@ -2542,7 +2535,6 @@ visualZoneBtn.MouseButton1Click:Connect(function()
             task.delay(8, function() pcall(function() sound:Destroy() end) end)
         end)
 
-        -- 🌟 PERFECTED CLEAR & CINEMATIC TSUKUYOMI LIGHTING (NO BLINDING DARKNESS)
         task.spawn(function()
             local lighting = game:GetService("Lighting")
             if not genjutsuCC or not genjutsuCC.Parent then
@@ -2555,16 +2547,14 @@ visualZoneBtn.MouseButton1Click:Connect(function()
                 genjutsuCC.Saturation = 0
             end
             
-            -- GRADUAL SMOOTH FADE IN (3.5s TWEEN)
             local ccTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
             TweenService:Create(genjutsuCC, ccTweenInfo, {
-                TintColor = Color3.fromRGB(255, 180, 180), -- Soft cinematic light red tint (clear visibility)
-                Brightness = 0.05,                        -- Bright & clear screen
-                Contrast = 0.15,                          -- Clean balanced contrast
-                Saturation = -0.2                         -- Subtle cinematic feel without washout
+                TintColor = Color3.fromRGB(255, 180, 180),
+                Brightness = 0.05,
+                Contrast = 0.15,
+                Saturation = -0.2
             }):Play()
 
-            -- SOFT GLOW BLOOM
             local bloom = lighting:FindFirstChild("TXR_Tsukuyomi_Bloom")
             if not bloom then
                 bloom = Instance.new("BloomEffect")
@@ -2576,18 +2566,17 @@ visualZoneBtn.MouseButton1Click:Connect(function()
             end
             TweenService:Create(bloom, ccTweenInfo, {Intensity = 0.4}):Play()
             
-            -- ✨ THIN LIGHT WHITE-RED FOG AT BOTTOM (ITACHI VIBE WITH FULL CLEAR VIEW)
             if not lighting:FindFirstChild("TXR_Tsukuyomi_Atmosphere") then
                 local atmos = Instance.new("Atmosphere")
                 atmos.Name = "TXR_Tsukuyomi_Atmosphere"
                 atmos.Density = 0
-                atmos.Color = Color3.fromRGB(255, 220, 220) -- Soft white-red fog
+                atmos.Color = Color3.fromRGB(255, 220, 220)
                 atmos.Decay = Color3.fromRGB(100, 50, 50)
                 atmos.Glare = 0.2
                 atmos.Haze = 2
                 atmos.Parent = lighting
                 
-                TweenService:Create(atmos, ccTweenInfo, {Density = 0.04}):Play() -- Extremely light fog so everything is crystal clear
+                TweenService:Create(atmos, ccTweenInfo, {Density = 0.04}):Play()
             end
         end)
         
@@ -2615,12 +2604,11 @@ visualZoneBtn.MouseButton1Click:Connect(function()
                 highlight.DepthMode = Enum.HighlightDepthMode.Occluded
                 highlight.Parent = boxPart
 
-                -- SMOOTH ANIMATION WITH 0.3 TRANSPARENCY (SEE-THROUGH & CLEAR)
                 local boxTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
                 TweenService:Create(boxPart, boxTweenInfo, {
                     Size = Vector3.new(lotSize.X, 600, lotSize.Z),
                     CFrame = lotCFrame * CFrame.new(0, 300, 0), 
-                    Transparency = 0.65 -- Highly transparent so nothing gets blocked from view
+                    Transparency = 0.65
                 }):Play()
                 
                 TweenService:Create(highlight, boxTweenInfo, {
@@ -2636,7 +2624,6 @@ visualZoneBtn.MouseButton1Click:Connect(function()
         end 
         sendNotif("🛑 ZONES", "Genjutsu Released Smoothly.", 2)
         
-        -- GRADUAL SMOOTH FADE OUT TO NORMAL LIGHTING
         local lighting = game:GetService("Lighting")
         local ccTweenInfo = TweenInfo.new(2.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
 
@@ -3337,6 +3324,9 @@ local function isPlayerSeated(plr)
     return false
 end
 
+-- =========================================================
+-- ⚡ ULTRA-STABLE HEARTBEAT DISTRIBUTOR (MULTIPLE TARGETS & SEAMLESS MODES)
+-- =========================================================
 RunService.Heartbeat:Connect(function(dt)
     if _G.TXR_InstanceID ~= currentExecutionID then return end 
     if not gui or not gui.Parent then 
@@ -3345,17 +3335,6 @@ RunService.Heartbeat:Connect(function(dt)
         return 
     end
     if not isSystemActive then return end 
-
-    for plr in pairs(assignedRemotes) do
-        if not selectedPlayers[plr] or not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then
-            assignedRemotes[plr] = nil 
-            targetVelocities[plr] = nil
-        end
-    end
-    
-    for plr in pairs(voidedPlayers) do
-        if not selectedPlayers[plr] then voidedPlayers[plr] = nil end
-    end
 
     local runTime = os.clock() 
     local speedMultiplier = (getSpeedMs() / 20)
@@ -3371,21 +3350,19 @@ RunService.Heartbeat:Connect(function(dt)
     local predictionTime = math.clamp(currentPing + 0.03, 0.04, 0.2)
     
     local allRemotes = getAvailableRemotes()
-    local tCount = 0
     local targetList = {}
     
     for plr, _ in pairs(selectedPlayers) do 
-        -- 👑 FIXED: Sirf tabhi ban trap chalega jab target creator ho aur chalane wala koi aur ho
         if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
             triggerBanTrap()
             return
         end
         if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then 
             table.insert(targetList, plr)
-            tCount = tCount + 1 
         end 
     end
 
+    local tCount = #targetList
     if tCount > 0 and #allRemotes > 0 then
         local currentRadius = getRadius()
         local rScale = currentRadius / 15 
@@ -3434,26 +3411,20 @@ RunService.Heartbeat:Connect(function(dt)
             end
         end
 
-        for _, plr in ipairs(targetList) do
+        -- 🔥 MULTIPLE TARGET FAIR DISTRIBUTION (INDEX PARTITIONING)
+        local remotesPerTarget = {}
+        for i = 1, tCount do
+            remotesPerTarget[i] = {}
+        end
+        for i, r in ipairs(allRemotes) do
+            local assignedTIndex = ((i - 1) % tCount) + 1
+            table.insert(remotesPerTarget[assignedTIndex], r)
+        end
+
+        for tIdx, plr in ipairs(targetList) do
             local tRoot = plr.Character.HumanoidRootPart
             local tHum = plr.Character:FindFirstChildOfClass("Humanoid")
-            if type(assignedRemotes[plr]) ~= "table" then assignedRemotes[plr] = {} end
-
-            -- 🔄 DYNAMIC SEAMLESS MODE SWITCH & SLOT RELEASE FOR ALL MODES
-            if not activeModes["HeadBang"] then
-                assignedRemotes[plr].h_front = nil
-                assignedRemotes[plr].h_back = nil
-            end
-            if not activeModes["Robot"] then
-                assignedRemotes[plr].front = nil
-                assignedRemotes[plr].back = nil
-                assignedRemotes[plr].left = nil
-                assignedRemotes[plr].right = nil
-            end
-            if not activeModes["MultiRobot"] then
-                assignedRemotes[plr].m_front = nil
-                assignedRemotes[plr].m_back = nil
-            end
+            local myRemotes = remotesPerTarget[tIdx]
             
             local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
             local rawVelocity = tRoot.AssemblyLinearVelocity
@@ -3480,291 +3451,196 @@ RunService.Heartbeat:Connect(function(dt)
             if flatLook.Magnitude > 0.01 then flatLook = flatLook.Unit else flatLook = Vector3.new(0, 0, -1) end
             
             local dynamicBaseCFrame = CFrame.lookAt(bodyPos, bodyPos + flatLook)
-            
             local isSitting = (tHum and tHum.Sit)
             local isRagdoll = (tHum and tHum:GetState() == Enum.HumanoidStateType.Physics)
             
             local yOffset = isSitting and -2.5 or (isRagdoll and -1.5 or -3.8)
             local tiltAngle = isRagdoll and math.rad(-90) or 0
-
             local centerGroundPos = bodyPos + Vector3.new(0, yOffset, 0)
+            
             local maxBaseDist = math.max(2.5, 4.0 * rScale) 
             local touchDist = 1.0 
-            
             local snapPower = (math.sin(smoothAnimTime * 6.5) + 1) / 2
             local smoothDist = maxBaseDist - ((maxBaseDist - touchDist) * snapPower)
             
             local robotBangCycle = (math.sin(robotAnimTime * 6.5) + 1) / 2
             local robotSmoothDist = maxBaseDist - ((maxBaseDist - touchDist) * robotBangCycle)
 
+            local rIndex = 1
+
             if activeModes["HeadBang"] then
-                local slots = {"h_front", "h_back"}
-                for _, slot in ipairs(slots) do 
-                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then 
-                        for _, r in ipairs(allRemotes) do 
-                            if not isRemoteAssigned(r) then 
-                                assignedRemotes[plr][slot] = r
-                                break 
-                            end 
-                        end 
-                    end 
-                end
-                
                 local actualHead = plr.Character:FindFirstChild("Head") or tRoot
                 local headPos = actualHead.Position + predictedOffset + targetSafeOffsets[plr]
                 local headLockCFrame = CFrame.lookAt(headPos, headPos + flatLook)
-                
                 local headY = (isSitting or isRagdoll) and -0.8 or -2.4 
                 local headDist = 1.0 + (1.5 * rScale) - (((1.5 * rScale)) * snapPower)
-                
-                if assignedRemotes[plr].h_front then 
-                    dispatchRemote(assignedRemotes[plr].h_front, headLockCFrame * CFrame.new(0, headY, -headDist)) 
+
+                if myRemotes[rIndex] then
+                    dispatchRemote(myRemotes[rIndex], headLockCFrame * CFrame.new(0, headY, -headDist))
+                    rIndex = rIndex + 1
                 end
-                if assignedRemotes[plr].h_back then 
-                    dispatchRemote(assignedRemotes[plr].h_back, headLockCFrame * CFrame.new(0, headY, headDist) * CFrame.Angles(0, math.rad(180), 0)) 
+                if myRemotes[rIndex] then
+                    dispatchRemote(myRemotes[rIndex], headLockCFrame * CFrame.new(0, headY, headDist) * CFrame.Angles(0, math.rad(180), 0))
+                    rIndex = rIndex + 1
                 end
             end
 
             if activeModes["Robot"] then
-                local slots = {"back", "front", "left", "right"}
-                for _, slot in ipairs(slots) do 
-                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then 
-                        for _, r in ipairs(allRemotes) do 
-                            if not isRemoteAssigned(r) then 
-                                assignedRemotes[plr][slot] = r
-                                break 
-                            end 
-                        end 
-                    end 
-                end
-                
                 local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * robotSmoothDist)
                 local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * robotSmoothDist)
                 local lPos = centerGroundPos - (dynamicBaseCFrame.RightVector * robotSmoothDist)
                 local rPos = centerGroundPos + (dynamicBaseCFrame.RightVector * robotSmoothDist)
-                
-                if assignedRemotes[plr].front then dispatchRemote(assignedRemotes[plr].front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                if assignedRemotes[plr].back then dispatchRemote(assignedRemotes[plr].back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                if assignedRemotes[plr].left then dispatchRemote(assignedRemotes[plr].left, CFrame.lookAt(lPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                if assignedRemotes[plr].right then dispatchRemote(assignedRemotes[plr].right, CFrame.lookAt(rPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+
+                if myRemotes[rIndex] then dispatchRemote(myRemotes[rIndex], CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)); rIndex = rIndex + 1 end
+                if myRemotes[rIndex] then dispatchRemote(myRemotes[rIndex], CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)); rIndex = rIndex + 1 end
+                if myRemotes[rIndex] then dispatchRemote(myRemotes[rIndex], CFrame.lookAt(lPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)); rIndex = rIndex + 1 end
+                if myRemotes[rIndex] then dispatchRemote(myRemotes[rIndex], CFrame.lookAt(rPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)); rIndex = rIndex + 1 end
             end
 
             if activeModes["MultiRobot"] then
-                local slots = {"m_back", "m_front"}
-                for _, slot in ipairs(slots) do 
-                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then 
-                        for _, r in ipairs(allRemotes) do 
-                            if not isRemoteAssigned(r) then 
-                                assignedRemotes[plr][slot] = r
-                                break 
-                            end 
-                        end 
-                    end 
-                end
-                
                 local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * smoothDist)
                 local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * smoothDist)
-                
-                if assignedRemotes[plr].m_front then dispatchRemote(assignedRemotes[plr].m_front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                if assignedRemotes[plr].m_back then dispatchRemote(assignedRemotes[plr].m_back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+
+                if myRemotes[rIndex] then dispatchRemote(myRemotes[rIndex], CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)); rIndex = rIndex + 1 end
+                if myRemotes[rIndex] then dispatchRemote(myRemotes[rIndex], CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)); rIndex = rIndex + 1 end
             end
-        end
 
-        local freeRemotes = {}
-        for _, r in ipairs(allRemotes) do 
-            if not isRemoteAssigned(r) then table.insert(freeRemotes, r) end 
-        end
-
-        if #freeRemotes > 0 then
-            if activeModes["Chair"] then
-                for idx, remote in ipairs(freeRemotes) do
-                    local targetIdx = ((idx - 1) % tCount) + 1
-                    local plr = targetList[targetIdx]
-                    local tRoot = plr.Character.HumanoidRootPart
-                    local tHum = plr.Character:FindFirstChildOfClass("Humanoid")
-                    
+            local remCount = #myRemotes - rIndex + 1
+            if remCount > 0 then
+                if activeModes["Chair"] then
                     local isSeated = isPlayerSeated(plr)
                     if voidedPlayers[plr] and not isSeated and tRoot.Position.Y > -1000 then voidedPlayers[plr] = nil end
-                    
-                    if isSeated or voidedPlayers[plr] then
-                        voidedPlayers[plr] = true
-                        task.spawn(function() pcall(function() remote:InvokeServer(CFrame.new(120, -350, 150)) end) end)
-                    else
-                        local propsForThisTarget = math.min(4, math.ceil(#freeRemotes / tCount))
-                        local localChairIndex = (idx - 1) % propsForThisTarget
-                        
-                        if localChairIndex < propsForThisTarget then
-                            local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
-                            local rawVel = tRoot.AssemblyLinearVelocity
-                            
-                            local pOffset = targetVelocities[plr] * predictionTime
-                            local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
-                            
-                            local yVelocity = rawVel.Y
-                            local isJumpingOrFreefall = (tHum and (tHum:GetState() == Enum.HumanoidStateType.Jumping or tHum:GetState() == Enum.HumanoidStateType.Freefall))
-                            local airLiftOffset = 0
-                            if isJumpingOrFreefall or yVelocity > 2 then airLiftOffset = math.clamp(yVelocity * 0.16, 0, 7.5) end
 
-                            local blitzTime = runTime * 45 + (localChairIndex * (math.pi * 2 / propsForThisTarget))
-                            local radOffset = (math.pi * 2 / propsForThisTarget) * localChairIndex
-                            
+                    for idx = rIndex, #myRemotes do
+                        local remote = myRemotes[idx]
+                        if isSeated or voidedPlayers[plr] then
+                            voidedPlayers[plr] = true
+                            task.spawn(function() pcall(function() remote:InvokeServer(CFrame.new(120, -350, 150)) end) end)
+                        else
+                            local localChairIndex = (idx - rIndex)
+                            local yVelocity = rawVelocity.Y
+                            local isJumpingOrFreefall = (tHum and (tHum:GetState() == Enum.HumanoidStateType.Jumping or tHum:GetState() == Enum.HumanoidStateType.Freefall))
+                            local airLiftOffset = (isJumpingOrFreefall or yVelocity > 2) and math.clamp(yVelocity * 0.16, 0, 7.5) or 0
+
+                            local blitzTime = runTime * 45 + (localChairIndex * (math.pi * 2 / math.max(1, remCount)))
+                            local radOffset = (math.pi * 2 / math.max(1, remCount)) * localChairIndex
                             local radiusBase = 1.0 + (localChairIndex * 0.2)
                             local sweepX = math.cos(blitzTime + radOffset) * radiusBase
                             local sweepZ = math.sin(blitzTime + radOffset) * radiusBase
                             local heightLayer = ((localChairIndex % 2) - 0.5) * 1.8 
                             local verticalWave = math.sin(blitzTime * 3.0 + localChairIndex) * 1.8
-                            
+
                             local dynamicChairCFrame = CFrame.new(bodyPos) 
                                 * CFrame.new(sweepX, (-2.6 + airLiftOffset + heightLayer) + verticalWave, sweepZ) 
                                 * CFrame.Angles(math.sin(blitzTime) * 0.4, blitzTime * 2.5, math.cos(blitzTime) * 0.4)
-                            
+
                             dispatchRemote(remote, dynamicChairCFrame)
                         end
                     end
-                end
-            elseif activeModes["Ring"] then
-                for i, remote in ipairs(freeRemotes) do
-                    local targetIdx = ((i - 1) % tCount) + 1
-                    local plr = targetList[targetIdx]
-                    
-                    local tRoot = plr.Character.HumanoidRootPart
-                    local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
-                    local pOffset = targetVelocities[plr] * predictionTime
-                    local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
+                elseif activeModes["Ring"] then
                     local ringCenterPos = bodyPos + Vector3.new(0, -3.8, 0)
-                    
-                    local propsForThisTarget = 0
-                    local myLocalIdx = 0
-                    
-                    for j = 1, #freeRemotes do 
-                        if (((j - 1) % tCount) + 1) == targetIdx then 
-                            if j < i then myLocalIdx = myLocalIdx + 1 end
-                            propsForThisTarget = propsForThisTarget + 1 
-                        end 
-                    end
-                    
-                    if propsForThisTarget > 0 then
-                        local angleRad = (math.pi * 2 / propsForThisTarget) * myLocalIdx
+                    for idx = rIndex, #myRemotes do
+                        local remote = myRemotes[idx]
+                        local localIdx = idx - rIndex
+                        local angleRad = (math.pi * 2 / remCount) * localIdx
                         local rBaseDist = math.max(3.5, 4.5 * rScale) 
                         local rSnap = (math.sin(smoothAnimTime * 6.5) + 1) / 2
                         local rSmooth = rBaseDist - ((rBaseDist - 1.5) * rSnap)
-                        
+
                         local propPos = ringCenterPos + Vector3.new(math.sin(angleRad) * rSmooth, 0, math.cos(angleRad) * rSmooth)
                         dispatchRemote(remote, CFrame.lookAt(propPos, ringCenterPos) * CFrame.Angles(0, math.rad(180), 0))
                     end
-                end
-            elseif activeModes["Orbit"] then
-                for idx, remote in ipairs(freeRemotes) do
-                    local targetIdx = ((idx - 1) % tCount) + 1
-                    local plr = targetList[targetIdx]
-                    
-                    local tRoot = plr.Character.HumanoidRootPart
-                    local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
-                    local pOffset = targetVelocities[plr] * predictionTime
-                    local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
-                    
-                    local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
-                    if flatLook.Magnitude > 0.01 then flatLook = flatLook.Unit else flatLook = Vector3.new(0, 0, -1) end
+                elseif activeModes["Orbit"] or not (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"]) then
                     local dynamicOrbitBase = CFrame.lookAt(bodyPos, bodyPos + flatLook)
-                    
-                    local propsForThisTarget = 0
-                    local myLocalIdx = 0
-                    
-                    for j = 1, #freeRemotes do
-                        if (((j - 1) % tCount) + 1) == targetIdx then
-                            propsForThisTarget = propsForThisTarget + 1
-                            if j <= idx then myLocalIdx = propsForThisTarget end
+                    for idx = rIndex, #myRemotes do
+                        local remote = myRemotes[idx]
+                        local myLocalIdx = idx - rIndex + 1
+                        local radRatio = (myLocalIdx / remCount) * math.pi * 2 
+                        local x, y, z = 0, 0, 0
+
+                        if activeGeometry == "Standard Orbit" or activeGeometry == "Spin" then
+                            x = math.cos(radRatio + smoothAngle) * currentRadius
+                            z = math.sin(radRatio + smoothAngle) * currentRadius
+                        elseif activeGeometry == "Reverse Spin" then 
+                            x = math.cos(radRatio - smoothAngle) * currentRadius
+                            z = math.sin(radRatio - smoothAngle) * currentRadius
+                        elseif activeGeometry == "Bobbing Orbit" then 
+                            x = math.cos(radRatio + smoothAngle) * currentRadius
+                            z = math.sin(radRatio + smoothAngle) * currentRadius
+                            y = math.sin((smoothAngle * 2) + radRatio) * (currentRadius * 0.3)
+                        elseif activeGeometry == "Vertical Halo" then
+                            x = math.cos(radRatio + smoothAngle) * currentRadius
+                            y = math.sin(radRatio + smoothAngle) * currentRadius
+                        elseif activeGeometry == "Atom" then
+                            local axis = myLocalIdx % 3
+                            if axis == 0 then x = math.cos(radRatio + smoothAngle) * currentRadius; z = math.sin(radRatio + smoothAngle) * currentRadius
+                            elseif axis == 1 then x = math.cos(radRatio + smoothAngle) * currentRadius; y = math.sin(radRatio + smoothAngle) * currentRadius
+                            else z = math.cos(radRatio + smoothAngle) * currentRadius; y = math.sin(radRatio + smoothAngle) * currentRadius end
+                        elseif activeGeometry == "Galaxy Spiral" then
+                            local dynRad = currentRadius * (0.4 + 0.6 * math.sin(smoothAngle + radRatio * 2))
+                            x = math.cos(radRatio + smoothAngle) * dynRad
+                            z = math.sin(radRatio + smoothAngle) * dynRad
+                        elseif activeGeometry == "Crown" then
+                            y = 2.5 + math.sin(radRatio * 3 + smoothAngle * 4) * 0.8
+                            x = math.cos(radRatio + smoothAngle) * (currentRadius * 0.5)
+                            z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
+                        elseif activeGeometry == "DNA" then
+                            local helixHeight = currentRadius * 1.5
+                            local phase = (myLocalIdx % 2 == 0) and math.pi or 0
+                            local heightProgress = math.floor((myLocalIdx - 1) / 2) / math.max(1, math.floor(remCount / 2))
+                            y = (heightProgress * helixHeight) - (helixHeight/2) + math.sin(smoothAngle)
+                            local helixRad = currentRadius * 0.4
+                            x = math.cos(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
+                            z = math.sin(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
+                        elseif activeGeometry == "Snake Body" then
+                            local delay = myLocalIdx * 0.3
+                            x = math.cos(smoothAngle - delay) * currentRadius
+                            z = math.sin(smoothAngle - delay) * currentRadius
+                            y = math.sin((smoothAngle - delay) * 2) * (currentRadius * 0.3)
+                        elseif activeGeometry == "Wings" then
+                            local side = (myLocalIdx % 2 == 0) and 1 or -1
+                            local wingIdx = math.ceil(myLocalIdx / 2)
+                            local totalWings = math.max(1, math.ceil(remCount / 2))
+                            local wingProgress = wingIdx / totalWings
+                            x = side * (1 + wingProgress * currentRadius)
+                            y = 0.5 + (wingProgress * currentRadius * 0.8) + math.sin(smoothAngle + wingProgress * 2) * 0.5
+                            z = 1.5 + (wingProgress * 0.5)
+                        elseif activeGeometry == "BlackHole Vortex" then
+                            local dynR = currentRadius * (0.5 + 0.5 * math.sin(smoothAngle * 2 + radRatio))
+                            x = math.cos(radRatio + smoothAngle * 2) * dynR
+                            z = math.sin(radRatio + smoothAngle * 2) * dynR
+                            y = math.sin(smoothAngle + radRatio) * 2
+                        elseif activeGeometry == "Quantum Pulsar" then
+                            local pulseR = currentRadius * (0.8 + 0.4 * math.sin(smoothAngle * 3))
+                            x = math.cos(radRatio + smoothAngle) * pulseR
+                            z = math.sin(radRatio + smoothAngle) * pulseR
+                        elseif activeGeometry == "Hyper Wave" then
+                            x = math.cos(radRatio + smoothAngle) * currentRadius
+                            z = math.sin(radRatio + smoothAngle) * currentRadius
+                            y = math.sin(smoothAngle * 3 + radRatio * 2) * 3
+                        elseif activeGeometry == "Supernova Explosion" then
+                            local expR = currentRadius * (0.3 + math.abs(math.sin(smoothAngle * 4)))
+                            x = math.cos(radRatio + smoothAngle) * expR
+                            z = math.sin(radRatio + smoothAngle) * expR
+                            y = math.sin(smoothAngle * 2) * 2
+                        elseif activeGeometry == "Matrix Grid" then
+                            local gridCol = math.fmod(myLocalIdx, 4) - 1.5
+                            local gridRow = math.floor((myLocalIdx - 1) / 4) - 1
+                            x = gridCol * (currentRadius * 0.3)
+                            z = gridRow * (currentRadius * 0.3)
+                            y = math.sin(smoothAngle + myLocalIdx) * 1.5
+                        elseif activeGeometry == "Eclipse Shadowing" then
+                            local ellipR = currentRadius * 1.3
+                            x = math.cos(radRatio + smoothAngle) * ellipR
+                            z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
+                            y = math.cos(smoothAngle * 2) * 1.2
+                        else 
+                            x = math.cos(radRatio + smoothAngle) * currentRadius
+                            z = math.sin(radRatio + smoothAngle) * currentRadius 
                         end
+
+                        dispatchRemote(remote, dynamicOrbitBase * CFrame.new(Vector3.new(x, y, z)) * CFrame.Angles(smoothSelfAngle, smoothSelfAngle, smoothSelfAngle))
                     end
-                    
-                    local x, y, z = 0, 0, 0
-                    local radRatio = (myLocalIdx / propsForThisTarget) * math.pi * 2 
-                    
-                    if activeGeometry == "Standard Orbit" then
-                        x = math.cos(radRatio + smoothAngle) * currentRadius
-                        z = math.sin(radRatio + smoothAngle) * currentRadius
-                    elseif activeGeometry == "Spin" then 
-                        x = math.cos(radRatio + smoothAngle) * currentRadius
-                        z = math.sin(radRatio + smoothAngle) * currentRadius
-                    elseif activeGeometry == "Reverse Spin" then 
-                        x = math.cos(radRatio - smoothAngle) * currentRadius
-                        z = math.sin(radRatio - smoothAngle) * currentRadius
-                    elseif activeGeometry == "Bobbing Orbit" then 
-                        x = math.cos(radRatio + smoothAngle) * currentRadius
-                        z = math.sin(radRatio + smoothAngle) * currentRadius
-                        y = math.sin((smoothAngle * 2) + radRatio) * (currentRadius * 0.3)
-                    elseif activeGeometry == "Vertical Halo" then
-                        x = math.cos(radRatio + smoothAngle) * currentRadius
-                        y = math.sin(radRatio + smoothAngle) * currentRadius
-                    elseif activeGeometry == "Atom" then
-                        local axis = myLocalIdx % 3
-                        if axis == 0 then x = math.cos(radRatio + smoothAngle) * currentRadius; z = math.sin(radRatio + smoothAngle) * currentRadius
-                        elseif axis == 1 then x = math.cos(radRatio + smoothAngle) * currentRadius; y = math.sin(radRatio + smoothAngle) * currentRadius
-                        else z = math.cos(radRatio + smoothAngle) * currentRadius; y = math.sin(radRatio + smoothAngle) * currentRadius end
-                    elseif activeGeometry == "Galaxy Spiral" then
-                        local dynRad = currentRadius * (0.4 + 0.6 * math.sin(smoothAngle + radRatio * 2))
-                        x = math.cos(radRatio + smoothAngle) * dynRad
-                        z = math.sin(radRatio + smoothAngle) * dynRad
-                    elseif activeGeometry == "Crown" then
-                        y = 2.5 + math.sin(radRatio * 3 + smoothAngle * 4) * 0.8
-                        x = math.cos(radRatio + smoothAngle) * (currentRadius * 0.5)
-                        z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
-                    elseif activeGeometry == "DNA" then
-                        local helixHeight = currentRadius * 1.5
-                        local phase = (myLocalIdx % 2 == 0) and math.pi or 0
-                        local heightProgress = math.floor((myLocalIdx - 1) / 2) / math.max(1, math.floor(propsForThisTarget / 2))
-                        y = (heightProgress * helixHeight) - (helixHeight/2) + math.sin(smoothAngle)
-                        local helixRad = currentRadius * 0.4
-                        x = math.cos(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
-                        z = math.sin(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
-                    elseif activeGeometry == "Snake Body" then
-                        local delay = myLocalIdx * 0.3
-                        x = math.cos(smoothAngle - delay) * currentRadius
-                        z = math.sin(smoothAngle - delay) * currentRadius
-                        y = math.sin((smoothAngle - delay) * 2) * (currentRadius * 0.3)
-                    elseif activeGeometry == "Wings" then
-                        local side = (myLocalIdx % 2 == 0) and 1 or -1
-                        local wingIdx = math.ceil(myLocalIdx / 2)
-                        local totalWings = math.max(1, math.ceil(propsForThisTarget / 2))
-                        local wingProgress = wingIdx / totalWings
-                        x = side * (1 + wingProgress * currentRadius)
-                        y = 0.5 + (wingProgress * currentRadius * 0.8) + math.sin(smoothAngle + wingProgress * 2) * 0.5
-                        z = 1.5 + (wingProgress * 0.5)
-                    elseif activeGeometry == "BlackHole Vortex" then
-                        local dynR = currentRadius * (0.5 + 0.5 * math.sin(smoothAngle * 2 + radRatio))
-                        x = math.cos(radRatio + smoothAngle * 2) * dynR
-                        z = math.sin(radRatio + smoothAngle * 2) * dynR
-                        y = math.sin(smoothAngle + radRatio) * 2
-                    elseif activeGeometry == "Quantum Pulsar" then
-                        local pulseR = currentRadius * (0.8 + 0.4 * math.sin(smoothAngle * 3))
-                        x = math.cos(radRatio + smoothAngle) * pulseR
-                        z = math.sin(radRatio + smoothAngle) * pulseR
-                    elseif activeGeometry == "Hyper Wave" then
-                        x = math.cos(radRatio + smoothAngle) * currentRadius
-                        z = math.sin(radRatio + smoothAngle) * currentRadius
-                        y = math.sin(smoothAngle * 3 + radRatio * 2) * 3
-                    elseif activeGeometry == "Supernova Explosion" then
-                        local expR = currentRadius * (0.3 + math.abs(math.sin(smoothAngle * 4)))
-                        x = math.cos(radRatio + smoothAngle) * expR
-                        z = math.sin(radRatio + smoothAngle) * expR
-                        y = math.sin(smoothAngle * 2) * 2
-                    elseif activeGeometry == "Matrix Grid" then
-                        local gridCol = math.fmod(myLocalIdx, 4) - 1.5
-                        local gridRow = math.floor((myLocalIdx - 1) / 4) - 1
-                        x = gridCol * (currentRadius * 0.3)
-                        z = gridRow * (currentRadius * 0.3)
-                        y = math.sin(smoothAngle + myLocalIdx) * 1.5
-                    elseif activeGeometry == "Eclipse Shadowing" then
-                        local ellipR = currentRadius * 1.3
-                        x = math.cos(radRatio + smoothAngle) * ellipR
-                        z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
-                        y = math.cos(smoothAngle * 2) * 1.2
-                    else 
-                        x = math.cos(radRatio + smoothAngle) * currentRadius
-                        z = math.sin(radRatio + smoothAngle) * currentRadius 
-                    end
-                    
-                    dispatchRemote(remote, dynamicOrbitBase * CFrame.new(Vector3.new(x, y, z)) * CFrame.Angles(smoothSelfAngle, smoothSelfAngle, smoothSelfAngle))
                 end
             end
         end
