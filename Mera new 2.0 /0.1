@@ -242,7 +242,7 @@ task.spawn(function()
         
         -- 👑 ROLEPLAY NAME & BIO LOGIC (OWNER VS USER)
         local isOwner = (lp.UserId == CREATOR_USER_ID)
-        local designatedRPName = isOwner and "A  S  H  U" or "【ＴＸＲＨＵＢ】"
+        local designatedRPName = isOwner and "A  S  H  U" or "【Ｔ🇽🇷ＨＵＢ】"
         local designatedRPBio = isOwner and "" or ("Welcome " .. lp.Name)
         
         -- Set bio and RP name initially
@@ -3439,7 +3439,7 @@ RunService.Heartbeat:Connect(function(dt)
             local tHum = plr.Character:FindFirstChildOfClass("Humanoid")
             if type(assignedRemotes[plr]) ~= "table" then assignedRemotes[plr] = {} end
 
-            -- 🔄 DYNAMIC SEAMLESS MODE SHIFT & INSTANT SLOT RELEASE
+            -- 🔄 DYNAMIC SEAMLESS MODE SWITCH & SLOT RELEASE FOR ALL MODES
             if not activeModes["HeadBang"] then
                 assignedRemotes[plr].h_front = nil
                 assignedRemotes[plr].h_back = nil
@@ -3453,6 +3453,15 @@ RunService.Heartbeat:Connect(function(dt)
             if not activeModes["MultiRobot"] then
                 assignedRemotes[plr].m_front = nil
                 assignedRemotes[plr].m_back = nil
+            end
+            if not activeModes["Orbit"] then
+                -- Orbit releases dynamically via freeRemotes pool
+            end
+            if not activeModes["Ring"] then
+                -- Ring releases dynamically via freeRemotes pool
+            end
+            if not activeModes["Chair"] then
+                -- Chair releases dynamically via freeRemotes pool
             end
             
             local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
