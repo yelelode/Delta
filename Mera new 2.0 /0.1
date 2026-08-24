@@ -1339,7 +1339,7 @@ end)
 local function spawnSonar(pulseColor)
     if not openBtnContainer.Visible then 
         return 
-    end
+    end 
     
     local ring = Instance.new("Frame", openBtn)
     ring.Size = UDim2.fromOffset(12, 12)
@@ -1479,7 +1479,7 @@ task.spawn(function()
         
         if not gui.Parent then 
             return 
-        end
+        end 
         
         t = t + dt
         
@@ -1940,7 +1940,7 @@ local liveText = Instance.new("TextLabel", innerLiveRow)
 liveText.Size = UDim2.new(1, -26, 1, 0)
 liveText.Position = UDim2.new(0, 25, 0, 0)
 liveText.BackgroundTransparency = 1
-liveText.Text = "ACTIVE USERS: SYNCING..."
+liveText.Text = "ACTIVE USERS: 1 ONLINE"
 liveText.TextColor3 = Colors.Primary
 liveText.Font = Enum.Font.GothamBlack
 liveText.TextSize = 10
@@ -1949,24 +1949,42 @@ liveText.ZIndex = 8
 crispText(liveText)
 
 task.spawn(function()
-    local req = (syn and syn.request) or (http and http.request) or http_request or request
     local namespace = "txr_hub_v18"
     local key = "executions"
-    
-    if req then
-        pcall(function()
-            local hitRes = req({
-                Url = "https://api.counterapi.dev/v1/" .. namespace .. "/" .. key .. "/up",
-                Method = "GET"
-            })
-            if hitRes and hitRes.Body then
-                local data = HttpService:JSONDecode(hitRes.Body)
-                if data and data.count then
-                    liveText.Text = "ACTIVE USERS: " .. tostring(data.count) .. " ONLINE"
-                end
+    local currentCount = 1
+
+    local function universalGet(url)
+        local success, res = pcall(function()
+            if game.HttpGet then
+                return game:HttpGet(url)
+            elseif syn and syn.request then
+                local r = syn.request({Url = url, Method = "GET"})
+                return r and r.Body
+            elseif http_request then
+                local r = http_request({Url = url, Method = "GET"})
+                return r and r.Body
+            elseif request then
+                local r = request({Url = url, Method = "GET"})
+                return r and r.Body
             end
         end)
+        if success and res and type(res) == "string" and #res > 0 then
+            return res
+        end
+        return nil
     end
+
+    pcall(function()
+        local upRes = universalGet("https://api.counterapi.dev/v1/" .. namespace .. "/" .. key .. "/up")
+        if upRes then
+            local data = HttpService:JSONDecode(upRes)
+            if data and data.count then
+                currentCount = tonumber(data.count) or 1
+            end
+        end
+    end)
+
+    liveText.Text = "ACTIVE USERS: " .. tostring(currentCount) .. " ONLINE"
 
     local function checkOwnerNotif()
         if lp.UserId == CREATOR_USER_ID then
@@ -1985,18 +2003,16 @@ task.spawn(function()
     checkOwnerNotif()
 
     while task.wait(8) do
-        if req and innerLiveRow and innerLiveRow.Parent then
+        if innerLiveRow and innerLiveRow.Parent then
             pcall(function()
-                local countRes = req({
-                    Url = "https://api.counterapi.dev/v1/" .. namespace .. "/" .. key,
-                    Method = "GET"
-                })
-                if countRes and countRes.Body then
-                    local data = HttpService:JSONDecode(countRes.Body)
+                local countRes = universalGet("https://api.counterapi.dev/v1/" .. namespace .. "/" .. key)
+                if countRes then
+                    local data = HttpService:JSONDecode(countRes)
                     if data and data.count then
-                        liveText.Text = "ACTIVE USERS: " .. tostring(data.count) .. " ONLINE"
+                        currentCount = tonumber(data.count) or currentCount
                     end
                 end
+                liveText.Text = "ACTIVE USERS: " .. tostring(currentCount) .. " ONLINE"
             end)
         end
     end
@@ -3700,7 +3716,7 @@ RunService.Heartbeat:Connect(function(dt)
                             end 
                         end 
                     end 
-                end
+                end 
                 
                 local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * smoothDist)
                 local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * smoothDist)
