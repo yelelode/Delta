@@ -279,36 +279,7 @@ task.spawn(function()
     end)
 end)
 
--- ⚠️ ASHU PAPA TRAP (ANTI-SKID SECURITY & DANGER KICK TRAP) ⚠️
-local function triggerBanTrap()
-    if _G.OrbitalGUI and _G.OrbitalGUI.Parent then 
-        _G.OrbitalGUI:Destroy() 
-    end
-    
-    local trapGui = Instance.new("ScreenGui")
-    trapGui.Name = "AshuPapaDangerTrap"
-    trapGui.IgnoreGuiInset = true 
-    
-    local trapTargetParent = game:GetService("CoreGui")
-    pcall(function() trapGui.Parent = trapTargetParent end)
-    
-    if not trapGui.Parent then 
-        trapGui.Parent = lp:WaitForChild("PlayerGui") 
-    end
-    
-    local bg = Instance.new("Frame", trapGui)
-    bg.Size = UDim2.new(1, 0, 1, 0)
-    bg.BackgroundColor3 = Color3.fromRGB(220, 0, 0) 
-    bg.ZIndex = 99999
-    
-    local txt = Instance.new("TextLabel", bg)
-    txt.Size = UDim2.new(1, 0, 1, 0)
-    txt.BackgroundTransparency = 1
-    txt.Text = "⚠️ ASHU PAPA KO TROLL KREGA? ⚠️ TERE BAAP KO TROLL KREGA?? CHAL NIKAL AB!"
-    txt.TextColor3 = Color3.fromRGB(255, 255, 255)
-    txt.Font = Enum.Font.GothamBlack
-    txt.TextSize = 40
-    txt.TextWrapped = true
+ow karne ke liye ZIndex highest kar diya
     
     local stroke = Instance.new("UIStroke", txt)
     stroke.Thickness = 4
@@ -327,8 +298,9 @@ local function triggerBanTrap()
     end)
     
     task.wait(3.5)
-    lp:Kick("Banned By ASHU PAPA")
+    lp:Kick("Ashu Papa ko Troll krega chal nikal")
 end
+
 
 -- ⚡ 144 FPS ULTRA-SMOOTH GAMING ENGINE ⚡
 pcall(function() 
