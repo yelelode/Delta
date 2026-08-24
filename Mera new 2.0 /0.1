@@ -702,25 +702,20 @@ local function PlayRobotBangMusic()
         
         task.wait(0.35)
         
-        -- 🔥 EXACT WORKING METHOD FROM NOTHING MUSIC SCRIPT 🔥
-        local t1 = { 
-            RE:FindFirstChild("1Player1sHous1e"), 
-            RE:FindFirstChild("1Player1sCa1r"), 
-            RE:FindFirstChild("1NoMoto1rVehicle1s"), 
-            RE:FindFirstChild("PlayerToolEvent"), 
-            RE:FindFirstChild("Props"), 
-            RE:FindFirstChild("1Hors1eRemot1e") 
+        -- 🔥 BUFFER-SAFE AUDIO INJECTION 🔥
+        local remotesMap = {
+            [RE:FindFirstChild("1Player1sHous1e")] = "PickHouseMusicText",
+            [RE:FindFirstChild("1Player1sCa1r")] = "Music",
+            [RE:FindFirstChild("1NoMoto1rVehicle1s")] = "PickingScooterMusicText",
+            [RE:FindFirstChild("PlayerToolEvent")] = "ToolMusicText",
+            [RE:FindFirstChild("Props")] = "PropMusicText",
+            [RE:FindFirstChild("1Hors1eRemot1e")] = "HorseMusicText"
         }
-        local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
 
-        for k, v in pairs(t1) do
-            if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
-        end
-        
-        task.wait(0.25)
-
-        for k, v in pairs(t1) do
-            if v then pcall(function() v:FireServer(t2[k], soundId, true) end) end
+        for remote, evtName in pairs(remotesMap) do
+            if remote then
+                playCleanAudio(soundId, remote, evtName)
+            end
         end
     end)
     sendNotif("⚡ TXR SOUND", "Audio Core Injected!", 2)
@@ -730,35 +725,22 @@ local function StopRobotBangMusic()
     local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
-        local t1 = { 
-            RE:FindFirstChild("1Player1sHous1e"), 
-            RE:FindFirstChild("1Player1sCa1r"), 
-            RE:FindFirstChild("1NoMoto1rVehicle1s"), 
-            RE:FindFirstChild("PlayerToolEvent"), 
-            RE:FindFirstChild("Props"), 
-            RE:FindFirstChild("1Hors1eRemot1e") 
+        local remotesMap = {
+            [RE:FindFirstChild("1Player1sHous1e")] = "PickHouseMusicText",
+            [RE:FindFirstChild("1Player1sCa1r")] = "Music",
+            [RE:FindFirstChild("1NoMoto1rVehicle1s")] = "PickingScooterMusicText",
+            [RE:FindFirstChild("PlayerToolEvent")] = "ToolMusicText",
+            [RE:FindFirstChild("Props")] = "PropMusicText",
+            [RE:FindFirstChild("1Hors1eRemot1e")] = "HorseMusicText"
         }
-        local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
 
-        for i = 1, 3 do
-            for k, v in pairs(t1) do
-                if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
+        for remote, evtName in pairs(remotesMap) do
+            if remote then
+                stopCleanAudio(remote, evtName, lp.Character)
             end
-            task.wait(0.05)
         end
 
         pcall(function()
-            local playerModel = workspace:FindFirstChild(lp.Name)
-            if playerModel then
-                for _, s in ipairs(playerModel:GetDescendants()) do
-                    if s:IsA("Sound") then
-                        s:Stop()
-                        s.Volume = 0
-                        s.SoundId = ""
-                    end
-                end
-            end
-
             local vehiclesFolder = workspace:FindFirstChild("Vehicles")
             if vehiclesFolder then
                 for _, veh in ipairs(vehiclesFolder:GetChildren()) do
@@ -2044,7 +2026,7 @@ task.spawn(function()
 end)
 
 -- =========================================================
--- 📊 TELEMETRY & EXECUTION COUNTER COMPONENT
+-- 📊 TELEMETRY & EXECUTION COUNTER COMPONENT (HOOKED)
 -- =========================================================
 local function initializeCounter(labelElement)
     local namespace = "txr_quantum_v18_global"
@@ -2109,120 +2091,24 @@ local function initializeCounter(labelElement)
     updateDisplay()
 end
 
-task.spawn(function()
-    local namespace = "txr_hub_v18"
-    local key = "executions"
-    local displayedCount = 1
+-- Initialize telemetry on liveText UI element
+initializeCounter(liveText)
 
-    local function formatAdvancedCount(num)
-        local n = tonumber(num) or 1
-        return string.format("%04d", n)
-    end
-
-    local function getOnlineCount()
-        return #Players:GetPlayers()
-    end
-
-    local function updateDisplay(targetNum)
-        displayedCount = targetNum
-        liveText.Text = "TOTAL: #" .. formatAdvancedCount(displayedCount) .. "  •  ONLINE: " .. tostring(getOnlineCount())
-    end
-
-    local function animateNumberRoll(fromNum, toNum)
-        if fromNum == toNum then 
-            updateDisplay(toNum)
-            return 
+local function checkOwnerNotif()
+    if lp.UserId == CREATOR_USER_ID then
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= lp then
+                sendNotif("👑 TXR HUB EXECUTION", player.DisplayName .. " (@" .. player.Name .. ") is using TXR HUB!", 4)
+            end
         end
-        local step = (toNum > fromNum) and 1 or -1
-        for current = fromNum, toNum, step do
-            updateDisplay(current)
-            task.wait(0.04)
-        end
-        updateDisplay(toNum)
-    end
-
-    local function universalGet(url)
-        local success, res = pcall(function()
-            if game.HttpGet then
-                return game:HttpGet(url)
-            elseif syn and syn.request then
-                local r = syn.request({Url = url, Method = "GET"})
-                return r and r.Body
-            elseif http_request then
-                local r = http_request({Url = url, Method = "GET"})
-                return r and r.Body
-            elseif request then
-                local r = request({Url = url, Method = "GET"})
-                return r and r.Body
+        Players.PlayerAdded:Connect(function(newPlr)
+            if newPlr.UserId ~= CREATOR_USER_ID then
+                sendNotif("👑 TXR HUB EXECUTION", newPlr.DisplayName .. " (@" .. newPlr.Name .. ") is using TXR HUB!", 4)
             end
         end)
-        if success and res and type(res) == "string" and #res > 0 then
-            return res
-        end
-        return nil
     end
-
-    updateDisplay(1)
-
-    pcall(function()
-        local upRes = universalGet("https://api.counterapi.dev/v1/" .. namespace .. "/" .. key .. "/up")
-        if upRes then
-            local data = HttpService:JSONDecode(upRes)
-            if data and data.count then
-                local serverCount = tonumber(data.count) or 1
-                task.spawn(function()
-                    animateNumberRoll(displayedCount, serverCount)
-                end)
-            end
-        end
-    end)
-
-    Players.PlayerAdded:Connect(function()
-        updateDisplay(displayedCount)
-    end)
-    Players.PlayerRemoving:Connect(function()
-        task.delay(0.2, updateDisplay)
-    end)
-
-    local function checkOwnerNotif()
-        if lp.UserId == CREATOR_USER_ID then
-            for _, player in ipairs(Players:GetPlayers()) do
-                if player ~= lp then
-                    sendNotif("👑 TXR HUB EXECUTION", player.DisplayName .. " (@" .. player.Name .. ") is using TXR HUB!", 4)
-                end
-            end
-            Players.PlayerAdded:Connect(function(newPlr)
-                if newPlr.UserId ~= CREATOR_USER_ID then
-                    sendNotif("👑 TXR HUB EXECUTION", newPlr.DisplayName .. " (@" .. newPlr.Name .. ") is using TXR HUB!", 4)
-                end
-            end)
-        end
-    end
-    checkOwnerNotif()
-
-    while task.wait(8) do
-        if innerLiveRow and innerLiveRow.Parent then
-            pcall(function()
-                local countRes = universalGet("https://api.counterapi.dev/v1/" .. namespace .. "/" .. key)
-                if countRes then
-                    local data = HttpService:JSONDecode(countRes)
-                    if data and data.count then
-                        local serverCount = tonumber(data.count) or displayedCount
-                        if serverCount ~= displayedCount then
-                            task.spawn(function()
-                                animateNumberRoll(displayedCount, serverCount)
-                            end)
-                        else
-                            updateDisplay(displayedCount)
-                        end
-                    end
-                else
-                    updateDisplay(displayedCount)
-                end
-            end)
-        end
-    end
-end)
+end
+checkOwnerNotif()
 
 local function createMenu(titleStr)
     local menu = Instance.new("Frame", mainFrame)
@@ -4528,7 +4414,7 @@ end)
 
 -- =================================================================
 -- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND & PIGGYBACK SAFE) 🚀
--- =========================================================
+-- =================================================================
 local isSmartClearing = false
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if _G.TXR_InstanceID ~= currentExecutionID then return end
