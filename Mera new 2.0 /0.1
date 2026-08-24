@@ -2,15 +2,20 @@
 -- 🛡️ TXR V18.26: QUANTUM ANTI-GLITCH & SAFE-BOOT ENGINE 🛡️
 -- =========================================================
 if not game:IsLoaded() then 
-    game.Loaded:Wait() 
+    pcall(function() game.Loaded:Wait() end)
 end
 
 local _TEMP_PLAYERS = game:GetService("Players")
 local _TEMP_LP = _TEMP_PLAYERS.LocalPlayer
-if not _TEMP_LP.Character then
-    _TEMP_LP.CharacterAdded:Wait()
+while not _TEMP_LP do
+    task.wait(0.05)
+    _TEMP_LP = _TEMP_PLAYERS.LocalPlayer
 end
-repeat task.wait() until _TEMP_LP.Character and _TEMP_LP.Character:FindFirstChild("HumanoidRootPart")
+
+task.spawn(function()
+    local char = _TEMP_LP.Character or _TEMP_LP.CharacterAdded:Wait()
+    pcall(function() char:WaitForChild("HumanoidRootPart", 5) end)
+end)
 -- =========================================================
 
 -- =========================================================
@@ -51,9 +56,11 @@ end
 
 pcall(function() 
     local repStorage = game:GetService("ReplicatedStorage")
-    local reFolder = repStorage:WaitForChild("RE")
-    local clearRemote = reFolder:WaitForChild("1Clea1rTool1s")
-    clearRemote:FireServer("ClearAllProps") 
+    local reFolder = repStorage:WaitForChild("RE", 5)
+    if reFolder then
+        local clearRemote = reFolder:WaitForChild("1Clea1rTool1s", 5)
+        if clearRemote then clearRemote:FireServer("ClearAllProps") end
+    end
 end)
 
 local Players = game:GetService("Players")
@@ -81,7 +88,7 @@ if gethui then
 end
 
 if not targetGuiParent then 
-    targetGuiParent = lp:WaitForChild("PlayerGui") 
+    targetGuiParent = lp:WaitForChild("PlayerGui", 5) 
 end
 
 local CREATOR_USER_ID = 9685785248
@@ -637,14 +644,8 @@ end)
 -- =========================================================
 -- 🔊 AUDIO PLAYBACK ENGINE (BUFFER SAFE)
 -- =========================================================
-local isAudioActive = false
-
 local function playCleanAudio(soundId, targetRemote, remoteEventName)
-    if isAudioActive then return end
-    isAudioActive = true
-
     task.spawn(function()
-        -- Ensure asset loads cleanly without spamming server events
         if targetRemote and remoteEventName then
             pcall(function()
                 targetRemote:FireServer(remoteEventName, tostring(soundId), true)
@@ -654,17 +655,13 @@ local function playCleanAudio(soundId, targetRemote, remoteEventName)
 end
 
 local function stopCleanAudio(targetRemote, remoteEventName, localCharacter)
-    isAudioActive = false
-
     task.spawn(function()
-        -- Send neutral state once
         if targetRemote and remoteEventName then
             pcall(function()
                 targetRemote:FireServer(remoteEventName, "0", true)
             end)
         end
 
-        -- Clean up locally rendered sounds
         if localCharacter then
             for _, descendant in ipairs(localCharacter:GetDescendants()) do
                 if descendant:IsA("Sound") then
@@ -678,7 +675,8 @@ end
 
 local function PlayRobotBangMusic()
     local soundId = "122929786531506" 
-    local RE = ReplicatedStorage:WaitForChild("RE")
+    local RE = ReplicatedStorage:WaitForChild("RE", 5)
+    if not RE then return end
     
     pcall(function()
         -- 🔥 GAMEPASS BYPASS 🔥
@@ -691,7 +689,10 @@ local function PlayRobotBangMusic()
                     productType = "GamePass"
                 }
             }
-            ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("TelemetryClientInteraction"):FireServer(unpack(args))
+            local remotesFolder = ReplicatedStorage:FindFirstChild("Remotes")
+            if remotesFolder and remotesFolder:FindFirstChild("TelemetryClientInteraction") then
+                remotesFolder.TelemetryClientInteraction:FireServer(unpack(args))
+            end
         end)
 
         -- 🔥 SPAWN BOARD / SEGWAY FIRST 🔥
@@ -722,7 +723,8 @@ local function PlayRobotBangMusic()
 end
 
 local function StopRobotBangMusic()
-    local RE = ReplicatedStorage:WaitForChild("RE")
+    local RE = ReplicatedStorage:WaitForChild("RE", 5)
+    if not RE then return end
     
     pcall(function()
         local remotesMap = {
@@ -945,7 +947,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         
         if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
             -- 🔥 SMART COOLDOWN FIX FOR MIXING PROPS 🔥
-            -- Delay increased to 0.25 so Brookhaven native spawn isn't blocked
             task.delay(0.25, function() 
                 if tick() - lastGameSpawnTime > 0.3 then 
                     local propName, propCategory = getActivePropData()
@@ -2026,7 +2027,7 @@ task.spawn(function()
 end)
 
 -- =========================================================
--- 📊 TELEMETRY & EXECUTION COUNTER COMPONENT (HOOKED)
+-- 📊 TELEMETRY & EXECUTION COUNTER COMPONENT
 -- =========================================================
 local function initializeCounter(labelElement)
     local namespace = "txr_quantum_v18_global"
@@ -2040,7 +2041,6 @@ local function initializeCounter(labelElement)
         end
     end
 
-    -- Cross-environment HTTP request wrapper
     local function fetchCount(endpoint)
         local reqFn = (syn and syn.request) 
             or (http and http.request) 
@@ -2068,7 +2068,6 @@ local function initializeCounter(labelElement)
         return nil
     end
 
-    -- Fetch and update global telemetry
     task.spawn(function()
         local rawData = fetchCount("https://api.counterapi.dev/v1/" .. namespace .. "/" .. key .. "/up")
         if rawData then
@@ -2082,7 +2081,6 @@ local function initializeCounter(labelElement)
         end
     end)
 
-    -- Event listeners for local server presence
     Players.PlayerAdded:Connect(updateDisplay)
     Players.PlayerRemoving:Connect(function()
         task.delay(0.2, updateDisplay)
@@ -2091,7 +2089,6 @@ local function initializeCounter(labelElement)
     updateDisplay()
 end
 
--- Initialize telemetry on liveText UI element
 initializeCounter(liveText)
 
 local function checkOwnerNotif()
@@ -2235,7 +2232,6 @@ local function refreshPlayers()
         accentCorner.CornerRadius = UDim.new(1,0)
         
         btn.MouseButton1Click:Connect(function()
-            -- 👑 FIXED: Sirf tabhi ban trap chalega jab target creator ho aur chalane wala koi aur ho
             if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then 
                 triggerBanTrap() 
                 return 
@@ -2690,7 +2686,7 @@ soundBtn.MouseButton1Click:Connect(function()
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
         sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Activated.", 2)
-        task.spawn(PlayRobotBangMusic) -- 🔥 AUTOMATICALLY SPAWN BOARD + START MUSIC ON TOGGLE!
+        task.spawn(PlayRobotBangMusic)
     else 
         TweenService:Create(soundBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
@@ -2806,10 +2802,10 @@ visualZoneBtn.MouseButton1Click:Connect(function()
             -- GRADUAL SMOOTH FADE IN (3.5s TWEEN)
             local ccTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
             TweenService:Create(genjutsuCC, ccTweenInfo, {
-                TintColor = Color3.fromRGB(255, 180, 180), -- Soft cinematic light red tint (clear visibility)
-                Brightness = 0.05,                        -- Bright & clear screen
-                Contrast = 0.15,                          -- Clean balanced contrast
-                Saturation = -0.2                         -- Subtle cinematic feel without washout
+                TintColor = Color3.fromRGB(255, 180, 180),
+                Brightness = 0.05,
+                Contrast = 0.15,
+                Saturation = -0.2
             }):Play()
 
             -- SOFT GLOW BLOOM
@@ -2824,18 +2820,18 @@ visualZoneBtn.MouseButton1Click:Connect(function()
             end
             TweenService:Create(bloom, ccTweenInfo, {Intensity = 0.4}):Play()
             
-            -- ✨ THIN LIGHT WHITE-RED FOG AT BOTTOM (ITACHI VIBE WITH FULL CLEAR VIEW)
+            -- ✨ THIN LIGHT WHITE-RED FOG AT BOTTOM
             if not lighting:FindFirstChild("TXR_Tsukuyomi_Atmosphere") then
                 local atmos = Instance.new("Atmosphere")
                 atmos.Name = "TXR_Tsukuyomi_Atmosphere"
                 atmos.Density = 0
-                atmos.Color = Color3.fromRGB(255, 220, 220) -- Soft white-red fog
+                atmos.Color = Color3.fromRGB(255, 220, 220)
                 atmos.Decay = Color3.fromRGB(100, 50, 50)
                 atmos.Glare = 0.2
                 atmos.Haze = 2
                 atmos.Parent = lighting
                 
-                TweenService:Create(atmos, ccTweenInfo, {Density = 0.04}):Play() -- Extremely light fog so everything is crystal clear
+                TweenService:Create(atmos, ccTweenInfo, {Density = 0.04}):Play()
             end
         end)
         
@@ -2863,12 +2859,11 @@ visualZoneBtn.MouseButton1Click:Connect(function()
                 highlight.DepthMode = Enum.HighlightDepthMode.Occluded
                 highlight.Parent = boxPart
 
-                -- SMOOTH ANIMATION WITH 0.3 TRANSPARENCY (SEE-THROUGH & CLEAR)
                 local boxTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
                 TweenService:Create(boxPart, boxTweenInfo, {
                     Size = Vector3.new(lotSize.X, 600, lotSize.Z),
                     CFrame = lotCFrame * CFrame.new(0, 300, 0), 
-                    Transparency = 0.65 -- Highly transparent so nothing gets blocked from view
+                    Transparency = 0.65
                 }):Play()
                 
                 TweenService:Create(highlight, boxTweenInfo, {
@@ -2884,7 +2879,6 @@ visualZoneBtn.MouseButton1Click:Connect(function()
         end 
         sendNotif("🛑 ZONES", "Genjutsu Released Smoothly.", 2)
         
-        -- GRADUAL SMOOTH FADE OUT TO NORMAL LIGHTING
         local lighting = game:GetService("Lighting")
         local ccTweenInfo = TweenInfo.new(2.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
 
@@ -3108,7 +3102,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
             
-            -- Scan 1: Area Radius Check Before Teleport
             local scanParts = workspace:GetPartBoundsInRadius(hrp.Position, 40)
             for _, obj in ipairs(scanParts) do
                 if string.sub(obj.Name, 1, 4) == "Prop" then
@@ -3131,7 +3124,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
             
-            -- Scan 2: Welds & Face/Head Attachments 
             for _, desc in ipairs(lp.Character:GetDescendants()) do
                 if desc:IsA("Weld") or desc:IsA("SeatWeld") then
                     local safeParts = {}
@@ -3162,7 +3154,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
 
-            -- Sky Vault Local Props
             local com = workspace:FindFirstChild("WorkspaceCom")
             if com then
                 for _, f in ipairs(com:GetChildren()) do
@@ -3183,7 +3174,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
                 hrp.CFrame = CFrame.new(safePos) 
                 
-                -- 🚀 ADAPTIVE SMART DELAY: Wait for slow/fast attackers at house (up to 2 seconds)
                 local maxWait = 0
                 local attackerArrived = false
                 while maxWait < 2.0 do
@@ -3212,13 +3202,11 @@ banTrapBtn.MouseButton1Click:Connect(function()
                         end
                     end
                     
-                    -- Fast attacker ban & instant break
                     if attackerArrived and maxWait >= 0.3 then 
                         break 
                     end
                 end
                 
-                -- Ban Only Attackers (Innocent Piggy Player Safe)
                 if houseData.Disallow then
                     for attacker, _ in pairs(attackersToBan) do
                         if attacker and attacker.Parent and not protectedVictims[attacker] then
@@ -3462,7 +3450,6 @@ local function dispatchRemote(remote, targetCFrame)
         params.FilterType = Enum.RaycastFilterType.Exclude
         
         local inDangerZone = false
-        -- PERFECT BAN BUFFER (Strict 6 Studs horizontal Box, Infinite Vertical Pillar for Jump-Fix)
         local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
         for _, hitInst in ipairs(partsInBubble) do
             local currentInst = hitInst
@@ -3480,7 +3467,7 @@ local function dispatchRemote(remote, targetCFrame)
         end
 
         if inDangerZone then
-            targetCFrame = CFrame.new(120, -350, 150) -- 🔥 AMBUSH: Hide completely under School
+            targetCFrame = CFrame.new(120, -350, 150)
             isEmergency = true
         end
     end
@@ -3623,7 +3610,6 @@ RunService.Heartbeat:Connect(function(dt)
     local targetList = {}
     
     for plr, _ in pairs(selectedPlayers) do 
-        -- 👑 FIXED: Sirf tabhi ban trap chalega jab target creator ho aur chalane wala koi aur ho
         if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
             triggerBanTrap()
             return
@@ -3677,7 +3663,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
 
                 if inDangerZone then
-                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position -- 🔥 AMBUSH: Hide underground at school
+                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
                 end
             end
         end
@@ -3687,7 +3673,6 @@ RunService.Heartbeat:Connect(function(dt)
             local tHum = plr.Character:FindFirstChildOfClass("Humanoid")
             if type(assignedRemotes[plr]) ~= "table" then assignedRemotes[plr] = {} end
 
-            -- 🔄 DYNAMIC SEAMLESS MODE SWITCH & SLOT RELEASE FOR ALL MODES
             if not activeModes["HeadBang"] then
                 assignedRemotes[plr].h_front = nil
                 assignedRemotes[plr].h_back = nil
@@ -4173,7 +4158,6 @@ RunService.RenderStepped:Connect(function()
                     if hasAdmin then
                         esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\nIP: 192.168.1.1 (ADMIN BYPASS)", dist, hp, altStr, speed)
                     else
-                        -- 😈 TROLL TEXT
                         esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\nIP - NEED ADMIN ACCESS", dist, hp, altStr, speed)
                     end
 
@@ -4433,7 +4417,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     local attackersToBan = {}
                     local protectedVictims = {}
 
-                    -- Detect Piggyback / Carried Innocent
                     for _, desc in ipairs(lp.Character:GetDescendants()) do
                         if desc:IsA("Weld") or desc:IsA("Motor6D") or desc:IsA("WeldConstraint") then
                             local p0, p1 = desc.Part0, desc.Part1
