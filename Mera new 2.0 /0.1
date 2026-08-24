@@ -242,7 +242,7 @@ task.spawn(function()
         
         -- 👑 ROLEPLAY NAME & BIO LOGIC (OWNER VS USER)
         local isOwner = (lp.UserId == CREATOR_USER_ID)
-        local designatedRPName = isOwner and "A  S  H  U" or "【Ｔ🇽🇷ＨＵＢ】"
+        local designatedRPName = isOwner and "A  S  H  U" or "【 TXR HUB 】"
         local designatedRPBio = isOwner and "" or ("Welcome " .. lp.Name)
         
         -- Set bio and RP name initially
@@ -2447,7 +2447,7 @@ soundBtn.MouseButton1Click:Connect(function()
         TweenService:Create(soundBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
-        end 
+        end
         sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Deactivated.", 2)
         task.spawn(StopRobotBangMusic) 
     end
@@ -3453,15 +3453,6 @@ RunService.Heartbeat:Connect(function(dt)
             if not activeModes["MultiRobot"] then
                 assignedRemotes[plr].m_front = nil
                 assignedRemotes[plr].m_back = nil
-            end
-            if not activeModes["Orbit"] then
-                -- Orbit releases dynamically via freeRemotes pool
-            end
-            if not activeModes["Ring"] then
-                -- Ring releases dynamically via freeRemotes pool
-            end
-            if not activeModes["Chair"] then
-                -- Chair releases dynamically via freeRemotes pool
             end
             
             local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
