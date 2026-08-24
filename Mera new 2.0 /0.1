@@ -241,12 +241,10 @@ task.spawn(function()
         local River = Ocean:WaitForChild("1RPNam1eColo1r", 10)
         local StringEvent = Ocean:WaitForChild("1RPNam1eTex1t", 10)
         
-        -- 👑 ROLEPLAY NAME & BIO LOGIC (OWNER VS USER)
         local isOwner = (lp.UserId == CREATOR_USER_ID)
         local designatedRPName = isOwner and "A  S  H  U" or "【 TXR HUB 】"
         local designatedRPBio = isOwner and "" or ("Welcome " .. lp.Name)
         
-        -- Set bio and RP name initially
         pcall(function()
             StringEvent:FireServer("RolePlayName", designatedRPName)
             StringEvent:FireServer("RolePlayBio", designatedRPBio)
@@ -260,7 +258,6 @@ task.spawn(function()
             t = t + 0.1
             
             pcall(function()
-                -- Water-like smooth flowing wave between dark black-red and vibrant red
                 local nameWave = (math.sin(t * 1.8) + 1) / 2
                 local bioWave = (math.cos(t * 1.8) + 1) / 2
                 
@@ -274,7 +271,6 @@ task.spawn(function()
                 River:FireServer("PickingRPBioColor", bioRgb)
             end)
             
-            -- Re-apply RP Name & Bio every 60 seconds
             if tickCounter >= 60 then
                 tickCounter = 0
                 pcall(function()
@@ -348,7 +344,6 @@ end)
 -- 🏠 UNIVERSAL HOUSE/APARTMENT FINDER METHOD
 -- =========================================================
 local function getMyHouse()
-    -- Pehle normal Lots check karo
     local lotsFolder = workspace:FindFirstChild("001_Lots")
     if lotsFolder then
         for _, lot in ipairs(lotsFolder:GetChildren()) do
@@ -369,7 +364,6 @@ local function getMyHouse()
         end
     end
     
-    -- Agar normal Lot nahi mila, toh Apartments me dhundho (Global Workspace scan for our owner tag)
     for _, desc in ipairs(workspace:GetDescendants()) do
         if desc.Name == "HousePickedByPlayer" and (tostring(desc.Value) == lp.Name or desc.Value == lp) then
             local parentLot = desc.Parent
@@ -438,7 +432,7 @@ local isRainbowEnabled = false
 local isSoundEnabled = false
 local isSystemActive = false
 local isGodShieldEnabled = false
-local isEvading = false -- 🔥 Master void evasion lock
+local isEvading = false
 local animTime = 0
 local angle = 0
 local selfAngle = 0 
@@ -450,11 +444,9 @@ local customPropName = "ScreensRobotBig"
 local customPropCategory = "Screens"
 local lastGameSpawnTime = 0
 
--- ✨ UI INTERACTION STATES FOR DOF FOCUS ✨
 local uiHoverCount = 0
 local isSubMenuOpen = false
 
--- ✨ SMART METAMETHOD HOOK (WITH C-CLOSURE STEALTH) ✨
 pcall(function()
     local oldNamecall
     oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
@@ -508,7 +500,6 @@ local function crispText(element)
     stroke.Thickness = 1.2
 end
 
--- ✨ WATERFALL STAGGER ANIMATION ENGINE (FIXED GLITCH & OVERLAP) ✨
 local function animateWaterfall(container)
     local currentID = (container:GetAttribute("WaterfallID") or 0) + 1
     container:SetAttribute("WaterfallID", currentID)
@@ -582,74 +573,98 @@ local function onPlayerJoinAlert(plr)
 end
 Players.PlayerAdded:Connect(onPlayerJoinAlert)
 
--- 🔊 CLEANED & FIXED AUDIO CORE (NO CUTS / NO PUS-PUS)
-local isAudioInjecting = false
+-- =========================================================
+-- 🔊 PERFECTED NOTHING MUSIC ENGINE (AUTO MERGED PIPELINE)
+-- =========================================================
+local isAudioRunning = false
+
 local function PlayRobotBangMusic()
-    if isAudioInjecting then return end
-    isAudioInjecting = true
+    if isAudioRunning then return end
+    isAudioRunning = true
     
-    local soundId = "122929786531506" 
+    local songId = "122929786531506"
     local RE = ReplicatedStorage:WaitForChild("RE", 10)
     
     task.spawn(function()
         pcall(function()
-            -- 🔥 GAMEPASS BYPASS 🔥
-            pcall(function()
-                local args = {
-                    "shopInteraction",
-                    {
-                        id = 9066988,
-                        shop = "new",
-                        productType = "GamePass"
-                    }
+            -- 1. Auto Bypass GamePass
+            local args = {
+                "shopInteraction",
+                {
+                    id = 9066988,
+                    shop = "new",
+                    productType = "GamePass"
                 }
-                ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("TelemetryClientInteraction"):FireServer(unpack(args))
+            }
+            local rem = ReplicatedStorage:FindFirstChild("Remotes")
+            if rem and rem:FindFirstChild("TelemetryClientInteraction") then
+                rem.TelemetryClientInteraction:FireServer(unpack(args))
+            end
+
+            -- 2. Spawn Segway / Board with Smart Fallback
+            local mainRE = DynamicRemotes.SpawnVehicle or (RE and RE:FindFirstChild("1NoMoto1rVehicle1s"))
+            if mainRE then
+                mainRE:FireServer("SegwaySmall")
+                
+                local vehicleSpawned = false
+                local connections = {}
+                local function onChildAdded(child)
+                    if child:IsA("Model") or child:IsA("Tool") then
+                        vehicleSpawned = true
+                    end
+                end
+                
+                table.insert(connections, workspace.ChildAdded:Connect(onChildAdded))
+                if workspace:FindFirstChild("Vehicles") then
+                    table.insert(connections, workspace.Vehicles.ChildAdded:Connect(onChildAdded))
+                end
+                if lp.Character then
+                    table.insert(connections, lp.Character.ChildAdded:Connect(onChildAdded))
+                end
+                
+                task.wait(1.2)
+                for _, conn in ipairs(connections) do conn:Disconnect() end
+                
+                if not vehicleSpawned then
+                    mainRE:FireServer("SkateBoard")
+                end
+            end
+
+            -- 3. Volume Change Request
+            pcall(function()
+                local pg = lp:FindFirstChild("PlayerGui")
+                if pg and pg:FindFirstChild("MainGUIHandler") then
+                    local vReq = pg.MainGUIHandler.MainAudio.Catalog.Header.VolumeContainer.VolumeChangeRequest
+                    vReq:FireServer(100)
+                end
             end)
 
-            -- 🔥 SPAWN BOARD / SEGWAY FIRST 🔥
-            local spawnVehicle = DynamicRemotes.SpawnVehicle or (RE and RE:FindFirstChild("1NoMoto1rVehicle1s"))
-            if spawnVehicle then 
-                spawnVehicle:FireServer("SegwaySmall")
-            end
-            
-            task.wait(0.4)
-            
-            -- Targeted Clean Injection
+            -- 4. Exact Nothing Music u9 Method
             if RE then
-                local scooterRemote = RE:FindFirstChild("1NoMoto1rVehicle1s")
-                if scooterRemote then
-                    scooterRemote:FireServer("PickingScooterMusicText", soundId, true)
-                end
-                
-                local houseMusic = RE:FindFirstChild("1Player1sHous1e")
-                if houseMusic then
-                    houseMusic:FireServer("PickHouseMusicText", soundId, true)
-                end
-                
-                local carMusic = RE:FindFirstChild("1Player1sCa1r")
-                if carMusic then
-                    carMusic:FireServer("Music", soundId, true)
-                end
+                local t1 = { 
+                    RE:FindFirstChild("1Player1sHous1e"), 
+                    RE:FindFirstChild("1Player1sCa1r"), 
+                    RE:FindFirstChild("1NoMoto1rVehicle1s"), 
+                    RE:FindFirstChild("PlayerToolEvent"), 
+                    RE:FindFirstChild("Props"), 
+                    RE:FindFirstChild("1Hors1eRemot1e") 
+                }
+                local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
 
-                local toolMusic = RE:FindFirstChild("PlayerToolEvent")
-                if toolMusic then
-                    toolMusic:FireServer("ToolMusicText", soundId, true)
+                for k, v in pairs(t1) do
+                    if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
                 end
+                task.wait(0.25)
 
-                local propMusic = RE:FindFirstChild("Props")
-                if propMusic then
-                    propMusic:FireServer("PropMusicText", soundId, true)
-                end
-
-                local horseMusic = RE:FindFirstChild("1Hors1eRemot1e")
-                if horseMusic then
-                    horseMusic:FireServer("HorseMusicText", soundId, true)
+                for k, v in pairs(t1) do
+                    if v then pcall(function() v:FireServer(t2[k], tostring(songId), true) end) end
                 end
             end
         end)
+        
         sendNotif("⚡ TXR SOUND", "Audio Core Injected!", 2)
         task.wait(0.5)
-        isAudioInjecting = false
+        isAudioRunning = false
     end)
 end
 
@@ -658,18 +673,25 @@ local function StopRobotBangMusic()
     
     task.spawn(function()
         pcall(function()
-            local t1 = { 
-                RE and RE:FindFirstChild("1Player1sHous1e"), 
-                RE and RE:FindFirstChild("1Player1sCa1r"), 
-                RE and RE:FindFirstChild("1NoMoto1rVehicle1s"), 
-                RE and RE:FindFirstChild("PlayerToolEvent"), 
-                RE and RE:FindFirstChild("Props"), 
-                RE and RE:FindFirstChild("1Hors1eRemot1e") 
-            }
-            local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
+            if RE then
+                local t1 = { 
+                    RE:FindFirstChild("1Player1sHous1e"), 
+                    RE:FindFirstChild("1Player1sCa1r"), 
+                    RE:FindFirstChild("1NoMoto1rVehicle1s"), 
+                    RE:FindFirstChild("PlayerToolEvent"), 
+                    RE:FindFirstChild("Props"), 
+                    RE:FindFirstChild("1Hors1eRemot1e") 
+                }
+                local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
 
-            for k, v in pairs(t1) do
-                if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
+                for k, v in pairs(t1) do
+                    if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
+                end
+            end
+
+            local mainRE = DynamicRemotes.SpawnVehicle or (RE and RE:FindFirstChild("1NoMoto1rVehicle1s"))
+            if mainRE then
+                mainRE:FireServer("Delete NoMotorVehicle")
             end
 
             pcall(function()
@@ -712,7 +734,7 @@ local function StopRobotBangMusic()
                         pcall(function() 
                             v:Destroy() 
                         end) 
-                    end
+                    end 
                 end
             end
             
@@ -723,17 +745,6 @@ local function StopRobotBangMusic()
                 pcall(function() 
                     despawnVehicle:FireServer() 
                 end) 
-            end
-            
-            local vehiclesFolder = workspace:FindFirstChild("Vehicles")
-            if vehiclesFolder then 
-                for _, v in ipairs(vehiclesFolder:GetChildren()) do 
-                    if string.find(string.lower(v.Name), "segway") then 
-                        pcall(function() 
-                            v:Destroy() 
-                        end) 
-                    end 
-                end 
             end
         end)
     end)
@@ -805,7 +816,6 @@ end
 -- ✨ FIXED CLEAR PROPS METHOD FOR INJECT BUG & STOP WIPE
 -- =========================================================
 local function clearProps() 
-    -- 1. Aggressive Main Clear Request
     task.spawn(function()
         pcall(function() 
             local r = DynamicRemotes.ClearProps or ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s")
@@ -819,17 +829,15 @@ local function clearProps()
         end)
     end)
     
-    -- 2. UNIVERSAL WIPE: Map me jaha bhi clear props ka remote hai sab aggressively trigger
     task.spawn(function()
         for _, obj in ipairs(workspace:GetDescendants()) do
             if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
                 task.spawn(function() pcall(function() obj:InvokeServer() end) end)
-                task.wait(0.01) -- Magic fast-stagger taaki request drop na ho
+                task.wait(0.01)
             end
         end
     end)
     
-    -- 3. Local cleanup
     pcall(function()
         local com = workspace:FindFirstChild("WorkspaceCom")
         if com then
@@ -886,7 +894,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         local tool = char and char:FindFirstChildOfClass("Tool")
         
         if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
-            -- 🔥 SMART COOLDOWN FIX FOR MIXING PROPS 🔥
             task.delay(0.25, function() 
                 if tick() - lastGameSpawnTime > 0.3 then 
                     local propName, propCategory = getActivePropData()
@@ -962,7 +969,7 @@ strokeGrad.Color = ColorSequence.new({
 local mainScale = Instance.new("UIScale", mainFrame)
 mainScale.Scale = 0.85
 
--- ✨ 🌐 V18.26 PREMIUM MATRIX RAIN WITH SELECTIVE DOF FOCUS 🌐 ✨
+-- ✨ MATRIX RAIN
 local matrixContainer = Instance.new("Frame", mainFrame)
 matrixContainer.Size = UDim2.fromScale(1, 1)
 matrixContainer.BackgroundTransparency = 1
@@ -1336,7 +1343,7 @@ local function spawnSonar(pulseColor)
     end)
 end
 
--- ✨ 🛑 V18.26 PREMIUM ONYX EXIT MODAL (ULTRA SLEEK) 🛑 ✨
+-- ✨ 🛑 ONYX EXIT MODAL 🛑 ✨
 local closeOverlay = Instance.new("Frame", mainFrame)
 closeOverlay.Size = UDim2.fromScale(1, 1)
 closeOverlay.BackgroundColor3 = Color3.new(0, 0, 0)
@@ -1984,7 +1991,6 @@ local function refreshPlayers()
         accentCorner.CornerRadius = UDim.new(1,0)
         
         btn.MouseButton1Click:Connect(function()
-            -- 👑 FIXED: Sirf tabhi ban trap chalega jab target creator ho aur chalane wala koi aur ho
             if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then 
                 triggerBanTrap() 
                 return 
@@ -2424,7 +2430,7 @@ rainbowBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local soundBtn = createMainBtn("🔊 DYNAMIC AUDIO HOOK ( Music Pass Required )", "Sound", false)
+local soundBtn = createMainBtn("🔊 DYNAMIC AUDIO ( 122929786531506 )", "Sound", false)
 soundBtn.MouseButton1Click:Connect(function() 
     isSoundEnabled = not isSoundEnabled
     activeModes["Sound"] = isSoundEnabled
@@ -2529,7 +2535,6 @@ visualZoneBtn.MouseButton1Click:Connect(function()
         end
         sendNotif("🛑 TSUKUYOMI", "Domain Expansion: Clear Anime Genjutsu Active.", 3)
         
-        -- ITACHI SOUND EFFECT
         task.spawn(function()
             local sound = Instance.new("Sound")
             sound.SoundId = "rbxassetid://7288361610"
@@ -2539,7 +2544,6 @@ visualZoneBtn.MouseButton1Click:Connect(function()
             task.delay(8, function() pcall(function() sound:Destroy() end) end)
         end)
 
-        -- 🌟 PERFECTED CLEAR & CINEMATIC TSUKUYOMI LIGHTING (NO BLINDING DARKNESS)
         task.spawn(function()
             local lighting = game:GetService("Lighting")
             if not genjutsuCC or not genjutsuCC.Parent then
@@ -2834,7 +2838,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
             local protectedVictims = {}
             local propsDetectedBefore = false
             
-            -- 🛡️ STEP 1: DETECT PIGGYBACK / CARRIED INNOCENT PLAYER (WHITELIST)
             for _, desc in ipairs(lp.Character:GetDescendants()) do
                 if desc:IsA("Weld") or desc:IsA("Motor6D") or desc:IsA("WeldConstraint") then
                     local p0, p1 = desc.Part0, desc.Part1
@@ -2852,7 +2855,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
             
-            -- Scan 1: Area Radius Check Before Teleport
             local scanParts = workspace:GetPartBoundsInRadius(hrp.Position, 40)
             for _, obj in ipairs(scanParts) do
                 if string.sub(obj.Name, 1, 4) == "Prop" then
@@ -2875,7 +2877,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
             
-            -- Scan 2: Welds & Face/Head Attachments 
             for _, desc in ipairs(lp.Character:GetDescendants()) do
                 if desc:IsA("Weld") or desc:IsA("SeatWeld") then
                     local safeParts = {}
@@ -2906,7 +2907,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
 
-            -- Sky Vault Local Props
             local com = workspace:FindFirstChild("WorkspaceCom")
             if com then
                 for _, f in ipairs(com:GetChildren()) do
@@ -2927,7 +2927,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
                 hrp.CFrame = CFrame.new(safePos) 
                 
-                -- 🚀 ADAPTIVE SMART DELAY: Wait for slow/fast attackers at house (up to 2 seconds)
                 local maxWait = 0
                 local attackerArrived = false
                 while maxWait < 2.0 do
@@ -2961,7 +2960,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                     end
                 end
                 
-                -- Ban Only Attackers (Innocent Piggy Player Safe)
                 if houseData.Disallow then
                     for attacker, _ in pairs(attackersToBan) do
                         if attacker and attacker.Parent and not protectedVictims[attacker] then
@@ -3768,7 +3766,7 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
--- 🌈 FIXED RGB LOOP ENGINE
+-- 🌈 RGB LOOP ENGINE
 task.spawn(function()
     local RE = game:GetService("ReplicatedStorage"):WaitForChild("RE", 10)
     while _G.TXR_InstanceID == currentExecutionID and gui.Parent do 
@@ -4172,7 +4170,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     local attackersToBan = {}
                     local protectedVictims = {}
 
-                    -- Detect Piggyback / Carried Innocent
                     for _, desc in ipairs(lp.Character:GetDescendants()) do
                         if desc:IsA("Weld") or desc:IsA("Motor6D") or desc:IsA("WeldConstraint") then
                             local p0, p1 = desc.Part0, desc.Part1
