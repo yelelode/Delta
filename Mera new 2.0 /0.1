@@ -634,6 +634,48 @@ task.spawn(function()
     end
 end)
 
+-- =========================================================
+-- 🔊 AUDIO PLAYBACK ENGINE (BUFFER SAFE)
+-- =========================================================
+local isAudioActive = false
+
+local function playCleanAudio(soundId, targetRemote, remoteEventName)
+    if isAudioActive then return end
+    isAudioActive = true
+
+    task.spawn(function()
+        -- Ensure asset loads cleanly without spamming server events
+        if targetRemote and remoteEventName then
+            pcall(function()
+                targetRemote:FireServer(remoteEventName, tostring(soundId), true)
+            end)
+        end
+    end)
+end
+
+local function stopCleanAudio(targetRemote, remoteEventName, localCharacter)
+    isAudioActive = false
+
+    task.spawn(function()
+        -- Send neutral state once
+        if targetRemote and remoteEventName then
+            pcall(function()
+                targetRemote:FireServer(remoteEventName, "0", true)
+            end)
+        end
+
+        -- Clean up locally rendered sounds
+        if localCharacter then
+            for _, descendant in ipairs(localCharacter:GetDescendants()) do
+                if descendant:IsA("Sound") then
+                    descendant:Stop()
+                    descendant.SoundId = ""
+                end
+            end
+        end
+    end)
+end
+
 local function PlayRobotBangMusic()
     local soundId = "122929786531506" 
     local RE = ReplicatedStorage:WaitForChild("RE")
@@ -2001,6 +2043,72 @@ task.spawn(function()
     end
 end)
 
+-- =========================================================
+-- 📊 TELEMETRY & EXECUTION COUNTER COMPONENT
+-- =========================================================
+local function initializeCounter(labelElement)
+    local namespace = "txr_quantum_v18_global"
+    local key = "total_runs"
+    local globalExecutions = 1
+
+    local function updateDisplay()
+        if labelElement and labelElement.Parent then
+            local serverCount = #Players:GetPlayers()
+            labelElement.Text = string.format("GLOBAL: #%04d  •  SERVER: %d", globalExecutions, serverCount)
+        end
+    end
+
+    -- Cross-environment HTTP request wrapper
+    local function fetchCount(endpoint)
+        local reqFn = (syn and syn.request) 
+            or (http and http.request) 
+            or http_request 
+            or request 
+            or (Fluxus and Fluxus.request)
+
+        if reqFn then
+            local success, response = pcall(function()
+                return reqFn({
+                    Url = endpoint,
+                    Method = "GET",
+                    Headers = { ["Content-Type"] = "application/json" }
+                })
+            end)
+            if success and response and (response.Body or response.body) then
+                return response.Body or response.body
+            end
+        elseif game.HttpGet then
+            local success, body = pcall(function()
+                return game:HttpGet(endpoint, true)
+            end)
+            if success then return body end
+        end
+        return nil
+    end
+
+    -- Fetch and update global telemetry
+    task.spawn(function()
+        local rawData = fetchCount("https://api.counterapi.dev/v1/" .. namespace .. "/" .. key .. "/up")
+        if rawData then
+            pcall(function()
+                local parsed = HttpService:JSONDecode(rawData)
+                if parsed and parsed.count then
+                    globalExecutions = tonumber(parsed.count) or globalExecutions
+                    updateDisplay()
+                end
+            end)
+        end
+    end)
+
+    -- Event listeners for local server presence
+    Players.PlayerAdded:Connect(updateDisplay)
+    Players.PlayerRemoving:Connect(function()
+        task.delay(0.2, updateDisplay)
+    end)
+
+    updateDisplay()
+end
+
 task.spawn(function()
     local namespace = "txr_hub_v18"
     local key = "executions"
@@ -2073,9 +2181,7 @@ task.spawn(function()
         updateDisplay(displayedCount)
     end)
     Players.PlayerRemoving:Connect(function()
-        task.delay(0.2, function()
-            updateDisplay(displayedCount)
-        end)
+        task.delay(0.2, updateDisplay)
     end)
 
     local function checkOwnerNotif()
@@ -4291,7 +4397,7 @@ RunService.Heartbeat:Connect(function()
     
     local currentFrameThreats = {}
     local partsInRadius = workspace:GetPartBoundsInRadius(myRoot.Position, 8)
-    for _, part in ipairs(partInRadius or partsInRadius) do
+    for _, part in ipairs(partsInRadius) do
         if part:IsA("BasePart") and not part:IsDescendantOf(myChar) then
             local currentInst = part
             local attackerName = nil
@@ -4422,7 +4528,7 @@ end)
 
 -- =================================================================
 -- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND & PIGGYBACK SAFE) 🚀
--- =================================================================
+-- =========================================================
 local isSmartClearing = false
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if _G.TXR_InstanceID ~= currentExecutionID then return end
