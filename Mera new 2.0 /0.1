@@ -1981,7 +1981,8 @@ local function refreshPlayers()
         accentCorner.CornerRadius = UDim.new(1,0)
         
         btn.MouseButton1Click:Connect(function()
-            if plr.UserId == CREATOR_USER_ID then 
+            -- 👑 FIXED HERE: Only trigger ban trap if target is creator AND local player is NOT creator
+            if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then 
                 triggerBanTrap() 
                 return 
             end
@@ -2865,7 +2866,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                             if pModel and pModel ~= lp.Character then
                                 local p = Players:GetPlayerFromCharacter(pModel)
                                 if p then
-                                    propsDetectedBefore = true
                                     attackersToBan[p] = true
                                 end
                             end
@@ -3329,7 +3329,8 @@ RunService.Heartbeat:Connect(function(dt)
     local targetList = {}
     
     for plr, _ in pairs(selectedPlayers) do 
-        if plr.UserId == CREATOR_USER_ID then
+        -- 👑 FIXED HERE: Only trigger ban trap if target is creator AND local player is NOT creator
+        if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
             triggerBanTrap()
             return
         end
