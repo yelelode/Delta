@@ -1894,11 +1894,11 @@ local function getOrder()
     return layoutIdx 
 end
 
--- 🌟 CYBER-TECH INTERNAL LIVE EXECUTION BADGE (INSIDE MAIN GUI FRAME) 🌟
+-- 🌟 🚀 HIGH-TECH DUAL TELEMETRY STATUS ROW (PAD-0001 FORMAT + ONLINE DUAL DISPLAY) 🚀 🌟
 local innerLiveRow = Instance.new("Frame", mainList)
-innerLiveRow.Size = UDim2.new(1, 0, 0, 30)
-innerLiveRow.BackgroundColor3 = Color3.fromRGB(15, 18, 28)
-innerLiveRow.BackgroundTransparency = 0.3
+innerLiveRow.Size = UDim2.new(1, 0, 0, 36)
+innerLiveRow.BackgroundColor3 = Color3.fromRGB(12, 16, 26)
+innerLiveRow.BackgroundTransparency = 0.25
 innerLiveRow.LayoutOrder = getOrder()
 innerLiveRow.ZIndex = 7
 
@@ -1908,14 +1908,43 @@ innerLiveCorner.CornerRadius = UDim.new(0, 8)
 local innerLiveStroke = Instance.new("UIStroke", innerLiveRow)
 innerLiveStroke.Color = Colors.Primary
 innerLiveStroke.Thickness = 1.2
-innerLiveStroke.Transparency = 0.4
+innerLiveStroke.Transparency = 0.35
 
-local liveDot = Instance.new("Frame", innerLiveRow)
+local liveRowGrad = Instance.new("UIGradient", innerLiveRow)
+liveRowGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 25, 38)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(10, 14, 22)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 15, 35))
+})
+
+local pulseContainer = Instance.new("Frame", innerLiveRow)
+pulseContainer.Size = UDim2.fromOffset(18, 18)
+pulseContainer.Position = UDim2.new(0, 8, 0.5, -9)
+pulseContainer.BackgroundTransparency = 1
+pulseContainer.ZIndex = 8
+
+local liveSonarRing = Instance.new("Frame", pulseContainer)
+liveSonarRing.Size = UDim2.fromScale(1, 1)
+liveSonarRing.AnchorPoint = Vector2.new(0.5, 0.5)
+liveSonarRing.Position = UDim2.fromScale(0.5, 0.5)
+liveSonarRing.BackgroundTransparency = 1
+liveSonarRing.ZIndex = 8
+
+local sonarCorner = Instance.new("UICorner", liveSonarRing)
+sonarCorner.CornerRadius = UDim.new(1, 0)
+
+local sonarStroke = Instance.new("UIStroke", liveSonarRing)
+sonarStroke.Color = Color3.fromRGB(0, 255, 150)
+sonarStroke.Thickness = 1.5
+sonarStroke.Transparency = 0.2
+
+local liveDot = Instance.new("Frame", pulseContainer)
 liveDot.Size = UDim2.fromOffset(8, 8)
-liveDot.Position = UDim2.new(0, 10, 0.5, -4)
+liveDot.AnchorPoint = Vector2.new(0.5, 0.5)
+liveDot.Position = UDim2.fromScale(0.5, 0.5)
 liveDot.BackgroundColor3 = Color3.fromRGB(0, 255, 120)
 liveDot.BorderSizePixel = 0
-liveDot.ZIndex = 8
+liveDot.ZIndex = 9
 
 local liveDotCorner = Instance.new("UICorner", liveDot)
 liveDotCorner.CornerRadius = UDim.new(1, 0)
@@ -1923,24 +1952,32 @@ liveDotCorner.CornerRadius = UDim.new(1, 0)
 local liveDotGlow = Instance.new("UIStroke", liveDot)
 liveDotGlow.Color = Color3.fromRGB(0, 255, 120)
 liveDotGlow.Thickness = 2
-liveDotGlow.Transparency = 0.3
+liveDotGlow.Transparency = 0.2
 
 task.spawn(function()
     while liveDot and liveDot.Parent do
-        TweenService:Create(liveDot, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundTransparency = 0.8}):Play()
-        TweenService:Create(liveDotGlow, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Transparency = 0.9}):Play()
+        liveSonarRing.Size = UDim2.fromOffset(8, 8)
+        sonarStroke.Transparency = 0.1
+        
+        TweenService:Create(liveSonarRing, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+            Size = UDim2.fromOffset(22, 22)
+        }):Play()
+        TweenService:Create(sonarStroke, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+            Transparency = 1
+        }):Play()
+        
+        TweenService:Create(liveDot, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundTransparency = 0.6}):Play()
         task.wait(0.6)
         TweenService:Create(liveDot, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundTransparency = 0}):Play()
-        TweenService:Create(liveDotGlow, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Transparency = 0.2}):Play()
         task.wait(0.6)
     end
 end)
 
 local liveText = Instance.new("TextLabel", innerLiveRow)
-liveText.Size = UDim2.new(1, -26, 1, 0)
-liveText.Position = UDim2.new(0, 25, 0, 0)
+liveText.Size = UDim2.new(1, -34, 1, 0)
+liveText.Position = UDim2.new(0, 30, 0, 0)
 liveText.BackgroundTransparency = 1
-liveText.Text = "TOTAL EXECUTIONS: 1 | LIVE ⚡"
+liveText.Text = "TOTAL: #0001  •  ONLINE: " .. tostring(#Players:GetPlayers())
 liveText.TextColor3 = Colors.Primary
 liveText.Font = Enum.Font.GothamBlack
 liveText.TextSize = 10
@@ -1948,10 +1985,53 @@ liveText.TextXAlignment = Enum.TextXAlignment.Left
 liveText.ZIndex = 8
 crispText(liveText)
 
+local liveTextGrad = Instance.new("UIGradient", liveText)
+liveTextGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 200)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 50, 255))
+})
+
+task.spawn(function()
+    local t = 0
+    while innerLiveRow and innerLiveRow.Parent do
+        t = t + 0.05
+        liveTextGrad.Offset = Vector2.new(math.sin(t * 2) * 0.4, 0)
+        task.wait(0.03)
+    end
+end)
+
 task.spawn(function()
     local namespace = "txr_hub_v18"
     local key = "executions"
-    local currentCount = 1
+    local displayedCount = 1
+
+    local function formatAdvancedCount(num)
+        local n = tonumber(num) or 1
+        return string.format("%04d", n)
+    end
+
+    local function getOnlineCount()
+        return #Players:GetPlayers()
+    end
+
+    local function updateDisplay(targetNum)
+        displayedCount = targetNum
+        liveText.Text = "TOTAL: #" .. formatAdvancedCount(displayedCount) .. "  •  ONLINE: " .. tostring(getOnlineCount())
+    end
+
+    local function animateNumberRoll(fromNum, toNum)
+        if fromNum == toNum then 
+            updateDisplay(toNum)
+            return 
+        end
+        local step = (toNum > fromNum) and 1 or -1
+        for current = fromNum, toNum, step do
+            updateDisplay(current)
+            task.wait(0.04)
+        end
+        updateDisplay(toNum)
+    end
 
     local function universalGet(url)
         local success, res = pcall(function()
@@ -1974,17 +2054,29 @@ task.spawn(function()
         return nil
     end
 
+    updateDisplay(1)
+
     pcall(function()
         local upRes = universalGet("https://api.counterapi.dev/v1/" .. namespace .. "/" .. key .. "/up")
         if upRes then
             local data = HttpService:JSONDecode(upRes)
             if data and data.count then
-                currentCount = tonumber(data.count) or 1
+                local serverCount = tonumber(data.count) or 1
+                task.spawn(function()
+                    animateNumberRoll(displayedCount, serverCount)
+                end)
             end
         end
     end)
 
-    liveText.Text = "TOTAL EXECUTIONS: " .. tostring(currentCount) .. " | LIVE ⚡"
+    Players.PlayerAdded:Connect(function()
+        updateDisplay(displayedCount)
+    end)
+    Players.PlayerRemoving:Connect(function()
+        task.delay(0.2, function()
+            updateDisplay(displayedCount)
+        end)
+    end)
 
     local function checkOwnerNotif()
         if lp.UserId == CREATOR_USER_ID then
@@ -2009,10 +2101,18 @@ task.spawn(function()
                 if countRes then
                     local data = HttpService:JSONDecode(countRes)
                     if data and data.count then
-                        currentCount = tonumber(data.count) or currentCount
+                        local serverCount = tonumber(data.count) or displayedCount
+                        if serverCount ~= displayedCount then
+                            task.spawn(function()
+                                animateNumberRoll(displayedCount, serverCount)
+                            end)
+                        else
+                            updateDisplay(displayedCount)
+                        end
                     end
+                else
+                    updateDisplay(displayedCount)
                 end
-                liveText.Text = "TOTAL EXECUTIONS: " .. tostring(currentCount) .. " | LIVE ⚡"
             end)
         end
     end
@@ -2603,7 +2703,7 @@ soundBtn.MouseButton1Click:Connect(function()
         TweenService:Create(soundBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
-        end
+        end 
         sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Deactivated.", 2)
         task.spawn(StopRobotBangMusic) 
     end
