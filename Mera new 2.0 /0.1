@@ -2447,7 +2447,7 @@ soundBtn.MouseButton1Click:Connect(function()
         TweenService:Create(soundBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
-        end
+        end 
         sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Deactivated.", 2)
         task.spawn(StopRobotBangMusic) 
     end
@@ -3438,6 +3438,22 @@ RunService.Heartbeat:Connect(function(dt)
             local tRoot = plr.Character.HumanoidRootPart
             local tHum = plr.Character:FindFirstChildOfClass("Humanoid")
             if type(assignedRemotes[plr]) ~= "table" then assignedRemotes[plr] = {} end
+
+            -- 🔄 DYNAMIC SEAMLESS MODE SHIFT & INSTANT SLOT RELEASE
+            if not activeModes["HeadBang"] then
+                assignedRemotes[plr].h_front = nil
+                assignedRemotes[plr].h_back = nil
+            end
+            if not activeModes["Robot"] then
+                assignedRemotes[plr].front = nil
+                assignedRemotes[plr].back = nil
+                assignedRemotes[plr].left = nil
+                assignedRemotes[plr].right = nil
+            end
+            if not activeModes["MultiRobot"] then
+                assignedRemotes[plr].m_front = nil
+                assignedRemotes[plr].m_back = nil
+            end
             
             local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
             local rawVelocity = tRoot.AssemblyLinearVelocity
@@ -4296,7 +4312,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     sendNotif("SMART CLEAR", "Bang Props Banned & Cleared!", 2)
                 else
                     if not houseData then
-                        sendNotif("ERROR", "House not found! Please claim a house first.", 2)
+                        sendNotif("⚠️ HOUSE REQUIRED", "House spawn nahi hai! Please pehle house spawn karo.", 3)
                     end
                 end
             end)
