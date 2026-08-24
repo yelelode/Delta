@@ -659,7 +659,7 @@ local function PlayRobotBangMusic()
         
         task.wait(0.35)
         
-        -- 🔥 EXACT WORKING METHOD FROM NOTHING MUSIC SCRIPT 🔥
+        -- 🔥 EXACT WORKING METHOD FROM NOTHING MUSIC SCRIPT (MULTIPLE FORMAT SYNC FOR LONG IDs) 🔥
         local t1 = { 
             RE:FindFirstChild("1Player1sHous1e"), 
             RE:FindFirstChild("1Player1sCa1r"), 
@@ -677,8 +677,26 @@ local function PlayRobotBangMusic()
         task.wait(0.25)
 
         for k, v in pairs(t1) do
-            if v then pcall(function() v:FireServer(t2[k], soundId, true) end) end
+            if v then 
+                pcall(function() v:FireServer(t2[k], soundId, true) end)
+                pcall(function() v:FireServer(t2[k], "rbxassetid://" .. soundId, true) end)
+            end
         end
+
+        task.spawn(function()
+            local numID = tonumber(soundId)
+            local rbxID = "rbxassetid://" .. soundId
+            for _, desc in ipairs(workspace:GetDescendants()) do
+                if desc:IsA("Sound") and desc.Name == "PlayersChoice" then
+                    pcall(function()
+                        desc.SoundId = rbxID
+                        desc.TimePosition = 0
+                        desc.Volume = MAX_VOLUME
+                        desc:Play()
+                    end)
+                end
+            end
+        end)
     end)
     sendNotif("⚡ TXR SOUND", "Audio Core Injected!", 2)
 end
@@ -1474,7 +1492,7 @@ task.spawn(function()
     RunService.RenderStepped:Connect(function(dt)
         if _G.TXR_InstanceID ~= currentExecutionID then 
             return 
-        end
+        end 
         
         if not gui.Parent then 
             return 
@@ -3204,7 +3222,7 @@ local function getAvailableRemotes()
         if r and r.Parent then 
             table.insert(remotes, r) 
         end 
-    end
+    end 
     
     cachedRemotes = remotes
     return remotes
@@ -4066,7 +4084,7 @@ RunService.Heartbeat:Connect(function()
     
     local currentFrameThreats = {}
     local partsInRadius = workspace:GetPartBoundsInRadius(myRoot.Position, 8)
-    for _, part in ipairs(partsInRadius) do
+    for _, part in ipairs(partInRadius or partsInRadius) do
         if part:IsA("BasePart") and not part:IsDescendantOf(myChar) then
             local currentInst = part
             local attackerName = nil
