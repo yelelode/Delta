@@ -574,24 +574,60 @@ end
 Players.PlayerAdded:Connect(onPlayerJoinAlert)
 
 -- =========================================================
--- 🔊 PERFECTED NOTHING MUSIC ENGINE (AUTO MERGED PIPELINE)
+-- 🔊 TXR RANDOM TRACK PLAYLIST & SMART VEHICLE MUSIC CORE
 -- =========================================================
-local isAudioRunning = false
+local MUSIC_GAMEPASS_ID = 9066988
+local TXR_MUSIC_PLAYLIST = {
+    "169664410",
+    "139740597178232",
+    "134489447055645",
+    "89016013924693"
+}
+
+local function spawnAdaptiveSkate(mainRE)
+    if not mainRE then return end
+
+    -- 1. Try Spawning Premium White Segway (SegwaySmall)
+    mainRE:FireServer("SegwaySmall")
+    
+    local vehicleSpawned = false
+    local connections = {}
+    local function onChildAdded(child)
+        if child:IsA("Model") or child:IsA("Tool") then
+            vehicleSpawned = true
+        end
+    end
+    
+    table.insert(connections, workspace.ChildAdded:Connect(onChildAdded))
+    if workspace:FindFirstChild("Vehicles") then
+        table.insert(connections, workspace.Vehicles.ChildAdded:Connect(onChildAdded))
+    end
+    if lp.Character then
+        table.insert(connections, lp.Character.ChildAdded:Connect(onChildAdded))
+    end
+    
+    task.wait(0.8)
+    for _, conn in ipairs(connections) do conn:Disconnect() end
+
+    -- 2. Fallback: Agar White Skate spawn nahi hua (Non-Premium User), spawn free standard Skateboard
+    if not vehicleSpawned then
+        mainRE:FireServer("SkateBoard")
+    end
+end
 
 local function PlayRobotBangMusic()
-    if isAudioRunning then return end
-    isAudioRunning = true
-    
-    local songId = "122929786531506"
     local RE = ReplicatedStorage:WaitForChild("RE", 10)
     
     task.spawn(function()
         pcall(function()
-            -- 1. Auto Bypass GamePass
+            -- Step 1: Pick a Random Sound Code from Playlist
+            local randomSoundId = TXR_MUSIC_PLAYLIST[math.random(1, #TXR_MUSIC_PLAYLIST)]
+
+            -- Step 2: Auto GamePass Interaction Bypass
             local args = {
                 "shopInteraction",
                 {
-                    id = 9066988,
+                    id = MUSIC_GAMEPASS_ID,
                     shop = "new",
                     productType = "GamePass"
                 }
@@ -601,36 +637,13 @@ local function PlayRobotBangMusic()
                 rem.TelemetryClientInteraction:FireServer(unpack(args))
             end
 
-            -- 2. Spawn Segway / Board with Smart Fallback
+            -- Step 3: Adaptive Skate Spawn (White Segway -> Fallback Free Skate)
             local mainRE = DynamicRemotes.SpawnVehicle or (RE and RE:FindFirstChild("1NoMoto1rVehicle1s"))
             if mainRE then
-                mainRE:FireServer("SegwaySmall")
-                
-                local vehicleSpawned = false
-                local connections = {}
-                local function onChildAdded(child)
-                    if child:IsA("Model") or child:IsA("Tool") then
-                        vehicleSpawned = true
-                    end
-                end
-                
-                table.insert(connections, workspace.ChildAdded:Connect(onChildAdded))
-                if workspace:FindFirstChild("Vehicles") then
-                    table.insert(connections, workspace.Vehicles.ChildAdded:Connect(onChildAdded))
-                end
-                if lp.Character then
-                    table.insert(connections, lp.Character.ChildAdded:Connect(onChildAdded))
-                end
-                
-                task.wait(1.2)
-                for _, conn in ipairs(connections) do conn:Disconnect() end
-                
-                if not vehicleSpawned then
-                    mainRE:FireServer("SkateBoard")
-                end
+                spawnAdaptiveSkate(mainRE)
             end
 
-            -- 3. Volume Change Request
+            -- Step 4: Brookhaven Master Volume 100 Request
             pcall(function()
                 local pg = lp:FindFirstChild("PlayerGui")
                 if pg and pg:FindFirstChild("MainGUIHandler") then
@@ -639,7 +652,7 @@ local function PlayRobotBangMusic()
                 end
             end)
 
-            -- 4. Exact Nothing Music u9 Method
+            -- Step 5: Exact Nothing Music Multi-Remote u9 Pipeline
             if RE then
                 local t1 = { 
                     RE:FindFirstChild("1Player1sHous1e"), 
@@ -651,20 +664,20 @@ local function PlayRobotBangMusic()
                 }
                 local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
 
+                -- 5a. Flush Audio Buffer
                 for k, v in pairs(t1) do
                     if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
                 end
                 task.wait(0.25)
 
+                -- 5b. Play Random Song ID
                 for k, v in pairs(t1) do
-                    if v then pcall(function() v:FireServer(t2[k], tostring(songId), true) end) end
+                    if v then pcall(function() v:FireServer(t2[k], tostring(randomSoundId), true) end) end
                 end
             end
         end)
         
-        sendNotif("⚡ TXR SOUND", "Audio Core Injected!", 2)
-        task.wait(0.5)
-        isAudioRunning = false
+        sendNotif("⚡ TXR SOUND", "Audio Track Injected!", 2)
     end)
 end
 
@@ -2430,7 +2443,7 @@ rainbowBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local soundBtn = createMainBtn("🔊 DYNAMIC AUDIO ( 122929786531506 )", "Sound", false)
+local soundBtn = createMainBtn("🔊 DYNAMIC AUDIO HOOK ( Multi-Track Random )", "Sound", false)
 soundBtn.MouseButton1Click:Connect(function() 
     isSoundEnabled = not isSoundEnabled
     activeModes["Sound"] = isSoundEnabled
