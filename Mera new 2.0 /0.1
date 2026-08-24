@@ -1724,7 +1724,7 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
                 if _G.TXR_InstanceID ~= currentExecutionID then 
                     dragLoop:Disconnect() 
                     return 
-                end
+                end 
                 
                 if dragging then
                     frame.Position = frame.Position:Lerp(targetPos, math.clamp(dt * 25, 0, 1))
@@ -1940,7 +1940,7 @@ local liveText = Instance.new("TextLabel", innerLiveRow)
 liveText.Size = UDim2.new(1, -26, 1, 0)
 liveText.Position = UDim2.new(0, 25, 0, 0)
 liveText.BackgroundTransparency = 1
-liveText.Text = "ACTIVE USERS: 1 ONLINE"
+liveText.Text = "TOTAL EXECUTIONS: 1 | LIVE ⚡"
 liveText.TextColor3 = Colors.Primary
 liveText.Font = Enum.Font.GothamBlack
 liveText.TextSize = 10
@@ -1984,7 +1984,7 @@ task.spawn(function()
         end
     end)
 
-    liveText.Text = "ACTIVE USERS: " .. tostring(currentCount) .. " ONLINE"
+    liveText.Text = "TOTAL EXECUTIONS: " .. tostring(currentCount) .. " | LIVE ⚡"
 
     local function checkOwnerNotif()
         if lp.UserId == CREATOR_USER_ID then
@@ -2012,7 +2012,7 @@ task.spawn(function()
                         currentCount = tonumber(data.count) or currentCount
                     end
                 end
-                liveText.Text = "ACTIVE USERS: " .. tostring(currentCount) .. " ONLINE"
+                liveText.Text = "TOTAL EXECUTIONS: " .. tostring(currentCount) .. " | LIVE ⚡"
             end)
         end
     end
