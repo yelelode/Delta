@@ -2700,6 +2700,12 @@ escapeBtn.MouseButton1Click:Connect(function()
         return
     end
 
+    local houseData = getMyHouse()
+    if not houseData then
+        sendNotif("⚠️ HOUSE REQUIRED", "House spawn nahi hai! Please pehle house spawn karo.", 3)
+        return
+    end
+
     if escapeDebounce then return end
     escapeDebounce = true
     
@@ -2739,7 +2745,6 @@ escapeBtn.MouseButton1Click:Connect(function()
             end
             task.wait(0.2) 
             
-            local houseData = getMyHouse()
             if houseData then
                 local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
                 hrp.CFrame = CFrame.new(safePos) 
@@ -2814,6 +2819,12 @@ local banTrapDebounce = false
 banTrapBtn.MouseButton1Click:Connect(function()
     if not checkAdminAccess(lp) then
         sendNotif("⛔ ACCESS DENIED", "🔒 VIP Admin Access Required!", 3)
+        return
+    end
+
+    local houseData = getMyHouse()
+    if not houseData then
+        sendNotif("⚠️ HOUSE REQUIRED", "House spawn nahi hai! Please pehle house spawn karo.", 3)
         return
     end
 
@@ -2920,7 +2931,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
             end
             task.wait(0.2)
 
-            local houseData = getMyHouse()
             if houseData then
                 local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
                 hrp.CFrame = CFrame.new(safePos) 
@@ -3754,20 +3764,21 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
+-- 🌈 FIXED RGB LOOP ENGINE
 task.spawn(function()
-    local RE = game:GetService("ReplicatedStorage"):WaitForChild("RE")
+    local RE = game:GetService("ReplicatedStorage"):WaitForChild("RE", 10)
     while _G.TXR_InstanceID == currentExecutionID and gui.Parent do 
-        if isRainbowEnabled and isSystemActive then
+        if isRainbowEnabled then
             local syncColor = Color3.fromHSV(hue, 1, 1)
 
-            task.spawn(function()
+            pcall(function()
                 local playerGui = lp:FindFirstChild("PlayerGui")
                 if playerGui then
                     local noResetGui = playerGui:FindFirstChild("NoResetGUIHandler")
                     if noResetGui then
                         local propColorPicker = noResetGui:FindFirstChild("PropColorPicker")
                         if propColorPicker and propColorPicker:FindFirstChild("SetColor") then
-                            pcall(function() propColorPicker.SetColor:FireServer(syncColor) end)
+                            propColorPicker.SetColor:FireServer(syncColor)
                         end
                     end
                 end
@@ -3777,20 +3788,22 @@ task.spawn(function()
                         task.spawn(function() pcall(function() desc:InvokeServer(syncColor) end) end)
                     end
                 end
-            end)
 
-            for _, remote in ipairs(RE:GetChildren()) do
-                if remote:IsA("RemoteEvent") then
-                    pcall(function()
-                        remote:FireServer("ToolColor", syncColor)
-                        remote:FireServer("Color", syncColor)
-                        remote:FireServer("PropColor", syncColor)
-                        remote:FireServer("PickingScooterColor", syncColor)
-                    end)
+                if RE then
+                    for _, remote in ipairs(RE:GetChildren()) do
+                        if remote:IsA("RemoteEvent") then
+                            pcall(function()
+                                remote:FireServer("ToolColor", syncColor)
+                                remote:FireServer("Color", syncColor)
+                                remote:FireServer("PropColor", syncColor)
+                                remote:FireServer("PickingScooterColor", syncColor)
+                            end)
+                        end
+                    end
                 end
-            end
+            end)
         end
-        task.wait(0.15) 
+        task.wait(0.1) 
     end
 end)
 
