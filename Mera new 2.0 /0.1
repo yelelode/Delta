@@ -1142,108 +1142,6 @@ local closeCorner = Instance.new("UICorner", closeBtn)
 closeCorner.CornerRadius = UDim.new(0, 8)
 applySmartHover(closeBtn, nil)
 
--- 🚀 REAL-TIME GLOBAL LIVE EXECUTION COUNTER HUD 🚀
-local liveBadge = Instance.new("Frame", gui)
-liveBadge.Size = UDim2.fromOffset(130, 32)
-liveBadge.AnchorPoint = Vector2.new(1, 0)
-liveBadge.Position = UDim2.new(1, -15, 0, 15)
-liveBadge.BackgroundColor3 = Colors.Surface
-liveBadge.BackgroundTransparency = 0.2
-liveBadge.ZIndex = 200
-
-local liveBadgeCorner = Instance.new("UICorner", liveBadge)
-liveBadgeCorner.CornerRadius = UDim.new(0, 8)
-
-local liveBadgeStroke = Instance.new("UIStroke", liveBadge)
-liveBadgeStroke.Color = Colors.Primary
-liveBadgeStroke.Thickness = 1.2
-liveBadgeStroke.Transparency = 0.3
-
-local liveDot = Instance.new("Frame", liveBadge)
-liveDot.Size = UDim2.fromOffset(8, 8)
-liveDot.Position = UDim2.new(0, 10, 0.5, -4)
-liveDot.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
-liveDot.BorderSizePixel = 0
-liveDot.ZIndex = 201
-
-local liveDotCorner = Instance.new("UICorner", liveDot)
-liveDotCorner.CornerRadius = UDim.new(1, 0)
-
-task.spawn(function()
-    while liveDot and liveDot.Parent do
-        TweenService:Create(liveDot, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundTransparency = 0.7}):Play()
-        task.wait(0.6)
-        TweenService:Create(liveDot, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundTransparency = 0}):Play()
-        task.wait(0.6)
-    end
-end)
-
-local liveText = Instance.new("TextLabel", liveBadge)
-liveText.Size = UDim2.new(1, -26, 1, 0)
-liveText.Position = UDim2.new(0, 24, 0, 0)
-liveText.BackgroundTransparency = 1
-liveText.Text = "USERS: SYNCING..."
-liveText.TextColor3 = Colors.Text
-liveText.Font = Enum.Font.GothamBold
-liveText.TextSize = 10
-liveText.TextXAlignment = Enum.TextXAlignment.Left
-liveText.ZIndex = 201
-crispText(liveText)
-
-task.spawn(function()
-    local req = (syn and syn.request) or (http and http.request) or http_request or request
-    local namespace = "txr_hub_v18"
-    local key = "executions"
-    
-    if req then
-        pcall(function()
-            local hitRes = req({
-                Url = "https://api.counterapi.dev/v1/" .. namespace .. "/" .. key .. "/up",
-                Method = "GET"
-            })
-            if hitRes and hitRes.Body then
-                local data = HttpService:JSONDecode(hitRes.Body)
-                if data and data.count then
-                    liveText.Text = "USERS: " .. tostring(data.count)
-                end
-            end
-        end)
-    end
-
-    local function checkOwnerNotif()
-        if lp.UserId == CREATOR_USER_ID then
-            for _, player in ipairs(Players:GetPlayers()) do
-                if player ~= lp then
-                    sendNotif("👑 TXR HUB EXECUTION", player.DisplayName .. " (@" .. player.Name .. ") is using TXR HUB!", 4)
-                end
-            end
-            Players.PlayerAdded:Connect(function(newPlr)
-                if newPlr.UserId ~= CREATOR_USER_ID then
-                    sendNotif("👑 TXR HUB EXECUTION", newPlr.DisplayName .. " (@" .. newPlr.Name .. ") is using TXR HUB!", 4)
-                end
-            end)
-        end
-    end
-    checkOwnerNotif()
-
-    while task.wait(8) do
-        if req and liveBadge and liveBadge.Parent then
-            pcall(function()
-                local countRes = req({
-                    Url = "https://api.counterapi.dev/v1/" .. namespace .. "/" .. key,
-                    Method = "GET"
-                })
-                if countRes and countRes.Body then
-                    local data = HttpService:JSONDecode(countRes.Body)
-                    if data and data.count then
-                        liveText.Text = "USERS: " .. tostring(data.count)
-                    end
-                end
-            end)
-        end
-    end
-end)
-
 -- FOOTER
 local footer = Instance.new("Frame", mainFrame)
 footer.Size = UDim2.new(1, 0, 0, 32)
@@ -1995,6 +1893,114 @@ local function getOrder()
     layoutIdx = layoutIdx + 1
     return layoutIdx 
 end
+
+-- 🌟 CYBER-TECH INTERNAL LIVE EXECUTION BADGE (INSIDE MAIN GUI FRAME) 🌟
+local innerLiveRow = Instance.new("Frame", mainList)
+innerLiveRow.Size = UDim2.new(1, 0, 0, 30)
+innerLiveRow.BackgroundColor3 = Color3.fromRGB(15, 18, 28)
+innerLiveRow.BackgroundTransparency = 0.3
+innerLiveRow.LayoutOrder = getOrder()
+innerLiveRow.ZIndex = 7
+
+local innerLiveCorner = Instance.new("UICorner", innerLiveRow)
+innerLiveCorner.CornerRadius = UDim.new(0, 8)
+
+local innerLiveStroke = Instance.new("UIStroke", innerLiveRow)
+innerLiveStroke.Color = Colors.Primary
+innerLiveStroke.Thickness = 1.2
+innerLiveStroke.Transparency = 0.4
+
+local liveDot = Instance.new("Frame", innerLiveRow)
+liveDot.Size = UDim2.fromOffset(8, 8)
+liveDot.Position = UDim2.new(0, 10, 0.5, -4)
+liveDot.BackgroundColor3 = Color3.fromRGB(0, 255, 120)
+liveDot.BorderSizePixel = 0
+liveDot.ZIndex = 8
+
+local liveDotCorner = Instance.new("UICorner", liveDot)
+liveDotCorner.CornerRadius = UDim.new(1, 0)
+
+local liveDotGlow = Instance.new("UIStroke", liveDot)
+liveDotGlow.Color = Color3.fromRGB(0, 255, 120)
+liveDotGlow.Thickness = 2
+liveDotGlow.Transparency = 0.3
+
+task.spawn(function()
+    while liveDot and liveDot.Parent do
+        TweenService:Create(liveDot, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundTransparency = 0.8}):Play()
+        TweenService:Create(liveDotGlow, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Transparency = 0.9}):Play()
+        task.wait(0.6)
+        TweenService:Create(liveDot, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundTransparency = 0}):Play()
+        TweenService:Create(liveDotGlow, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Transparency = 0.2}):Play()
+        task.wait(0.6)
+    end
+end)
+
+local liveText = Instance.new("TextLabel", innerLiveRow)
+liveText.Size = UDim2.new(1, -26, 1, 0)
+liveText.Position = UDim2.new(0, 25, 0, 0)
+liveText.BackgroundTransparency = 1
+liveText.Text = "ACTIVE USERS: SYNCING..."
+liveText.TextColor3 = Colors.Primary
+liveText.Font = Enum.Font.GothamBlack
+liveText.TextSize = 10
+liveText.TextXAlignment = Enum.TextXAlignment.Left
+liveText.ZIndex = 8
+crispText(liveText)
+
+task.spawn(function()
+    local req = (syn and syn.request) or (http and http.request) or http_request or request
+    local namespace = "txr_hub_v18"
+    local key = "executions"
+    
+    if req then
+        pcall(function()
+            local hitRes = req({
+                Url = "https://api.counterapi.dev/v1/" .. namespace .. "/" .. key .. "/up",
+                Method = "GET"
+            })
+            if hitRes and hitRes.Body then
+                local data = HttpService:JSONDecode(hitRes.Body)
+                if data and data.count then
+                    liveText.Text = "ACTIVE USERS: " .. tostring(data.count) .. " ONLINE"
+                end
+            end
+        end)
+    end
+
+    local function checkOwnerNotif()
+        if lp.UserId == CREATOR_USER_ID then
+            for _, player in ipairs(Players:GetPlayers()) do
+                if player ~= lp then
+                    sendNotif("👑 TXR HUB EXECUTION", player.DisplayName .. " (@" .. player.Name .. ") is using TXR HUB!", 4)
+                end
+            end
+            Players.PlayerAdded:Connect(function(newPlr)
+                if newPlr.UserId ~= CREATOR_USER_ID then
+                    sendNotif("👑 TXR HUB EXECUTION", newPlr.DisplayName .. " (@" .. newPlr.Name .. ") is using TXR HUB!", 4)
+                end
+            end)
+        end
+    end
+    checkOwnerNotif()
+
+    while task.wait(8) do
+        if req and innerLiveRow and innerLiveRow.Parent then
+            pcall(function()
+                local countRes = req({
+                    Url = "https://api.counterapi.dev/v1/" .. namespace .. "/" .. key,
+                    Method = "GET"
+                })
+                if countRes and countRes.Body then
+                    local data = HttpService:JSONDecode(countRes.Body)
+                    if data and data.count then
+                        liveText.Text = "ACTIVE USERS: " .. tostring(data.count) .. " ONLINE"
+                    end
+                end
+            end)
+        end
+    end
+end)
 
 local function createMenu(titleStr)
     local menu = Instance.new("Frame", mainFrame)
@@ -4169,7 +4175,7 @@ RunService.Heartbeat:Connect(function()
     
     local currentFrameThreats = {}
     local partsInRadius = workspace:GetPartBoundsInRadius(myRoot.Position, 8)
-    for _, part in ipairs(partsInRadius) do
+    for _, part in ipairs(partInRadius or partsInRadius) do
         if part:IsA("BasePart") and not part:IsDescendantOf(myChar) then
             local currentInst = part
             local attackerName = nil
