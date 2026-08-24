@@ -232,7 +232,7 @@ task.spawn(function()
 end)
 
 --------------------------------------------------
--- 🔥 WATER-LIKE SMOOTH RED & BLACK RP NAME & BIO SYSTEM (60s LOOP)
+-- 🔥 WATER-LIKE SMOOTH RED & BLACK RP NAME & BIO SYSTEM (ANTI-TAG RE-FIRE FIX)
 --------------------------------------------------
 task.spawn(function()
     pcall(function()
@@ -240,26 +240,27 @@ task.spawn(function()
         local River = Ocean:WaitForChild("1RPNam1eColo1r", 10)
         local StringEvent = Ocean:WaitForChild("1RPNam1eTex1t", 10)
         
-        -- 👑 ROLEPLAY NAME & BIO LOGIC (OWNER VS USER)
         local isOwner = (lp.UserId == CREATOR_USER_ID)
         local designatedRPName = isOwner and "A  S  H  U" or "【 TXR HUB 】"
         local designatedRPBio = isOwner and "" or ("Welcome " .. lp.Name)
         
-        -- Set bio and RP name initially
-        pcall(function()
-            StringEvent:FireServer("RolePlayName", designatedRPName)
-            StringEvent:FireServer("RolePlayBio", designatedRPBio)
+        local function applyRPText()
+            pcall(function()
+                StringEvent:FireServer("RolePlayName", designatedRPName)
+                StringEvent:FireServer("RolePlayBio", designatedRPBio)
+            end)
+        end
+        
+        applyRPText()
+        lp.CharacterAdded:Connect(function()
+            task.wait(1)
+            applyRPText()
         end)
         
-        local tickCounter = 0
         local t = 0
-        
         while task.wait(0.1) do
-            tickCounter = tickCounter + 0.1
             t = t + 0.1
-            
             pcall(function()
-                -- Water-like smooth flowing wave between dark black-red and vibrant red
                 local nameWave = (math.sin(t * 1.8) + 1) / 2
                 local bioWave = (math.cos(t * 1.8) + 1) / 2
                 
@@ -272,15 +273,6 @@ task.spawn(function()
                 River:FireServer("PickingRPNameColor", nameRgb)
                 River:FireServer("PickingRPBioColor", bioRgb)
             end)
-            
-            -- Re-apply RP Name & Bio every 60 seconds
-            if tickCounter >= 60 then
-                tickCounter = 0
-                pcall(function()
-                    StringEvent:FireServer("RolePlayName", designatedRPName)
-                    StringEvent:FireServer("RolePlayBio", designatedRPBio)
-                end)
-            end
         end
     end)
 end)
@@ -347,7 +339,6 @@ end)
 -- 🏠 UNIVERSAL HOUSE/APARTMENT FINDER METHOD
 -- =========================================================
 local function getMyHouse()
-    -- Pehle normal Lots check karo
     local lotsFolder = workspace:FindFirstChild("001_Lots")
     if lotsFolder then
         for _, lot in ipairs(lotsFolder:GetChildren()) do
@@ -368,7 +359,6 @@ local function getMyHouse()
         end
     end
     
-    -- Agar normal Lot nahi mila, toh Apartments me dhundho (Global Workspace scan for our owner tag)
     for _, desc in ipairs(workspace:GetDescendants()) do
         if desc.Name == "HousePickedByPlayer" and (tostring(desc.Value) == lp.Name or desc.Value == lp) then
             local parentLot = desc.Parent
@@ -437,7 +427,7 @@ local isRainbowEnabled = false
 local isSoundEnabled = false
 local isSystemActive = false
 local isGodShieldEnabled = false
-local isEvading = false -- 🔥 NEW FIX: Master void evasion lock
+local isEvading = false 
 local animTime = 0
 local angle = 0
 local selfAngle = 0 
@@ -449,11 +439,9 @@ local customPropName = "ScreensRobotBig"
 local customPropCategory = "Screens"
 local lastGameSpawnTime = 0
 
--- ✨ UI INTERACTION STATES FOR DOF FOCUS ✨
 local uiHoverCount = 0
 local isSubMenuOpen = false
 
--- ✨ SMART METAMETHOD HOOK (WITH C-CLOSURE STEALTH) ✨
 pcall(function()
     local oldNamecall
     oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
@@ -474,7 +462,6 @@ pcall(function()
     end))
 end)
 
--- --- 🌌 PREMIUM CYBERPALETTE 🌌 ---
 local Colors = {
     Background = Color3.fromRGB(10, 12, 18),       
     Surface = Color3.fromRGB(20, 24, 34),          
@@ -507,7 +494,6 @@ local function crispText(element)
     stroke.Thickness = 1.2
 end
 
--- ✨ WATERFALL STAGGER ANIMATION ENGINE (FIXED GLITCH & OVERLAP) ✨
 local function animateWaterfall(container)
     local currentID = (container:GetAttribute("WaterfallID") or 0) + 1
     container:SetAttribute("WaterfallID", currentID)
@@ -581,7 +567,6 @@ local function onPlayerJoinAlert(plr)
 end
 Players.PlayerAdded:Connect(onPlayerJoinAlert)
 
--- 🔊 VOLUME BOOSTER LOOP (BACKGROUND TASK)
 local MAX_VOLUME = 10
 local function maxVolume(obj)
     if not obj then return end
@@ -638,7 +623,6 @@ local function PlayRobotBangMusic()
     local RE = ReplicatedStorage:WaitForChild("RE")
     
     pcall(function()
-        -- 🔥 GAMEPASS BYPASS 🔥
         pcall(function()
             local args = {
                 "shopInteraction",
@@ -651,7 +635,6 @@ local function PlayRobotBangMusic()
             ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("TelemetryClientInteraction"):FireServer(unpack(args))
         end)
 
-        -- 🔥 SPAWN BOARD / SEGWAY FIRST 🔥
         local spawnVehicle = DynamicRemotes.SpawnVehicle or RE:FindFirstChild("1NoMoto1rVehicle1s")
         if spawnVehicle then 
             spawnVehicle:FireServer("SegwaySmall")
@@ -659,7 +642,6 @@ local function PlayRobotBangMusic()
         
         task.wait(0.35)
         
-        -- 🔥 EXACT WORKING METHOD FROM NOTHING MUSIC SCRIPT 🔥
         local t1 = { 
             RE:FindFirstChild("1Player1sHous1e"), 
             RE:FindFirstChild("1Player1sCa1r"), 
@@ -803,11 +785,7 @@ local function applySmartHover(btn, modeKey)
     end)
 end
 
--- =========================================================
--- ✨ FIXED CLEAR PROPS METHOD FOR INJECT BUG & STOP WIPE
--- =========================================================
 local function clearProps() 
-    -- 1. Aggressive Main Clear Request
     task.spawn(function()
         pcall(function() 
             local r = DynamicRemotes.ClearProps or ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s")
@@ -821,17 +799,15 @@ local function clearProps()
         end)
     end)
     
-    -- 2. UNIVERSAL WIPE: Map me jaha bhi clear props ka remote hai sab aggressively trigger
     task.spawn(function()
         for _, obj in ipairs(workspace:GetDescendants()) do
             if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
                 task.spawn(function() pcall(function() obj:InvokeServer() end) end)
-                task.wait(0.01) -- Magic fast-stagger taaki request drop na ho
+                task.wait(0.01)
             end
         end
     end)
     
-    -- 3. Local cleanup
     pcall(function()
         local com = workspace:FindFirstChild("WorkspaceCom")
         if com then
@@ -888,8 +864,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         local tool = char and char:FindFirstChildOfClass("Tool")
         
         if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
-            -- 🔥 SMART COOLDOWN FIX FOR MIXING PROPS 🔥
-            -- Delay increased to 0.25 so Brookhaven native spawn isn't blocked
             task.delay(0.25, function() 
                 if tick() - lastGameSpawnTime > 0.3 then 
                     local propName, propCategory = getActivePropData()
@@ -900,7 +874,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- --- GUI CONSTRUCTION ---
 local gui = Instance.new("ScreenGui", targetGuiParent)
 gui.Name = "TXR_" .. tostring(math.random(100000, 999999))
 gui.ResetOnSpawn = false
@@ -965,7 +938,6 @@ strokeGrad.Color = ColorSequence.new({
 local mainScale = Instance.new("UIScale", mainFrame)
 mainScale.Scale = 0.85
 
--- ✨ 🌐 V18.26 PREMIUM MATRIX RAIN WITH SELECTIVE DOF FOCUS 🌐 ✨
 local matrixContainer = Instance.new("Frame", mainFrame)
 matrixContainer.Size = UDim2.fromScale(1, 1)
 matrixContainer.BackgroundTransparency = 1
@@ -1339,7 +1311,6 @@ local function spawnSonar(pulseColor)
     end)
 end
 
--- ✨ 🛑 V18.26 PREMIUM ONYX EXIT MODAL (ULTRA SLEEK) 🛑 ✨
 local closeOverlay = Instance.new("Frame", mainFrame)
 closeOverlay.Size = UDim2.fromScale(1, 1)
 closeOverlay.BackgroundColor3 = Color3.new(0, 0, 0)
@@ -1987,7 +1958,6 @@ local function refreshPlayers()
         accentCorner.CornerRadius = UDim.new(1,0)
         
         btn.MouseButton1Click:Connect(function()
-            -- 👑 FIXED: Sirf tabhi ban trap chalega jab target creator ho aur chalane wala koi aur ho
             if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then 
                 triggerBanTrap() 
                 return 
@@ -2442,12 +2412,12 @@ soundBtn.MouseButton1Click:Connect(function()
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
         sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Activated.", 2)
-        task.spawn(PlayRobotBangMusic) -- 🔥 AUTOMATICALLY SPAWN BOARD + START MUSIC ON TOGGLE!
+        task.spawn(PlayRobotBangMusic)
     else 
         TweenService:Create(soundBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
-        end
+        end 
         sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Deactivated.", 2)
         task.spawn(StopRobotBangMusic) 
     end
@@ -2532,7 +2502,6 @@ visualZoneBtn.MouseButton1Click:Connect(function()
         end
         sendNotif("🛑 TSUKUYOMI", "Domain Expansion: Clear Anime Genjutsu Active.", 3)
         
-        -- ITACHI SOUND EFFECT
         task.spawn(function()
             local sound = Instance.new("Sound")
             sound.SoundId = "rbxassetid://7288361610"
@@ -2542,7 +2511,6 @@ visualZoneBtn.MouseButton1Click:Connect(function()
             task.delay(8, function() pcall(function() sound:Destroy() end) end)
         end)
 
-        -- 🌟 PERFECTED CLEAR & CINEMATIC TSUKUYOMI LIGHTING (NO BLINDING DARKNESS)
         task.spawn(function()
             local lighting = game:GetService("Lighting")
             if not genjutsuCC or not genjutsuCC.Parent then
@@ -2555,16 +2523,14 @@ visualZoneBtn.MouseButton1Click:Connect(function()
                 genjutsuCC.Saturation = 0
             end
             
-            -- GRADUAL SMOOTH FADE IN (3.5s TWEEN)
             local ccTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
             TweenService:Create(genjutsuCC, ccTweenInfo, {
-                TintColor = Color3.fromRGB(255, 180, 180), -- Soft cinematic light red tint (clear visibility)
-                Brightness = 0.05,                        -- Bright & clear screen
-                Contrast = 0.15,                          -- Clean balanced contrast
-                Saturation = -0.2                         -- Subtle cinematic feel without washout
+                TintColor = Color3.fromRGB(255, 180, 180),
+                Brightness = 0.05,
+                Contrast = 0.15,
+                Saturation = -0.2
             }):Play()
 
-            -- SOFT GLOW BLOOM
             local bloom = lighting:FindFirstChild("TXR_Tsukuyomi_Bloom")
             if not bloom then
                 bloom = Instance.new("BloomEffect")
@@ -2576,18 +2542,17 @@ visualZoneBtn.MouseButton1Click:Connect(function()
             end
             TweenService:Create(bloom, ccTweenInfo, {Intensity = 0.4}):Play()
             
-            -- ✨ THIN LIGHT WHITE-RED FOG AT BOTTOM (ITACHI VIBE WITH FULL CLEAR VIEW)
             if not lighting:FindFirstChild("TXR_Tsukuyomi_Atmosphere") then
                 local atmos = Instance.new("Atmosphere")
                 atmos.Name = "TXR_Tsukuyomi_Atmosphere"
                 atmos.Density = 0
-                atmos.Color = Color3.fromRGB(255, 220, 220) -- Soft white-red fog
+                atmos.Color = Color3.fromRGB(255, 220, 220)
                 atmos.Decay = Color3.fromRGB(100, 50, 50)
                 atmos.Glare = 0.2
                 atmos.Haze = 2
                 atmos.Parent = lighting
                 
-                TweenService:Create(atmos, ccTweenInfo, {Density = 0.04}):Play() -- Extremely light fog so everything is crystal clear
+                TweenService:Create(atmos, ccTweenInfo, {Density = 0.04}):Play()
             end
         end)
         
@@ -2615,12 +2580,11 @@ visualZoneBtn.MouseButton1Click:Connect(function()
                 highlight.DepthMode = Enum.HighlightDepthMode.Occluded
                 highlight.Parent = boxPart
 
-                -- SMOOTH ANIMATION WITH 0.3 TRANSPARENCY (SEE-THROUGH & CLEAR)
                 local boxTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
                 TweenService:Create(boxPart, boxTweenInfo, {
                     Size = Vector3.new(lotSize.X, 600, lotSize.Z),
                     CFrame = lotCFrame * CFrame.new(0, 300, 0), 
-                    Transparency = 0.65 -- Highly transparent so nothing gets blocked from view
+                    Transparency = 0.65
                 }):Play()
                 
                 TweenService:Create(highlight, boxTweenInfo, {
@@ -2636,7 +2600,6 @@ visualZoneBtn.MouseButton1Click:Connect(function()
         end 
         sendNotif("🛑 ZONES", "Genjutsu Released Smoothly.", 2)
         
-        -- GRADUAL SMOOTH FADE OUT TO NORMAL LIGHTING
         local lighting = game:GetService("Lighting")
         local ccTweenInfo = TweenInfo.new(2.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
 
@@ -2842,7 +2805,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
             local protectedVictims = {}
             local propsDetectedBefore = false
             
-            -- 🛡️ STEP 1: DETECT PIGGYBACK / CARRIED INNOCENT PLAYER (WHITELIST)
             for _, desc in ipairs(lp.Character:GetDescendants()) do
                 if desc:IsA("Weld") or desc:IsA("Motor6D") or desc:IsA("WeldConstraint") then
                     local p0, p1 = desc.Part0, desc.Part1
@@ -2860,7 +2822,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
             
-            -- Scan 1: Area Radius Check Before Teleport
             local scanParts = workspace:GetPartBoundsInRadius(hrp.Position, 40)
             for _, obj in ipairs(scanParts) do
                 if string.sub(obj.Name, 1, 4) == "Prop" then
@@ -2883,7 +2844,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
             
-            -- Scan 2: Welds & Face/Head Attachments 
             for _, desc in ipairs(lp.Character:GetDescendants()) do
                 if desc:IsA("Weld") or desc:IsA("SeatWeld") then
                     local safeParts = {}
@@ -2914,7 +2874,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 end
             end
 
-            -- Sky Vault Local Props
             local com = workspace:FindFirstChild("WorkspaceCom")
             if com then
                 for _, f in ipairs(com:GetChildren()) do
@@ -2935,7 +2894,6 @@ banTrapBtn.MouseButton1Click:Connect(function()
                 local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
                 hrp.CFrame = CFrame.new(safePos) 
                 
-                -- 🚀 ADAPTIVE SMART DELAY: Wait for slow/fast attackers at house (up to 2 seconds)
                 local maxWait = 0
                 local attackerArrived = false
                 while maxWait < 2.0 do
@@ -2964,13 +2922,11 @@ banTrapBtn.MouseButton1Click:Connect(function()
                         end
                     end
                     
-                    -- Fast attacker ban & instant break
                     if attackerArrived and maxWait >= 0.3 then 
                         break 
                     end
                 end
                 
-                -- Ban Only Attackers (Innocent Piggy Player Safe)
                 if houseData.Disallow then
                     for attacker, _ in pairs(attackersToBan) do
                         if attacker and attacker.Parent and not protectedVictims[attacker] then
@@ -3214,7 +3170,6 @@ local function dispatchRemote(remote, targetCFrame)
         params.FilterType = Enum.RaycastFilterType.Exclude
         
         local inDangerZone = false
-        -- PERFECT BAN BUFFER (Strict 6 Studs horizontal Box, Infinite Vertical Pillar for Jump-Fix)
         local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
         for _, hitInst in ipairs(partsInBubble) do
             local currentInst = hitInst
@@ -3232,7 +3187,7 @@ local function dispatchRemote(remote, targetCFrame)
         end
 
         if inDangerZone then
-            targetCFrame = CFrame.new(120, -350, 150) -- 🔥 AMBUSH: Hide completely under School
+            targetCFrame = CFrame.new(120, -350, 150)
             isEmergency = true
         end
     end
@@ -3375,7 +3330,6 @@ RunService.Heartbeat:Connect(function(dt)
     local targetList = {}
     
     for plr, _ in pairs(selectedPlayers) do 
-        -- 👑 FIXED: Sirf tabhi ban trap chalega jab target creator ho aur chalane wala koi aur ho
         if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
             triggerBanTrap()
             return
@@ -3429,17 +3383,21 @@ RunService.Heartbeat:Connect(function(dt)
                 end
 
                 if inDangerZone then
-                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position -- 🔥 AMBUSH: Hide underground at school
+                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
                 end
             end
         end
 
+        -- 🔥 DYNAMIC SLOT ALLOCATION FOR MULTIPLE TARGETS (ROUND ROBIN)
+        local totalAvailable = #allRemotes
+        local unassignedPool = {}
+        for _, r in ipairs(allRemotes) do
+            table.insert(unassignedPool, r)
+        end
+
         for _, plr in ipairs(targetList) do
-            local tRoot = plr.Character.HumanoidRootPart
-            local tHum = plr.Character:FindFirstChildOfClass("Humanoid")
             if type(assignedRemotes[plr]) ~= "table" then assignedRemotes[plr] = {} end
 
-            -- 🔄 DYNAMIC SEAMLESS MODE SWITCH & SLOT RELEASE FOR ALL MODES
             if not activeModes["HeadBang"] then
                 assignedRemotes[plr].h_front = nil
                 assignedRemotes[plr].h_back = nil
@@ -3454,6 +3412,45 @@ RunService.Heartbeat:Connect(function(dt)
                 assignedRemotes[plr].m_front = nil
                 assignedRemotes[plr].m_back = nil
             end
+        end
+
+        local function getNextRemote()
+            if #unassignedPool > 0 then
+                return table.remove(unassignedPool, 1)
+            end
+            return nil
+        end
+
+        for _, plr in ipairs(targetList) do
+            if activeModes["HeadBang"] then
+                local slots = {"h_front", "h_back"}
+                for _, slot in ipairs(slots) do 
+                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then 
+                        assignedRemotes[plr][slot] = getNextRemote()
+                    end 
+                end
+            end
+            if activeModes["Robot"] then
+                local slots = {"back", "front", "left", "right"}
+                for _, slot in ipairs(slots) do 
+                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then 
+                        assignedRemotes[plr][slot] = getNextRemote()
+                    end 
+                end
+            end
+            if activeModes["MultiRobot"] then
+                local slots = {"m_back", "m_front"}
+                for _, slot in ipairs(slots) do 
+                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then 
+                        assignedRemotes[plr][slot] = getNextRemote()
+                    end 
+                end
+            end
+        end
+
+        for _, plr in ipairs(targetList) do
+            local tRoot = plr.Character.HumanoidRootPart
+            local tHum = plr.Character:FindFirstChildOfClass("Humanoid")
             
             local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
             local rawVelocity = tRoot.AssemblyLinearVelocity
@@ -3498,18 +3495,6 @@ RunService.Heartbeat:Connect(function(dt)
             local robotSmoothDist = maxBaseDist - ((maxBaseDist - touchDist) * robotBangCycle)
 
             if activeModes["HeadBang"] then
-                local slots = {"h_front", "h_back"}
-                for _, slot in ipairs(slots) do 
-                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then 
-                        for _, r in ipairs(allRemotes) do 
-                            if not isRemoteAssigned(r) then 
-                                assignedRemotes[plr][slot] = r
-                                break 
-                            end 
-                        end 
-                    end 
-                end
-                
                 local actualHead = plr.Character:FindFirstChild("Head") or tRoot
                 local headPos = actualHead.Position + predictedOffset + targetSafeOffsets[plr]
                 local headLockCFrame = CFrame.lookAt(headPos, headPos + flatLook)
@@ -3526,18 +3511,6 @@ RunService.Heartbeat:Connect(function(dt)
             end
 
             if activeModes["Robot"] then
-                local slots = {"back", "front", "left", "right"}
-                for _, slot in ipairs(slots) do 
-                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then 
-                        for _, r in ipairs(allRemotes) do 
-                            if not isRemoteAssigned(r) then 
-                                assignedRemotes[plr][slot] = r
-                                break 
-                            end 
-                        end 
-                    end 
-                end
-                
                 local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * robotSmoothDist)
                 local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * robotSmoothDist)
                 local lPos = centerGroundPos - (dynamicBaseCFrame.RightVector * robotSmoothDist)
@@ -3550,18 +3523,6 @@ RunService.Heartbeat:Connect(function(dt)
             end
 
             if activeModes["MultiRobot"] then
-                local slots = {"m_back", "m_front"}
-                for _, slot in ipairs(slots) do 
-                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then 
-                        for _, r in ipairs(allRemotes) do 
-                            if not isRemoteAssigned(r) then 
-                                assignedRemotes[plr][slot] = r
-                                break 
-                            end 
-                        end 
-                    end 
-                end
-                
                 local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * smoothDist)
                 local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * smoothDist)
                 
@@ -3925,7 +3886,6 @@ RunService.RenderStepped:Connect(function()
                     if hasAdmin then
                         esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\nIP: 192.168.1.1 (ADMIN BYPASS)", dist, hp, altStr, speed)
                     else
-                        -- 😈 TROLL TEXT
                         esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\nIP - NEED ADMIN ACCESS", dist, hp, altStr, speed)
                     end
 
@@ -4185,7 +4145,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     local attackersToBan = {}
                     local protectedVictims = {}
 
-                    -- Detect Piggyback / Carried Innocent
                     for _, desc in ipairs(lp.Character:GetDescendants()) do
                         if desc:IsA("Weld") or desc:IsA("Motor6D") or desc:IsA("WeldConstraint") then
                             local p0, p1 = desc.Part0, desc.Part1
