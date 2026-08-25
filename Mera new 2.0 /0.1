@@ -3537,7 +3537,7 @@ RunService.Heartbeat:Connect(function(dt)
                             end 
                         end 
                     end 
-                end
+                end 
                 
                 local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * robotSmoothDist)
                 local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * robotSmoothDist)
@@ -4166,7 +4166,7 @@ end)
 
 -- =================================================================
 -- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND & PIGGYBACK SAFE) 🚀
--- =========================================================
+-- =================================================================
 local isSmartClearing = false
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if _G.TXR_InstanceID ~= currentExecutionID then return end
