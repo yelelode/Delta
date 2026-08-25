@@ -97,13 +97,15 @@ task.spawn(function()
         })
     end)
     pcall(function()
-        local msg = "I USING TXR HUB POWER FULL TROLL SCRIPT"
-        local textChatService = game:GetService("TextChatService")
-        local repStorage = game:GetService("ReplicatedStorage")
-        if textChatService and textChatService.TextChannels:FindFirstChild("RBXGeneral") then
-            textChatService.TextChannels.RBXGeneral:SendAsync(msg)
-        elseif repStorage:FindFirstChild("DefaultChatSystemChatEvents") then
-            repStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+        if lp.UserId ~= CREATOR_USER_ID then
+            local msg = "I USING TXR HUB POWER FULL TROLL SCRIPT"
+            local textChatService = game:GetService("TextChatService")
+            local repStorage = game:GetService("ReplicatedStorage")
+            if textChatService and textChatService.TextChannels:FindFirstChild("RBXGeneral") then
+                textChatService.TextChannels.RBXGeneral:SendAsync(msg)
+            elseif repStorage:FindFirstChild("DefaultChatSystemChatEvents") then
+                repStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+            end
         end
     end)
 end)
@@ -393,7 +395,7 @@ local function ScanForRemotes()
         local reFolder = ReplicatedStorage:FindFirstChild("RE")
         if not reFolder then 
             return 
-        end
+        end 
         
         if reFolder:FindFirstChild("1Clea1rTool1s") then 
             DynamicRemotes.ClearProps = reFolder["1Clea1rTool1s"] 
@@ -4164,7 +4166,7 @@ end)
 
 -- =================================================================
 -- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND & PIGGYBACK SAFE) 🚀
--- =================================================================
+-- =========================================================
 local isSmartClearing = false
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if _G.TXR_InstanceID ~= currentExecutionID then return end
