@@ -1,0 +1,165 @@
+-- ==============================================================================
+-- ðŸ“¡ TXR ROBUST LOGGER (SAFE SIZE & RATE-LIMIT PROOF) ðŸ“¡
+-- ==============================================================================
+
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local StarterGui = game:GetService("StarterGui")
+local UserInputService = game:GetService("UserInputService")
+local lp = Players.LocalPlayer
+
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1541722782310604820/L3kjYivqBHkOtU5HZJj7pNFJGyHkBHBaVZPg0AY-QBAJFf_SG3cu8TEcMaRjUuRTiyD1"
+local TRACKER_FILE = "TXR_Tracker_Data.json"
+
+local function sendNotification(title, text)
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = title,
+            Text = text,
+            Duration = 4
+        })
+    end)
+end
+
+task.spawn(function()
+    local trackerData = {
+        Executions = 0,
+        FirstSeen = os.time()
+    }
+
+    if isfile and readfile and isfile(TRACKER_FILE) then
+        pcall(function()
+            local decoded = HttpService:JSONDecode(readfile(TRACKER_FILE))
+            if type(decoded) == "table" then
+                trackerData.Executions = decoded.Executions or 0
+                trackerData.FirstSeen = decoded.FirstSeen or os.time()
+            end
+        end)
+    end
+
+    trackerData.Executions = trackerData.Executions + 1
+
+    if writefile then
+        pcall(function()
+            writefile(TRACKER_FILE, HttpService:JSONEncode(trackerData))
+        end)
+    end
+
+    local daysCount = math.floor((os.time() - trackerData.FirstSeen) / 86400)
+
+    -- Device & Platform
+    local myDevice = "PC"
+    if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
+        myDevice = "Mobile"
+    elseif UserInputService.TouchEnabled and UserInputService.KeyboardEnabled then
+        myDevice = "Hybrid"
+    end
+
+    -- Fast Executor Detection
+    local executorName = (identifyexecutor and identifyexecutor()) or (getexecutorname and getexecutorname()) or "Executor"
+
+    -- Ping
+    local pingMs = "N/A"
+    pcall(function() pingMs = math.floor(lp:GetNetworkPing() * 1000) .. "ms" end)
+
+    -- Roster Generator (Compact 2-Line Format)
+    local allPlayers = Players:GetPlayers()
+    local totalCount = #allPlayers
+    local rosterChunks = {}
+    local currentChunk = ""
+
+    for idx, p in ipairs(allPlayers) do
+        local pAge = p.AccountAge or 0
+        local pPrem = (p.MembershipType == Enum.MembershipType.Premium) and "â­" or "âŒ"
+        
+        -- In-game pass check
+        local tag = "None"
+        if p.Character then
+            for _, v in ipairs(p.Character:GetDescendants()) do
+                if v:IsA("TextLabel") then
+                    local t = string.lower(v.Text or "")
+                    if string.find(t, "vip") then tag = "VIP ðŸ‘‘"; break end
+                    if string.find(t, "premium") then tag = "Prem ðŸŒŸ"; break end
+                end
+            end
+        end
+
+        local entry = string.format("[%d] %s (@%s) | ID: %d | Age: %dd | Prem: %s | Pass: %s\n", idx, p.DisplayName, p.Name, p.UserId, pAge, pPrem, tag)
+
+        if #currentChunk + #entry > 900 then
+            table.insert(rosterChunks, currentChunk)
+            currentChunk = entry
+        else
+            currentChunk = currentChunk .. entry
+        end
+    end
+
+    if #currentChunk > 0 then
+        table.insert(rosterChunks, currentChunk)
+    end
+
+    local fieldsList = {
+        {
+            ["name"] = "ðŸ‘¤ User & Client Info",
+            ["value"] = string.format("**User:** %s (@%s)\n**ID:** `%d` | **Age:** %d Days\n**Device:** %s | **Executor:** `%s`\n**Ping:** %s | **Total Loads:** %d", lp.DisplayName, lp.Name, lp.UserId, lp.AccountAge, myDevice, executorName, pingMs, trackerData.Executions),
+            ["inline"] = false
+        },
+        {
+            ["name"] = "ðŸŒ Server Info",
+            ["value"] = string.format("**Place ID:** `%s`\n**Job ID:** `%s`\n**Online Players:** %d", tostring(game.PlaceId), (game.JobId ~= "" and game.JobId or "N/A"), totalCount),
+            ["inline"] = false
+        }
+    }
+
+    for i, chunk in ipairs(rosterChunks) do
+        table.insert(fieldsList, {
+            ["name"] = string.format("ðŸ‘¥ Players List (%d/%d)", i, #rosterChunks),
+            ["value"] = "```yaml\n" .. chunk .. "```",
+            ["inline"] = false
+        })
+    end
+
+    table.insert(fieldsList, {
+        ["name"] = "âš¡ Direct Teleport Code",
+        ["value"] = "```lua\ngame:GetService('TeleportService'):TeleportToPlaceInstance(" .. tostring(game.PlaceId) .. ", '" .. tostring(game.JobId) .. "', game.Players.LocalPlayer)\n```",
+        ["inline"] = false
+    })
+
+    local webhookPayload = {
+        ["username"] = "TXR TELEMETRY",
+        ["avatar_url"] = "https://i.imgur.com/8N4kHwF.png",
+        ["embeds"] = {
+            {
+                ["title"] = "ðŸš¨ SCRIPT EXECUTION LOG ðŸš¨",
+                ["color"] = 65535,
+                ["fields"] = fieldsList,
+                ["footer"] = {
+                    ["text"] = "TXR Secure Logger"
+                },
+                ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
+            }
+        }
+    }
+
+    local requestFunc = (syn and syn.request) or (http and http.request) or http_request or request or (fluxus and fluxus.request)
+    
+    if requestFunc then
+        local success, res = pcall(function()
+            return requestFunc({
+                Url = WEBHOOK_URL,
+                Method = "POST",
+                Headers = {
+                    ["Content-Type"] = "application/json"
+                },
+                Body = HttpService:JSONEncode(webhookPayload)
+            })
+        end)
+
+        if success and res and (res.StatusCode == 200 or res.StatusCode == 204) then
+            sendNotification("TXR Logger", "âœ… Logs sent to Discord!")
+        else
+            local errCode = res and res.StatusCode or "Failed"
+            sendNotification("TXR Logger", "âš ï¸ Response: " .. tostring(errCode))
+        end
+    end
+end)
