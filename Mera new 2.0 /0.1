@@ -103,74 +103,35 @@ end
 local CREATOR_USER_ID = 9685785248
 local DISCORD_SERVER_LINK = "https://discord.gg/dhFYEFNQU"
 
--- 📢 INTERACTIVE DISCORD SERVER NOTIFICATION WITH COPY BUTTON 📢
+local function sendNotif(title, text, duration)
+    pcall(function() 
+        StarterGui:SetCore("SendNotification", {
+            Title = tostring(title), 
+            Text = tostring(text), 
+            Duration = duration or 3
+        }) 
+    end)
+end
+
+-- 📢 ROBLOX NATIVE DISCORD NOTIFICATION WITH BUTTON 📢
 task.spawn(function()
-    task.wait(1)
+    task.wait(1.2)
     pcall(function()
-        local notifGui = Instance.new("ScreenGui")
-        notifGui.Name = "TXR_DiscordPopup"
-        pcall(function() notifGui.Parent = targetGuiParent end)
-        if not notifGui.Parent then notifGui.Parent = lp:WaitForChild("PlayerGui") end
-
-        local notifCard = Instance.new("Frame", notifGui)
-        notifCard.Size = UDim2.fromOffset(260, 75)
-        notifCard.Position = UDim2.new(1, 20, 0.82, 0)
-        notifCard.AnchorPoint = Vector2.new(0, 0)
-        notifCard.BackgroundColor3 = Color3.fromRGB(15, 18, 26)
-        notifCard.ZIndex = 1000
-
-        local cardCorner = Instance.new("UICorner", notifCard)
-        cardCorner.CornerRadius = UDim.new(0, 10)
-
-        local cardStroke = Instance.new("UIStroke", notifCard)
-        cardStroke.Color = Color3.fromRGB(0, 255, 200)
-        cardStroke.Thickness = 1.5
-
-        local title = Instance.new("TextLabel", notifCard)
-        title.Size = UDim2.new(1, -20, 0, 20)
-        title.Position = UDim2.fromOffset(10, 8)
-        title.BackgroundTransparency = 1
-        title.Text = "🌐 MY DISCORD SERVER"
-        title.TextColor3 = Color3.fromRGB(0, 255, 200)
-        title.Font = Enum.Font.GothamBlack
-        title.TextSize = 12
-        title.TextXAlignment = Enum.TextXAlignment.Left
-
-        local copyBtn = Instance.new("TextButton", notifCard)
-        copyBtn.Size = UDim2.new(1, -20, 0, 30)
-        copyBtn.Position = UDim2.fromOffset(10, 35)
-        copyBtn.BackgroundColor3 = Color3.fromRGB(160, 50, 255)
-        copyBtn.Text = "📋 COPY LINK"
-        copyBtn.TextColor3 = Color3.new(1, 1, 1)
-        copyBtn.Font = Enum.Font.GothamBold
-        copyBtn.TextSize = 11
-        copyBtn.AutoButtonColor = false
-
-        local btnCorner = Instance.new("UICorner", copyBtn)
-        btnCorner.CornerRadius = UDim.new(0, 6)
-
-        copyBtn.MouseButton1Click:Connect(function()
-            pcall(function() copyToClip(DISCORD_SERVER_LINK) end)
-            copyBtn.Text = "✅ COPIED TO CLIPBOARD!"
-            copyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 140)
-            task.delay(1.5, function()
-                if notifCard and notifCard.Parent then
-                    TweenService:Create(notifCard, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.new(1, 20, 0.82, 0)}):Play()
-                    task.wait(0.4)
-                    notifGui:Destroy()
-                end
-            end)
-        end)
-
-        TweenService:Create(notifCard, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(1, -280, 0.82, 0)}):Play()
-
-        task.delay(8, function()
-            if notifCard and notifCard.Parent then
-                TweenService:Create(notifCard, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.new(1, 20, 0.82, 0)}):Play()
-                task.wait(0.4)
-                pcall(function() notifGui:Destroy() end)
+        local bindable = Instance.new("BindableFunction")
+        bindable.OnInvoke = function(button)
+            if button == "COPY LINK" then
+                pcall(function() copyToClip(DISCORD_SERVER_LINK) end)
+                sendNotif("TXR HUB", "Discord Link Copied!", 2)
             end
-        end)
+        end
+
+        StarterGui:SetCore("SendNotification", {
+            Title = "MY DISCORD SERVER",
+            Text = "Click button below to copy server link!",
+            Duration = 8,
+            Button1 = "COPY LINK",
+            Callback = bindable
+        })
     end)
 
     pcall(function()
@@ -572,16 +533,6 @@ local Colors = {
     SubText = Color3.fromRGB(120, 135, 160),       
     TextDark = Color3.fromRGB(10, 15, 22)
 }
-
-local function sendNotif(title, text, duration)
-    pcall(function() 
-        StarterGui:SetCore("SendNotification", {
-            Title = tostring(title), 
-            Text = tostring(text), 
-            Duration = duration or 3
-        }) 
-    end)
-end
 
 local function crispText(element)
     local stroke = Instance.new("UIStroke", element)
@@ -1739,7 +1690,7 @@ openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function()
     end 
 end)
 
--- 🚀 ULTRA-SMOOTH FULL DRAGGABLE SYSTEM (PC + TOUCH SUPPORT) 🚀
+-- 🚀 ULTRA-SMOOTH FULL DRAGGABLE SYSTEM (HEADER & MAINFRAME) 🚀
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart = nil
@@ -3857,7 +3808,6 @@ task.spawn(function()
             local syncColor = Color3.fromHSV(hue, 1, 1)
 
             pcall(function()
-                -- 1. Fast PlayerGui Color Update (Zero Network Load)
                 local pg = lp:FindFirstChild("PlayerGui")
                 if pg then
                     local noResetGui = pg:FindFirstChild("NoResetGUIHandler")
@@ -3869,7 +3819,6 @@ task.spawn(function()
                     end
                 end
                 
-                -- 2. Scoped WorkspaceCom Scan (Zero Ping Spike / Heavy scan replaced)
                 local com = workspace:FindFirstChild("WorkspaceCom")
                 if com then
                     for _, folder in ipairs(com:GetChildren()) do
@@ -3884,12 +3833,11 @@ task.spawn(function()
                     end
                 end
 
-                -- 3. Direct Targeted Remotes (No mass Remote spam)
                 if toolColorRemote then pcall(function() toolColorRemote:FireServer(syncColor) end) end
                 if propColorRemote then pcall(function() propColorRemote:FireServer(syncColor) end) end
             end)
         end
-        task.wait(0.3) -- Stable tick rate that prevents ping spiking
+        task.wait(0.3)
     end
 end)
 
