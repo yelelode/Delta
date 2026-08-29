@@ -62,6 +62,10 @@ if _G.TXR_ESP_GUI and _G.TXR_ESP_GUI.Parent then
     _G.TXR_ESP_GUI:Destroy() 
 end
 
+if _G.TXR_THREAT_ESP and _G.TXR_THREAT_ESP.Parent then 
+    _G.TXR_THREAT_ESP:Destroy() 
+end
+
 pcall(function() 
     local repStorage = game:GetService("ReplicatedStorage")
     local reFolder = repStorage:WaitForChild("RE")
@@ -220,7 +224,7 @@ task.spawn(function()
 
         task.spawn(function()
             local t = 0
-            while billboard and billboard.Parent do
+            while billboard and billboard.Parent and _G.TXR_InstanceID == currentExecutionID do
                 t = t + 0.05
                 local pulse = (math.sin(t * 3.5) + 1) / 2
                 
@@ -228,7 +232,7 @@ task.spawn(function()
                 ownerLabel.TextColor3 = goldVal
                 oGrad.Offset = Vector2.new(math.sin(t * 2.5) * 1.5, 0)
                 
-                task.wait(0.03)
+                task.wait(0.04)
             end
         end)
     end
@@ -267,17 +271,16 @@ task.spawn(function()
         
         local tickCounter = 0
         local t = 0
+        local baseDark = Color3.fromRGB(20, 0, 0)
+        local baseBright = Color3.fromRGB(255, 10, 10)
         
-        while task.wait(0.1) do
-            tickCounter = tickCounter + 0.1
-            t = t + 0.1
+        while task.wait(0.15) and _G.TXR_InstanceID == currentExecutionID do
+            tickCounter = tickCounter + 0.15
+            t = t + 0.15
             
             pcall(function()
                 local nameWave = (math.sin(t * 1.8) + 1) / 2
                 local bioWave = (math.cos(t * 1.8) + 1) / 2
-                
-                local baseDark = Color3.fromRGB(20, 0, 0)
-                local baseBright = Color3.fromRGB(255, 10, 10)
                 
                 local nameRgb = baseDark:Lerp(baseBright, nameWave)
                 local bioRgb = baseDark:Lerp(baseBright, bioWave)
@@ -379,15 +382,17 @@ local function getMyHouse()
         end
     end
     
-    for _, desc in ipairs(workspace:GetDescendants()) do
-        if desc.Name == "HousePickedByPlayer" and (tostring(desc.Value) == lp.Name or desc.Value == lp) then
-            local parentLot = desc.Parent
-            if parentLot then
-                local clearRemote = parentLot:FindFirstChild("Permissions:ClearProps", true)
-                local disallowRemote = parentLot:FindFirstChild("Permissions:Disallow", true)
-                local allowRemote = parentLot:FindFirstChild("Permissions:Allow", true)
-                if clearRemote and clearRemote:IsA("RemoteFunction") then
-                    return {Lot = parentLot, Remote = clearRemote, Disallow = disallowRemote, Allow = allowRemote, Type = "Apartment"}
+    for _, desc in ipairs(workspace:GetChildren()) do
+        if desc.Name == "001_Lots" or desc.Name == "Lots" then
+            for _, lot in ipairs(desc:GetChildren()) do
+                local picked = lot:FindFirstChild("HousePickedByPlayer")
+                if picked and (tostring(picked.Value) == lp.Name or picked.Value == lp) then
+                    local clearRemote = lot:FindFirstChild("Permissions:ClearProps", true)
+                    local disallowRemote = lot:FindFirstChild("Permissions:Disallow", true)
+                    local allowRemote = lot:FindFirstChild("Permissions:Allow", true)
+                    if clearRemote and clearRemote:IsA("RemoteFunction") then
+                        return {Lot = lot, Remote = clearRemote, Disallow = disallowRemote, Allow = allowRemote, Type = "Apartment"}
+                    end
                 end
             end
         end
@@ -541,7 +546,7 @@ local function animateWaterfall(container)
             local scale = child:FindFirstChildOfClass("UIScale")
             if scale then
                 TweenService:Create(scale, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
-                task.wait(0.035)
+                task.wait(0.03)
             end
         end
     end)
@@ -621,7 +626,7 @@ local function spawnAdaptiveSkate(mainRE)
         table.insert(connections, lp.Character.ChildAdded:Connect(onChildAdded))
     end
     
-    task.wait(0.8)
+    task.wait(0.6)
     for _, conn in ipairs(connections) do conn:Disconnect() end
 
     -- 2. Fallback: Agar White Skate spawn nahi hua (Non-Premium User), spawn free standard Skateboard
@@ -683,7 +688,7 @@ local function PlayRobotBangMusic()
                 for k, v in pairs(t1) do
                     if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
                 end
-                task.wait(0.25)
+                task.wait(0.2)
 
                 -- 5b. Play Random Song ID
                 for k, v in pairs(t1) do
@@ -858,11 +863,9 @@ local function clearProps()
     end)
     
     task.spawn(function()
-        for _, obj in ipairs(workspace:GetDescendants()) do
-            if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
-                task.spawn(function() pcall(function() obj:InvokeServer() end) end)
-                task.wait(0.01)
-            end
+        local myHouseData = getMyHouse()
+        if myHouseData and myHouseData.Remote then
+            pcall(function() myHouseData.Remote:InvokeServer() end)
         end
     end)
     
@@ -878,7 +881,7 @@ local function clearProps()
             end
         end
     end)
-    task.wait(0.35) 
+    task.wait(0.3) 
 end
 
 local function spawnProp(propName, category) 
@@ -1817,6 +1820,9 @@ cmConfirm.MouseButton1Click:Connect(function()
     if _G.TXR_ESP_GUI then 
         _G.TXR_ESP_GUI:Destroy() 
     end 
+    if _G.TXR_THREAT_ESP then 
+        _G.TXR_THREAT_ESP:Destroy() 
+    end
 end)
 
 minimizeBtn.MouseButton1Click:Connect(function() 
