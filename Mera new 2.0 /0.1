@@ -65,6 +65,10 @@ if _G.TXR_THREAT_ESP and _G.TXR_THREAT_ESP.Parent then
     _G.TXR_THREAT_ESP:Destroy() 
 end
 
+if _G.TXR_SpectateHUD and _G.TXR_SpectateHUD.Parent then 
+    _G.TXR_SpectateHUD:Destroy() 
+end
+
 pcall(function() 
     local repStorage = game:GetService("ReplicatedStorage")
     local reFolder = repStorage:WaitForChild("RE")
@@ -80,6 +84,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterGui = game:GetService("StarterGui")
 local HttpService = game:GetService("HttpService")
 local lp = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
 
 local copyToClip = setclipboard or toclipboard or function() end
 
@@ -497,6 +502,11 @@ local lastGameSpawnTime = 0
 
 local uiHoverCount = 0
 local isSubMenuOpen = false
+
+-- 👁️ ADVANCED SPECTATE CORE VARIABLES
+local isSpectating = false
+local spectateTarget = nil
+local spectateConn = nil
 
 pcall(function()
     local oldNamecall
@@ -1714,13 +1724,11 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
         local minX, maxX, minY, maxY
 
         if isOrb then
-            -- Reopen Orb Button hamesha 100% Screen ke andar rahega
             minX = frameSize.X * anchor.X
             maxX = parentSize.X - (frameSize.X * (1 - anchor.X))
             minY = frameSize.Y * anchor.Y
             maxY = parentSize.Y - (frameSize.Y * (1 - anchor.Y))
         else
-            -- Main UI Screen se bahar ja sakti hai, lekin 20% hissa hamesha andar rahega
             local visibleWidth = frameSize.X * 0.20
             local visibleHeight = frameSize.Y * 0.20
 
@@ -1854,6 +1862,13 @@ cmConfirm.MouseButton1Click:Connect(function()
     end 
     if _G.TXR_THREAT_ESP then 
         _G.TXR_THREAT_ESP:Destroy() 
+    end
+    if _G.TXR_SpectateHUD then 
+        _G.TXR_SpectateHUD:Destroy() 
+    end
+    if Camera and lp.Character then
+        local myHum = lp.Character:FindFirstChildOfClass("Humanoid")
+        if myHum then Camera.CameraSubject = myHum end
     end
 end)
 
@@ -2018,6 +2033,177 @@ end
 local playerMenu, playerScroll = createMenu("👥 MATRIX TARGETS")
 local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
 
+-- =========================================================
+-- 👁️ ADVANCED TARGET SPECTATE HUD & TELEMETRY CORE
+-- =========================================================
+local spectateHud = Instance.new("ScreenGui", targetGuiParent)
+spectateHud.Name = "TXR_SpectateHUD_" .. tostring(math.random(100000, 999999))
+spectateHud.ResetOnSpawn = false
+_G.TXR_SpectateHUD = spectateHud
+
+local specCard = Instance.new("Frame", spectateHud)
+specCard.Size = UDim2.fromOffset(300, 105)
+specCard.AnchorPoint = Vector2.new(0.5, 1)
+specCard.Position = UDim2.new(0.5, 0, 1, 150)
+specCard.BackgroundColor3 = Color3.fromRGB(12, 15, 22)
+specCard.BackgroundTransparency = 0.15
+specCard.ClipsDescendants = true
+specCard.Visible = false
+specCard.ZIndex = 500
+
+local scCorner = Instance.new("UICorner", specCard)
+scCorner.CornerRadius = UDim.new(0, 12)
+
+local scStroke = Instance.new("UIStroke", specCard)
+scStroke.Color = Colors.Primary
+scStroke.Thickness = 1.5
+
+local scGrad = Instance.new("UIGradient", scStroke)
+scGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Colors.Primary),
+    ColorSequenceKeypoint.new(0.5, Colors.Purple),
+    ColorSequenceKeypoint.new(1, Colors.Primary)
+})
+
+local specTitle = Instance.new("TextLabel", specCard)
+specTitle.Size = UDim2.new(1, -90, 0, 22)
+specTitle.Position = UDim2.fromOffset(12, 8)
+specTitle.BackgroundTransparency = 1
+specTitle.Text = "TACTICAL SPECTATE"
+specTitle.TextColor3 = Colors.Primary
+specTitle.Font = Enum.Font.GothamBlack
+specTitle.TextSize = 13
+specTitle.TextXAlignment = Enum.TextXAlignment.Left
+specTitle.ZIndex = 501
+crispText(specTitle)
+
+local specStats = Instance.new("TextLabel", specCard)
+specStats.Size = UDim2.new(1, -100, 0, 65)
+specStats.Position = UDim2.fromOffset(12, 32)
+specStats.BackgroundTransparency = 1
+specStats.TextColor3 = Colors.Text
+specStats.Font = Enum.Font.Code
+specStats.TextSize = 10.5
+specStats.TextYAlignment = Enum.TextYAlignment.Top
+specStats.TextXAlignment = Enum.TextXAlignment.Left
+specStats.LineHeight = 1.15
+specStats.ZIndex = 501
+crispText(specStats)
+
+local specTpBtn = Instance.new("TextButton", specCard)
+specTpBtn.Size = UDim2.fromOffset(72, 28)
+specTpBtn.Position = UDim2.new(1, -82, 0, 10)
+specTpBtn.BackgroundColor3 = Colors.PrimaryDark
+specTpBtn.Text = "⚡ TP"
+specTpBtn.TextColor3 = Color3.new(1, 1, 1)
+specTpBtn.Font = Enum.Font.GothamBold
+specTpBtn.TextSize = 11
+specTpBtn.AutoButtonColor = false
+specTpBtn.ZIndex = 502
+local tpCorner = Instance.new("UICorner", specTpBtn)
+tpCorner.CornerRadius = UDim.new(0, 6)
+applySmartHover(specTpBtn, nil)
+
+local specExitBtn = Instance.new("TextButton", specCard)
+specExitBtn.Size = UDim2.fromOffset(72, 28)
+specExitBtn.Position = UDim2.new(1, -82, 0, 48)
+specExitBtn.BackgroundColor3 = Colors.Danger
+specExitBtn.Text = "❌ EXIT"
+specExitBtn.TextColor3 = Color3.new(1, 1, 1)
+specExitBtn.Font = Enum.Font.GothamBold
+specExitBtn.TextSize = 11
+specExitBtn.AutoButtonColor = false
+specExitBtn.ZIndex = 502
+local exitCorner = Instance.new("UICorner", specExitBtn)
+exitCorner.CornerRadius = UDim.new(0, 6)
+applySmartHover(specExitBtn, nil)
+
+local function stopSpectating()
+    isSpectating = false
+    spectateTarget = nil
+    if spectateConn then
+        spectateConn:Disconnect()
+        spectateConn = nil
+    end
+    
+    if Camera and lp.Character then
+        local myHum = lp.Character:FindFirstChildOfClass("Humanoid")
+        if myHum then 
+            Camera.CameraSubject = myHum 
+        end
+    end
+
+    local hideTween = TweenService:Create(specCard, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.new(0.5, 0, 1, 150)})
+    hideTween:Play()
+    hideTween.Completed:Connect(function()
+        specCard.Visible = false
+    end)
+    sendNotif("👁️ SPECTATE", "Spectate View Returned To Player.", 2)
+end
+
+local function startSpectating(targetPlayer)
+    if not targetPlayer or not targetPlayer.Character then
+        sendNotif("⚠️ SPECTATE", "Target character not available!", 2)
+        return
+    end
+
+    local targetHum = targetPlayer.Character:FindFirstChildOfClass("Humanoid")
+    local targetRoot = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not targetHum or not targetRoot then
+        sendNotif("⚠️ SPECTATE", "Target Humanoid not found!", 2)
+        return
+    end
+
+    isSpectating = true
+    spectateTarget = targetPlayer
+    Camera.CameraSubject = targetHum
+    
+    specCard.Visible = true
+    TweenService:Create(specCard, TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, 0, 1, -25)}):Play()
+    sendNotif("👁️ SPECTATE ACTIVE", "Tracking: " .. targetPlayer.DisplayName, 2)
+
+    if spectateConn then spectateConn:Disconnect() end
+    spectateConn = RunService.RenderStepped:Connect(function()
+        if not isSpectating or _G.TXR_InstanceID ~= currentExecutionID then
+            stopSpectating()
+            return
+        end
+
+        if not spectateTarget or not spectateTarget.Parent or not spectateTarget.Character or not spectateTarget.Character:FindFirstChild("HumanoidRootPart") then
+            stopSpectating()
+            return
+        end
+
+        local tChar = spectateTarget.Character
+        local tHum = tChar:FindFirstChildOfClass("Humanoid")
+        local tRoot = tChar:FindFirstChild("HumanoidRootPart")
+        local myRoot = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+
+        if tHum and Camera.CameraSubject ~= tHum then
+            Camera.CameraSubject = tHum
+        end
+
+        local dist = myRoot and math.floor((myRoot.Position - tRoot.Position).Magnitude) or 0
+        local altDiff = myRoot and math.floor(tRoot.Position.Y - myRoot.Position.Y) or 0
+        local altStr = (altDiff > 0 and "+"..altDiff.."m") or (altDiff < 0 and altDiff.."m") or "0m"
+        local speed = math.floor(tRoot.AssemblyLinearVelocity.Magnitude)
+        local hp = tHum and math.floor(tHum.Health) or 0
+        local state = (tHum and tHum.Sit and "SEATED") or (tHum and tHum:GetState() == Enum.HumanoidStateType.Physics and "RAGDOLL") or (speed > 2 and "MOVING") or "IDLE"
+
+        specTitle.Text = "🛰️ " .. spectateTarget.DisplayName .. " (@" .. spectateTarget.Name .. ")"
+        specStats.Text = string.format("DIST: %dm | ALT: %s | SPD: %du/s\nHEALTH: %d%% | STATE: %s\nID: %d | AGE: %dd", dist, altStr, speed, hp, state, spectateTarget.UserId, spectateTarget.AccountAge or 0)
+    end)
+end
+
+specExitBtn.MouseButton1Click:Connect(stopSpectating)
+
+specTpBtn.MouseButton1Click:Connect(function()
+    if spectateTarget and spectateTarget.Character and spectateTarget.Character:FindFirstChild("HumanoidRootPart") and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+        lp.Character.HumanoidRootPart.CFrame = spectateTarget.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
+        sendNotif("⚡ TELEPORT", "Teleported to " .. spectateTarget.DisplayName, 2)
+    end
+end)
+
 local function refreshPlayers()
     for _, child in ipairs(playerScroll:GetChildren()) do 
         if child:IsA("TextButton") then 
@@ -2115,6 +2301,9 @@ for _, plr in ipairs(Players:GetPlayers()) do
 end
 
 Players.PlayerRemoving:Connect(function(plr)
+    if spectateTarget == plr then
+        stopSpectating()
+    end
     selectedPlayers[plr] = nil
     assignedRemotes[plr] = nil
     voidedPlayers[plr] = nil
@@ -2447,6 +2636,43 @@ for key, data in pairs(modeBtns) do
     end)
 end
 
+-- 👁️ ADVANCED TARGET SPECTATE BUTTON
+local spectateToggleBtn = createMainBtn("🛰️ TARGET SPECTATE (ADVANCED)", "Spectate", false)
+spectateToggleBtn.MouseButton1Click:Connect(function()
+    if isSpectating then
+        stopSpectating()
+        local accent = spectateToggleBtn:FindFirstChild("Accent")
+        TweenService:Create(spectateToggleBtn, TweenInfo.new(0.4), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then TweenService:Create(accent, TweenInfo.new(0.4), {Size = UDim2.new(0, 0, 0, 0)}):Play() end
+    else
+        local chosenTarget = nil
+        for plr, _ in pairs(selectedPlayers) do
+            if plr and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                chosenTarget = plr
+                break
+            end
+        end
+
+        if not chosenTarget then
+            for _, plr in ipairs(Players:GetPlayers()) do
+                if plr ~= lp and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                    chosenTarget = plr
+                    break
+                end
+            end
+        end
+
+        if chosenTarget then
+            startSpectating(chosenTarget)
+            local accent = spectateToggleBtn:FindFirstChild("Accent")
+            TweenService:Create(spectateToggleBtn, TweenInfo.new(0.4), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+            if accent then TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Back), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
+        else
+            sendNotif("⚠️ SPECTATE", "No valid target available in server!", 2)
+        end
+    end
+end)
+
 local espBtn = createMainBtn("👁️ TACTICAL ESP (HUD)", "ESP", false)
 espBtn.MouseButton1Click:Connect(function() 
     activeModes["ESP"] = not activeModes["ESP"] 
@@ -2544,7 +2770,6 @@ shieldBtn.MouseButton1Click:Connect(function()
         end 
         sendNotif("🛡️ SECURITY", "Anti Sit Deactivated.", 2)
         
-        -- Clean restore character seated state
         if lp.Character then
             local hum = lp.Character:FindFirstChildOfClass("Humanoid")
             if hum then
