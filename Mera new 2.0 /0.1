@@ -101,17 +101,78 @@ if not targetGuiParent then
 end
 
 local CREATOR_USER_ID = 9685785248
+local DISCORD_SERVER_LINK = "https://discord.gg/dhFYEFNQU"
 
--- 📢 SCRIPT LOAD BANNER & NOTIFICATION 👑
+-- 📢 INTERACTIVE DISCORD SERVER NOTIFICATION WITH COPY BUTTON 📢
 task.spawn(function()
     task.wait(1)
     pcall(function()
-        StarterGui:SetCore("SendNotification", {
-            Title = "TXR HUB",
-            Text = "I USING TXR HUB TROLL SCRIPT",
-            Duration = 5
-        })
+        local notifGui = Instance.new("ScreenGui")
+        notifGui.Name = "TXR_DiscordPopup"
+        pcall(function() notifGui.Parent = targetGuiParent end)
+        if not notifGui.Parent then notifGui.Parent = lp:WaitForChild("PlayerGui") end
+
+        local notifCard = Instance.new("Frame", notifGui)
+        notifCard.Size = UDim2.fromOffset(260, 75)
+        notifCard.Position = UDim2.new(1, 20, 0.82, 0)
+        notifCard.AnchorPoint = Vector2.new(0, 0)
+        notifCard.BackgroundColor3 = Color3.fromRGB(15, 18, 26)
+        notifCard.ZIndex = 1000
+
+        local cardCorner = Instance.new("UICorner", notifCard)
+        cardCorner.CornerRadius = UDim.new(0, 10)
+
+        local cardStroke = Instance.new("UIStroke", notifCard)
+        cardStroke.Color = Color3.fromRGB(0, 255, 200)
+        cardStroke.Thickness = 1.5
+
+        local title = Instance.new("TextLabel", notifCard)
+        title.Size = UDim2.new(1, -20, 0, 20)
+        title.Position = UDim2.fromOffset(10, 8)
+        title.BackgroundTransparency = 1
+        title.Text = "🌐 MY DISCORD SERVER"
+        title.TextColor3 = Color3.fromRGB(0, 255, 200)
+        title.Font = Enum.Font.GothamBlack
+        title.TextSize = 12
+        title.TextXAlignment = Enum.TextXAlignment.Left
+
+        local copyBtn = Instance.new("TextButton", notifCard)
+        copyBtn.Size = UDim2.new(1, -20, 0, 30)
+        copyBtn.Position = UDim2.fromOffset(10, 35)
+        copyBtn.BackgroundColor3 = Color3.fromRGB(160, 50, 255)
+        copyBtn.Text = "📋 COPY LINK"
+        copyBtn.TextColor3 = Color3.new(1, 1, 1)
+        copyBtn.Font = Enum.Font.GothamBold
+        copyBtn.TextSize = 11
+        copyBtn.AutoButtonColor = false
+
+        local btnCorner = Instance.new("UICorner", copyBtn)
+        btnCorner.CornerRadius = UDim.new(0, 6)
+
+        copyBtn.MouseButton1Click:Connect(function()
+            pcall(function() copyToClip(DISCORD_SERVER_LINK) end)
+            copyBtn.Text = "✅ COPIED TO CLIPBOARD!"
+            copyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 140)
+            task.delay(1.5, function()
+                if notifCard and notifCard.Parent then
+                    TweenService:Create(notifCard, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.new(1, 20, 0.82, 0)}):Play()
+                    task.wait(0.4)
+                    notifGui:Destroy()
+                end
+            end)
+        end)
+
+        TweenService:Create(notifCard, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(1, -280, 0.82, 0)}):Play()
+
+        task.delay(8, function()
+            if notifCard and notifCard.Parent then
+                TweenService:Create(notifCard, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.new(1, 20, 0.82, 0)}):Play()
+                task.wait(0.4)
+                pcall(function() notifGui:Destroy() end)
+            end
+        end)
     end)
+
     pcall(function()
         if lp.UserId ~= CREATOR_USER_ID then
             local msg = "I USING TXR HUB TROLL SCRIPT"
@@ -1145,11 +1206,12 @@ local closeCorner = Instance.new("UICorner", closeBtn)
 closeCorner.CornerRadius = UDim.new(0, 8)
 applySmartHover(closeBtn, nil)
 
--- FOOTER
+-- FOOTER (DISCORD USERNAME COPY BAR)
 local footer = Instance.new("Frame", mainFrame)
 footer.Size = UDim2.new(1, 0, 0, 32)
 footer.Position = UDim2.new(0, 0, 1, -32)
-footer.BackgroundTransparency = 1
+footer.BackgroundColor3 = Colors.Surface
+footer.BackgroundTransparency = 0.3
 footer.BorderSizePixel = 0
 footer.ZIndex = 15
 
@@ -1157,9 +1219,9 @@ local discordBtn = Instance.new("TextButton", footer)
 discordBtn.Size = UDim2.fromScale(1, 1)
 discordBtn.BackgroundTransparency = 1
 discordBtn.Text = "Discord: @not_ashu."
-discordBtn.TextColor3 = Colors.SubText
-discordBtn.Font = Enum.Font.GothamMedium
-discordBtn.TextSize = 10
+discordBtn.TextColor3 = Colors.Primary
+discordBtn.Font = Enum.Font.GothamBold
+discordBtn.TextSize = 11
 discordBtn.AutoButtonColor = false
 discordBtn.ZIndex = 16
 crispText(discordBtn)
@@ -1168,13 +1230,13 @@ discordBtn.MouseButton1Click:Connect(function()
     pcall(function() 
         copyToClip("not_ashu.") 
     end)
-    sendNotif("TXR System", "Copied to clipboard!", 2)
-    discordBtn.Text = "⚡ Copied Core!"
-    discordBtn.TextColor3 = Colors.Primary
+    sendNotif("TXR System", "Discord Tag (@not_ashu.) Copied!", 2)
+    discordBtn.Text = "⚡ Copied Discord!"
+    discordBtn.TextColor3 = Colors.PrimaryDark
     task.delay(1.5, function() 
         if discordBtn then 
             discordBtn.Text = "Discord: @not_ashu."
-            discordBtn.TextColor3 = Colors.SubText 
+            discordBtn.TextColor3 = Colors.Primary
         end 
     end) 
 end)
@@ -1677,6 +1739,7 @@ openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function()
     end 
 end)
 
+-- 🚀 ULTRA-SMOOTH FULL DRAGGABLE SYSTEM (PC + TOUCH SUPPORT) 🚀
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart = nil
@@ -1774,7 +1837,8 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
     end)
 end
 
-makeDraggable(mainFrame, mainFrame, aura, false) 
+makeDraggable(mainFrame, header, aura, false) 
+makeDraggable(mainFrame, mainFrame, aura, false)
 makeDraggable(openBtnContainer, openBtn, nil, true)
 
 openBtn.MouseButton1Down:Connect(function() 
