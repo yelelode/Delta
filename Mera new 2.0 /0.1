@@ -2511,6 +2511,14 @@ shieldBtn.MouseButton1Click:Connect(function()
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
         sendNotif("🛡️ SECURITY", "Anti Sit Deactivated.", 2)
+        
+        -- Clean restore character seated state
+        if lp.Character then
+            local hum = lp.Character:FindFirstChildOfClass("Humanoid")
+            if hum then
+                hum:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+            end
+        end
     end
 end)
 
@@ -3299,14 +3307,11 @@ RunService.Stepped:Connect(function()
                 hum.Sit = false
                 hum.Jump = true
                 hum:ChangeState(Enum.HumanoidStateType.Running)
-                pcall(function() 
-                    root.CFrame = root.CFrame + Vector3.new(0, 1.5, 0) 
-                end) 
             end
         end
         
         for _, v in ipairs(char:GetDescendants()) do
-            if v:IsA("Weld") or v.Name == "SeatWeld" then
+            if v.Name == "SeatWeld" or (v:IsA("Weld") and v.Part1 and string.find(string.lower(v.Part1.Name), "seat")) then
                 pcall(function() 
                     v:Destroy() 
                 end) 
@@ -3314,24 +3319,10 @@ RunService.Stepped:Connect(function()
         end
 
         pcall(function()
-            local radiusParts = workspace:GetPartBoundsInRadius(root.Position, 15)
+            local radiusParts = workspace:GetPartBoundsInRadius(root.Position, 10)
             for _, part in ipairs(radiusParts) do
-                if part:IsA("BasePart") and not part:IsDescendantOf(char) and not part.Anchored then
-                    pcall(function() 
-                        part.CanCollide = false 
-                    end)
-                end
-            end
-            
-            for _, plr in ipairs(Players:GetPlayers()) do
-                if plr ~= lp and plr.Character then
-                    for _, p in ipairs(plr.Character:GetChildren()) do
-                        if p:IsA("BasePart") then
-                            pcall(function() 
-                                p.CanCollide = false 
-                            end)
-                        end
-                    end
+                if part:IsA("Seat") or part:IsA("VehicleSeat") then
+                    part.CanTouch = false
                 end
             end
         end)
@@ -3519,7 +3510,7 @@ RunService.Heartbeat:Connect(function(dt)
                             end 
                         end 
                     end 
-                end
+                end 
                 
                 local actualHead = plr.Character:FindFirstChild("Head") or tRoot
                 local headPos = actualHead.Position + predictedOffset + targetSafeOffsets[plr]
