@@ -1,8 +1,8 @@
 -- =========================================================
--- 👑 TXR HUB: 100% CLEAN VOID (NO GRID BOXES) - V55 👑
+-- 👑 TXR HUB: 100% CLEAN VOID - 3S ULTRA SMOOTH 👑
 -- =========================================================
 
-local LOAD_DURATION = 4.5 -- Exact 4.5-Second Runtime
+local LOAD_DURATION = 3.0 -- Exact 3-Second Runtime
 
 local Lighting = game:GetService("Lighting")
 local TweenService = game:GetService("TweenService")
@@ -27,14 +27,14 @@ introGui.DisplayOrder = 9999999
 introGui.Parent = targetParent
 _G.TXR_MonogramIntro = introGui
 
--- 🌌 Cinematic Depth Blur Effect
+-- 🌌 Depth Blur
 local blur = Instance.new("BlurEffect")
 blur.Name = "TXR_IntroBlur"
 blur.Size = 0
 blur.Parent = Lighting
-TweenService:Create(blur, TweenInfo.new(0.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = 28}):Play()
+TweenService:Create(blur, TweenInfo.new(0.3, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = 24}):Play()
 
--- 🖤 Deep OLED Clean Void Background (No Boxes/Lines)
+-- 🖤 OLED Background
 local bg = Instance.new("Frame", introGui)
 bg.Size = UDim2.new(1, 0, 1, 0)
 bg.BackgroundColor3 = Color3.fromRGB(1, 2, 6)
@@ -48,11 +48,11 @@ bgGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 2, 8))
 })
 bgGrad.Rotation = 45
-TweenService:Create(bg, TweenInfo.new(0.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {BackgroundTransparency = 0.04}):Play()
+TweenService:Create(bg, TweenInfo.new(0.3, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {BackgroundTransparency = 0.04}):Play()
 
--- ✨ 2-Layer Ambient Starfield
+-- ✨ Particles
 local bgParticles = {}
-for i = 1, 36 do
+for i = 1, 30 do
     local p = Instance.new("Frame", bg)
     local isSmall = (i % 3 == 0)
     p.Size = isSmall and UDim2.fromOffset(2, 2) or UDim2.fromOffset(3, 3)
@@ -64,7 +64,7 @@ for i = 1, 36 do
     table.insert(bgParticles, {frame = p, speed = math.random(8, 20) / 10, offset = math.random() * 10})
 end
 
--- 🔮 Master UI Canvas Group
+-- 🔮 Canvas Group
 local mainCanvas = Instance.new("CanvasGroup", introGui)
 mainCanvas.Size = UDim2.fromOffset(500, 390)
 mainCanvas.Position = UDim2.fromScale(0.5, 0.5)
@@ -74,11 +74,11 @@ mainCanvas.GroupTransparency = 0
 mainCanvas.ZIndex = 10
 
 local canvasScale = Instance.new("UIScale", mainCanvas)
-canvasScale.Scale = 0.65
-TweenService:Create(canvasScale, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+canvasScale.Scale = 0.7
+TweenService:Create(canvasScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
 
 -- =========================================================
--- ⚡ 3D HOLOGRAPHIC TESSERACT & CORE MONOGRAM
+-- ⚡ LOGO CONTAINER & SHAPES
 -- =========================================================
 local logoContainer = Instance.new("Frame", mainCanvas)
 logoContainer.Size = UDim2.fromOffset(170, 170)
@@ -96,26 +96,6 @@ glowHalo.BackgroundTransparency = 0.90
 glowHalo.BorderSizePixel = 0
 glowHalo.ZIndex = 10
 Instance.new("UICorner", glowHalo).CornerRadius = UDim.new(1, 0)
-
-local cross1 = Instance.new("Frame", logoContainer)
-cross1.Size = UDim2.new(0, 155, 0, 1)
-cross1.Position = UDim2.fromScale(0.5, 0.5)
-cross1.AnchorPoint = Vector2.new(0.5, 0.5)
-cross1.BackgroundColor3 = Color3.fromRGB(0, 255, 200)
-cross1.BackgroundTransparency = 0.8
-cross1.BorderSizePixel = 0
-cross1.Rotation = 45
-cross1.ZIndex = 11
-
-local cross2 = Instance.new("Frame", logoContainer)
-cross2.Size = UDim2.new(0, 155, 0, 1)
-cross2.Position = UDim2.fromScale(0.5, 0.5)
-cross2.AnchorPoint = Vector2.new(0.5, 0.5)
-cross2.BackgroundColor3 = Color3.fromRGB(0, 255, 200)
-cross2.BackgroundTransparency = 0.8
-cross2.BorderSizePixel = 0
-cross2.Rotation = -45
-cross2.ZIndex = 11
 
 local square1 = Instance.new("Frame", logoContainer)
 square1.Size = UDim2.fromOffset(128, 128)
@@ -172,31 +152,8 @@ jisEmblem.TextSize = 36
 jisEmblem.TextColor3 = Color3.fromRGB(255, 255, 255)
 jisEmblem.ZIndex = 22
 
-local jisGrad = Instance.new("UIGradient", jisEmblem)
-jisGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 200)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 60, 255))
-})
-
-local sparks = {}
-for i = 1, 10 do
-    local sp = Instance.new("Frame", logoContainer)
-    sp.Size = UDim2.fromOffset((i % 2 == 0) and 3.5 or 2.5, (i % 2 == 0) and 3.5 or 2.5)
-    sp.BackgroundColor3 = (i % 2 == 0) and Color3.fromRGB(0, 255, 200) or Color3.fromRGB(180, 60, 255)
-    sp.BorderSizePixel = 0
-    sp.ZIndex = 24
-    table.insert(sparks, {
-        frame = sp, 
-        orbitX = (i % 2 == 0) and 64 or 48,
-        orbitY = (i % 2 == 0) and 38 or 28,
-        orbitSpeed = (i % 2 == 0) and 2.2 or -3.0, 
-        offset = i * (math.pi * 2 / 10)
-    })
-end
-
 -- =========================================================
--- 👑 CHROMATIC "TXR HUB" TITLE
+-- 👑 TITLE & PROGRESS
 -- =========================================================
 local titleRow = Instance.new("Frame", mainCanvas)
 titleRow.AutomaticSize = Enum.AutomaticSize.XY
@@ -218,43 +175,14 @@ txrContainer.Size = UDim2.fromOffset(78, 40)
 txrContainer.BackgroundTransparency = 1
 txrContainer.ZIndex = 32
 
-local txrShadowCyan = Instance.new("TextLabel", txrContainer)
-txrShadowCyan.Size = UDim2.fromScale(1, 1)
-txrShadowCyan.Position = UDim2.new(0, -1.8, 0, 0)
-txrShadowCyan.BackgroundTransparency = 1
-txrShadowCyan.Text = "TXR"
-txrShadowCyan.Font = Enum.Font.GothamBlack
-txrShadowCyan.TextSize = 34
-txrShadowCyan.TextColor3 = Color3.fromRGB(0, 255, 200)
-txrShadowCyan.TextTransparency = 0.6
-txrShadowCyan.ZIndex = 31
-
-local txrShadowPurple = Instance.new("TextLabel", txrContainer)
-txrShadowPurple.Size = UDim2.fromScale(1, 1)
-txrShadowPurple.Position = UDim2.new(0, 1.8, 0, 0)
-txrShadowPurple.BackgroundTransparency = 1
-txrShadowPurple.Text = "TXR"
-txrShadowPurple.Font = Enum.Font.GothamBlack
-txrShadowPurple.TextSize = 34
-txrShadowPurple.TextColor3 = Color3.fromRGB(180, 60, 255)
-txrShadowPurple.TextTransparency = 0.6
-txrShadowPurple.ZIndex = 31
-
 local txrText = Instance.new("TextLabel", txrContainer)
 txrText.Size = UDim2.fromScale(1, 1)
 txrText.BackgroundTransparency = 1
 txrText.Text = "TXR"
 txrText.Font = Enum.Font.GothamBlack
 txrText.TextSize = 34
-txrText.TextColor3 = Color3.fromRGB(255, 255, 255)
+txrText.TextColor3 = Color3.fromRGB(0, 255, 200)
 txrText.ZIndex = 33
-
-local txrGrad = Instance.new("UIGradient", txrText)
-txrGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 200)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 60, 255))
-})
 
 local hubBadge = Instance.new("Frame", titleRow)
 hubBadge.LayoutOrder = 2
@@ -263,10 +191,6 @@ hubBadge.BackgroundColor3 = Color3.fromRGB(24, 12, 40)
 hubBadge.BackgroundTransparency = 0.2
 hubBadge.ZIndex = 32
 Instance.new("UICorner", hubBadge).CornerRadius = UDim.new(0, 8)
-
-local hubBadgeStroke = Instance.new("UIStroke", hubBadge)
-hubBadgeStroke.Thickness = 1.8
-hubBadgeStroke.Color = Color3.fromRGB(180, 60, 255)
 
 local hubText = Instance.new("TextLabel", hubBadge)
 hubText.Size = UDim2.fromScale(1, 1)
@@ -277,30 +201,6 @@ hubText.TextSize = 17
 hubText.TextColor3 = Color3.fromRGB(255, 255, 255)
 hubText.ZIndex = 33
 
-local tagBadge = Instance.new("TextLabel", mainCanvas)
-tagBadge.Size = UDim2.new(1, 0, 0, 16)
-tagBadge.Position = UDim2.new(0.5, 0, 0.72, 0)
-tagBadge.AnchorPoint = Vector2.new(0.5, 0.5)
-tagBadge.BackgroundTransparency = 1
-tagBadge.Text = "⚡ QUANTUM CORE ARCHITECTURE • V55 ⚡"
-tagBadge.Font = Enum.Font.Code
-tagBadge.TextSize = 10.5
-tagBadge.TextColor3 = Color3.fromRGB(130, 160, 200)
-tagBadge.ZIndex = 30
-
--- =========================================================
--- 📊 ULTRA-SMOOTH PROGRESS LINE WITH GLOW UNDERLAY
--- =========================================================
-local barGlow = Instance.new("Frame", mainCanvas)
-barGlow.Size = UDim2.new(0, 348, 0, 9)
-barGlow.Position = UDim2.new(0.5, 0, 0.82, 0)
-barGlow.AnchorPoint = Vector2.new(0.5, 0.5)
-barGlow.BackgroundColor3 = Color3.fromRGB(0, 255, 200)
-barGlow.BackgroundTransparency = 0.90
-barGlow.BorderSizePixel = 0
-barGlow.ZIndex = 29
-Instance.new("UICorner", barGlow).CornerRadius = UDim.new(1, 0)
-
 local barContainer = Instance.new("Frame", mainCanvas)
 barContainer.Size = UDim2.new(0, 340, 0, 4.5)
 barContainer.Position = UDim2.new(0.5, 0, 0.82, 0)
@@ -310,37 +210,12 @@ barContainer.BorderSizePixel = 0
 barContainer.ZIndex = 30
 Instance.new("UICorner", barContainer).CornerRadius = UDim.new(1, 0)
 
-local barTrackStroke = Instance.new("UIStroke", barContainer)
-barTrackStroke.Thickness = 1
-barTrackStroke.Color = Color3.fromRGB(0, 255, 200)
-barTrackStroke.Transparency = 0.75
-
 local barFill = Instance.new("Frame", barContainer)
 barFill.Size = UDim2.new(0, 0, 1, 0)
 barFill.BackgroundColor3 = Color3.fromRGB(0, 255, 200)
 barFill.BorderSizePixel = 0
 barFill.ZIndex = 31
 Instance.new("UICorner", barFill).CornerRadius = UDim.new(1, 0)
-
-local fillGrad = Instance.new("UIGradient", barFill)
-fillGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 60, 255)),
-    ColorSequenceKeypoint.new(0.6, Color3.fromRGB(0, 220, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
-})
-
-local laserTip = Instance.new("Frame", barContainer)
-laserTip.Size = UDim2.fromOffset(8.5, 8.5)
-laserTip.Position = UDim2.new(0, 0, 0.5, 0)
-laserTip.AnchorPoint = Vector2.new(0.5, 0.5)
-laserTip.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-laserTip.BorderSizePixel = 0
-laserTip.ZIndex = 33
-Instance.new("UICorner", laserTip).CornerRadius = UDim.new(1, 0)
-
-local tipStroke = Instance.new("UIStroke", laserTip)
-tipStroke.Thickness = 2
-tipStroke.Color = Color3.fromRGB(0, 255, 200)
 
 local statusRow = Instance.new("Frame", mainCanvas)
 statusRow.Size = UDim2.new(0, 340, 0, 18)
@@ -349,23 +224,14 @@ statusRow.AnchorPoint = Vector2.new(0.5, 0.5)
 statusRow.BackgroundTransparency = 1
 statusRow.ZIndex = 32
 
-local liveDot = Instance.new("Frame", statusRow)
-liveDot.Size = UDim2.fromOffset(6, 6)
-liveDot.Position = UDim2.new(0, 0, 0.5, 0)
-liveDot.AnchorPoint = Vector2.new(0, 0.5)
-liveDot.BackgroundColor3 = Color3.fromRGB(0, 255, 200)
-liveDot.BorderSizePixel = 0
-liveDot.ZIndex = 34
-Instance.new("UICorner", liveDot).CornerRadius = UDim.new(1, 0)
-
 local statusLabel = Instance.new("TextLabel", statusRow)
 statusLabel.Size = UDim2.new(0.75, 0, 1, 0)
-statusLabel.Position = UDim2.new(0, 12, 0, 0)
+statusLabel.Position = UDim2.new(0, 5, 0, 0)
 statusLabel.BackgroundTransparency = 1
 statusLabel.TextXAlignment = Enum.TextXAlignment.Left
 statusLabel.Text = "INITIALIZING..."
 statusLabel.Font = Enum.Font.Code
-statusLabel.TextSize = 10.5
+statusLabel.TextSize = 11
 statusLabel.TextColor3 = Color3.fromRGB(150, 180, 220)
 statusLabel.ZIndex = 33
 
@@ -381,7 +247,7 @@ percentLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
 percentLabel.ZIndex = 33
 
 -- =========================================================
--- 🔄 144HZ FLUID ENGINE
+-- 🔄 144HZ RENDER LOOP
 -- =========================================================
 local isIntroActive = true
 local currentProgress = 0.0
@@ -391,70 +257,39 @@ local renderConn = RunService.RenderStepped:Connect(function(dt)
     if not isIntroActive then return end
     local t = tick()
     
-    currentProgress = currentProgress + (targetProgress - currentProgress) * math.clamp(dt * 16, 0, 1)
-    local displayPct = math.clamp(math.floor(currentProgress * 100), 0, 100)
-    percentLabel.Text = displayPct .. "%"
-    
+    currentProgress = currentProgress + (targetProgress - currentProgress) * math.clamp(dt * 20, 0, 1)
+    percentLabel.Text = math.clamp(math.floor(currentProgress * 100), 0, 100) .. "%"
     barFill.Size = UDim2.new(currentProgress, 0, 1, 0)
-    laserTip.Position = UDim2.new(currentProgress, 0, 0.5, 0)
 
     for _, pt in ipairs(bgParticles) do
         local yPos = ((t * pt.speed * 0.04) + pt.offset) % 1
         pt.frame.Position = UDim2.new(pt.frame.Position.X.Scale, 0, yPos, 0)
     end
     
-    liveDot.BackgroundTransparency = 0.2 + math.abs(math.sin(t * 4)) * 0.6
-    
-    local breath = math.sin(t * 2.5) * 0.012
-    canvasScale.Scale = 1 + breath
-    
-    local haloSize = 80 + math.sin(t * 2.5) * 6
-    glowHalo.Size = UDim2.fromOffset(haloSize, haloSize)
-    
-    local scaleX1 = 0.4 + math.abs(math.sin(t * 1.8)) * 0.6
-    local scaleY1 = 0.4 + math.abs(math.cos(t * 1.8)) * 0.6
+    local scaleX1 = 0.4 + math.abs(math.sin(t * 2.2)) * 0.6
+    local scaleY1 = 0.4 + math.abs(math.cos(t * 2.2)) * 0.6
     square1.Size = UDim2.fromOffset(128 * scaleX1, 128 * scaleY1)
-    square1.Rotation = (t * 45) % 360
+    square1.Rotation = (t * 60) % 360
     
-    local scaleX2 = 0.4 + math.abs(math.cos(t * 2.2)) * 0.6
-    local scaleY2 = 0.4 + math.abs(math.sin(t * 2.2)) * 0.6
+    local scaleX2 = 0.4 + math.abs(math.cos(t * 2.6)) * 0.6
+    local scaleY2 = 0.4 + math.abs(math.sin(t * 2.6)) * 0.6
     square2.Size = UDim2.fromOffset(102 * scaleX2, 102 * scaleY2)
-    square2.Rotation = -(t * 55) % 360
+    square2.Rotation = -(t * 75) % 360
 
-    local scaleX3 = 0.4 + math.abs(math.sin(t * 2.6)) * 0.6
-    local scaleY3 = 0.4 + math.abs(math.cos(t * 2.6)) * 0.6
+    local scaleX3 = 0.4 + math.abs(math.sin(t * 3.0)) * 0.6
+    local scaleY3 = 0.4 + math.abs(math.cos(t * 3.0)) * 0.6
     square3.Size = UDim2.fromOffset(80 * scaleX3, 80 * scaleY3)
-    square3.Rotation = (t * 70) % 360
-    
-    centerPlate.Rotation = math.sin(t * 2.5) * 2.5
-    
-    txrGrad.Offset = Vector2.new(math.sin(t * 2.5) * 0.35, 0)
-    fillGrad.Offset = Vector2.new(math.sin(t * 3.0) * 0.2, 0)
-    barGlow.BackgroundTransparency = 0.88 + math.sin(t * 2.5) * 0.06
-    txrShadowCyan.Position = UDim2.new(0, -1.8, 0, 0)
-    txrShadowPurple.Position = UDim2.new(0, 1.8, 0, 0)
-    jisGrad.Offset = Vector2.new(math.sin(t * 3) * 0.4, 0)
-    
-    for _, spData in ipairs(sparks) do
-        local angle = (t * spData.orbitSpeed) + spData.offset
-        local posX = math.cos(angle) * spData.orbitX
-        local posY = math.sin(angle) * spData.orbitY
-        spData.frame.Position = UDim2.new(0.5, posX, 0.5, posY)
-        spData.frame.Rotation = (t * 90) % 360
-    end
+    square3.Rotation = (t * 90) % 360
 end)
 
 -- =========================================================
--- ⚡ 4.5-SECOND PROGRESSION SEQUENCE
+-- ⚡ FAST 3-SECOND RUNTIME SEQUENCE
 -- =========================================================
 task.spawn(function()
     local bootSteps = {
-        {target = 0.22, text = "🔐 Establishing Quantum Encryption Bridge...", duration = LOAD_DURATION * 0.16},
-        {target = 0.48, text = "⚡ Synchronizing 144Hz Lerp Subsystems...", duration = LOAD_DURATION * 0.20},
-        {target = 0.72, text = "🛡️ Loading Apex Cyber Memory Allocator...", duration = LOAD_DURATION * 0.24},
-        {target = 0.90, text = "🔮 Injecting Dynamic Shader Layer...", duration = LOAD_DURATION * 0.22},
-        {target = 0.97, text = "✨ Finalizing Secure Runtime Core...", duration = LOAD_DURATION * 0.10},
-        {target = 1.00, text = "👑 TXR HUB READY!", duration = LOAD_DURATION * 0.08}
+        {target = 0.35, text = "⚡ Establishing Network Bridge...", duration = LOAD_DURATION * 0.30},
+        {target = 0.75, text = "🛡️ Loading Modules...", duration = LOAD_DURATION * 0.45},
+        {target = 1.00, text = "👑 TXR HUB READY!", duration = LOAD_DURATION * 0.25}
     }
     
     for _, step in ipairs(bootSteps) do
@@ -464,106 +299,41 @@ task.spawn(function()
         
         while (tick() - startTime) < step.duration do
             local alpha = (tick() - startTime) / step.duration
-            local smoothAlpha = alpha * alpha * (3 - 2 * alpha)
-            targetProgress = startPct + (step.target - startPct) * smoothAlpha
+            targetProgress = startPct + (step.target - startPct) * alpha
             task.wait()
         end
         targetProgress = step.target
     end
     
     targetProgress = 1.0
-    task.wait(0.2)
+    task.wait(0.15)
     
-    -- =========================================================
-    -- 🌿 VICTORY PULSE & HARMONIC OUTRO
-    -- =========================================================
-    local wave = Instance.new("Frame", logoContainer)
-    wave.Size = UDim2.fromOffset(40, 40)
-    wave.Position = UDim2.fromScale(0.5, 0.5)
-    wave.AnchorPoint = Vector2.new(0.5, 0.5)
-    wave.BackgroundTransparency = 1
-    wave.ZIndex = 11
-    
-    local wStroke = Instance.new("UIStroke", wave)
-    wStroke.Color = Color3.fromRGB(0, 255, 200)
-    wStroke.Thickness = 3
-    
-    TweenService:Create(wave, TweenInfo.new(0.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(280, 280)}):Play()
-    TweenService:Create(wStroke, TweenInfo.new(0.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Transparency = 1}):Play()
-
-    task.wait(0.3)
+    -- Clean Outro
     isIntroActive = false
     renderConn:Disconnect()
 
-    local smoothDuration = 0.5
-    local smoothInfo = TweenInfo.new(smoothDuration, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut)
-    local softFadeInfo = TweenInfo.new(smoothDuration * 0.8, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
+    local fadeTween = TweenService:Create(mainCanvas, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {GroupTransparency = 1})
+    TweenService:Create(bg, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(blur, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = 0}):Play()
+    fadeTween:Play()
 
-    TweenService:Create(titleRow, smoothInfo, {Position = UDim2.new(0.5, 0, 0.55, 0)}):Play()
-    TweenService:Create(txrText, softFadeInfo, {TextTransparency = 1}):Play()
-    TweenService:Create(txrShadowCyan, softFadeInfo, {TextTransparency = 1}):Play()
-    TweenService:Create(txrShadowPurple, softFadeInfo, {TextTransparency = 1}):Play()
-    TweenService:Create(hubBadge, softFadeInfo, {BackgroundTransparency = 1}):Play()
-    TweenService:Create(hubBadgeStroke, softFadeInfo, {Transparency = 1}):Play()
-    TweenService:Create(hubText, softFadeInfo, {TextTransparency = 1}):Play()
-    TweenService:Create(tagBadge, softFadeInfo, {TextTransparency = 1}):Play()
+    task.wait(0.35)
 
-    TweenService:Create(barGlow, softFadeInfo, {BackgroundTransparency = 1}):Play()
-    TweenService:Create(barContainer, smoothInfo, {Size = UDim2.fromOffset(0, 4), BackgroundTransparency = 1}):Play()
-    TweenService:Create(barTrackStroke, softFadeInfo, {Transparency = 1}):Play()
-    TweenService:Create(barFill, softFadeInfo, {BackgroundTransparency = 1}):Play()
-    TweenService:Create(laserTip, smoothInfo, {Size = UDim2.fromOffset(0, 0)}):Play()
-    TweenService:Create(tipStroke, softFadeInfo, {Transparency = 1}):Play()
-    TweenService:Create(liveDot, softFadeInfo, {BackgroundTransparency = 1}):Play()
-    TweenService:Create(statusLabel, softFadeInfo, {TextTransparency = 1}):Play()
-    TweenService:Create(percentLabel, softFadeInfo, {TextTransparency = 1}):Play()
+    pcall(function()
+        introGui:Destroy()
+        blur:Destroy()
+    end)
 
-    TweenService:Create(glowHalo, softFadeInfo, {BackgroundTransparency = 1, Size = UDim2.fromOffset(0, 0)}):Play()
-    TweenService:Create(cross1, softFadeInfo, {BackgroundTransparency = 1, Size = UDim2.fromOffset(0, 0)}):Play()
-    TweenService:Create(cross2, softFadeInfo, {BackgroundTransparency = 1, Size = UDim2.fromOffset(0, 0)}):Play()
-    
-    for _, spData in ipairs(sparks) do
-        TweenService:Create(spData.frame, smoothInfo, {Position = UDim2.fromScale(0.5, 0.5), BackgroundTransparency = 1}):Play()
-    end
-
-    TweenService:Create(square1, smoothInfo, {Size = UDim2.fromOffset(60, 60), Rotation = 0}):Play()
-    TweenService:Create(square2, smoothInfo, {Size = UDim2.fromOffset(60, 60), Rotation = 0}):Play()
-    TweenService:Create(square3, smoothInfo, {Size = UDim2.fromOffset(60, 60), Rotation = 0}):Play()
-    TweenService:Create(centerPlate, smoothInfo, {Rotation = 0}):Play()
-
-    TweenService:Create(sq1Stroke, smoothInfo, {Thickness = 2, Color = Color3.fromRGB(255, 255, 255)}):Play()
-    TweenService:Create(sq2Stroke, softFadeInfo, {Transparency = 1}):Play()
-    TweenService:Create(sq3Stroke, softFadeInfo, {Transparency = 1}):Play()
-
-    task.wait(smoothDuration * 0.65)
-
-    local finishInfo = TweenInfo.new(0.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.In)
-    TweenService:Create(jisEmblem, finishInfo, {TextTransparency = 1, TextSize = 0}):Play()
-    TweenService:Create(square1, finishInfo, {Size = UDim2.fromOffset(0, 0), Rotation = 90}):Play()
-    TweenService:Create(sq1Stroke, finishInfo, {Thickness = 0, Transparency = 1}):Play()
-
-    local finalWipe = TweenService:Create(centerPlate, finishInfo, {
-        Size = UDim2.fromOffset(0, 0),
-        Rotation = 90,
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        BackgroundTransparency = 1
-    })
-    finalWipe:Play()
-    TweenService:Create(plateStroke, finishInfo, {Thickness = 0, Transparency = 1}):Play()
-
-    TweenService:Create(bg, TweenInfo.new(0.45, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(blur, TweenInfo.new(0.45, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = 0}):Play()
-
-    finalWipe.Completed:Connect(function()
-        task.wait(0.05)
-        pcall(function()
-            introGui:Destroy()
-            blur:Destroy()
-        end)
-
-        -- =========================================================
-        -- 🚀 MAIN SCRIPT EXECUTION
-        -- =========================================================
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Secure1Version.lua"))()
+    -- =========================================================
+    -- 🚀 GUARANTEED MAIN SCRIPT LOAD
+    -- =========================================================
+    task.spawn(function()
+        local rawCode = game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Secure1Version.lua")
+        local runScript, err = loadstring(rawCode)
+        if runScript then
+            runScript()
+        else
+            warn("Main Script Load Error: " .. tostring(err))
+        end
     end)
 end)
