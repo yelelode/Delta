@@ -473,6 +473,7 @@ ScanForRemotes()
 
 -- --- CORE LOGIC ---
 local selectedPlayers = {}
+local targetSelectionOrder = {}
 local assignedRemotes = {}
 local voidedPlayers = {}
 local propsCache = {}
@@ -499,9 +500,9 @@ local lastGameSpawnTime = 0
 local uiHoverCount = 0
 local isSubMenuOpen = false
 
--- 👁️ SPECTATE CORE SYSTEM
+-- 👁️ SPECTATE CORE LOGIC
 local isSpectating = false
-local currentSpectatePlr = nil
+local spectateBtnRef = nil
 
 pcall(function()
     local oldNamecall
@@ -567,8 +568,7 @@ local function animateWaterfall(container)
             return (a.LayoutOrder or 0) < (b.LayoutOrder or 0) 
         end)
 
-        for _, child in ipairs(items) do
-            if container:GetAttribute("WaterfallID") ~= currentID then return end
+        for _, child in ipairs(container:GetAttribute("WaterfallID") ~= currentID and {} or items) do
             local scale = child:FindFirstChildOfClass("UIScale")
             if scale then
                 TweenService:Create(scale, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
@@ -1858,9 +1858,14 @@ cmConfirm.MouseButton1Click:Connect(function()
     if _G.TXR_THREAT_ESP then 
         _G.TXR_THREAT_ESP:Destroy() 
     end
+    
+    isSpectating = false
     if Camera and lp.Character then
         local myHum = lp.Character:FindFirstChildOfClass("Humanoid")
-        if myHum then Camera.CameraSubject = myHum end
+        if myHum then 
+            Camera.CameraType = Enum.CameraType.Custom
+            Camera.CameraSubject = myHum 
+        end
     end
 end)
 
@@ -2025,22 +2030,18 @@ end
 local playerMenu, playerScroll = createMenu("👥 MATRIX TARGETS")
 local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
 
-local spectateBtnRef = nil
-
-local function resetSpectateState()
-    isSpectating = false
-    currentSpectatePlr = nil
-    if Camera and lp.Character then
-        local myHum = lp.Character:FindFirstChildOfClass("Humanoid")
-        if myHum then 
-            Camera.CameraSubject = myHum 
+local function getFirstValidTarget()
+    for _, plr in ipairs(targetSelectionOrder) do
+        if plr and plr.Parent and selectedPlayers[plr] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            return plr
         end
     end
-    if spectateBtnRef then
-        local accent = spectateBtnRef:FindFirstChild("Accent")
-        TweenService:Create(spectateBtnRef, TweenInfo.new(0.4), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
-        if accent then TweenService:Create(accent, TweenInfo.new(0.4), {Size = UDim2.new(0, 0, 0, 0)}):Play() end
+    for plr, _ in pairs(selectedPlayers) do
+        if plr and plr.Parent and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            return plr
+        end
     end
+    return nil
 end
 
 local function refreshPlayers()
@@ -2091,9 +2092,11 @@ local function refreshPlayers()
                 selectedPlayers[plr] = nil
                 autoRejoinTargets[plr.UserId] = nil
                 
-                if currentSpectatePlr == plr then
-                    resetSpectateState()
-                    sendNotif("👁️ SPECTATE", "Target Deselected. Spectate Reset.", 2)
+                for i, v in ipairs(targetSelectionOrder) do
+                    if v == plr then
+                        table.remove(targetSelectionOrder, i)
+                        break
+                    end
                 end
 
                 local tInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quart)
@@ -2105,6 +2108,7 @@ local function refreshPlayers()
             else 
                 selectedPlayers[plr] = true
                 autoRejoinTargets[plr.UserId] = true
+                table.insert(targetSelectionOrder, plr)
                 
                 local tInfo1 = TweenInfo.new(0.4, Enum.EasingStyle.Quart)
                 local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
@@ -2122,6 +2126,7 @@ end
 Players.PlayerAdded:Connect(function(plr)
     if autoRejoinTargets[plr.UserId] then 
         selectedPlayers[plr] = true 
+        table.insert(targetSelectionOrder, plr)
     end
     
     plr.CharacterAdded:Connect(function()
@@ -2145,9 +2150,11 @@ for _, plr in ipairs(Players:GetPlayers()) do
 end
 
 Players.PlayerRemoving:Connect(function(plr)
-    if currentSpectatePlr == plr then
-        resetSpectateState()
-        sendNotif("👁️ SPECTATE", "Target left the game.", 2)
+    for i, v in ipairs(targetSelectionOrder) do
+        if v == plr then
+            table.remove(targetSelectionOrder, i)
+            break
+        end
     end
     selectedPlayers[plr] = nil
     assignedRemotes[plr] = nil
@@ -2504,63 +2511,70 @@ espBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 👁️ NATIVE & RELIABLE TARGET SPECTATE BUTTON (PLACED BELOW ESP)
+-- 👁️ NATIVE FIFO ORDERED TARGET SPECTATE BUTTON
 local spectateBtn = createMainBtn("👁️ TARGET SPECTATE", "Spectate", false)
 spectateBtnRef = spectateBtn
 
 spectateBtn.MouseButton1Click:Connect(function()
     if isSpectating then
-        resetSpectateState()
-        sendNotif("👁️ SPECTATE", "Spectate Deactivated. View Reset.", 2)
+        isSpectating = false
+        if Camera and lp.Character then
+            local myHum = lp.Character:FindFirstChildOfClass("Humanoid")
+            if myHum then
+                Camera.CameraType = Enum.CameraType.Custom
+                Camera.CameraSubject = myHum
+            end
+        end
+        local accent = spectateBtn:FindFirstChild("Accent")
+        TweenService:Create(spectateBtn, TweenInfo.new(0.4), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then TweenService:Create(accent, TweenInfo.new(0.4), {Size = UDim2.new(0, 0, 0, 0)}):Play() end
+        sendNotif("👁️ SPECTATE", "Spectate Deactivated. Returned to Local Player.", 2)
     else
-        local targetPlr = nil
-        for plr, _ in pairs(selectedPlayers) do
-            if plr and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                targetPlr = plr
-                break
-            end
-        end
-
-        if not targetPlr then
-            for _, plr in ipairs(Players:GetPlayers()) do
-                if plr ~= lp and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                    targetPlr = plr
-                    break
-                end
-            end
-        end
-
+        local targetPlr = getFirstValidTarget()
         if targetPlr and targetPlr.Character then
             local hum = targetPlr.Character:FindFirstChildOfClass("Humanoid")
             if hum then
                 isSpectating = true
-                currentSpectatePlr = targetPlr
+                Camera.CameraType = Enum.CameraType.Custom
                 Camera.CameraSubject = hum
-
+                
                 local accent = spectateBtn:FindFirstChild("Accent")
-                TweenService:Create(spectateBtn, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
-                if accent then TweenService:Create(accent, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
+                TweenService:Create(spectateBtn, TweenInfo.new(0.4), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+                if accent then TweenService:Create(accent, TweenInfo.new(0.4), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
                 sendNotif("👁️ SPECTATE", "Spectating: " .. targetPlr.DisplayName, 2)
             else
-                sendNotif("⚠️ SPECTATE", "Target character humanoid not found!", 2)
+                sendNotif("⚠️ SPECTATE", "Target humanoid not found!", 2)
             end
         else
-            sendNotif("⚠️ SPECTATE", "No target selected. Select target in Matrix Targets!", 2)
+            sendNotif("⚠️ SPECTATE", "No target selected in Matrix Targets!", 2)
         end
     end
 end)
 
--- Continuous Spectate Subject & Auto-Disconnect Loop
+-- Continuous Spectate Focus & Smooth Shift Loop
 RunService.RenderStepped:Connect(function()
     if isSpectating then
-        if not currentSpectatePlr or not currentSpectatePlr.Parent or not currentSpectatePlr.Character or not currentSpectatePlr.Character:FindFirstChild("HumanoidRootPart") then
-            resetSpectateState()
-            sendNotif("👁️ SPECTATE", "Target unavailable. Spectate Reset.", 2)
-        else
-            local hum = currentSpectatePlr.Character:FindFirstChildOfClass("Humanoid")
+        local currentValid = getFirstValidTarget()
+        if currentValid and currentValid.Character then
+            local hum = currentValid.Character:FindFirstChildOfClass("Humanoid")
             if hum and Camera.CameraSubject ~= hum then
                 Camera.CameraSubject = hum
             end
+        else
+            isSpectating = false
+            if Camera and lp.Character then
+                local myHum = lp.Character:FindFirstChildOfClass("Humanoid")
+                if myHum then
+                    Camera.CameraType = Enum.CameraType.Custom
+                    Camera.CameraSubject = myHum
+                end
+            end
+            if spectateBtnRef then
+                local accent = spectateBtnRef:FindFirstChild("Accent")
+                TweenService:Create(spectateBtnRef, TweenInfo.new(0.4), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+                if accent then TweenService:Create(accent, TweenInfo.new(0.4), {Size = UDim2.new(0, 0, 0, 0)}):Play() end
+            end
+            sendNotif("👁️ SPECTATE", "All targets unavailable. Spectate Reset.", 2)
         end
     end
 end)
@@ -3043,7 +3057,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
                     if desc.Part1 then table.insert(safeParts, desc.Part1) end
                     
                     for _, pt in ipairs(safeParts) do
-                        if not pt:IsDescendantOf(lp.Character) then
+                        if pt and pt.Parent and not pt:IsDescendantOf(lp.Character) then
                             if string.sub(pt.Name, 1, 4) == "Prop" then
                                 local ownerName = string.sub(pt.Name, 5)
                                 if ownerName ~= "" and ownerName ~= lp.Name then
