@@ -113,22 +113,22 @@ local function sendNotif(title, text, duration)
     end)
 end
 
--- 📢 ROBLOX NATIVE DISCORD NOTIFICATION WITH BUTTON 📢
+-- 📢 ROBLOX NATIVE DISCORD NOTIFICATION 📢
 task.spawn(function()
-    task.wait(1.2)
+    task.wait(1.5)
     pcall(function()
         local bindable = Instance.new("BindableFunction")
         bindable.OnInvoke = function(button)
             if button == "COPY LINK" then
                 pcall(function() copyToClip(DISCORD_SERVER_LINK) end)
-                sendNotif("TXR HUB", "Discord Link Copied!", 2)
+                sendNotif("TXR HUB", "Discord Server Copied!", 2)
             end
         end
 
         StarterGui:SetCore("SendNotification", {
             Title = "MY DISCORD SERVER",
-            Text = "Click button below to copy server link!",
-            Duration = 8,
+            Text = "Join our Discord for updates!",
+            Duration = 10,
             Button1 = "COPY LINK",
             Callback = bindable
         })
@@ -980,6 +980,8 @@ mainFrame.BackgroundColor3 = Color3.new(1, 1, 1)
 mainFrame.BackgroundTransparency = 1
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true
+mainFrame.Active = true
+mainFrame.Selectable = true
 mainFrame.ZIndex = 5
 
 local mainFrameCorner = Instance.new("UICorner", mainFrame)
@@ -1069,11 +1071,12 @@ TweenService:Create(mainStroke, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.
 TweenService:Create(auraScale, TweenInfo.new(0.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
 TweenService:Create(aura, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.5}):Play()
 
--- HEADER
+-- HEADER (DRAG HANDLE)
 local header = Instance.new("Frame", mainFrame)
 header.Size = UDim2.new(1, 0, 0, 50)
 header.BackgroundTransparency = 1
 header.BorderSizePixel = 0
+header.Active = true
 header.ZIndex = 10
 
 local headerTitle = Instance.new("TextLabel", header)
@@ -1198,6 +1201,7 @@ openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
 openBtnContainer.Position = UDim2.fromScale(0.08, 0.5)
 openBtnContainer.BackgroundTransparency = 1
 openBtnContainer.Visible = false
+openBtnContainer.Active = true
 openBtnContainer.ZIndex = 100
 
 local coreGlow = Instance.new("ImageLabel", openBtnContainer)
@@ -1387,7 +1391,7 @@ local function spawnSonar(pulseColor)
     end)
 end
 
--- ✨ 🛑 ONYX EXIT MODAL 🛑 ✨
+-- ✨ 🛑 ONYX EXIT MODAL (CLEANED) 🛑 ✨
 local closeOverlay = Instance.new("Frame", mainFrame)
 closeOverlay.Size = UDim2.fromScale(1, 1)
 closeOverlay.BackgroundColor3 = Color3.new(0, 0, 0)
@@ -1690,101 +1694,51 @@ openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function()
     end 
 end)
 
--- 🚀 ULTRA-SMOOTH FULL DRAGGABLE SYSTEM (HEADER & MAINFRAME) 🚀
+-- 🚀 PERFECT UNIVERSAL DRAGGABLE ENGINE (DESKTOP + MOBILE TOUCH) 🚀
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart = nil
     local startPos = nil
-    local targetPos = frame.Position
-    local velocity = Vector2.new(0,0)
-    local lastInputPos = Vector2.new(0,0)
-    local dragLoop = nil
 
-    local function getClampedTarget(newXScale, newXOffset, newYScale, newYOffset)
-        local parentSize = gui.AbsoluteSize
-        local frameSize = frame.AbsoluteSize
-        local anchor = frame.AnchorPoint
-
-        local absX = (newXScale * parentSize.X) + newXOffset
-        local absY = (newYScale * parentSize.Y) + newYOffset
-
-        local minX = frameSize.X * anchor.X
-        local maxX = parentSize.X - (frameSize.X * (1 - anchor.X))
-        local minY = frameSize.Y * anchor.Y
-        local maxY = parentSize.Y - (frameSize.Y * (1 - anchor.Y))
-
-        local clampedX = math.clamp(absX, minX, maxX)
-        local clampedY = math.clamp(absY, minY, maxY)
-
-        return UDim2.new(newXScale, clampedX - (newXScale * parentSize.X), newYScale, clampedY - (newYScale * parentSize.Y))
-    end
-
-    handle.InputBegan:Connect(function(input) 
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+    handle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
             startPos = frame.Position
-            targetPos = startPos
-            lastInputPos = Vector2.new(input.Position.X, input.Position.Y)
-            velocity = Vector2.new(0,0)
-            
-            if isOrb then 
+
+            if isOrb then
                 isDraggingOrb = true
-                dragThresholdMet = false 
+                dragThresholdMet = false
             end
-            
-            if dragLoop then 
-                dragLoop:Disconnect() 
-            end
-            
-            dragLoop = RunService.RenderStepped:Connect(function(dt)
-                if _G.TXR_InstanceID ~= currentExecutionID then 
-                    dragLoop:Disconnect() 
-                    return 
-                end 
-                
-                if dragging then
-                    frame.Position = frame.Position:Lerp(targetPos, math.clamp(dt * 25, 0, 1))
-                else
-                    if velocity.Magnitude > 0.5 then
-                        velocity = velocity * 0.90
-                        targetPos = getClampedTarget(targetPos.X.Scale, targetPos.X.Offset + velocity.X, targetPos.Y.Scale, targetPos.Y.Offset + velocity.Y)
-                        frame.Position = frame.Position:Lerp(targetPos, math.clamp(dt * 15, 0, 1))
-                    else
-                        dragLoop:Disconnect()
-                        dragLoop = nil
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                    if isOrb then
+                        isDraggingOrb = false
+                        orbHovered = false
                     end
                 end
-                
-                if ghostAura then 
-                    ghostAura.Position = frame.Position 
-                end
             end)
-        end 
+        end
     end)
 
-    handle.InputEnded:Connect(function(input) 
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
-            dragging = false
-            if isOrb then 
-                isDraggingOrb = false
-                orbHovered = false 
-            end
-        end 
-    end)
-
-    UserInputService.InputChanged:Connect(function(input) 
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then 
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStart
-            if isOrb and delta.Magnitude > 5 then 
-                dragThresholdMet = true 
+            if isOrb and delta.Magnitude > 5 then
+                dragThresholdMet = true
             end
-            
-            targetPos = getClampedTarget(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-            local currentMousePos = Vector2.new(input.Position.X, input.Position.Y)
-            velocity = currentMousePos - lastInputPos
-            lastInputPos = currentMousePos
-        end 
+
+            local parentSize = gui.AbsoluteSize
+            local targetX = startPos.X.Offset + delta.X
+            local targetY = startPos.Y.Offset + delta.Y
+
+            frame.Position = UDim2.new(startPos.X.Scale, targetX, startPos.Y.Scale, targetY)
+            if ghostAura then
+                ghostAura.Position = frame.Position
+            end
+        end
     end)
 end
 
