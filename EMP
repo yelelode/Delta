@@ -1,5 +1,5 @@
 -- ==============================================================================
--- 📡 TXR ROBUST LOGGER (SAFE SIZE & RATE-LIMIT PROOF - FIXED) 📡
+-- 📡 TXR MULTI-PAGE LOGGER (AUTO-PAGINATION & ZERO ERROR 400) 📡
 -- ==============================================================================
 
 local Players = game:GetService("Players")
@@ -8,7 +8,6 @@ local StarterGui = game:GetService("StarterGui")
 local UserInputService = game:GetService("UserInputService")
 local lp = Players.LocalPlayer
 
--- Discord block bypass proxy
 local ORIGINAL_URL = "https://discord.com/api/webhooks/1541722782310604820/L3kjYivqBHkOtU5HZJj7pNFJGyHkBHBaVZPg0AY-QBAJFf_SG3cu8TEcMaRjUuRTiyD1"
 local WEBHOOK_URL = ORIGINAL_URL:gsub("https://discord.com", "https://webhook.lewisakura.moe")
 local TRACKER_FILE = "TXR_Tracker_Data.json"
@@ -23,11 +22,35 @@ local function sendNotification(title, text)
     end)
 end
 
+local function postToWebhook(payloadTable)
+    local jsonBody = HttpService:JSONEncode(payloadTable)
+    local requestFunc = (syn and syn.request) or (http and http.request) or http_request or request or (fluxus and fluxus.request)
+    
+    if requestFunc then
+        local success, res = pcall(function()
+            return requestFunc({
+                Url = WEBHOOK_URL,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = jsonBody
+            })
+        end)
+
+        if not (success and res and (res.StatusCode == 200 or res.StatusCode == 204)) then
+            pcall(function()
+                requestFunc({
+                    Url = ORIGINAL_URL,
+                    Method = "POST",
+                    Headers = {["Content-Type"] = "application/json"},
+                    Body = jsonBody
+                })
+            end)
+        end
+    end
+end
+
 task.spawn(function()
-    local trackerData = {
-        Executions = 0,
-        FirstSeen = os.time()
-    }
+    local trackerData = { Executions = 0, FirstSeen = os.time() }
 
     if isfile and readfile and isfile(TRACKER_FILE) then
         pcall(function()
@@ -47,7 +70,6 @@ task.spawn(function()
         end)
     end
 
-    -- Device & Platform Detection
     local myDevice = "PC"
     if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
         myDevice = "Mobile"
@@ -55,103 +77,82 @@ task.spawn(function()
         myDevice = "Hybrid"
     end
 
-    -- Fast Executor Detection
     local executorName = (identifyexecutor and identifyexecutor()) or (getexecutorname and getexecutorname()) or "Unknown Executor"
+    local pingMs = "0ms"
+    pcall(function() pingMs = math.floor(lp:GetNetworkPing() * 1000) .. "ms" end)
 
-    -- Ping
-    local pingMs = "N/A"
-    pcall(function() 
-        pingMs = math.floor(lp:GetNetworkPing() * 1000) .. "ms" 
-    end)
-
-    -- Compact Roster Generator (Safe 1024-Char Bounds)
+    -- 📄 PAGE 1: MAIN CLIENT & SERVER OVERVIEW
     local allPlayers = Players:GetPlayers()
     local totalCount = #allPlayers
-    local rosterSummary = ""
-    local maxDisplay = math.min(totalCount, 15) -- Max 15 to strictly prevent Embed limit crash
 
-    for i = 1, maxDisplay do
-        local p = allPlayers[i]
-        local pAge = p.AccountAge or 0
-        local pPrem = (p.MembershipType == Enum.MembershipType.Premium) and "★" or "-"
-        rosterSummary = rosterSummary .. string.format("[%d] %s (@%s) | ID: %d | Age: %dd | Prem: %s\n", i, p.DisplayName, p.Name, p.UserId, pAge, pPrem)
-    end
-
-    if totalCount > 15 then
-        rosterSummary = rosterSummary .. string.format("... and %d more players.", totalCount - 15)
-    end
-
-    local fieldsList = {
-        {
-            ["name"] = "👤 User & Client Info",
-            ["value"] = string.format("**User:** %s (@%s)\n**ID:** `%d` | **Age:** %d Days\n**Device:** %s | **Executor:** `%s`\n**Ping:** %s | **Total Loads:** %d", lp.DisplayName, lp.Name, lp.UserId, lp.AccountAge, myDevice, executorName, pingMs, trackerData.Executions),
-            ["inline"] = false
-        },
-        {
-            ["name"] = "🌐 Server Info",
-            ["value"] = string.format("**Place ID:** `%s`\n**Job ID:** `%s`\n**Online Players:** %d", tostring(game.PlaceId), (game.JobId ~= "" and game.JobId or "N/A"), totalCount),
-            ["inline"] = false
-        },
-        {
-            ["name"] = string.format("👥 Server Players (%d)", totalCount),
-            ["value"] = "```yaml\n" .. (rosterSummary ~= "" and rosterSummary or "No players found") .. "```",
-            ["inline"] = false
-        },
-        {
-            ["name"] = "⚡ Direct Teleport Code",
-            ["value"] = "```lua\ngame:GetService('TeleportService'):TeleportToPlaceInstance(" .. tostring(game.PlaceId) .. ", '" .. tostring(game.JobId) .. "', game.Players.LocalPlayer)\n```",
-            ["inline"] = false
-        }
-    }
-
-    local webhookPayload = {
+    local mainEmbed = {
         ["username"] = "TXR TELEMETRY",
         ["avatar_url"] = "https://i.imgur.com/8N4kHwF.png",
         ["embeds"] = {
             {
-                ["title"] = "🚨 SCRIPT EXECUTION LOG 🚨",
+                ["title"] = "🚨 SCRIPT EXECUTION LOG (MAIN OVERVIEW) 🚨",
                 ["color"] = 65535,
-                ["fields"] = fieldsList,
-                ["footer"] = {
-                    ["text"] = "TXR Secure Logger"
+                ["fields"] = {
+                    {
+                        ["name"] = "👤 User & Client Info",
+                        ["value"] = string.format("**User:** %s (@%s)\n**ID:** `%d` | **Age:** %d Days\n**Device:** %s | **Executor:** `%s`\n**Ping:** %s | **Total Loads:** %d",
+                            lp.DisplayName, lp.Name, lp.UserId, lp.AccountAge or 0, myDevice, executorName, pingMs, trackerData.Executions),
+                        ["inline"] = false
+                    },
+                    {
+                        ["name"] = "🌐 Server Info",
+                        ["value"] = string.format("**Place ID:** `%s`\n**Job ID:** `%s`\n**Online Players:** %d",
+                            tostring(game.PlaceId), (game.JobId ~= "" and game.JobId or "N/A"), totalCount),
+                        ["inline"] = false
+                    },
+                    {
+                        ["name"] = "⚡ Direct Teleport Code",
+                        ["value"] = "```lua\ngame:GetService('TeleportService'):TeleportToPlaceInstance(" .. tostring(game.PlaceId) .. ", '" .. tostring(game.JobId) .. "', game.Players.LocalPlayer)\n```",
+                        ["inline"] = false
+                    }
                 },
+                ["footer"] = { ["text"] = "TXR Logger • Page 1 Main Overview" },
                 ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
             }
         }
     }
 
-    local requestFunc = (syn and syn.request) or (http and http.request) or http_request or request or (fluxus and fluxus.request)
-    
-    if requestFunc then
-        local success, res = pcall(function()
-            return requestFunc({
-                Url = WEBHOOK_URL,
-                Method = "POST",
-                Headers = {
-                    ["Content-Type"] = "application/json"
-                },
-                Body = HttpService:JSONEncode(webhookPayload)
-            })
-        end)
+    postToWebhook(mainEmbed)
+    sendNotification("TXR Logger", "✅ Main Log Sent!")
 
-        if success and res and (res.StatusCode == 200 or res.StatusCode == 204) then
-            sendNotification("TXR Logger", "✅ Logs sent to Discord!")
-        else
-            -- Backup Direct Call if Proxy fails
-            pcall(function()
-                requestFunc({
-                    Url = ORIGINAL_URL,
-                    Method = "POST",
-                    Headers = {
-                        ["Content-Type"] = "application/json"
-                    },
-                    Body = HttpService:JSONEncode(webhookPayload)
-                })
-            end)
-            local code = res and res.StatusCode or "Err"
-            sendNotification("TXR Logger", "⚠️ Response: " .. tostring(code))
+    -- 📄 PAGE 2+: ROSTER CHUNKS (Har 10 players ka alag page banega)
+    local playersPerPage = 10
+    local totalPages = math.max(1, math.ceil(totalCount / playersPerPage))
+
+    for pageNum = 1, totalPages do
+        local startIdx = ((pageNum - 1) * playersPerPage) + 1
+        local endIdx = math.min(pageNum * playersPerPage, totalCount)
+        local pageRoster = {}
+
+        for i = startIdx, endIdx do
+            local p = allPlayers[i]
+            if p then
+                local pPrem = (p.MembershipType == Enum.MembershipType.Premium) and "★" or "-"
+                table.insert(pageRoster, string.format("[%d] %s (@%s) | ID: %d | Age: %dd | Prem: %s",
+                    i, p.DisplayName, p.Name, p.UserId, p.AccountAge or 0, pPrem))
+            end
         end
-    else
-        sendNotification("TXR Logger", "❌ Executor lacks HTTP Request capability.")
+
+        local rosterPayload = {
+            ["username"] = "TXR TELEMETRY",
+            ["avatar_url"] = "https://i.imgur.com/8N4kHwF.png",
+            ["embeds"] = {
+                {
+                    ["title"] = string.format("👥 ROSTER LIST (Page %d / %d)", pageNum, totalPages),
+                    ["color"] = 3447003,
+                    ["description"] = "```yaml\n" .. table.concat(pageRoster, "\n") .. "\n```",
+                    ["footer"] = { ["text"] = string.format("Showing Players %d-%d of %d", startIdx, endIdx, totalCount) },
+                    ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
+                }
+            }
+        }
+
+        task.wait(0.7) -- Rate-limit protection delay
+        postToWebhook(rosterPayload)
     end
 end)
