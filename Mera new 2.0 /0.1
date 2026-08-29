@@ -2876,7 +2876,7 @@ local escapeDebounce = false
 escapeBtn.MouseButton1Click:Connect(function()
     local houseData = getMyHouse()
     if not houseData then
-        sendNotif("⚠️ HOUSE REQUIRED", "House spawn nahi hai! Pehle house spawn karo.", 3)
+        sendNotif("⚠️ Spawn House Requirement", "House spawn karo pehle!", 3)
         return
     end
 
@@ -2993,7 +2993,7 @@ local banTrapDebounce = false
 banTrapBtn.MouseButton1Click:Connect(function()
     local houseData = getMyHouse()
     if not houseData then
-        sendNotif("⚠️ HOUSE REQUIRED", "House spawn nahi hai! Pehle house spawn karo.", 3)
+        sendNotif("⚠️ Spawn House Requirement", "House spawn karo pehle!", 3)
         return
     end
 
@@ -4457,7 +4457,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     sendNotif("SMART CLEAR", "Bang Props Banned & Cleared!", 2)
                 else
                     if not houseData then
-                        sendNotif("⚠️ HOUSE REQUIRED", "House spawn nahi hai! Pehle house spawn karo.", 3)
+                        sendNotif("⚠️ Spawn House Requirement", "House spawn karo pehle!", 3)
                     end
                 end
             end)
