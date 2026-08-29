@@ -515,8 +515,8 @@ local Colors = {
 local function sendNotif(title, text, duration)
     pcall(function() 
         StarterGui:SetCore("SendNotification", {
-            Title = title, 
-            Text = text, 
+            Title = tostring(title), 
+            Text = tostring(text), 
             Duration = duration or 3
         }) 
     end)
@@ -4167,7 +4167,7 @@ end)
 
 -- =================================================================
 -- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND & PIGGYBACK SAFE) 🚀
--- =================================================================
+-- =========================================================
 local isSmartClearing = false
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if _G.TXR_InstanceID ~= currentExecutionID then return end
