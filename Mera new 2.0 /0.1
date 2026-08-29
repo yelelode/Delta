@@ -3782,17 +3782,21 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
--- 🌈 RGB LOOP ENGINE
+-- 🌈 HIGH-SPEED ZERO-PING NEON RGB LOOP ENGINE (SMART THROTTLE)
 task.spawn(function()
     local RE = game:GetService("ReplicatedStorage"):WaitForChild("RE", 10)
+    local toolColorRemote = RE and RE:FindFirstChild("ToolColor")
+    local propColorRemote = RE and RE:FindFirstChild("PropColor")
+
     while _G.TXR_InstanceID == currentExecutionID and gui.Parent do 
         if isRainbowEnabled then
             local syncColor = Color3.fromHSV(hue, 1, 1)
 
             pcall(function()
-                local playerGui = lp:FindFirstChild("PlayerGui")
-                if playerGui then
-                    local noResetGui = playerGui:FindFirstChild("NoResetGUIHandler")
+                -- 1. Fast PlayerGui Color Update (Zero Network Load)
+                local pg = lp:FindFirstChild("PlayerGui")
+                if pg then
+                    local noResetGui = pg:FindFirstChild("NoResetGUIHandler")
                     if noResetGui then
                         local propColorPicker = noResetGui:FindFirstChild("PropColorPicker")
                         if propColorPicker and propColorPicker:FindFirstChild("SetColor") then
@@ -3801,27 +3805,27 @@ task.spawn(function()
                     end
                 end
                 
-                for _, desc in ipairs(workspace:GetDescendants()) do
-                    if desc.Name == "ChangePropColor" and desc:IsA("RemoteFunction") then
-                        task.spawn(function() pcall(function() desc:InvokeServer(syncColor) end) end)
-                    end
-                end
-
-                if RE then
-                    for _, remote in ipairs(RE:GetChildren()) do
-                        if remote:IsA("RemoteEvent") then
-                            pcall(function()
-                                remote:FireServer("ToolColor", syncColor)
-                                remote:FireServer("Color", syncColor)
-                                remote:FireServer("PropColor", syncColor)
-                                remote:FireServer("PickingScooterColor", syncColor)
-                            end)
+                -- 2. Scoped WorkspaceCom Scan (Zero Ping Spike / Heavy scan replaced)
+                local com = workspace:FindFirstChild("WorkspaceCom")
+                if com then
+                    for _, folder in ipairs(com:GetChildren()) do
+                        for _, child in ipairs(folder:GetChildren()) do
+                            if child.Name == "Prop" .. lp.Name then
+                                local cRemote = child:FindFirstChild("ChangePropColor")
+                                if cRemote and cRemote:IsA("RemoteFunction") then
+                                    task.spawn(function() pcall(function() cRemote:InvokeServer(syncColor) end) end)
+                                end
+                            end
                         end
                     end
                 end
+
+                -- 3. Direct Targeted Remotes (No mass Remote spam)
+                if toolColorRemote then pcall(function() toolColorRemote:FireServer(syncColor) end) end
+                if propColorRemote then pcall(function() propColorRemote:FireServer(syncColor) end) end
             end)
         end
-        task.wait(0.1) 
+        task.wait(0.3) -- Stable tick rate that prevents ping spiking
     end
 end)
 
@@ -4167,7 +4171,7 @@ end)
 
 -- =================================================================
 -- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND & PIGGYBACK SAFE) 🚀
--- =========================================================
+-- =================================================================
 local isSmartClearing = false
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if _G.TXR_InstanceID ~= currentExecutionID then return end
