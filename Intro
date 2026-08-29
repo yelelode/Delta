@@ -1,8 +1,8 @@
 -- =========================================================
--- 👑 TXR HUB: 100% CLEAN VOID - 3S ULTRA SMOOTH 👑
+-- 👑 TXR HUB: 100% CLEAN VOID - 5S ULTRA SMOOTH 👑
 -- =========================================================
 
-local LOAD_DURATION = 3.0 -- Exact 3-Second Runtime
+local LOAD_DURATION = 5.0 -- Exact 5-Second Runtime
 
 local Lighting = game:GetService("Lighting")
 local TweenService = game:GetService("TweenService")
@@ -27,14 +27,14 @@ introGui.DisplayOrder = 9999999
 introGui.Parent = targetParent
 _G.TXR_MonogramIntro = introGui
 
--- 🌌 Depth Blur
+-- 🌌 Cinematic Depth Blur Effect
 local blur = Instance.new("BlurEffect")
 blur.Name = "TXR_IntroBlur"
 blur.Size = 0
 blur.Parent = Lighting
-TweenService:Create(blur, TweenInfo.new(0.3, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = 24}):Play()
+TweenService:Create(blur, TweenInfo.new(0.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = 26}):Play()
 
--- 🖤 OLED Background
+-- 🖤 OLED Void Background
 local bg = Instance.new("Frame", introGui)
 bg.Size = UDim2.new(1, 0, 1, 0)
 bg.BackgroundColor3 = Color3.fromRGB(1, 2, 6)
@@ -48,11 +48,11 @@ bgGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 2, 8))
 })
 bgGrad.Rotation = 45
-TweenService:Create(bg, TweenInfo.new(0.3, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {BackgroundTransparency = 0.04}):Play()
+TweenService:Create(bg, TweenInfo.new(0.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {BackgroundTransparency = 0.04}):Play()
 
--- ✨ Particles
+-- ✨ Ambient Starfield
 local bgParticles = {}
-for i = 1, 30 do
+for i = 1, 32 do
     local p = Instance.new("Frame", bg)
     local isSmall = (i % 3 == 0)
     p.Size = isSmall and UDim2.fromOffset(2, 2) or UDim2.fromOffset(3, 3)
@@ -64,7 +64,7 @@ for i = 1, 30 do
     table.insert(bgParticles, {frame = p, speed = math.random(8, 20) / 10, offset = math.random() * 10})
 end
 
--- 🔮 Canvas Group
+-- 🔮 Master UI Canvas Group
 local mainCanvas = Instance.new("CanvasGroup", introGui)
 mainCanvas.Size = UDim2.fromOffset(500, 390)
 mainCanvas.Position = UDim2.fromScale(0.5, 0.5)
@@ -74,11 +74,11 @@ mainCanvas.GroupTransparency = 0
 mainCanvas.ZIndex = 10
 
 local canvasScale = Instance.new("UIScale", mainCanvas)
-canvasScale.Scale = 0.7
-TweenService:Create(canvasScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+canvasScale.Scale = 0.65
+TweenService:Create(canvasScale, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
 
 -- =========================================================
--- ⚡ LOGO CONTAINER & SHAPES
+-- ⚡ 3D HOLOGRAPHIC TESSERACT
 -- =========================================================
 local logoContainer = Instance.new("Frame", mainCanvas)
 logoContainer.Size = UDim2.fromOffset(170, 170)
@@ -153,7 +153,7 @@ jisEmblem.TextColor3 = Color3.fromRGB(255, 255, 255)
 jisEmblem.ZIndex = 22
 
 -- =========================================================
--- 👑 TITLE & PROGRESS
+-- 👑 CHROMATIC TITLE & PROGRESS BAR
 -- =========================================================
 local titleRow = Instance.new("Frame", mainCanvas)
 titleRow.AutomaticSize = Enum.AutomaticSize.XY
@@ -192,6 +192,10 @@ hubBadge.BackgroundTransparency = 0.2
 hubBadge.ZIndex = 32
 Instance.new("UICorner", hubBadge).CornerRadius = UDim.new(0, 8)
 
+local hubBadgeStroke = Instance.new("UIStroke", hubBadge)
+hubBadgeStroke.Thickness = 1.8
+hubBadgeStroke.Color = Color3.fromRGB(180, 60, 255)
+
 local hubText = Instance.new("TextLabel", hubBadge)
 hubText.Size = UDim2.fromScale(1, 1)
 hubText.BackgroundTransparency = 1
@@ -200,6 +204,17 @@ hubText.Font = Enum.Font.GothamBlack
 hubText.TextSize = 17
 hubText.TextColor3 = Color3.fromRGB(255, 255, 255)
 hubText.ZIndex = 33
+
+local tagBadge = Instance.new("TextLabel", mainCanvas)
+tagBadge.Size = UDim2.new(1, 0, 0, 16)
+tagBadge.Position = UDim2.new(0.5, 0, 0.72, 0)
+tagBadge.AnchorPoint = Vector2.new(0.5, 0.5)
+tagBadge.BackgroundTransparency = 1
+tagBadge.Text = "⚡ QUANTUM CORE ARCHITECTURE • V55 ⚡"
+tagBadge.Font = Enum.Font.Code
+tagBadge.TextSize = 10.5
+tagBadge.TextColor3 = Color3.fromRGB(130, 160, 200)
+tagBadge.ZIndex = 30
 
 local barContainer = Instance.new("Frame", mainCanvas)
 barContainer.Size = UDim2.new(0, 340, 0, 4.5)
@@ -247,7 +262,7 @@ percentLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
 percentLabel.ZIndex = 33
 
 -- =========================================================
--- 🔄 144HZ RENDER LOOP
+-- 🔄 144HZ FLUID RENDER LOOP
 -- =========================================================
 local isIntroActive = true
 local currentProgress = 0.0
@@ -257,7 +272,7 @@ local renderConn = RunService.RenderStepped:Connect(function(dt)
     if not isIntroActive then return end
     local t = tick()
     
-    currentProgress = currentProgress + (targetProgress - currentProgress) * math.clamp(dt * 20, 0, 1)
+    currentProgress = currentProgress + (targetProgress - currentProgress) * math.clamp(dt * 15, 0, 1)
     percentLabel.Text = math.clamp(math.floor(currentProgress * 100), 0, 100) .. "%"
     barFill.Size = UDim2.new(currentProgress, 0, 1, 0)
 
@@ -266,30 +281,32 @@ local renderConn = RunService.RenderStepped:Connect(function(dt)
         pt.frame.Position = UDim2.new(pt.frame.Position.X.Scale, 0, yPos, 0)
     end
     
-    local scaleX1 = 0.4 + math.abs(math.sin(t * 2.2)) * 0.6
-    local scaleY1 = 0.4 + math.abs(math.cos(t * 2.2)) * 0.6
+    local scaleX1 = 0.4 + math.abs(math.sin(t * 1.8)) * 0.6
+    local scaleY1 = 0.4 + math.abs(math.cos(t * 1.8)) * 0.6
     square1.Size = UDim2.fromOffset(128 * scaleX1, 128 * scaleY1)
-    square1.Rotation = (t * 60) % 360
+    square1.Rotation = (t * 50) % 360
     
-    local scaleX2 = 0.4 + math.abs(math.cos(t * 2.6)) * 0.6
-    local scaleY2 = 0.4 + math.abs(math.sin(t * 2.6)) * 0.6
+    local scaleX2 = 0.4 + math.abs(math.cos(t * 2.2)) * 0.6
+    local scaleY2 = 0.4 + math.abs(math.sin(t * 2.2)) * 0.6
     square2.Size = UDim2.fromOffset(102 * scaleX2, 102 * scaleY2)
-    square2.Rotation = -(t * 75) % 360
+    square2.Rotation = -(t * 65) % 360
 
-    local scaleX3 = 0.4 + math.abs(math.sin(t * 3.0)) * 0.6
-    local scaleY3 = 0.4 + math.abs(math.cos(t * 3.0)) * 0.6
+    local scaleX3 = 0.4 + math.abs(math.sin(t * 2.6)) * 0.6
+    local scaleY3 = 0.4 + math.abs(math.cos(t * 2.6)) * 0.6
     square3.Size = UDim2.fromOffset(80 * scaleX3, 80 * scaleY3)
-    square3.Rotation = (t * 90) % 360
+    square3.Rotation = (t * 80) % 360
 end)
 
 -- =========================================================
--- ⚡ FAST 3-SECOND RUNTIME SEQUENCE
+-- ⚡ 5-SECOND TIMELINE SEQUENCE
 -- =========================================================
 task.spawn(function()
     local bootSteps = {
-        {target = 0.35, text = "⚡ Establishing Network Bridge...", duration = LOAD_DURATION * 0.30},
-        {target = 0.75, text = "🛡️ Loading Modules...", duration = LOAD_DURATION * 0.45},
-        {target = 1.00, text = "👑 TXR HUB READY!", duration = LOAD_DURATION * 0.25}
+        {target = 0.25, text = "🔐 Establishing Quantum Encryption Bridge...", duration = LOAD_DURATION * 0.20},
+        {target = 0.55, text = "⚡ Synchronizing 144Hz Lerp Subsystems...", duration = LOAD_DURATION * 0.25},
+        {target = 0.80, text = "🛡️ Loading Apex Cyber Memory Allocator...", duration = LOAD_DURATION * 0.30},
+        {target = 0.95, text = "🔮 Injecting Dynamic Shader Layer...", duration = LOAD_DURATION * 0.15},
+        {target = 1.00, text = "👑 TXR HUB READY!", duration = LOAD_DURATION * 0.10}
     }
     
     for _, step in ipairs(bootSteps) do
@@ -299,25 +316,26 @@ task.spawn(function()
         
         while (tick() - startTime) < step.duration do
             local alpha = (tick() - startTime) / step.duration
-            targetProgress = startPct + (step.target - startPct) * alpha
+            local smoothAlpha = alpha * alpha * (3 - 2 * alpha)
+            targetProgress = startPct + (step.target - startPct) * smoothAlpha
             task.wait()
         end
         targetProgress = step.target
     end
     
     targetProgress = 1.0
-    task.wait(0.15)
+    task.wait(0.2)
     
-    -- Clean Outro
+    -- Smooth Fade Out
     isIntroActive = false
     renderConn:Disconnect()
 
-    local fadeTween = TweenService:Create(mainCanvas, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {GroupTransparency = 1})
-    TweenService:Create(bg, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(blur, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = 0}):Play()
+    local fadeTween = TweenService:Create(mainCanvas, TweenInfo.new(0.35, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {GroupTransparency = 1})
+    TweenService:Create(bg, TweenInfo.new(0.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(blur, TweenInfo.new(0.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = 0}):Play()
     fadeTween:Play()
 
-    task.wait(0.35)
+    task.wait(0.4)
 
     pcall(function()
         introGui:Destroy()
@@ -325,15 +343,22 @@ task.spawn(function()
     end)
 
     -- =========================================================
-    -- 🚀 GUARANTEED MAIN SCRIPT LOAD
+    -- 🚀 MAIN SCRIPT EXECUTION
     -- =========================================================
     task.spawn(function()
-        local rawCode = game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Secure1Version.lua")
-        local runScript, err = loadstring(rawCode)
-        if runScript then
-            runScript()
+        local success, rawCode = pcall(function()
+            return game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Secure1Version.lua")
+        end)
+        
+        if success and rawCode then
+            local runScript, err = loadstring(rawCode)
+            if runScript then
+                runScript()
+            else
+                warn("[TXR HUB] Script Compile Error: " .. tostring(err))
+            end
         else
-            warn("Main Script Load Error: " .. tostring(err))
+            warn("[TXR HUB] Failed to fetch script from GitHub!")
         end
     end)
 end)
