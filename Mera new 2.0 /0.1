@@ -1705,7 +1705,7 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
     local startPos = nil
     local targetPos = frame.Position
     local velocity = Vector2.new(0, 0)
-    local lastInputPos = Vector2.new(0, 0)
+    local lastInputPos = Vector2.new(inputPos or Vector2.new(0, 0))
     local dragLoop = nil
 
     local function getClampedTarget(newXScale, newXOffset, newYScale, newYOffset)
@@ -2865,7 +2865,7 @@ end)
 -- =========================================================
 -- 🛡️ ANTI ROBOTS (PUBLIC ACCESS)
 -- =========================================================
-local escapeBtn = createMainBtn("⚡ ANTI ROBOTS", nil, false)
+local escapeBtn = createMainBtn("⚡ ANTI ROBOTS ( House Spawn Required )", nil, false)
 escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
 escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
@@ -2876,7 +2876,7 @@ local escapeDebounce = false
 escapeBtn.MouseButton1Click:Connect(function()
     local houseData = getMyHouse()
     if not houseData then
-        sendNotif("⚠️ Spawn House Requirement", "House spawn karo pehle!", 3)
+        sendNotif("⚠️ HOUSE REQUIRED", "First Spawn House! Pehle apna house spawn karein.", 3)
         return
     end
 
@@ -2982,7 +2982,7 @@ end)
 -- =========================================================
 -- 🚫 ANTI BANG (LIVE COUNTDOWN & SUCCESS/FAIL NOTIFICATION)
 -- =========================================================
-local banTrapBtn = createMainBtn("🛡️ ANTI BANG", nil, false)
+local banTrapBtn = createMainBtn("🛡️ ANTI BANG ( House Spawn Required )", nil, false)
 banTrapBtn.BackgroundColor3 = Color3.fromRGB(130, 0, 200)
 banTrapBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 banTrapBtn:SetAttribute("BaseColor", Color3.fromRGB(130, 0, 200))
@@ -2993,7 +2993,7 @@ local banTrapDebounce = false
 banTrapBtn.MouseButton1Click:Connect(function()
     local houseData = getMyHouse()
     if not houseData then
-        sendNotif("⚠️ Spawn House Requirement", "House spawn karo pehle!", 3)
+        sendNotif("⚠️ HOUSE REQUIRED", "First Spawn House! Pehle apna house spawn karein.", 3)
         return
     end
 
@@ -4311,7 +4311,7 @@ end)
 
 -- =================================================================
 -- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND & PIGGYBACK SAFE) 🚀
--- =================================================================
+-- =========================================================
 local isSmartClearing = false
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if _G.TXR_InstanceID ~= currentExecutionID then return end
@@ -4457,7 +4457,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     sendNotif("SMART CLEAR", "Bang Props Banned & Cleared!", 2)
                 else
                     if not houseData then
-                        sendNotif("⚠️ Spawn House Requirement", "House spawn karo pehle!", 3)
+                        sendNotif("⚠️ HOUSE REQUIRED", "First Spawn House! Pehle apna house spawn karein.", 3)
                     end
                 end
             end)
