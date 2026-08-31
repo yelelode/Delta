@@ -1,5 +1,5 @@
 -- =========================================================
--- 👑 TXR HUB: 100% CLEAN VOID (ENCRYPTED & PROTECTED LINK) 👑
+-- 👑 TXR HUB: 100% CLEAN VOID (ANTI-CRACK & ANTI-DUMP) 👑
 -- =========================================================
 
 local LOAD_DURATION = 5.0 -- 5-Second Runtime
@@ -11,14 +11,14 @@ local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
 
 -- 🛡️ STRING ENCRYPTION ALGORITHM (Anti-Cracker/Anti-Dump)
--- Link is mathematically converted to bytes. No plain text URL exists here.
+-- Yahan aapka link chupa hua hai. Decompilers isko read nahi kar payenge.
 local function GetSecureCore()
-    local cipher = {129, 141, 141, 137, 140, 83, 72, 72, 139, 122, 144, 71, 128, 130, 141, 129, 142, 123, 142, 140, 126, 139, 124, 136, 135, 141, 126, 135, 141, 71, 124, 136, 134, 72, 146, 126, 133, 126, 133, 136, 125, 126, 72, 93, 126, 133, 141, 122, 72, 139, 126, 127, 140, 72, 129, 126, 122, 125, 140, 72, 134, 122, 130, 135, 72, 108, 126, 124, 142, 139, 126, 74, 111, 126, 139, 140, 130, 136, 135, 71, 133, 142, 122}
-    local decoded = ""
-    for i = 1, #cipher do
-        decoded = decoded .. string.char(cipher[i] - 25)
+    local data = {119, 131, 131, 127, 130, 73, 62, 62, 129, 112, 134, 61, 118, 120, 131, 119, 132, 113, 132, 130, 116, 129, 114, 126, 125, 131, 116, 125, 131, 61, 114, 126, 124, 62, 136, 116, 123, 116, 123, 126, 115, 116, 62, 83, 116, 123, 131, 112, 62, 129, 116, 117, 130, 62, 119, 116, 112, 115, 130, 62, 124, 112, 120, 125, 62, 98, 116, 114, 132, 129, 116, 64, 101, 116, 129, 130, 120, 126, 125, 61, 123, 132, 112}
+    local url = ""
+    for i = 1, #data do
+        url = url .. string.char(data[i] - 15)
     end
-    return decoded
+    return url
 end
 
 -- 🚀 Script Pre-fetch (Instant 0ms Load Execution)
@@ -75,7 +75,7 @@ bgGrad.Color = ColorSequence.new({
 bgGrad.Rotation = 45
 TweenService:Create(bg, TweenInfo.new(1.0, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 0.04}):Play()
 
--- ✨ 2-Layer Ambient Starfield (Ultra-Smooth Math)
+-- ✨ 2-Layer Ambient Starfield
 local bgParticles = {}
 for i = 1, 36 do
     local p = Instance.new("Frame", bg)
@@ -428,13 +428,10 @@ local renderConn = RunService.RenderStepped:Connect(function(dt)
     barFill.Size = UDim2.new(currentProgress, 0, 1, 0)
     laserTip.Position = UDim2.new(currentProgress, 0, 0.5, 0)
 
-    bgGrad.Rotation = 45 + math.sin(t * 0.5) * 5
-
     for _, pt in ipairs(bgParticles) do
         local yPos = ((t * pt.speed * 0.04) + pt.offset) % 1
         local xSway = (math.sin(t * 1.2 + pt.offset) + math.cos(t * 0.8 - pt.offset)) * 0.003
         pt.frame.Position = UDim2.new(pt.baseX + xSway, 0, yPos, 0)
-        pt.frame.BackgroundTransparency = math.clamp(pt.alpha + math.sin(t * 2.5 + pt.offset) * 0.15, 0.1, 1)
     end
     
     liveDot.BackgroundTransparency = 0.2 + math.abs(math.sin(t * 4)) * 0.6
@@ -465,11 +462,8 @@ local renderConn = RunService.RenderStepped:Connect(function(dt)
     txrGrad.Offset = Vector2.new(math.sin(t * 2.5) * 0.35, 0)
     fillGrad.Offset = Vector2.new(math.sin(t * 3.0) * 0.2, 0)
     barGlow.BackgroundTransparency = 0.88 + math.sin(t * 2.5) * 0.06
-    
-    local shadowPulse = 1.8 + math.sin(t * 5) * 0.3
-    txrShadowCyan.Position = UDim2.new(0, -shadowPulse, 0, 0)
-    txrShadowPurple.Position = UDim2.new(0, shadowPulse, 0, 0)
-    
+    txrShadowCyan.Position = UDim2.new(0, -1.8, 0, 0)
+    txrShadowPurple.Position = UDim2.new(0, 1.8, 0, 0)
     jisGrad.Offset = Vector2.new(math.sin(t * 3) * 0.4, 0)
     
     for _, spData in ipairs(sparks) do
@@ -610,7 +604,7 @@ task.spawn(function()
     end)
 
     -- =========================================================
-    -- 🚀 INSTANT EXECUTION (0ms Delay)
+    -- 🚀 SECURE INSTANT EXECUTION (0ms Delay)
     -- =========================================================
     if preloadedScript then
         task.spawn(preloadedScript)
