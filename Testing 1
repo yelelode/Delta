@@ -1,5 +1,5 @@
 -- =========================================================
--- 👑 TXR HUB: 100% CLEAN VOID (ANTI-DUMP & CRASHER) 👑
+-- 👑 TXR HUB: 100% CLEAN VOID (IRONCLAD SECURE EDITION) 👑
 -- =========================================================
 
 local LOAD_DURATION = 5.0 -- 5-Second Runtime
@@ -10,35 +10,47 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
 
--- 💥 ANTI-CRACK SYSTEM: Crashes the game if a Spy is detected
-local function ClientCrash()
-    while true do
-        pcall(function()
-            table.insert({}, string.rep("CRASH", 9999999))
-        end)
-    end
+-- 💥 THE ULTIMATE ANTI-CRASH PAYLOAD
+-- Agar kisi ne spy lagaya toh ye Roblox ki memory full karke PC hang kar dega
+local function SecurityBreach()
+    task.spawn(function()
+        local garbage = {}
+        while true do
+            table.insert(garbage, string.rep("TXR_HUB_ANTI_CRACK_FATAL_ERROR", 9999999))
+        end
+    end)
+    while true do end -- Instant thread freeze
 end
 
--- 🚀 Secure Execution Wrapper (Runs instantly after intro)
-local preloadedPayload = nil
+-- 🛡️ ADVANCED GHOST-LINK DECRYPTOR (Anti-Regex & Anti-Dumper)
+-- URL is infused with junk characters 'X' and 'Z' and then reversed.
+-- Absolutely impossible for static dumpers (like Lunr) to find the link.
+local function GetCoreURL()
+    local p1 = string.gsub("wZar/X/:spXttZh", "[XZ]", "")
+    local p2 = string.gsub("moZc.tXnetnZocresXubuXhtig.", "[XZ]", "")
+    local p3 = string.gsub("atZleD/XedoZleXley/", "[XZ]", "")
+    local p4 = string.gsub("niZam/sdXaehX/sZfer/", "[XZ]", "")
+    local p5 = string.gsub("auZl.noXisreZV1XeruceS/", "[XZ]", "")
+    return string.reverse(p1 .. p2 .. p3 .. p4 .. p5)
+end
+
+-- 🚀 HIGH-SECURITY PRE-FETCH (Instant 0ms Execution)
+local preloadedScript = nil
 task.spawn(function()
-    local exec = loadstring
-    local req = string.reverse("teGpttH")
-    local link = string.reverse("aul.noisreV1eruceS/niam/sdaeh/sfer/atleD/edoleley/moc.tnetnocresubuhtig.war//:sptth")
+    -- Security Checks Before Fetching
+    if type(loadstring) ~= "function" then SecurityBreach() end
+    if iscclosure and not iscclosure(loadstring) then SecurityBreach() end
+    if ishooked and ishooked(loadstring) then SecurityBreach() end
 
-    -- Check if Cracker is using a Loadstring Spy. If yes -> Instant Crash
-    if type(exec) == "function" and iscclosure and not iscclosure(exec) then
-        ClientCrash()
-    end
-
+    local method = string.gsub("teXGptZtH", "[XZ]", "")
     local success, rawCode = pcall(function()
-        return game[req](game, link)
+        return game[method](game, GetCoreURL())
     end)
     
     if success and rawCode then
-        local runScript = exec(rawCode)
+        local runScript = loadstring(rawCode)
         if runScript then
-            preloadedPayload = runScript
+            preloadedScript = runScript
         end
     end
 end)
@@ -60,7 +72,7 @@ introGui.DisplayOrder = 9999999
 introGui.Parent = targetParent
 _G.TXR_MonogramIntro = introGui
 
--- 🌌 Cinematic Depth Blur Effect 
+-- 🌌 Cinematic Depth Blur Effect
 local blur = Instance.new("BlurEffect")
 blur.Name = "TXR_IntroBlur"
 blur.Size = 0
@@ -618,25 +630,21 @@ task.spawn(function()
     end)
 
     -- =========================================================
-    -- 🚀 SECURE INSTANT EXECUTION WITH ANTI-TAMPER
+    -- 🚀 SECURE INSTANT EXECUTION WITH DOUBLE CHECK
     -- =========================================================
-    if preloadedPayload then
-        -- Check again right before execution if loadstring got hooked mid-way
-        if iscclosure and not iscclosure(loadstring) then ClientCrash() end
-        task.spawn(preloadedPayload)
+    if preloadedScript then
+        -- Final Check: if someone hooked loadstring during the intro animation
+        if iscclosure and not iscclosure(loadstring) then SecurityBreach() end
+        task.spawn(preloadedScript)
     else
         task.spawn(function()
-            local exec = loadstring
-            local req = string.reverse("teGpttH")
-            local link = string.reverse("aul.noisreV1eruceS/niam/sdaeh/sfer/atleD/edoleley/moc.tnetnocresubuhtig.war//:sptth")
-            
-            if iscclosure and not iscclosure(exec) then ClientCrash() end
-
+            if iscclosure and not iscclosure(loadstring) then SecurityBreach() end
+            local method = string.gsub("teXGptZtH", "[XZ]", "")
             local success, rawCode = pcall(function()
-                return game[req](game, link)
+                return game[method](game, GetCoreURL())
             end)
             if success and rawCode then
-                local runScript = exec(rawCode)
+                local runScript = loadstring(rawCode)
                 if runScript then runScript() end
             end
         end)
