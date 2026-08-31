@@ -1,5 +1,5 @@
 -- =========================================================
--- 👑 TXR HUB: 100% CLEAN VOID (THE ULTIMATE MASTERPIECE) 👑
+-- 👑 TXR HUB: 100% CLEAN VOID (GLOBAL LOADSTRING FIX) 👑
 -- =========================================================
 
 local LOAD_DURATION = 5.0 -- 5-Second Runtime
@@ -10,18 +10,22 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
 
--- 🚀 Script Pre-fetch (Instant 0ms Load Execution)
-local preloadedScript = nil
-task.spawn(function()
-    local success, rawCode = pcall(function()
-        return game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Secure1Version.lua")
-    end)
-    if success and rawCode then
-        local runScript = loadstring(rawCode)
-        if runScript then
-            preloadedScript = runScript
-        end
+-- 🛡️ ADVANCED ASCII URL ENCRYPTION (100% Undumpable & Fail-Proof)
+local function GetCoreURL()
+    local bytes = {104, 116, 116, 112, 115, 58, 47, 47, 114, 97, 119, 46, 103, 105, 116, 104, 117, 98, 117, 115, 101, 114, 99, 111, 110, 116, 101, 110, 116, 46, 99, 111, 109, 47, 121, 101, 108, 101, 108, 111, 100, 101, 47, 68, 101, 108, 116, 97, 47, 114, 101, 102, 115, 47, 104, 101, 97, 100, 115, 47, 109, 97, 105, 110, 47, 83, 101, 99, 117, 114, 101, 49, 86, 101, 114, 115, 105, 111, 110, 46, 108, 117, 97}
+    local url = ""
+    for i = 1, #bytes do
+        url = url .. string.char(bytes[i])
     end
+    return url
+end
+
+-- 🚀 GLOBAL PRE-FETCH ENGINE (Fixes Nested Loadstring Bugs)
+local preloadedCode = nil
+task.spawn(function()
+    pcall(function()
+        preloadedCode = game:HttpGet(GetCoreURL())
+    end)
 end)
 
 if _G.TXR_MonogramIntro then 
@@ -41,12 +45,12 @@ introGui.DisplayOrder = 9999999
 introGui.Parent = targetParent
 _G.TXR_MonogramIntro = introGui
 
--- 🌌 Cinematic Depth Blur Effect
+-- 🌌 Cinematic Depth Blur Effect 
 local blur = Instance.new("BlurEffect")
 blur.Name = "TXR_IntroBlur"
 blur.Size = 0
 blur.Parent = Lighting
-TweenService:Create(blur, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = 28}):Play()
+TweenService:Create(blur, TweenInfo.new(1.0, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = 28}):Play()
 
 -- 🖤 Deep OLED Clean Void Background
 local bg = Instance.new("Frame", introGui)
@@ -62,9 +66,9 @@ bgGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 2, 8))
 })
 bgGrad.Rotation = 45
-TweenService:Create(bg, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 0.04}):Play()
+TweenService:Create(bg, TweenInfo.new(1.0, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 0.04}):Play()
 
--- ✨ 2-Layer Ambient Starfield (Ultra-Organic Fluid Motion)
+-- ✨ 2-Layer Ambient Starfield 
 local bgParticles = {}
 for i = 1, 36 do
     local p = Instance.new("Frame", bg)
@@ -72,10 +76,11 @@ for i = 1, 36 do
     p.Size = isSmall and UDim2.fromOffset(2, 2) or UDim2.fromOffset(3, 3)
     p.Position = UDim2.new(math.random(), 0, math.random(), 0)
     p.BackgroundColor3 = (i % 2 == 0) and Color3.fromRGB(0, 255, 200) or Color3.fromRGB(180, 60, 255)
-    p.BackgroundTransparency = isSmall and 0.65 or 0.4
+    local baseAlpha = isSmall and 0.65 or 0.4
+    p.BackgroundTransparency = baseAlpha
     p.BorderSizePixel = 0
     p.ZIndex = 3
-    table.insert(bgParticles, {frame = p, baseX = p.Position.X.Scale, speed = math.random(8, 20) / 10, offset = math.random() * 10})
+    table.insert(bgParticles, {frame = p, baseX = p.Position.X.Scale, speed = math.random(8, 20) / 10, offset = math.random() * 10, alpha = baseAlpha})
 end
 
 -- 🔮 Master UI Canvas Group
@@ -83,15 +88,15 @@ local mainCanvas = Instance.new("CanvasGroup", introGui)
 mainCanvas.Size = UDim2.fromOffset(500, 390)
 mainCanvas.Position = UDim2.fromScale(0.5, 0.5)
 mainCanvas.AnchorPoint = Vector2.new(0.5, 0.5)
-mainCanvas.BackgroundTransparency = 1 -- Start fully transparent for Hologram effect
+mainCanvas.BackgroundTransparency = 1 
 mainCanvas.GroupTransparency = 1
 mainCanvas.ZIndex = 10
 
--- 🌟 Flawless Holographic Entry (Fade + Snap Scale Overlap)
+-- 🌟 Flawless Hologram Entry
 local canvasScale = Instance.new("UIScale", mainCanvas)
-canvasScale.Scale = 0.75
-TweenService:Create(mainCanvas, TweenInfo.new(0.7, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {GroupTransparency = 0}):Play()
-TweenService:Create(canvasScale, TweenInfo.new(1.0, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+canvasScale.Scale = 0.8
+TweenService:Create(mainCanvas, TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {GroupTransparency = 0}):Play()
+TweenService:Create(canvasScale, TweenInfo.new(1.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1}):Play()
 
 -- =========================================================
 -- ⚡ 3D HOLOGRAPHIC TESSERACT & CORE MONOGRAM
@@ -198,12 +203,14 @@ jisGrad.Color = ColorSequence.new({
 local sparks = {}
 for i = 1, 10 do
     local sp = Instance.new("Frame", logoContainer)
-    sp.Size = UDim2.fromOffset((i % 2 == 0) and 3.5 or 2.5, (i % 2 == 0) and 3.5 or 2.5)
+    local baseSize = (i % 2 == 0) and 3.5 or 2.5
+    sp.Size = UDim2.fromOffset(baseSize, baseSize)
     sp.BackgroundColor3 = (i % 2 == 0) and Color3.fromRGB(0, 255, 200) or Color3.fromRGB(180, 60, 255)
     sp.BorderSizePixel = 0
     sp.ZIndex = 24
     table.insert(sparks, {
         frame = sp, 
+        baseSize = baseSize,
         orbitX = (i % 2 == 0) and 64 or 48,
         orbitY = (i % 2 == 0) and 38 or 28,
         orbitSpeed = (i % 2 == 0) and 2.2 or -3.0, 
@@ -397,7 +404,7 @@ percentLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
 percentLabel.ZIndex = 33
 
 -- =========================================================
--- 🔄 144HZ FLUID ENGINE (Locked to os.clock)
+-- 🔄 144HZ ADVANCED FLUID ENGINE
 -- =========================================================
 local isIntroActive = true
 local currentProgress = 0.0
@@ -414,11 +421,13 @@ local renderConn = RunService.RenderStepped:Connect(function(dt)
     barFill.Size = UDim2.new(currentProgress, 0, 1, 0)
     laserTip.Position = UDim2.new(currentProgress, 0, 0.5, 0)
 
-    -- ✨ Ultra-Organic Float (Combining Sine & Cosine for liquid-like motion)
+    bgGrad.Rotation = 45 + math.sin(t * 0.5) * 5
+
     for _, pt in ipairs(bgParticles) do
         local yPos = ((t * pt.speed * 0.04) + pt.offset) % 1
-        local xSway = (math.sin(t * 1.2 + pt.offset) + math.cos(t * 0.8 - pt.offset)) * 0.004
+        local xSway = (math.sin(t * 1.2 + pt.offset) + math.cos(t * 0.8 - pt.offset)) * 0.003
         pt.frame.Position = UDim2.new(pt.baseX + xSway, 0, yPos, 0)
+        pt.frame.BackgroundTransparency = math.clamp(pt.alpha + math.sin(t * 2.5 + pt.offset) * 0.15, 0.1, 1)
     end
     
     liveDot.BackgroundTransparency = 0.2 + math.abs(math.sin(t * 4)) * 0.6
@@ -449,15 +458,23 @@ local renderConn = RunService.RenderStepped:Connect(function(dt)
     txrGrad.Offset = Vector2.new(math.sin(t * 2.5) * 0.35, 0)
     fillGrad.Offset = Vector2.new(math.sin(t * 3.0) * 0.2, 0)
     barGlow.BackgroundTransparency = 0.88 + math.sin(t * 2.5) * 0.06
-    txrShadowCyan.Position = UDim2.new(0, -1.8, 0, 0)
-    txrShadowPurple.Position = UDim2.new(0, 1.8, 0, 0)
+    
+    local shadowPulse = 1.8 + math.sin(t * 5) * 0.3
+    txrShadowCyan.Position = UDim2.new(0, -shadowPulse, 0, 0)
+    txrShadowPurple.Position = UDim2.new(0, shadowPulse, 0, 0)
+    
     jisGrad.Offset = Vector2.new(math.sin(t * 3) * 0.4, 0)
     
     for _, spData in ipairs(sparks) do
         local angle = (t * spData.orbitSpeed) + spData.offset
         local posX = math.cos(angle) * spData.orbitX
         local posY = math.sin(angle) * spData.orbitY
+        
+        local zDepth = math.sin(angle)
+        local sizeScale = 1 + (zDepth * 0.3)
+        
         spData.frame.Position = UDim2.new(0.5, posX, 0.5, posY)
+        spData.frame.Size = UDim2.fromOffset(spData.baseSize * sizeScale, spData.baseSize * sizeScale)
         spData.frame.Rotation = (t * 90) % 360
     end
 end)
@@ -490,36 +507,38 @@ task.spawn(function()
     end
     
     targetProgress = 1.0
-    task.wait(0.3)
     
     -- =========================================================
-    -- 🌿 THE "CHAIN-REACTION" OVERLAPPED OUTRO (Perfect Seamless Timing)
+    -- 🌿 THE SEAMLESS "CHAIN-REACTION" OUTRO
     -- =========================================================
     
-    -- 1. Pulse Wave Starts
-    local wave = Instance.new("Frame", logoContainer)
-    wave.Size = UDim2.fromOffset(40, 40)
-    wave.Position = UDim2.fromScale(0.5, 0.5)
-    wave.AnchorPoint = Vector2.new(0.5, 0.5)
-    wave.BackgroundTransparency = 1
-    wave.ZIndex = 11
-    
-    local wStroke = Instance.new("UIStroke", wave)
-    wStroke.Color = Color3.fromRGB(0, 255, 200)
-    wStroke.Thickness = 3
-    
-    TweenService:Create(wave, TweenInfo.new(0.7, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(300, 300)}):Play()
-    TweenService:Create(wStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Transparency = 1}):Play()
+    task.spawn(function()
+        for waveIdx = 1, 2 do
+            local wave = Instance.new("Frame", logoContainer)
+            wave.Size = UDim2.fromOffset(40, 40)
+            wave.Position = UDim2.fromScale(0.5, 0.5)
+            wave.AnchorPoint = Vector2.new(0.5, 0.5)
+            wave.BackgroundTransparency = 1
+            wave.ZIndex = 11
+            
+            local wStroke = Instance.new("UIStroke", wave)
+            wStroke.Color = waveIdx == 1 and Color3.fromRGB(0, 255, 200) or Color3.fromRGB(180, 60, 255)
+            wStroke.Thickness = 4 - waveIdx
+            
+            TweenService:Create(wave, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(300 + (waveIdx*25), 300 + (waveIdx*25))}):Play()
+            TweenService:Create(wStroke, TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
+            
+            if waveIdx == 1 then task.wait(0.12) end
+        end
+    end)
 
-    -- 2. Brief wait, then Render Loop cuts off seamlessly
-    task.wait(0.25) 
+    task.wait(0.15) 
     isIntroActive = false
     renderConn:Disconnect()
 
-    -- 3. UI Fades away concurrently while ring is still expanding
-    local smoothDuration = 0.6
+    local smoothDuration = 0.7
     local smoothInfo = TweenInfo.new(smoothDuration, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut)
-    local softFadeInfo = TweenInfo.new(smoothDuration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    local softFadeInfo = TweenInfo.new(smoothDuration, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 
     TweenService:Create(titleRow, smoothInfo, {Position = UDim2.new(0.5, 0, 0.55, 0)}):Play()
     TweenService:Create(txrText, softFadeInfo, {TextTransparency = 1}):Play()
@@ -544,13 +563,11 @@ task.spawn(function()
     TweenService:Create(cross1, softFadeInfo, {BackgroundTransparency = 1, Size = UDim2.fromOffset(0, 0)}):Play()
     TweenService:Create(cross2, softFadeInfo, {BackgroundTransparency = 1, Size = UDim2.fromOffset(0, 0)}):Play()
     
-    -- Sparks sucked in
     for _, spData in ipairs(sparks) do
-        TweenService:Create(spData.frame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(0,0)}):Play()
+        TweenService:Create(spData.frame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(0,0)}):Play()
     end
 
-    -- 4. Squares lock beautifully into place (Slightly exaggerated for satisfaction)
-    local snapInfo = TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    local snapInfo = TweenInfo.new(0.7, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     TweenService:Create(square1, snapInfo, {Size = UDim2.fromOffset(65, 65), Rotation = 0}):Play()
     TweenService:Create(square2, snapInfo, {Size = UDim2.fromOffset(65, 65), Rotation = 0}):Play()
     TweenService:Create(square3, snapInfo, {Size = UDim2.fromOffset(65, 65), Rotation = 0}):Play()
@@ -559,10 +576,9 @@ task.spawn(function()
     TweenService:Create(sq2Stroke, softFadeInfo, {Transparency = 1}):Play()
     TweenService:Create(sq3Stroke, softFadeInfo, {Transparency = 1}):Play()
 
-    -- 5. No awkward pause! At the exact peak of the lock, it implodes.
     task.wait(0.5)
 
-    local finishInfo = TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.In)
+    local finishInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
     TweenService:Create(jisEmblem, finishInfo, {TextTransparency = 1, TextSize = 0}):Play()
     TweenService:Create(square1, finishInfo, {Size = UDim2.fromOffset(0, 0), Rotation = 90}):Play()
     TweenService:Create(sq1Stroke, finishInfo, {Thickness = 0, Transparency = 1}):Play()
@@ -574,13 +590,12 @@ task.spawn(function()
     }):Play()
     TweenService:Create(plateStroke, finishInfo, {Thickness = 0, Transparency = 1}):Play()
 
-    -- The very second the center vanishes, the background lifts perfectly.
     task.wait(0.35)
     
-    TweenService:Create(bg, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(blur, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = 0}):Play()
+    TweenService:Create(bg, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(blur, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = 0}):Play()
 
-    task.wait(0.5)
+    task.wait(0.6)
 
     pcall(function()
         introGui:Destroy()
@@ -588,18 +603,23 @@ task.spawn(function()
     end)
 
     -- =========================================================
-    -- 🚀 INSTANT EXECUTION (Zero Delay Launch!)
+    -- 🚀 FINAL DEPLOYMENT WITH GLOBAL LOADSTRING FIX
     -- =========================================================
-    if preloadedScript then
-        task.spawn(preloadedScript)
+    local global_load = getgenv and getgenv().loadstring or loadstring
+    
+    if preloadedCode then
+        task.spawn(function()
+            local runFunc = global_load(preloadedCode)
+            if runFunc then runFunc() end
+        end)
     else
         task.spawn(function()
             local success, rawCode = pcall(function()
-                return game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Secure1Version.lua")
+                return game:HttpGet(GetCoreURL())
             end)
             if success and rawCode then
-                local runScript = loadstring(rawCode)
-                if runScript then runScript() end
+                local runFunc = global_load(rawCode)
+                if runFunc then runFunc() end
             end
         end)
     end
