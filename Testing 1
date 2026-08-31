@@ -1,5 +1,5 @@
 -- =========================================================
--- 👑 TXR HUB: 100% CLEAN VOID (GLOBAL LOADSTRING FIX) 👑
+-- 👑 TXR HUB: 100% CLEAN VOID (THE DUMPER-CRASH TRAP) 👑
 -- =========================================================
 
 local LOAD_DURATION = 5.0 -- 5-Second Runtime
@@ -10,21 +10,25 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
 
--- 🛡️ ADVANCED ASCII URL ENCRYPTION (100% Undumpable & Fail-Proof)
+-- 🛡️ ADVANCED ASCII URL ENCRYPTION
 local function GetCoreURL()
     local bytes = {104, 116, 116, 112, 115, 58, 47, 47, 114, 97, 119, 46, 103, 105, 116, 104, 117, 98, 117, 115, 101, 114, 99, 111, 110, 116, 101, 110, 116, 46, 99, 111, 109, 47, 121, 101, 108, 101, 108, 111, 100, 101, 47, 68, 101, 108, 116, 97, 47, 114, 101, 102, 115, 47, 104, 101, 97, 100, 115, 47, 109, 97, 105, 110, 47, 83, 101, 99, 117, 114, 101, 49, 86, 101, 114, 115, 105, 111, 110, 46, 108, 117, 97}
     local url = ""
-    for i = 1, #bytes do
-        url = url .. string.char(bytes[i])
-    end
+    for i = 1, #bytes do url = url .. string.char(bytes[i]) end
     return url
 end
 
--- 🚀 GLOBAL PRE-FETCH ENGINE (Fixes Nested Loadstring Bugs)
+-- 🚀 GHOST PRE-FETCH (Bypasses HTTP Spies)
 local preloadedCode = nil
 task.spawn(function()
     pcall(function()
-        preloadedCode = game:HttpGet(GetCoreURL())
+        local req = (request or http and http.request or http_request)
+        if req then
+            local res = req({Url = GetCoreURL(), Method = "GET"})
+            if res and res.Body then preloadedCode = res.Body end
+        else
+            preloadedCode = game:HttpGet(GetCoreURL())
+        end
     end)
 end)
 
@@ -603,22 +607,31 @@ task.spawn(function()
     end)
 
     -- =========================================================
-    -- 🚀 FINAL DEPLOYMENT WITH GLOBAL LOADSTRING FIX
+    -- 🚀 FINAL DUMPER-CRASHING EXECUTION ENGINE
     -- =========================================================
-    local global_load = getgenv and getgenv().loadstring or loadstring
-    
-    if preloadedCode then
+    -- Dumper Trap: Passing invalid Windows characters as chunkname. 
+    -- If Lunr or any spy tries to 'writefile', the executor crashes!
+    local fatalChunkName = "COM1\\NUL\\CON\\<TXR_HUB_TRAP>.lua" 
+    local globalLoad = getgenv and getgenv().loadstring or loadstring
+
+    if preloadedCode and #preloadedCode > 0 then
         task.spawn(function()
-            local runFunc = global_load(preloadedCode)
+            local runFunc = globalLoad(preloadedCode, fatalChunkName)
             if runFunc then runFunc() end
         end)
     else
         task.spawn(function()
-            local success, rawCode = pcall(function()
-                return game:HttpGet(GetCoreURL())
-            end)
-            if success and rawCode then
-                local runFunc = global_load(rawCode)
+            local req = (request or http and http.request or http_request)
+            local rawCode = nil
+            if req then
+                local res = req({Url = GetCoreURL(), Method = "GET"})
+                if res and res.Body then rawCode = res.Body end
+            else
+                rawCode = game:HttpGet(GetCoreURL())
+            end
+            
+            if rawCode and #rawCode > 0 then
+                local runFunc = globalLoad(rawCode, fatalChunkName)
                 if runFunc then runFunc() end
             end
         end)
