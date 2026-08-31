@@ -1,5 +1,5 @@
 -- =========================================================
--- 👑 TXR HUB: 100% CLEAN VOID (FULL ORIGINAL OUTRO) - V55 👑
+-- 👑 TXR HUB: 100% CLEAN VOID (THE FLAWLESS MASTERPIECE) 👑
 -- =========================================================
 
 local LOAD_DURATION = 5.0 -- 5-Second Runtime
@@ -10,7 +10,7 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
 
--- 🚀 Pre-fetch in background for instant execution
+-- 🚀 Script Pre-fetch (Instant 0ms Load Execution)
 local preloadedScript = nil
 task.spawn(function()
     local success, rawCode = pcall(function()
@@ -41,12 +41,12 @@ introGui.DisplayOrder = 9999999
 introGui.Parent = targetParent
 _G.TXR_MonogramIntro = introGui
 
--- 🌌 Cinematic Depth Blur Effect
+-- 🌌 Cinematic Depth Blur Effect (Quint for luxurious fade)
 local blur = Instance.new("BlurEffect")
 blur.Name = "TXR_IntroBlur"
 blur.Size = 0
 blur.Parent = Lighting
-TweenService:Create(blur, TweenInfo.new(0.6, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = 28}):Play()
+TweenService:Create(blur, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = 28}):Play()
 
 -- 🖤 Deep OLED Clean Void Background
 local bg = Instance.new("Frame", introGui)
@@ -62,9 +62,9 @@ bgGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 2, 8))
 })
 bgGrad.Rotation = 45
-TweenService:Create(bg, TweenInfo.new(0.6, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {BackgroundTransparency = 0.04}):Play()
+TweenService:Create(bg, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 0.04}):Play()
 
--- ✨ 2-Layer Ambient Starfield
+-- ✨ 2-Layer Ambient Starfield (With Organic Base Position)
 local bgParticles = {}
 for i = 1, 36 do
     local p = Instance.new("Frame", bg)
@@ -75,7 +75,7 @@ for i = 1, 36 do
     p.BackgroundTransparency = isSmall and 0.65 or 0.4
     p.BorderSizePixel = 0
     p.ZIndex = 3
-    table.insert(bgParticles, {frame = p, speed = math.random(8, 20) / 10, offset = math.random() * 10})
+    table.insert(bgParticles, {frame = p, baseX = p.Position.X.Scale, speed = math.random(8, 20) / 10, offset = math.random() * 10})
 end
 
 -- 🔮 Master UI Canvas Group
@@ -87,9 +87,10 @@ mainCanvas.BackgroundTransparency = 1
 mainCanvas.GroupTransparency = 0
 mainCanvas.ZIndex = 10
 
+-- 🌟 Flawless Premium Entry Animation (Snappy 'Back' Easing instead of wobbly Elastic)
 local canvasScale = Instance.new("UIScale", mainCanvas)
-canvasScale.Scale = 0.65
-TweenService:Create(canvasScale, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+canvasScale.Scale = 0.7
+TweenService:Create(canvasScale, TweenInfo.new(0.9, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
 
 -- =========================================================
 -- ⚡ 3D HOLOGRAPHIC TESSERACT & CORE MONOGRAM
@@ -395,7 +396,7 @@ percentLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
 percentLabel.ZIndex = 33
 
 -- =========================================================
--- 🔄 144HZ FLUID ENGINE
+-- 🔄 144HZ FLUID ENGINE (Locked to os.clock)
 -- =========================================================
 local isIntroActive = true
 local currentProgress = 0.0
@@ -403,7 +404,7 @@ local targetProgress = 0.0
 
 local renderConn = RunService.RenderStepped:Connect(function(dt)
     if not isIntroActive then return end
-    local t = tick()
+    local t = os.clock() 
     
     currentProgress = currentProgress + (targetProgress - currentProgress) * math.clamp(dt * 14, 0, 1)
     local displayPct = math.clamp(math.floor(currentProgress * 100), 0, 100)
@@ -412,9 +413,11 @@ local renderConn = RunService.RenderStepped:Connect(function(dt)
     barFill.Size = UDim2.new(currentProgress, 0, 1, 0)
     laserTip.Position = UDim2.new(currentProgress, 0, 0.5, 0)
 
+    -- ✨ Perfected Organic Particle Float (Subtle sine wave sway)
     for _, pt in ipairs(bgParticles) do
         local yPos = ((t * pt.speed * 0.04) + pt.offset) % 1
-        pt.frame.Position = UDim2.new(pt.frame.Position.X.Scale, 0, yPos, 0)
+        local xSway = math.sin(t * 1.5 + pt.offset) * 0.005 
+        pt.frame.Position = UDim2.new(pt.baseX + xSway, 0, yPos, 0)
     end
     
     liveDot.BackgroundTransparency = 0.2 + math.abs(math.sin(t * 4)) * 0.6
@@ -473,11 +476,11 @@ task.spawn(function()
     
     for _, step in ipairs(bootSteps) do
         statusLabel.Text = step.text
-        local startTime = tick()
+        local startTime = os.clock()
         local startPct = targetProgress
         
-        while (tick() - startTime) < step.duration do
-            local alpha = (tick() - startTime) / step.duration
+        while (os.clock() - startTime) < step.duration do
+            local alpha = (os.clock() - startTime) / step.duration
             local smoothAlpha = alpha * alpha * (3 - 2 * alpha)
             targetProgress = startPct + (step.target - startPct) * smoothAlpha
             task.wait()
@@ -486,10 +489,10 @@ task.spawn(function()
     end
     
     targetProgress = 1.0
-    task.wait(0.35)
+    task.wait(0.3) -- Tightened pause for better chain-reaction
     
     -- =========================================================
-    -- 🌿 VICTORY PULSE & HARMONIC OUTRO (SLOW & DETAILED)
+    -- 🌿 THE PERFECT OUTRO SEQUENCE (Flawless Chain Reaction)
     -- =========================================================
     local wave = Instance.new("Frame", logoContainer)
     wave.Size = UDim2.fromOffset(40, 40)
@@ -502,16 +505,16 @@ task.spawn(function()
     wStroke.Color = Color3.fromRGB(0, 255, 200)
     wStroke.Thickness = 3
     
-    TweenService:Create(wave, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(280, 280)}):Play()
-    TweenService:Create(wStroke, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Transparency = 1}):Play()
+    TweenService:Create(wave, TweenInfo.new(0.65, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(300, 300)}):Play()
+    TweenService:Create(wStroke, TweenInfo.new(0.65, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Transparency = 1}):Play()
 
-    task.wait(0.45)
+    task.wait(0.35)
     isIntroActive = false
     renderConn:Disconnect()
 
-    local smoothDuration = 0.7
-    local smoothInfo = TweenInfo.new(smoothDuration, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut)
-    local softFadeInfo = TweenInfo.new(smoothDuration * 0.8, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
+    local smoothDuration = 0.65
+    local smoothInfo = TweenInfo.new(smoothDuration, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut)
+    local softFadeInfo = TweenInfo.new(smoothDuration * 0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 
     TweenService:Create(titleRow, smoothInfo, {Position = UDim2.new(0.5, 0, 0.55, 0)}):Play()
     TweenService:Create(txrText, softFadeInfo, {TextTransparency = 1}):Play()
@@ -537,21 +540,24 @@ task.spawn(function()
     TweenService:Create(cross2, softFadeInfo, {BackgroundTransparency = 1, Size = UDim2.fromOffset(0, 0)}):Play()
     
     for _, spData in ipairs(sparks) do
-        TweenService:Create(spData.frame, smoothInfo, {Position = UDim2.fromScale(0.5, 0.5), BackgroundTransparency = 1}):Play()
+        TweenService:Create(spData.frame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(0,0)}):Play()
     end
 
-    TweenService:Create(square1, smoothInfo, {Size = UDim2.fromOffset(60, 60), Rotation = 0}):Play()
-    TweenService:Create(square2, smoothInfo, {Size = UDim2.fromOffset(60, 60), Rotation = 0}):Play()
-    TweenService:Create(square3, smoothInfo, {Size = UDim2.fromOffset(60, 60), Rotation = 0}):Play()
-    TweenService:Create(centerPlate, smoothInfo, {Rotation = 0}):Play()
+    -- Flawless Snap: Using 'Back' easing gives it a mechanical, satisfying lock
+    local snapInfo = TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    TweenService:Create(square1, snapInfo, {Size = UDim2.fromOffset(65, 65), Rotation = 0}):Play()
+    TweenService:Create(square2, snapInfo, {Size = UDim2.fromOffset(65, 65), Rotation = 0}):Play()
+    TweenService:Create(square3, snapInfo, {Size = UDim2.fromOffset(65, 65), Rotation = 0}):Play()
+    TweenService:Create(centerPlate, snapInfo, {Rotation = 0}):Play()
 
-    TweenService:Create(sq1Stroke, smoothInfo, {Thickness = 2, Color = Color3.fromRGB(255, 255, 255)}):Play()
+    TweenService:Create(sq1Stroke, snapInfo, {Thickness = 2.5, Color = Color3.fromRGB(255, 255, 255)}):Play()
     TweenService:Create(sq2Stroke, softFadeInfo, {Transparency = 1}):Play()
     TweenService:Create(sq3Stroke, softFadeInfo, {Transparency = 1}):Play()
 
-    task.wait(smoothDuration * 0.65)
+    task.wait(0.6)
 
-    local finishInfo = TweenInfo.new(0.55, Enum.EasingStyle.Cubic, Enum.EasingDirection.In)
+    -- Flawless Implosion: Exponential In creates a true vacuum/blackhole effect
+    local finishInfo = TweenInfo.new(0.45, Enum.EasingStyle.Exponential, Enum.EasingDirection.In)
     TweenService:Create(jisEmblem, finishInfo, {TextTransparency = 1, TextSize = 0}):Play()
     TweenService:Create(square1, finishInfo, {Size = UDim2.fromOffset(0, 0), Rotation = 90}):Play()
     TweenService:Create(sq1Stroke, finishInfo, {Thickness = 0, Transparency = 1}):Play()
@@ -564,10 +570,10 @@ task.spawn(function()
     }):Play()
     TweenService:Create(plateStroke, finishInfo, {Thickness = 0, Transparency = 1}):Play()
 
-    TweenService:Create(bg, TweenInfo.new(0.65, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(blur, TweenInfo.new(0.65, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = 0}):Play()
+    TweenService:Create(bg, TweenInfo.new(0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(blur, TweenInfo.new(0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = 0}):Play()
 
-    task.wait(0.6)
+    task.wait(0.55)
 
     pcall(function()
         introGui:Destroy()
@@ -575,7 +581,7 @@ task.spawn(function()
     end)
 
     -- =========================================================
-    -- 🚀 INSTANT MAIN SCRIPT EXECUTION
+    -- 🚀 INSTANT EXECUTION (0ms Delay)
     -- =========================================================
     if preloadedScript then
         task.spawn(preloadedScript)
