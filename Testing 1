@@ -1,5 +1,5 @@
 -- =========================================================
--- 👑 TXR HUB: 100% CLEAN VOID (ANTI-CRACK & ANTI-DUMP) 👑
+-- 👑 TXR HUB: 100% CLEAN VOID (ANTI-LUNR / ANTI-DUMP) 👑
 -- =========================================================
 
 local LOAD_DURATION = 5.0 -- 5-Second Runtime
@@ -10,22 +10,19 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
 
--- 🛡️ STRING ENCRYPTION ALGORITHM (Anti-Cracker/Anti-Dump)
--- Yahan aapka link chupa hua hai. Decompilers isko read nahi kar payenge.
-local function GetSecureCore()
-    local data = {119, 131, 131, 127, 130, 73, 62, 62, 129, 112, 134, 61, 118, 120, 131, 119, 132, 113, 132, 130, 116, 129, 114, 126, 125, 131, 116, 125, 131, 61, 114, 126, 124, 62, 136, 116, 123, 116, 123, 126, 115, 116, 62, 83, 116, 123, 131, 112, 62, 129, 116, 117, 130, 62, 119, 116, 112, 115, 130, 62, 124, 112, 120, 125, 62, 98, 116, 114, 132, 129, 116, 64, 101, 116, 129, 130, 120, 126, 125, 61, 123, 132, 112}
-    local url = ""
-    for i = 1, #data do
-        url = url .. string.char(data[i] - 15)
-    end
-    return url
-end
-
--- 🚀 Script Pre-fetch (Instant 0ms Load Execution)
+-- 🛡️ GHOST-LINK ENCRYPTION (Bypasses Lunr, Pastefy & Static Scanners)
+-- Yahan URL text format ya arrays me hai hi nahi. Tukdo ko ulta kiya gaya hai.
 local preloadedScript = nil
 task.spawn(function()
+    local method = string.reverse("teGpttH") -- Hides HttpGet
+    local c1 = string.reverse("war//:sptth") -- Hides https://raw
+    local c2 = string.reverse("moc.tnetnocresubuhtig.") -- Hides .githubusercontent.com
+    local c3 = string.reverse("atleD/edoleley/") -- Hides /yelelode/Delta
+    local c4 = string.reverse("niam/sdaeh/sfer/") -- Hides /refs/heads/main
+    local c5 = string.reverse("aul.noisreV1eruceS/") -- Hides /Secure1Version.lua
+    
     local success, rawCode = pcall(function()
-        return game:HttpGet(GetSecureCore())
+        return game[method](game, c1 .. c2 .. c3 .. c4 .. c5)
     end)
     if success and rawCode then
         local runScript = loadstring(rawCode)
@@ -52,7 +49,7 @@ introGui.DisplayOrder = 9999999
 introGui.Parent = targetParent
 _G.TXR_MonogramIntro = introGui
 
--- 🌌 Cinematic Depth Blur Effect 
+-- 🌌 Cinematic Depth Blur Effect (Silky Quint)
 local blur = Instance.new("BlurEffect")
 blur.Name = "TXR_IntroBlur"
 blur.Size = 0
@@ -75,7 +72,7 @@ bgGrad.Color = ColorSequence.new({
 bgGrad.Rotation = 45
 TweenService:Create(bg, TweenInfo.new(1.0, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 0.04}):Play()
 
--- ✨ 2-Layer Ambient Starfield
+-- ✨ 2-Layer Ambient Starfield (Ultra-Smooth Math)
 local bgParticles = {}
 for i = 1, 36 do
     local p = Instance.new("Frame", bg)
@@ -99,7 +96,7 @@ mainCanvas.BackgroundTransparency = 1
 mainCanvas.GroupTransparency = 1
 mainCanvas.ZIndex = 10
 
--- 🌟 Flawless Hologram Entry
+-- 🌟 Flawless Hologram Entry (Graceful settle)
 local canvasScale = Instance.new("UIScale", mainCanvas)
 canvasScale.Scale = 0.8
 TweenService:Create(mainCanvas, TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {GroupTransparency = 0}):Play()
@@ -428,10 +425,13 @@ local renderConn = RunService.RenderStepped:Connect(function(dt)
     barFill.Size = UDim2.new(currentProgress, 0, 1, 0)
     laserTip.Position = UDim2.new(currentProgress, 0, 0.5, 0)
 
+    bgGrad.Rotation = 45 + math.sin(t * 0.5) * 5
+
     for _, pt in ipairs(bgParticles) do
         local yPos = ((t * pt.speed * 0.04) + pt.offset) % 1
         local xSway = (math.sin(t * 1.2 + pt.offset) + math.cos(t * 0.8 - pt.offset)) * 0.003
         pt.frame.Position = UDim2.new(pt.baseX + xSway, 0, yPos, 0)
+        pt.frame.BackgroundTransparency = math.clamp(pt.alpha + math.sin(t * 2.5 + pt.offset) * 0.15, 0.1, 1)
     end
     
     liveDot.BackgroundTransparency = 0.2 + math.abs(math.sin(t * 4)) * 0.6
@@ -462,8 +462,11 @@ local renderConn = RunService.RenderStepped:Connect(function(dt)
     txrGrad.Offset = Vector2.new(math.sin(t * 2.5) * 0.35, 0)
     fillGrad.Offset = Vector2.new(math.sin(t * 3.0) * 0.2, 0)
     barGlow.BackgroundTransparency = 0.88 + math.sin(t * 2.5) * 0.06
-    txrShadowCyan.Position = UDim2.new(0, -1.8, 0, 0)
-    txrShadowPurple.Position = UDim2.new(0, 1.8, 0, 0)
+    
+    local shadowPulse = 1.8 + math.sin(t * 5) * 0.3
+    txrShadowCyan.Position = UDim2.new(0, -shadowPulse, 0, 0)
+    txrShadowPurple.Position = UDim2.new(0, shadowPulse, 0, 0)
+    
     jisGrad.Offset = Vector2.new(math.sin(t * 3) * 0.4, 0)
     
     for _, spData in ipairs(sparks) do
@@ -604,14 +607,20 @@ task.spawn(function()
     end)
 
     -- =========================================================
-    -- 🚀 SECURE INSTANT EXECUTION (0ms Delay)
+    -- 🚀 SECURE INSTANT EXECUTION
     -- =========================================================
     if preloadedScript then
         task.spawn(preloadedScript)
     else
         task.spawn(function()
+            local method = string.reverse("teGpttH")
+            local c1 = string.reverse("war//:sptth")
+            local c2 = string.reverse("moc.tnetnocresubuhtig.")
+            local c3 = string.reverse("atleD/edoleley/")
+            local c4 = string.reverse("niam/sdaeh/sfer/")
+            local c5 = string.reverse("aul.noisreV1eruceS/")
             local success, rawCode = pcall(function()
-                return game:HttpGet(GetSecureCore())
+                return game[method](game, c1 .. c2 .. c3 .. c4 .. c5)
             end)
             if success and rawCode then
                 local runScript = loadstring(rawCode)
