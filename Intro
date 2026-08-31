@@ -1,5 +1,5 @@
 -- =========================================================
--- 👑 TXR HUB: 100% CLEAN VOID (FULL ORIGINAL OUTRO) - V55 👑
+-- 👑 TXR HUB: 100% CLEAN VOID (INSTANT LOAD) - V55 👑
 -- =========================================================
 
 local LOAD_DURATION = 5.0 -- 5-Second Runtime
@@ -9,6 +9,24 @@ local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
+
+-- 🚀 PRE-FETCH & PRE-COMPILE SCRIPT IN BACKGROUND (Zero Delay Execution)
+local preloadedScript = nil
+task.spawn(function()
+    local success, rawCode = pcall(function()
+        return game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Secure1Version.lua")
+    end)
+    if success and rawCode then
+        local runScript, err = loadstring(rawCode)
+        if runScript then
+            preloadedScript = runScript
+        else
+            warn("[TXR HUB] Script Compile Error: " .. tostring(err))
+        end
+    else
+        warn("[TXR HUB] Failed to fetch script from GitHub!")
+    end
+end)
 
 if _G.TXR_MonogramIntro then 
     pcall(function() _G.TXR_MonogramIntro:Destroy() end) 
@@ -561,22 +579,19 @@ task.spawn(function()
     end)
 
     -- =========================================================
-    -- 🚀 GUARANTEED MAIN SCRIPT LOAD AFTER FULL OUTRO
+    -- 🚀 INSTANT EXECUTION (0ms DELAY)
     -- =========================================================
-    task.spawn(function()
-        local success, rawCode = pcall(function()
-            return game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Secure1Version.lua")
-        end)
-        
-        if success and rawCode then
-            local runScript, err = loadstring(rawCode)
-            if runScript then
-                runScript()
-            else
-                warn("[TXR HUB] Script Compile Error: " .. tostring(err))
+    if preloadedScript then
+        task.spawn(preloadedScript)
+    else
+        task.spawn(function()
+            local success, rawCode = pcall(function()
+                return game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Secure1Version.lua")
+            end)
+            if success and rawCode then
+                local runScript = loadstring(rawCode)
+                if runScript then runScript() end
             end
-        else
-            warn("[TXR HUB] Failed to fetch script from GitHub!")
-        end
-    end)
+        end)
+    end
 end)
