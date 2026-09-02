@@ -1,4 +1,35 @@
 -- =========================================================
+-- 🌐 UNIVERSAL COMPATIBILITY SHIM (ALL-EXECUTOR SUPPORT)
+-- =========================================================
+pcall(function()
+    local g = (getgenv and getgenv()) or _G or shared
+    if not hookmetamethod then
+        g.hookmetamethod = function(obj, method, func) return func end
+    end
+    if not newcclosure then
+        g.newcclosure = function(func) return func end
+    end
+    if not checkcaller then
+        g.checkcaller = function() return false end
+    end
+    if not getnamecallmethod then
+        g.getnamecallmethod = function() return "" end
+    end
+    if not setfpscap then
+        g.setfpscap = function() end
+    end
+    if not setclipboard and not toclipboard then
+        g.setclipboard = function() end
+        g.toclipboard = function() end
+    end
+    if not gethui then
+        g.gethui = function()
+            local lp = game:GetService("Players").LocalPlayer
+            return lp and lp:FindFirstChild("PlayerGui") or nil
+        end
+    end
+end)
+-- =========================================================
 -- 🛡️ TXR V18.26: QUANTUM ANTI-GLITCH & SAFE-BOOT ENGINE 🛡️
 -- =========================================================
 if not game:IsLoaded() then 
@@ -4470,7 +4501,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     end
 
                     hrp.CFrame = originalPos
-                    
+
                     if houseData.Allow then
                         for attacker, _ in pairs(attackersToBan) do
                             if attacker and attacker.Parent and not protectedVictims[attacker] then
