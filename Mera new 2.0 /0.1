@@ -2198,7 +2198,7 @@ for _, geo in ipairs(geometries) do
     end)
 end
 
-local function createMainBtn(text, modeKey, isMenuOpener)
+local function createMainBtn(text, modeKey, isMenuOpener, bioBadgeText)
     local btn = Instance.new("TextButton", mainList)
     btn.Size = UDim2.new(1, 0, 0, 42)
     btn.BackgroundColor3 = Colors.Surface
@@ -2227,6 +2227,34 @@ local function createMainBtn(text, modeKey, isMenuOpener)
     local accentCorner = Instance.new("UICorner", accent)
     accentCorner.CornerRadius = UDim.new(1,0)
     
+    if bioBadgeText and bioBadgeText ~= "" then
+        local bioBadge = Instance.new("Frame", btn)
+        bioBadge.AnchorPoint = Vector2.new(1, 0.5)
+        bioBadge.Position = UDim2.new(1, -12, 0.5, 0)
+        bioBadge.Size = UDim2.fromOffset(math.max(28, #bioBadgeText * 7 + 14), 18)
+        bioBadge.BackgroundColor3 = Colors.SurfaceHover
+        bioBadge.BackgroundTransparency = 0.3
+        bioBadge.ZIndex = 8
+
+        local bCorner = Instance.new("UICorner", bioBadge)
+        bCorner.CornerRadius = UDim.new(1, 0)
+
+        local bStroke = Instance.new("UIStroke", bioBadge)
+        bStroke.Color = Colors.Primary
+        bStroke.Transparency = 0.6
+        bStroke.Thickness = 1
+
+        local bioLabel = Instance.new("TextLabel", bioBadge)
+        bioLabel.Size = UDim2.fromScale(1, 1)
+        bioLabel.BackgroundTransparency = 1
+        bioLabel.Text = bioBadgeText
+        bioLabel.TextColor3 = Colors.Primary
+        bioLabel.Font = Enum.Font.GothamBlack
+        bioLabel.TextSize = 9
+        bioLabel.ZIndex = 9
+        crispText(bioLabel)
+    end
+
     if isMenuOpener then 
         local arrow = Instance.new("TextLabel", btn)
         arrow.Size = UDim2.new(0, 30, 1, 0)
@@ -2408,7 +2436,7 @@ end
 local getRadius = createSlider("🪐 ORBIT RADIUS", 2, 100, 15, "")
 local getSpeedMs = createSlider("⚡ ENGINE YIELD", 10, 300, 50, " %") 
 
-local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true)
+local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true, nil)
 openTargetBtn.MouseButton1Click:Connect(function() 
     mainList.Visible = false
     isSubMenuOpen = true
@@ -2418,7 +2446,7 @@ openTargetBtn.MouseButton1Click:Connect(function()
     animateWaterfall(playerScroll)
 end)
 
-local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true)
+local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true, nil)
 openGeoBtn.MouseButton1Click:Connect(function() 
     mainList.Visible = false
     isSubMenuOpen = true
@@ -2428,12 +2456,12 @@ openGeoBtn.MouseButton1Click:Connect(function()
     animateWaterfall(geoScroll)
 end)
 
-local orbitBtn = createMainBtn("🪐 QUANTUM ORBIT", "Orbit", false)
-local robotBtn = createMainBtn("🤖 RADIAL SURROUND", "Robot", false)
-local multiBtn = createMainBtn("🤖 DUAL SYSTEM", "MultiRobot", false)
-local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false)
-local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false)
-local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR", "Chair", false)
+local orbitBtn = createMainBtn("🪐 QUANTUM ORBIT", "Orbit", false, nil)
+local robotBtn = createMainBtn("🤖 RADIAL SURROUND", "Robot", false, "4x")
+local multiBtn = createMainBtn("🤖 DUAL SYSTEM", "MultiRobot", false, "2x")
+local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false, "multiple")
+local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false, "HeAd BaNG")
+local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR", "Chair", false, "FLinG")
 
 local modeBtns = { 
     ["Orbit"] = {btn = orbitBtn}, 
@@ -2488,7 +2516,7 @@ for key, data in pairs(modeBtns) do
     end)
 end
 
-local espBtn = createMainBtn("👁️ TACTICAL ESP (HUD)", "ESP", false)
+local espBtn = createMainBtn("👁️ TACTICAL ESP (HUD)", "ESP", false, nil)
 espBtn.MouseButton1Click:Connect(function() 
     activeModes["ESP"] = not activeModes["ESP"] 
     local accent = espBtn:FindFirstChild("Accent")
@@ -2512,7 +2540,7 @@ espBtn.MouseButton1Click:Connect(function()
 end)
 
 -- 👁️ NATIVE FIFO ORDERED TARGET SPECTATE BUTTON
-local spectateBtn = createMainBtn("👁️ TARGET SPECTATE", "Spectate", false)
+local spectateBtn = createMainBtn("👁️ TARGET SPECTATE", "Spectate", false, nil)
 spectateBtnRef = spectateBtn
 
 spectateBtn.MouseButton1Click:Connect(function()
@@ -2579,7 +2607,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
-local rainbowBtn = createMainBtn("🌈 NEON PULSE GLOW", "Rainbow", false)
+local rainbowBtn = createMainBtn("🌈 NEON PULSE GLOW", "Rainbow", false, nil)
 rainbowBtn.MouseButton1Click:Connect(function() 
     isRainbowEnabled = not isRainbowEnabled
     activeModes["Rainbow"] = isRainbowEnabled
@@ -2605,7 +2633,7 @@ rainbowBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local soundBtn = createMainBtn("🔊 DYNAMIC AUDIO HOOK ( Multi-Track Random )", "Sound", false)
+local soundBtn = createMainBtn("🔊 DYNAMIC AUDIO HOOK ( Multi-Track Random )", "Sound", false, nil)
 soundBtn.MouseButton1Click:Connect(function() 
     isSoundEnabled = not isSoundEnabled
     activeModes["Sound"] = isSoundEnabled
@@ -2631,7 +2659,7 @@ soundBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local shieldBtn = createMainBtn("🛡️ ANTI SIT", "Shield", false)
+local shieldBtn = createMainBtn("🛡️ ANTI SIT", "Shield", false, nil)
 shieldBtn.MouseButton1Click:Connect(function() 
     isGodShieldEnabled = not isGodShieldEnabled
     activeModes["Shield"] = isGodShieldEnabled
@@ -2662,7 +2690,7 @@ shieldBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local houseProtBtn = createMainBtn("🏠 ANTI DELATE ROBOTS", "HouseProt", false)
+local houseProtBtn = createMainBtn("🏠 ANTI DELATE ROBOTS", "HouseProt", false, nil)
 local isHouseProtEnabled = true
 activeModes["HouseProt"] = true
 
@@ -2696,7 +2724,7 @@ end)
 
 local isVisualZoneEnabled = false
 activeModes["VisualZone"] = false
-local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES ( Use If target On - props ban )", "VisualZone", false)
+local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES ( Use If target On - props ban )", "VisualZone", false, nil)
 visualZoneBtn.TextSize = 9.5
 visualZoneBtn.BackgroundColor3 = Colors.Surface
 visualZoneBtn.TextColor3 = Colors.Text
@@ -2865,7 +2893,7 @@ end)
 -- =========================================================
 -- 🛡️ ANTI ROBOTS (PUBLIC ACCESS)
 -- =========================================================
-local escapeBtn = createMainBtn("⚡ ANTI ROBOTS ( House Spawn Required )", nil, false)
+local escapeBtn = createMainBtn("⚡ ANTI ROBOTS ( House Spawn Required )", nil, false, nil)
 escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
 escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
@@ -2982,7 +3010,7 @@ end)
 -- =========================================================
 -- 🚫 ANTI BANG (LIVE COUNTDOWN & SUCCESS/FAIL NOTIFICATION)
 -- =========================================================
-local banTrapBtn = createMainBtn("🛡️ ANTI BANG ( House Spawn Required )", nil, false)
+local banTrapBtn = createMainBtn("🛡️ ANTI BANG ( House Spawn Required )", nil, false, nil)
 banTrapBtn.BackgroundColor3 = Color3.fromRGB(130, 0, 200)
 banTrapBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 banTrapBtn:SetAttribute("BaseColor", Color3.fromRGB(130, 0, 200))
