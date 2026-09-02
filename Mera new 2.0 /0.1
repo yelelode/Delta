@@ -1,31 +1,33 @@
 -- =========================================================
--- 🌐 UNIVERSAL COMPATIBILITY SHIM (ALL-EXECUTOR SUPPORT)
+-- 🌐 UNIVERSAL EXECUTOR & DEVICE COMPATIBILITY SHIM
 -- =========================================================
 pcall(function()
     local g = (getgenv and getgenv()) or _G or shared
-    if not hookmetamethod then
-        g.hookmetamethod = function(obj, method, func) return func end
+    
+    -- Universal Loadstring Fallback
+    if not g.loadstring and not loadstring then
+        g.loadstring = function(str)
+            warn("Loadstring not supported natively on this executor.")
+            return function() end
+        end
     end
-    if not newcclosure then
-        g.newcclosure = function(func) return func end
+
+    -- Universal HTTP Fetch Fallback
+    if not game.HttpGet then
+        local req = (syn and syn.request) or (http and http.request) or http_request or request
+        if req then
+            game.HttpGet = function(self, url)
+                local res = req({Url = url, Method = "GET"})
+                return res and res.Body or ""
+            end
+        end
     end
-    if not checkcaller then
-        g.checkcaller = function() return false end
-    end
-    if not getnamecallmethod then
-        g.getnamecallmethod = function() return "" end
-    end
-    if not setfpscap then
-        g.setfpscap = function() end
-    end
-    if not setclipboard and not toclipboard then
-        g.setclipboard = function() end
-        g.toclipboard = function() end
-    end
-    if not gethui then
+
+    -- Universal Safe GUI Parent (Handles Mobile & Restricted Executors)
+    if not g.gethui then
         g.gethui = function()
             local lp = game:GetService("Players").LocalPlayer
-            return lp and lp:FindFirstChild("PlayerGui") or nil
+            return (game:GetService("CoreGui")) or (lp and lp:FindFirstChild("PlayerGui")) or nil
         end
     end
 end)
@@ -2716,6 +2718,12 @@ shieldBtn.MouseButton1Click:Connect(function()
             local hum = lp.Character:FindFirstChildOfClass("Humanoid")
             if hum then
                 hum:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+                hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
+                hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, true)
+            end
+            local root = lp.Character:FindFirstChild("HumanoidRootPart")
+            if root and root:FindFirstChild("TXR_ShieldVelocity") then
+                root.TXR_ShieldVelocity:Destroy()
             end
         end
     end
@@ -3505,6 +3513,8 @@ RunService.Stepped:Connect(function()
         
         if hum then
             hum:SetStateEnabled(Enum.HumanoidStateType.Seated, false) 
+            hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+            hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
             if hum.Sit then
                 hum.Sit = false
                 hum.Jump = true
@@ -3521,13 +3531,48 @@ RunService.Stepped:Connect(function()
         end
 
         pcall(function()
-            local radiusParts = workspace:GetPartBoundsInRadius(root.Position, 10)
+            local radiusParts = workspace:GetPartBoundsInRadius(root.Position, 16)
             for _, part in ipairs(radiusParts) do
                 if part:IsA("Seat") or part:IsA("VehicleSeat") then
                     part.CanTouch = false
                 end
             end
         end)
+
+        -- ⚡ FLY-STYLE INFINITE FORCE IMMUNITY ANCHOR
+        local bv = root:FindFirstChild("TXR_ShieldVelocity")
+        if not bv then
+            bv = Instance.new("BodyVelocity")
+            bv.Name = "TXR_ShieldVelocity"
+            bv.Parent = root
+        end
+
+        if hum and hum.MoveDirection.Magnitude > 0 then
+            bv.MaxForce = Vector3.new(0, 0, 0)
+        else
+            bv.MaxForce = Vector3.new(math.huge, 0, math.huge)
+            bv.Velocity = Vector3.new(0, 0, 0)
+        end
+
+        if root.AssemblyLinearVelocity.Magnitude > 75 then
+            root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        end
+        if root.AssemblyAngularVelocity.Magnitude > 25 then
+            root.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+        end
+
+        for _, p in ipairs(char:GetChildren()) do
+            if p:IsA("BasePart") and p.CanCollide then
+                p.CanCollide = false
+            end
+        end
+    else
+        if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+            local bv = lp.Character.HumanoidRootPart:FindFirstChild("TXR_ShieldVelocity")
+            if bv then 
+                bv:Destroy() 
+            end
+        end
     end
 end)
 
@@ -4501,7 +4546,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     end
 
                     hrp.CFrame = originalPos
-
+                    
                     if houseData.Allow then
                         for attacker, _ in pairs(attackersToBan) do
                             if attacker and attacker.Parent and not protectedVictims[attacker] then
