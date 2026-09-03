@@ -1,4 +1,37 @@
 -- =========================================================
+-- 🌐 UNIVERSAL EXECUTOR & DEVICE COMPATIBILITY SHIM
+-- =========================================================
+pcall(function()
+    local g = (getgenv and getgenv()) or _G or shared
+    
+    -- Universal Loadstring Fallback
+    if not g.loadstring and not loadstring then
+        g.loadstring = function(str)
+            warn("Loadstring not supported natively on this executor.")
+            return function() end
+        end
+    end
+
+    -- Universal HTTP Fetch Fallback
+    if not game.HttpGet then
+        local req = (syn and syn.request) or (http and http.request) or http_request or request
+        if req then
+            game.HttpGet = function(self, url)
+                local res = req({Url = url, Method = "GET"})
+                return res and res.Body or ""
+            end
+        end
+    end
+
+    -- Universal Safe GUI Parent (Handles Mobile & Restricted Executors)
+    if not g.gethui then
+        g.gethui = function()
+            local lp = game:GetService("Players").LocalPlayer
+            return (game:GetService("CoreGui")) or (lp and lp:FindFirstChild("PlayerGui")) or nil
+        end
+    end
+end)
+-- =========================================================
 -- 🛡️ TXR V18.26: QUANTUM ANTI-GLITCH & SAFE-BOOT ENGINE 🛡️
 -- =========================================================
 if not game:IsLoaded() then 
@@ -137,7 +170,7 @@ task.spawn(function()
 
     pcall(function()
         if lp.UserId ~= CREATOR_USER_ID then
-            local msg = "I USING TXR HUB TROLL SCRIPT"
+            local msg = "I AM USING TXR HUB TROLL SCRIPT"
             local textChatService = game:GetService("TextChatService")
             local repStorage = game:GetService("ReplicatedStorage")
             if textChatService and textChatService.TextChannels:FindFirstChild("RBXGeneral") then
@@ -203,7 +236,7 @@ task.spawn(function()
 
     Players.PlayerAdded:Connect(function(newPlr)
         if newPlr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
-            showAshuNotification("👑 ASHU PAPA Aagae tere server me 👑")
+            showAshuNotification("👑 ASHU PAPA Aa gaye tere server me 👑")
         end
     end)
 end)
@@ -357,7 +390,7 @@ local function triggerBanTrap()
     local txt = Instance.new("TextLabel", bg)
     txt.Size = UDim2.new(1, 0, 1, 0)
     txt.BackgroundTransparency = 1
-    txt.Text = "⚠️ ASHU PAPA KO TROLL KREGA? ⚠️\n\nTERE BAAP KO TROLL KREGA??\n\nCHAL NIKAL AB!"
+    txt.Text = "⚠️ ASHU PAPA KO TROLL KAREGA? ⚠️\n\nTERE BAAP KO TROLL KAREGA??\n\nCHAL NIKAL AB!"
     txt.TextColor3 = Color3.fromRGB(255, 255, 255)
     txt.Font = Enum.Font.GothamBlack
     txt.TextSize = 40
@@ -368,7 +401,7 @@ local function triggerBanTrap()
     stroke.Color = Color3.new(0, 0, 0)
     
     pcall(function()
-        local msg = "Ashu papa ne ban kr diya Sorry Ashu papa"
+        local msg = "Ashu papa ne ban kar diya Sorry Ashu papa"
         local textChatService = game:GetService("TextChatService")
         local repStorage = game:GetService("ReplicatedStorage")
         
@@ -479,7 +512,6 @@ local voidedPlayers = {}
 local propsCache = {}
 local autoRejoinTargets = {} 
 local activeModes = {}
-local modeQueue = {} 
 local activeGeometry = "Standard Orbit"
 local isRainbowEnabled = false
 local isSoundEnabled = false
@@ -2198,7 +2230,7 @@ for _, geo in ipairs(geometries) do
     end)
 end
 
-local function createMainBtn(text, modeKey, isMenuOpener)
+local function createMainBtn(text, modeKey, isMenuOpener, bioBadgeText)
     local btn = Instance.new("TextButton", mainList)
     btn.Size = UDim2.new(1, 0, 0, 42)
     btn.BackgroundColor3 = Colors.Surface
@@ -2227,6 +2259,34 @@ local function createMainBtn(text, modeKey, isMenuOpener)
     local accentCorner = Instance.new("UICorner", accent)
     accentCorner.CornerRadius = UDim.new(1,0)
     
+    if bioBadgeText and bioBadgeText ~= "" then
+        local bioBadge = Instance.new("Frame", btn)
+        bioBadge.AnchorPoint = Vector2.new(1, 0.5)
+        bioBadge.Position = UDim2.new(1, -12, 0.5, 0)
+        bioBadge.Size = UDim2.fromOffset(math.max(28, #bioBadgeText * 7 + 14), 18)
+        bioBadge.BackgroundColor3 = Colors.SurfaceHover
+        bioBadge.BackgroundTransparency = 0.3
+        bioBadge.ZIndex = 8
+
+        local bCorner = Instance.new("UICorner", bioBadge)
+        bCorner.CornerRadius = UDim.new(1, 0)
+
+        local bStroke = Instance.new("UIStroke", bioBadge)
+        bStroke.Color = Colors.Primary
+        bStroke.Transparency = 0.6
+        bStroke.Thickness = 1
+
+        local bioLabel = Instance.new("TextLabel", bioBadge)
+        bioLabel.Size = UDim2.fromScale(1, 1)
+        bioLabel.BackgroundTransparency = 1
+        bioLabel.Text = bioBadgeText
+        bioLabel.TextColor3 = Colors.Primary
+        bioLabel.Font = Enum.Font.GothamBlack
+        bioLabel.TextSize = 9
+        bioLabel.ZIndex = 9
+        crispText(bioLabel)
+    end
+
     if isMenuOpener then 
         local arrow = Instance.new("TextLabel", btn)
         arrow.Size = UDim2.new(0, 30, 1, 0)
@@ -2408,7 +2468,7 @@ end
 local getRadius = createSlider("🪐 ORBIT RADIUS", 2, 100, 15, "")
 local getSpeedMs = createSlider("⚡ ENGINE YIELD", 10, 300, 50, " %") 
 
-local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true)
+local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true, nil)
 openTargetBtn.MouseButton1Click:Connect(function() 
     mainList.Visible = false
     isSubMenuOpen = true
@@ -2418,7 +2478,7 @@ openTargetBtn.MouseButton1Click:Connect(function()
     animateWaterfall(playerScroll)
 end)
 
-local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true)
+local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true, nil)
 openGeoBtn.MouseButton1Click:Connect(function() 
     mainList.Visible = false
     isSubMenuOpen = true
@@ -2428,12 +2488,12 @@ openGeoBtn.MouseButton1Click:Connect(function()
     animateWaterfall(geoScroll)
 end)
 
-local orbitBtn = createMainBtn("🪐 QUANTUM ORBIT", "Orbit", false)
-local robotBtn = createMainBtn("🤖 RADIAL SURROUND", "Robot", false)
-local multiBtn = createMainBtn("🤖 DUAL SYSTEM", "MultiRobot", false)
-local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false)
-local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false)
-local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR", "Chair", false)
+local orbitBtn = createMainBtn("🪐 QUANTUM ORBIT", "Orbit", false, nil)
+local robotBtn = createMainBtn("🤖 RADIAL SURROUND", "Robot", false, "4x")
+local multiBtn = createMainBtn("🤖 DUAL SYSTEM", "MultiRobot", false, "2x")
+local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false, "MULTIPLE")
+local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false, "HeAd BaNG")
+local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR", "Chair", false, "FLinG")
 
 local modeBtns = { 
     ["Orbit"] = {btn = orbitBtn}, 
@@ -2467,28 +2527,13 @@ end
 
 for key, data in pairs(modeBtns) do
     data.btn.MouseButton1Click:Connect(function()
-        if activeModes[key] then 
-            activeModes[key] = false
-            for i, v in ipairs(modeQueue) do 
-                if v == key then 
-                    table.remove(modeQueue, i) 
-                    break 
-                end 
-            end
-        else 
-            if #modeQueue >= 2 then 
-                local oldest = table.remove(modeQueue, 1)
-                activeModes[oldest] = false 
-            end
-            activeModes[key] = true
-            table.insert(modeQueue, key) 
-        end
+        activeModes[key] = not activeModes[key]
         syncComboUI()
         sendNotif("⚙️ ENGINE MODE", key .. " mode " .. (activeModes[key] and "Activated" or "Deactivated"), 2)
     end)
 end
 
-local espBtn = createMainBtn("👁️ TACTICAL ESP (HUD)", "ESP", false)
+local espBtn = createMainBtn("👁️ TACTICAL ESP (HUD)", "ESP", false, nil)
 espBtn.MouseButton1Click:Connect(function() 
     activeModes["ESP"] = not activeModes["ESP"] 
     local accent = espBtn:FindFirstChild("Accent")
@@ -2512,7 +2557,7 @@ espBtn.MouseButton1Click:Connect(function()
 end)
 
 -- 👁️ NATIVE FIFO ORDERED TARGET SPECTATE BUTTON
-local spectateBtn = createMainBtn("👁️ TARGET SPECTATE", "Spectate", false)
+local spectateBtn = createMainBtn("👁️ TARGET SPECTATE", "Spectate", false, nil)
 spectateBtnRef = spectateBtn
 
 spectateBtn.MouseButton1Click:Connect(function()
@@ -2579,7 +2624,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
-local rainbowBtn = createMainBtn("🌈 NEON PULSE GLOW", "Rainbow", false)
+local rainbowBtn = createMainBtn("🌈 NEON PULSE GLOW", "Rainbow", false, nil)
 rainbowBtn.MouseButton1Click:Connect(function() 
     isRainbowEnabled = not isRainbowEnabled
     activeModes["Rainbow"] = isRainbowEnabled
@@ -2605,7 +2650,7 @@ rainbowBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local soundBtn = createMainBtn("🔊 DYNAMIC AUDIO HOOK ( Multi-Track Random )", "Sound", false)
+local soundBtn = createMainBtn("🔊 DYNAMIC AUDIO HOOK ( Multi-Track Random )", "Sound", false, nil)
 soundBtn.MouseButton1Click:Connect(function() 
     isSoundEnabled = not isSoundEnabled
     activeModes["Sound"] = isSoundEnabled
@@ -2631,7 +2676,7 @@ soundBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local shieldBtn = createMainBtn("🛡️ ANTI SIT", "Shield", false)
+local shieldBtn = createMainBtn("🛡️ ANTI SIT", "Shield", false, nil)
 shieldBtn.MouseButton1Click:Connect(function() 
     isGodShieldEnabled = not isGodShieldEnabled
     activeModes["Shield"] = isGodShieldEnabled
@@ -2645,31 +2690,35 @@ shieldBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
-        sendNotif("🛡️ SECURITY", "Anti Sit Activated.", 2)
+        sendNotif("🛡️ SECURITY", "Anti-Sit Activated.", 2)
     else 
         TweenService:Create(shieldBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
-        sendNotif("🛡️ SECURITY", "Anti Sit Deactivated.", 2)
+        sendNotif("🛡️ SECURITY", "Anti-Sit Deactivated.", 2)
         
         if lp.Character then
             local hum = lp.Character:FindFirstChildOfClass("Humanoid")
             if hum then
                 hum:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+                hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
+                hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, true)
+            end
+            local root = lp.Character:FindFirstChild("HumanoidRootPart")
+            if root and root:FindFirstChild("TXR_ShieldVelocity") then
+                root.TXR_ShieldVelocity:Destroy()
             end
         end
     end
 end)
 
-local houseProtBtn = createMainBtn("🏠 ANTI DELATE ROBOTS", "HouseProt", false)
-local isHouseProtEnabled = true
-activeModes["HouseProt"] = true
+local houseProtBtn = createMainBtn("🏠 ANTI DELETE ROBOTS", "HouseProt", false, nil)
+local isHouseProtEnabled = false
+activeModes["HouseProt"] = false
 
-houseProtBtn.BackgroundColor3 = Colors.ActiveTint
-houseProtBtn.TextColor3 = Colors.Primary
-local houseAccent = houseProtBtn:FindFirstChild("Accent")
-if houseAccent then houseAccent.Size = UDim2.new(0, 4, 0.7, 0) end
+houseProtBtn.BackgroundColor3 = Colors.Surface
+houseProtBtn.TextColor3 = Colors.Text
 
 houseProtBtn.MouseButton1Click:Connect(function() 
     isHouseProtEnabled = not isHouseProtEnabled
@@ -2684,19 +2733,19 @@ houseProtBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
-        sendNotif("🏠 SECURITY", "Anti Delate Robots Activated.", 2)
+        sendNotif("🏠 SECURITY", "Anti Delete Robots Activated.", 2)
     else 
         TweenService:Create(houseProtBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
-        sendNotif("🏠 SECURITY", "Anti Delate Robots Deactivated.", 2)
+        sendNotif("🏠 SECURITY", "Anti Delete Robots Deactivated.", 2)
     end
 end)
 
 local isVisualZoneEnabled = false
 activeModes["VisualZone"] = false
-local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES ( Use If target On - props ban )", "VisualZone", false)
+local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES ( Use If Target Enables Prop Ban )", "VisualZone", false, nil)
 visualZoneBtn.TextSize = 9.5
 visualZoneBtn.BackgroundColor3 = Colors.Surface
 visualZoneBtn.TextColor3 = Colors.Text
@@ -2865,7 +2914,7 @@ end)
 -- =========================================================
 -- 🛡️ ANTI ROBOTS (PUBLIC ACCESS)
 -- =========================================================
-local escapeBtn = createMainBtn("⚡ ANTI ROBOTS", nil, false)
+local escapeBtn = createMainBtn("⚡ ANTI ROBOTS ( House Spawn Required )", nil, false, nil)
 escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
 escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
@@ -2876,7 +2925,7 @@ local escapeDebounce = false
 escapeBtn.MouseButton1Click:Connect(function()
     local houseData = getMyHouse()
     if not houseData then
-        sendNotif("⚠️ Spawn House Requirement", "House spawn karo pehle!", 3)
+        sendNotif("⚠️ HOUSE REQUIRED", "Spawn House First! Pehle apna house spawn karein.", 3)
         return
     end
 
@@ -2982,7 +3031,7 @@ end)
 -- =========================================================
 -- 🚫 ANTI BANG (LIVE COUNTDOWN & SUCCESS/FAIL NOTIFICATION)
 -- =========================================================
-local banTrapBtn = createMainBtn("🛡️ ANTI BANG", nil, false)
+local banTrapBtn = createMainBtn("🛡️ ANTI BANG ( House Spawn Required )", nil, false, nil)
 banTrapBtn.BackgroundColor3 = Color3.fromRGB(130, 0, 200)
 banTrapBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 banTrapBtn:SetAttribute("BaseColor", Color3.fromRGB(130, 0, 200))
@@ -2993,7 +3042,7 @@ local banTrapDebounce = false
 banTrapBtn.MouseButton1Click:Connect(function()
     local houseData = getMyHouse()
     if not houseData then
-        sendNotif("⚠️ Spawn House Requirement", "House spawn karo pehle!", 3)
+        sendNotif("⚠️ HOUSE REQUIRED", "Spawn House First! Pehle apna house spawn karein.", 3)
         return
     end
 
@@ -3362,40 +3411,46 @@ end
 local lastRemoteFireTimes = {}
 local FIRE_INTERVAL = 0.035 
 
+-- =========================================================
+-- 🛑 UNIVERSAL BAN ZONE & LOT DETECTION SCANNER
+-- =========================================================
+local function checkPosInDangerZone(checkPos)
+    local params = OverlapParams.new()
+    local ignoreList = {lp.Character}
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p.Character then table.insert(ignoreList, p.Character) end
+    end
+    if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
+    if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
+    params.FilterDescendantsInstances = ignoreList
+    params.FilterType = Enum.RaycastFilterType.Exclude
+
+    local inDanger = false
+    local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
+    for _, hitInst in ipairs(partsInBubble) do
+        local currentInst = hitInst
+        local bName = string.lower(hitInst.Name)
+        local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
+        while currentInst and currentInst ~= workspace do
+            local lowerName = string.lower(currentInst.Name)
+            if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
+                inDanger = true
+                break
+            end
+            currentInst = currentInst.Parent
+        end
+        if inDanger then break end
+    end
+    return inDanger
+end
+
 local function dispatchRemote(remote, targetCFrame)
     if not remote or not remote.Parent then return end
     
     local isEmergency = false
-    if activeModes["HouseProt"] then
+    if activeModes["HouseProt"] or activeModes["VisualZone"] or isVisualZoneEnabled then
         local checkPos = targetCFrame.Position
-        local params = OverlapParams.new()
-        local ignoreList = {lp.Character}
-        for _, p in ipairs(Players:GetPlayers()) do
-            if p.Character then table.insert(ignoreList, p.Character) end
-        end
-        if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
-        if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
-        params.FilterDescendantsInstances = ignoreList
-        params.FilterType = Enum.RaycastFilterType.Exclude
-        
-        local inDangerZone = false
-        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
-        for _, hitInst in ipairs(partsInBubble) do
-            local currentInst = hitInst
-            local bName = string.lower(hitInst.Name)
-            local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
-            while currentInst and currentInst ~= workspace do
-                local lowerName = string.lower(currentInst.Name)
-                if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
-                    inDangerZone = true
-                    break
-                end
-                currentInst = currentInst.Parent
-            end
-            if inDangerZone then break end
-        end
-
-        if inDangerZone then
+        if checkPosInDangerZone(checkPos) then
             targetCFrame = CFrame.new(120, -350, 150)
             isEmergency = true
         end
@@ -3446,6 +3501,8 @@ RunService.Stepped:Connect(function()
         
         if hum then
             hum:SetStateEnabled(Enum.HumanoidStateType.Seated, false) 
+            hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+            hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
             if hum.Sit then
                 hum.Sit = false
                 hum.Jump = true
@@ -3462,13 +3519,48 @@ RunService.Stepped:Connect(function()
         end
 
         pcall(function()
-            local radiusParts = workspace:GetPartBoundsInRadius(root.Position, 10)
+            local radiusParts = workspace:GetPartBoundsInRadius(root.Position, 16)
             for _, part in ipairs(radiusParts) do
                 if part:IsA("Seat") or part:IsA("VehicleSeat") then
                     part.CanTouch = false
                 end
             end
         end)
+
+        -- ⚡ FLY-STYLE INFINITE FORCE IMMUNITY ANCHOR
+        local bv = root:FindFirstChild("TXR_ShieldVelocity")
+        if not bv then
+            bv = Instance.new("BodyVelocity")
+            bv.Name = "TXR_ShieldVelocity"
+            bv.Parent = root
+        end
+
+        if hum and hum.MoveDirection.Magnitude > 0 then
+            bv.MaxForce = Vector3.new(0, 0, 0)
+        else
+            bv.MaxForce = Vector3.new(math.huge, 0, math.huge)
+            bv.Velocity = Vector3.new(0, 0, 0)
+        end
+
+        if root.AssemblyLinearVelocity.Magnitude > 75 then
+            root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        end
+        if root.AssemblyAngularVelocity.Magnitude > 25 then
+            root.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+        end
+
+        for _, p in ipairs(char:GetChildren()) do
+            if p:IsA("BasePart") and p.CanCollide then
+                p.CanCollide = false
+            end
+        end
+    else
+        if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+            local bv = lp.Character.HumanoidRootPart:FindFirstChild("TXR_ShieldVelocity")
+            if bv then 
+                bv:Destroy() 
+            end
+        end
     end
 end)
 
@@ -3542,39 +3634,12 @@ RunService.Heartbeat:Connect(function(dt)
             
             if isEvading then
                 targetSafeOffsets[plr] = Vector3.new(0, 15000, 0) 
-            elseif activeModes["HouseProt"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            elseif (activeModes["HouseProt"] or activeModes["VisualZone"] or isVisualZoneEnabled) and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
                 local tRoot = plr.Character.HumanoidRootPart
                 local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
                 local checkPos = tRoot.Position + pOffset
                 
-                local params = OverlapParams.new()
-                local ignoreList = {lp.Character}
-                for _, p in ipairs(Players:GetPlayers()) do
-                    if p.Character then table.insert(ignoreList, p.Character) end
-                end
-                if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
-                if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
-                params.FilterDescendantsInstances = ignoreList
-                params.FilterType = Enum.RaycastFilterType.Exclude
-
-                local inDangerZone = false
-                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
-                for _, hitInst in ipairs(partsInBubble) do
-                    local currentInst = hitInst
-                    local bName = string.lower(hitInst.Name)
-                    local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
-                    while currentInst and currentInst ~= workspace do
-                        local lowerName = string.lower(currentInst.Name)
-                        if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
-                            inDangerZone = true
-                            break
-                        end
-                        currentInst = currentInst.Parent
-                    end
-                    if inDangerZone then break end
-                end
-
-                if inDangerZone then
+                if checkPosInDangerZone(checkPos) then
                     targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
                 end
             end
@@ -4111,7 +4176,7 @@ end)
 
 -- =================================================================
 -- 🚨 RGB THREAT RADAR ENGINE
--- =================================================================
+-- =========================================================
 local threatGuiParent = game:GetService("CoreGui")
 pcall(function() if not threatGuiParent then threatGuiParent = lp:WaitForChild("PlayerGui") end end)
 if _G.TXR_THREAT_ESP and _G.TXR_THREAT_ESP.Parent then _G.TXR_THREAT_ESP:Destroy() end
@@ -4311,7 +4376,7 @@ end)
 
 -- =================================================================
 -- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND & PIGGYBACK SAFE) 🚀
--- =================================================================
+-- =========================================================
 local isSmartClearing = false
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if _G.TXR_InstanceID ~= currentExecutionID then return end
@@ -4457,7 +4522,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     sendNotif("SMART CLEAR", "Bang Props Banned & Cleared!", 2)
                 else
                     if not houseData then
-                        sendNotif("⚠️ Spawn House Requirement", "House spawn karo pehle!", 3)
+                        sendNotif("⚠️ HOUSE REQUIRED", "Spawn House First! Pehle apna house spawn karein.", 3)
                     end
                 end
             end)
