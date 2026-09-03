@@ -504,51 +504,94 @@ local function ScanForRemotes()
 end
 ScanForRemotes()
 
--- 🏫 ADVANCED SCHOOL HIDE BASEMENT DESTINATION & SMART ZONE ENGINE
+-- 🏫 ADVANCED SCHOOL HIDE BASEMENT DESTINATION & HIGH-PERFORMANCE DANGER ZONE ENGINE
 local SCHOOL_HIDE_CFRAME = CFrame.new(-27.5, -45.0, 155.0)
 
-local CachedDangerZones = {}
+local CachedDangerLots = {}
 local lastZoneScanTick = 0
 
 local function updateDangerZonesCache()
-    if tick() - lastZoneScanTick < 1.0 then return end
+    if tick() - lastZoneScanTick < 0.8 then return end
     lastZoneScanTick = tick()
     
     local newZones = {}
     local lots = workspace:FindFirstChild("001_Lots") or workspace:FindFirstChild("Lots")
     if lots then
         for _, lot in ipairs(lots:GetChildren()) do
+            local hasHouse = false
             local picked = lot:FindFirstChild("HousePickedByPlayer")
             if picked and picked.Value and tostring(picked.Value) ~= "" then
-                local lotCF, lotSz = lot:GetBoundingBox()
+                hasHouse = true
+            elseif lot:FindFirstChild("HouseModel") or lot:FindFirstChild("HousePickedByPlayer") then
+                hasHouse = true
+            end
+            
+            if hasHouse then
+                local pivot = lot:GetPivot()
+                local cf, sz = lot:GetBoundingBox()
+                local center = cf.Position
+                local halfX = math.max(sz.X * 0.55, 45)
+                local halfZ = math.max(sz.Z * 0.55, 45)
                 table.insert(newZones, {
-                    Min = lotCF.Position - (lotSz * 0.5) - Vector3.new(2, 20, 2),
-                    Max = lotCF.Position + (lotSz * 0.5) + Vector3.new(2, 600, 2)
+                    Center = center,
+                    MinX = center.X - halfX,
+                    MaxX = center.X + halfX,
+                    MinZ = center.Z - halfZ,
+                    MaxZ = center.Z + halfZ,
+                    MinY = center.Y - 15,
+                    MaxY = center.Y + 250,
+                    LotInstance = lot
                 })
             end
         end
     end
+    
     for _, obj in ipairs(workspace:GetChildren()) do
         if obj.Name == "AsliBanZone_TXR" and obj:IsA("BasePart") then
             local p = obj.Position
             local sz = obj.Size
             table.insert(newZones, {
-                Min = p - (sz * 0.5),
-                Max = p + (sz * 0.5)
+                Center = p,
+                MinX = p.X - (sz.X * 0.5),
+                MaxX = p.X + (sz.X * 0.5),
+                MinZ = p.Z - (sz.Z * 0.5),
+                MaxZ = p.Z + (sz.Z * 0.5),
+                MinY = p.Y - 50,
+                MaxY = p.Y + 600,
+                LotInstance = obj
             })
         end
     end
-    CachedDangerZones = newZones
+    
+    CachedDangerLots = newZones
 end
 
 local function isPositionInDanger(pos)
-    for _, zone in ipairs(CachedDangerZones) do
-        if pos.X >= zone.Min.X and pos.X <= zone.Max.X and
-           pos.Y >= zone.Min.Y and pos.Y <= zone.Max.Y and
-           pos.Z >= zone.Min.Z and pos.Z <= zone.Max.Z then
+    for _, z in ipairs(CachedDangerLots) do
+        if pos.X >= z.MinX and pos.X <= z.MaxX and
+           pos.Z >= z.MinZ and pos.Z <= z.MaxZ and
+           pos.Y >= z.MinY and pos.Y <= z.MaxY then
             return true
         end
     end
+    
+    local rayParams = RaycastParams.new()
+    rayParams.FilterType = Enum.RaycastFilterType.Include
+    local lots = workspace:FindFirstChild("001_Lots") or workspace:FindFirstChild("Lots")
+    if lots then
+        rayParams.FilterDescendantsInstances = {lots}
+        local hit = workspace:Raycast(pos + Vector3.new(0, 10, 0), Vector3.new(0, -60, 0), rayParams)
+        if hit and hit.Instance then
+            local current = hit.Instance
+            while current and current ~= workspace and current ~= lots do
+                if current:FindFirstChild("HousePickedByPlayer") or current.Name:lower():find("lot") or current.Name:lower():find("house") then
+                    return true
+                end
+                current = current.Parent
+            end
+        end
+    end
+    
     return false
 end
 
