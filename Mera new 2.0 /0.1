@@ -482,10 +482,10 @@ local function isPositionInsideAnyHousePlot(targetPos)
         
         local cf, size = lot:GetBoundingBox()
         local rel = cf:PointToObjectSpace(targetPos)
-        local hX = (size.X / 2) - 2
-        local hZ = (size.Z / 2) - 2
+        local hX = (size.X / 2) - 4
+        local hZ = (size.Z / 2) - 4
         
-        if math.abs(rel.X) <= hX and math.abs(rel.Z) <= hZ and rel.Y >= -15 and rel.Y <= 65 then
+        if math.abs(rel.X) <= hX and math.abs(rel.Z) <= hZ and rel.Y >= -10 and rel.Y <= 50 then
             return true
         end
         return false
@@ -505,8 +505,8 @@ local function isPositionInsideAnyHousePlot(targetPos)
     for _, obj in ipairs(workspace:GetChildren()) do
         if obj.Name == "AsliBanZone_TXR" and obj:IsA("BasePart") then
             local rel = obj.CFrame:PointToObjectSpace(targetPos)
-            local hX = obj.Size.X / 2
-            local hZ = obj.Size.Z / 2
+            local hX = (obj.Size.X / 2) - 3
+            local hZ = (obj.Size.Z / 2) - 3
             if math.abs(rel.X) <= hX and math.abs(rel.Z) <= hZ and math.abs(rel.Y) <= (obj.Size.Y / 2) then
                 return true
             end
@@ -768,9 +768,12 @@ local function PlayRobotBangMusic()
 
             pcall(function()
                 local pg = lp:FindFirstChild("PlayerGui")
-                if pg and pg:FindFirstChild("MainGUIHandler") then
-                    local vReq = pg.MainGUIHandler.MainAudio.Catalog.Header.VolumeContainer.VolumeChangeRequest
-                    vReq:FireServer(100)
+                if pg then
+                    local h = pg:FindFirstChild("MainGUIHandler")
+                    if h and h:FindFirstChild("MainAudio") and h.MainAudio:FindFirstChild("Catalog") then
+                        local vReq = h.MainAudio.Catalog.Header.VolumeContainer.VolumeChangeRequest
+                        vReq:FireServer(100)
+                    end
                 end
             end)
 
@@ -3469,13 +3472,13 @@ local function dispatchRemote(remote, targetCFrame)
         local inDangerZone = isPositionInsideAnyHousePlot(targetCFrame.Position)
 
         if inDangerZone then
-            targetCFrame = CFrame.new(120, -65000, 150)
+            targetCFrame = CFrame.new(120, -350, 150)
             isEmergency = true
         end
     end
 
     if not isEmergency then
-        isEmergency = targetCFrame.Y < -100 or targetCFrame.Y > 10000
+        isEmergency = targetCFrame.Y < -5000 or targetCFrame.Y > 10000
     end
 
     pcall(function() 
@@ -3660,7 +3663,7 @@ RunService.Heartbeat:Connect(function(dt)
                 local inDangerZone = isPositionInsideAnyHousePlot(checkPos)
 
                 if inDangerZone then
-                    targetSafeOffsets[plr] = CFrame.new(120, -65000, 150).Position - tRoot.Position
+                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
                 end
             end
         end
@@ -3816,7 +3819,7 @@ RunService.Heartbeat:Connect(function(dt)
                     local isSeated = isPlayerSeated(plr)
                     if voidedPlayers[plr] and not isSeated and tRoot.Position.Y > -1000 then voidedPlayers[plr] = nil end
                     
-                    -- 🕳️ DEEP UNDERWORLD VOID-KILL POSITION (-65000 STUDS)
+                    -- 🕳️ DEEP UNDERWORLD VOID-KILL POSITION (-65000 STUDS ONLY FOR CHAIR)
                     local UNDERWORLD_KILL_CFRAME = CFrame.new(tRoot.Position.X, -65000, tRoot.Position.Z)
 
                     if isSeated or voidedPlayers[plr] then
@@ -3826,7 +3829,11 @@ RunService.Heartbeat:Connect(function(dt)
                                 remote:InvokeServer(UNDERWORLD_KILL_CFRAME) 
                             end) 
                         end)
-                        dispatchRemote(remote, UNDERWORLD_KILL_CFRAME)
+                        pcall(function()
+                            local parent = remote.Parent
+                            local part = parent:IsA("Model") and (parent.PrimaryPart or parent:FindFirstChildWhichIsA("BasePart")) or parent
+                            if part then part.CFrame = UNDERWORLD_KILL_CFRAME end
+                        end)
                     else
                         local propsForThisTarget = math.min(4, math.ceil(#freeRemotes / tCount))
                         local localChairIndex = (idx - 1) % propsForThisTarget
