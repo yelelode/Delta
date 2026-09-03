@@ -718,9 +718,12 @@ local function PlayRobotBangMusic()
 
             pcall(function()
                 local pg = lp:FindFirstChild("PlayerGui")
-                if pg and pg:FindFirstChild("MainGUIHandler") then
-                    local vReq = pg.MainGUIHandler.MainAudio.Catalog.Header.VolumeContainer.VolumeChangeRequest
-                    vReq:FireServer(100)
+                if pg then
+                    local h = pg:FindFirstChild("MainGUIHandler")
+                    if h and h:FindFirstChild("MainAudio") and h.MainAudio:FindFirstChild("Catalog") then
+                        local vReq = h.MainAudio.Catalog.Header.VolumeContainer.VolumeChangeRequest
+                        vReq:FireServer(100)
+                    end
                 end
             end)
 
@@ -3105,7 +3108,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
                     if desc.Part1 then table.insert(safeParts, desc.Part1) end
                     
                     for _, pt in ipairs(safeParts) do
-                        if pt and pt.Parent and not pt:IsDescendantOf(lp.Character) then
+                        if not pt:IsDescendantOf(lp.Character) then
                             if string.sub(pt.Name, 1, 4) == "Prop" then
                                 local ownerName = string.sub(pt.Name, 5)
                                 if ownerName ~= "" and ownerName ~= lp.Name then
@@ -3411,6 +3414,9 @@ end
 local lastRemoteFireTimes = {}
 local FIRE_INTERVAL = 0.035 
 
+-- =========================================================
+-- 🛡️ ORIGINAL AUTHENTIC DISPATCH METHOD (100% NO FREEZE)
+-- =========================================================
 local function dispatchRemote(remote, targetCFrame)
     if not remote or not remote.Parent then return end
     
@@ -3428,14 +3434,14 @@ local function dispatchRemote(remote, targetCFrame)
         params.FilterType = Enum.RaycastFilterType.Exclude
         
         local inDangerZone = false
-        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 12, 6), params)
+        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
         for _, hitInst in ipairs(partsInBubble) do
             local currentInst = hitInst
             local bName = string.lower(hitInst.Name)
-            local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway") or string.find(bName, "sidewalk")
+            local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
             while currentInst and currentInst ~= workspace do
                 local lowerName = string.lower(currentInst.Name)
-                if currentInst.Name == "AsliBanZone_TXR" or (string.find(lowerName, "housepickedbyplayer") and not isSafe) then
+                if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
                     inDangerZone = true
                     break
                 end
@@ -3644,14 +3650,14 @@ RunService.Heartbeat:Connect(function(dt)
                 params.FilterType = Enum.RaycastFilterType.Exclude
 
                 local inDangerZone = false
-                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 12, 6), params)
+                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
                 for _, hitInst in ipairs(partsInBubble) do
                     local currentInst = hitInst
                     local bName = string.lower(hitInst.Name)
-                    local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway") or string.find(bName, "sidewalk")
+                    local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
                     while currentInst and currentInst ~= workspace do
                         local lowerName = string.lower(currentInst.Name)
-                        if currentInst.Name == "AsliBanZone_TXR" or (string.find(lowerName, "housepickedbyplayer") and not isSafe) then
+                        if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
                             inDangerZone = true
                             break
                         end
