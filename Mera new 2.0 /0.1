@@ -718,12 +718,9 @@ local function PlayRobotBangMusic()
 
             pcall(function()
                 local pg = lp:FindFirstChild("PlayerGui")
-                if pg then
-                    local h = pg:FindFirstChild("MainGUIHandler")
-                    if h and h:FindFirstChild("MainAudio") and h.MainAudio:FindFirstChild("Catalog") then
-                        local vReq = h.MainAudio.Catalog.Header.VolumeContainer.VolumeChangeRequest
-                        vReq:FireServer(100)
-                    end
+                if pg and pg:FindFirstChild("MainGUIHandler") then
+                    local vReq = pg.MainGUIHandler.MainAudio.Catalog.Header.VolumeContainer.VolumeChangeRequest
+                    vReq:FireServer(100)
                 end
             end)
 
@@ -3414,9 +3411,6 @@ end
 local lastRemoteFireTimes = {}
 local FIRE_INTERVAL = 0.035 
 
--- =========================================================
--- 🛡️ BULLETPROOF ANTI-DELETE DISPATCH (PERFECT LERP & NO FREEZE)
--- =========================================================
 local function dispatchRemote(remote, targetCFrame)
     if not remote or not remote.Parent then return end
     
@@ -3434,15 +3428,14 @@ local function dispatchRemote(remote, targetCFrame)
         params.FilterType = Enum.RaycastFilterType.Exclude
         
         local inDangerZone = false
-        -- Column check (1000 studs vertical taaki jump karne par bhi plot miss na ho)
-        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos.X, 50, checkPos.Z), Vector3.new(6, 1000, 6), params)
+        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
         for _, hitInst in ipairs(partsInBubble) do
             local currentInst = hitInst
             local bName = string.lower(hitInst.Name)
-            local isSafe = string.find(bName, "road") or string.find(bName, "driveway") or string.find(bName, "sidewalk")
+            local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
             while currentInst and currentInst ~= workspace do
                 local lowerName = string.lower(currentInst.Name)
-                if currentInst.Name == "AsliBanZone_TXR" or (string.find(lowerName, "housepickedbyplayer") and not isSafe) then
+                if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
                     inDangerZone = true
                     break
                 end
@@ -3452,13 +3445,13 @@ local function dispatchRemote(remote, targetCFrame)
         end
 
         if inDangerZone then
-            targetCFrame = CFrame.new(120, -350, 150)
+            targetCFrame = SCHOOL_HIDE_CFRAME
             isEmergency = true
         end
     end
 
     if not isEmergency then
-        isEmergency = targetCFrame.Y < -5000 or targetCFrame.Y > 10000
+        isEmergency = targetCFrame.Y < -100 or targetCFrame.Y > 10000
     end
 
     pcall(function() 
@@ -3630,11 +3623,8 @@ RunService.Heartbeat:Connect(function(dt)
         local rScale = currentRadius / 15 
 
         local targetSafeOffsets = {}
-        local targetInHouseZone = {}
-
         for _, plr in ipairs(targetList) do
             targetSafeOffsets[plr] = Vector3.new(0, 0, 0)
-            targetInHouseZone[plr] = false
             
             if isEvading then
                 targetSafeOffsets[plr] = Vector3.new(0, 15000, 0) 
@@ -3654,15 +3644,14 @@ RunService.Heartbeat:Connect(function(dt)
                 params.FilterType = Enum.RaycastFilterType.Exclude
 
                 local inDangerZone = false
-                -- 2D Ground column box: Jump karne par height change hone par bhi detection miss na ho
-                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos.X, 50, checkPos.Z), Vector3.new(6, 1000, 6), params)
+                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
                 for _, hitInst in ipairs(partsInBubble) do
                     local currentInst = hitInst
                     local bName = string.lower(hitInst.Name)
-                    local isSafe = string.find(bName, "road") or string.find(bName, "driveway") or string.find(bName, "sidewalk")
+                    local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
                     while currentInst and currentInst ~= workspace do
                         local lowerName = string.lower(currentInst.Name)
-                        if currentInst.Name == "AsliBanZone_TXR" or (string.find(lowerName, "housepickedbyplayer") and not isSafe) then
+                        if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
                             inDangerZone = true
                             break
                         end
@@ -3672,8 +3661,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
 
                 if inDangerZone then
-                    targetInHouseZone[plr] = true
-                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
+                    targetSafeOffsets[plr] = SCHOOL_HIDE_CFRAME.Position - tRoot.Position
                 end
             end
         end
@@ -3740,8 +3728,6 @@ RunService.Heartbeat:Connect(function(dt)
             local robotBangCycle = (math.sin(robotAnimTime * 6.5) + 1) / 2
             local robotSmoothDist = maxBaseDist - ((maxBaseDist - touchDist) * robotBangCycle)
 
-            local inHouse = targetInHouseZone[plr]
-
             if activeModes["HeadBang"] then
                 local slots = {"h_front", "h_back"}
                 for _, slot in ipairs(slots) do 
@@ -3755,24 +3741,18 @@ RunService.Heartbeat:Connect(function(dt)
                     end 
                 end 
                 
-                if inHouse then
-                    local voidCFrame = CFrame.new(120, -350, 150)
-                    if assignedRemotes[plr].h_front then dispatchRemote(assignedRemotes[plr].h_front, voidCFrame) end
-                    if assignedRemotes[plr].h_back then dispatchRemote(assignedRemotes[plr].h_back, voidCFrame) end
-                else
-                    local actualHead = plr.Character:FindFirstChild("Head") or tRoot
-                    local headPos = actualHead.Position + predictedOffset + targetSafeOffsets[plr]
-                    local headLockCFrame = CFrame.lookAt(headPos, headPos + flatLook)
-                    
-                    local headY = (isSitting or isRagdoll) and -0.8 or -2.4 
-                    local headDist = 1.0 + (1.5 * rScale) - (((1.5 * rScale)) * snapPower)
-                    
-                    if assignedRemotes[plr].h_front then 
-                        dispatchRemote(assignedRemotes[plr].h_front, headLockCFrame * CFrame.new(0, headY, -headDist)) 
-                    end
-                    if assignedRemotes[plr].h_back then 
-                        dispatchRemote(assignedRemotes[plr].h_back, headLockCFrame * CFrame.new(0, headY, headDist) * CFrame.Angles(0, math.rad(180), 0)) 
-                    end
+                local actualHead = plr.Character:FindFirstChild("Head") or tRoot
+                local headPos = actualHead.Position + predictedOffset + targetSafeOffsets[plr]
+                local headLockCFrame = CFrame.lookAt(headPos, headPos + flatLook)
+                
+                local headY = (isSitting or isRagdoll) and -0.8 or -2.4 
+                local headDist = 1.0 + (1.5 * rScale) - (((1.5 * rScale)) * snapPower)
+                
+                if assignedRemotes[plr].h_front then 
+                    dispatchRemote(assignedRemotes[plr].h_front, headLockCFrame * CFrame.new(0, headY, -headDist)) 
+                end
+                if assignedRemotes[plr].h_back then 
+                    dispatchRemote(assignedRemotes[plr].h_back, headLockCFrame * CFrame.new(0, headY, headDist) * CFrame.Angles(0, math.rad(180), 0)) 
                 end
             end
 
@@ -3789,23 +3769,15 @@ RunService.Heartbeat:Connect(function(dt)
                     end 
                 end 
                 
-                if inHouse then
-                    local voidCFrame = CFrame.new(120, -350, 150)
-                    if assignedRemotes[plr].front then dispatchRemote(assignedRemotes[plr].front, voidCFrame) end
-                    if assignedRemotes[plr].back then dispatchRemote(assignedRemotes[plr].back, voidCFrame) end
-                    if assignedRemotes[plr].left then dispatchRemote(assignedRemotes[plr].left, voidCFrame) end
-                    if assignedRemotes[plr].right then dispatchRemote(assignedRemotes[plr].right, voidCFrame) end
-                else
-                    local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * robotSmoothDist)
-                    local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * robotSmoothDist)
-                    local lPos = centerGroundPos - (dynamicBaseCFrame.RightVector * robotSmoothDist)
-                    local rPos = centerGroundPos + (dynamicBaseCFrame.RightVector * robotSmoothDist)
-                    
-                    if assignedRemotes[plr].front then dispatchRemote(assignedRemotes[plr].front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                    if assignedRemotes[plr].back then dispatchRemote(assignedRemotes[plr].back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                    if assignedRemotes[plr].left then dispatchRemote(assignedRemotes[plr].left, CFrame.lookAt(lPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                    if assignedRemotes[plr].right then dispatchRemote(assignedRemotes[plr].right, CFrame.lookAt(rPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                end
+                local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * robotSmoothDist)
+                local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * robotSmoothDist)
+                local lPos = centerGroundPos - (dynamicBaseCFrame.RightVector * robotSmoothDist)
+                local rPos = centerGroundPos + (dynamicBaseCFrame.RightVector * robotSmoothDist)
+                
+                if assignedRemotes[plr].front then dispatchRemote(assignedRemotes[plr].front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].back then dispatchRemote(assignedRemotes[plr].back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].left then dispatchRemote(assignedRemotes[plr].left, CFrame.lookAt(lPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].right then dispatchRemote(assignedRemotes[plr].right, CFrame.lookAt(rPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
             end
 
             if activeModes["MultiRobot"] then
@@ -3821,17 +3793,11 @@ RunService.Heartbeat:Connect(function(dt)
                     end 
                 end 
                 
-                if inHouse then
-                    local voidCFrame = CFrame.new(120, -350, 150)
-                    if assignedRemotes[plr].m_front then dispatchRemote(assignedRemotes[plr].m_front, voidCFrame) end
-                    if assignedRemotes[plr].m_back then dispatchRemote(assignedRemotes[plr].m_back, voidCFrame) end
-                else
-                    local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * smoothDist)
-                    local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * smoothDist)
-                    
-                    if assignedRemotes[plr].m_front then dispatchRemote(assignedRemotes[plr].m_front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                    if assignedRemotes[plr].m_back then dispatchRemote(assignedRemotes[plr].m_back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                end
+                local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * smoothDist)
+                local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * smoothDist)
+                
+                if assignedRemotes[plr].m_front then dispatchRemote(assignedRemotes[plr].m_front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].m_back then dispatchRemote(assignedRemotes[plr].m_back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
             end
         end
 
@@ -3892,34 +3858,30 @@ RunService.Heartbeat:Connect(function(dt)
                     local targetIdx = ((i - 1) % tCount) + 1
                     local plr = targetList[targetIdx]
                     
-                    if targetInHouseZone[plr] then
-                        dispatchRemote(remote, CFrame.new(120, -350, 150))
-                    else
-                        local tRoot = plr.Character.HumanoidRootPart
-                        local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
-                        local pOffset = targetVelocities[plr] * predictionTime
-                        local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
-                        local ringCenterPos = bodyPos + Vector3.new(0, -3.8, 0)
+                    local tRoot = plr.Character.HumanoidRootPart
+                    local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
+                    local pOffset = targetVelocities[plr] * predictionTime
+                    local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
+                    local ringCenterPos = bodyPos + Vector3.new(0, -3.8, 0)
+                    
+                    local propsForThisTarget = 0
+                    local myLocalIdx = 0
+                    
+                    for j = 1, #freeRemotes do 
+                        if (((j - 1) % tCount) + 1) == targetIdx then 
+                            if j < i then myLocalIdx = myLocalIdx + 1 end
+                            propsForThisTarget = propsForThisTarget + 1 
+                        end 
+                    end
+                    
+                    if propsForThisTarget > 0 then
+                        local angleRad = (math.pi * 2 / propsForThisTarget) * myLocalIdx
+                        local rBaseDist = math.max(3.5, 4.5 * rScale) 
+                        local rSnap = (math.sin(smoothAnimTime * 6.5) + 1) / 2
+                        local rSmooth = rBaseDist - ((rBaseDist - 1.5) * rSnap)
                         
-                        local propsForThisTarget = 0
-                        local myLocalIdx = 0
-                        
-                        for j = 1, #freeRemotes do 
-                            if (((j - 1) % tCount) + 1) == targetIdx then 
-                                if j < i then myLocalIdx = myLocalIdx + 1 end
-                                propsForThisTarget = propsForThisTarget + 1 
-                            end 
-                        end
-                        
-                        if propsForThisTarget > 0 then
-                            local angleRad = (math.pi * 2 / propsForThisTarget) * myLocalIdx
-                            local rBaseDist = math.max(3.5, 4.5 * rScale) 
-                            local rSnap = (math.sin(smoothAnimTime * 6.5) + 1) / 2
-                            local rSmooth = rBaseDist - ((rBaseDist - 1.5) * rSnap)
-                            
-                            local propPos = ringCenterPos + Vector3.new(math.sin(angleRad) * rSmooth, 0, math.cos(angleRad) * rSmooth)
-                            dispatchRemote(remote, CFrame.lookAt(propPos, ringCenterPos) * CFrame.Angles(0, math.rad(180), 0))
-                        end
+                        local propPos = ringCenterPos + Vector3.new(math.sin(angleRad) * rSmooth, 0, math.cos(angleRad) * rSmooth)
+                        dispatchRemote(remote, CFrame.lookAt(propPos, ringCenterPos) * CFrame.Angles(0, math.rad(180), 0))
                     end
                 end
             elseif activeModes["Orbit"] then
@@ -3927,117 +3889,113 @@ RunService.Heartbeat:Connect(function(dt)
                     local targetIdx = ((idx - 1) % tCount) + 1
                     local plr = targetList[targetIdx]
                     
-                    if targetInHouseZone[plr] then
-                        dispatchRemote(remote, CFrame.new(120, -350, 150))
-                    else
-                        local tRoot = plr.Character.HumanoidRootPart
-                        local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
-                        local pOffset = targetVelocities[plr] * predictionTime
-                        local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
-                        
-                        local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
-                        if flatLook.Magnitude > 0.01 then flatLook = flatLook.Unit else flatLook = Vector3.new(0, 0, -1) end
-                        local dynamicOrbitBase = CFrame.lookAt(bodyPos, bodyPos + flatLook)
-                        
-                        local propsForThisTarget = 0
-                        local myLocalIdx = 0
-                        
-                        for j = 1, #freeRemotes do 
-                            if (((j - 1) % tCount) + 1) == targetIdx then 
-                                propsForThisTarget = propsForThisTarget + 1 
-                                if j <= idx then myLocalIdx = propsForThisTarget end 
-                            end 
-                        end 
-                        
-                        local x, y, z = 0, 0, 0
-                        local radRatio = (myLocalIdx / propsForThisTarget) * math.pi * 2 
-                        
-                        if activeGeometry == "Standard Orbit" then
-                            x = math.cos(radRatio + smoothAngle) * currentRadius
-                            z = math.sin(radRatio + smoothAngle) * currentRadius
-                        elseif activeGeometry == "Spin" then 
-                            x = math.cos(radRatio + smoothAngle) * currentRadius
-                            z = math.sin(radRatio + smoothAngle) * currentRadius
-                        elseif activeGeometry == "Reverse Spin" then 
-                            x = math.cos(radRatio - smoothAngle) * currentRadius
-                            z = math.sin(radRatio - smoothAngle) * currentRadius
-                        elseif activeGeometry == "Bobbing Orbit" then 
-                            x = math.cos(radRatio + smoothAngle) * currentRadius
-                            z = math.sin(radRatio + smoothAngle) * currentRadius
-                            y = math.sin((smoothAngle * 2) + radRatio) * (currentRadius * 0.3)
-                        elseif activeGeometry == "Vertical Halo" then
-                            x = math.cos(radRatio + smoothAngle) * currentRadius
-                            y = math.sin(radRatio + smoothAngle) * currentRadius
-                        elseif activeGeometry == "Atom" then
-                            local axis = myLocalIdx % 3
-                            if axis == 0 then x = math.cos(radRatio + smoothAngle) * currentRadius; z = math.sin(radRatio + smoothAngle) * currentRadius
-                            elseif axis == 1 then x = math.cos(radRatio + smoothAngle) * currentRadius; y = math.sin(radRatio + smoothAngle) * currentRadius
-                            else z = math.cos(radRatio + smoothAngle) * currentRadius; y = math.sin(radRatio + smoothAngle) * currentRadius end
-                        elseif activeGeometry == "Galaxy Spiral" then
-                            local dynRad = currentRadius * (0.4 + 0.6 * math.sin(smoothAngle + radRatio * 2))
-                            x = math.cos(radRatio + smoothAngle) * dynRad
-                            z = math.sin(radRatio + smoothAngle) * dynRad
-                        elseif activeGeometry == "Crown" then
-                            y = 2.5 + math.sin(radRatio * 3 + smoothAngle * 4) * 0.8
-                            x = math.cos(radRatio + smoothAngle) * (currentRadius * 0.5)
-                            z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
-                        elseif activeGeometry == "DNA" then
-                            local helixHeight = currentRadius * 1.5
-                            local phase = (myLocalIdx % 2 == 0) and math.pi or 0
-                            local heightProgress = math.floor((myLocalIdx - 1) / 2) / math.max(1, math.floor(propsForThisTarget / 2))
-                            y = (heightProgress * helixHeight) - (helixHeight/2) + math.sin(smoothAngle)
-                            local helixRad = currentRadius * 0.4
-                            x = math.cos(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
-                            z = math.sin(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
-                        elseif activeGeometry == "Snake Body" then
-                            local delay = myLocalIdx * 0.3
-                            x = math.cos(smoothAngle - delay) * currentRadius
-                            z = math.sin(smoothAngle - delay) * currentRadius
-                            y = math.sin((smoothAngle - delay) * 2) * (currentRadius * 0.3)
-                        elseif activeGeometry == "Wings" then
-                            local side = (myLocalIdx % 2 == 0) and 1 or -1
-                            local wingIdx = math.ceil(myLocalIdx / 2)
-                            local totalWings = math.max(1, math.ceil(propsForThisTarget / 2))
-                            local wingProgress = wingIdx / totalWings
-                            x = side * (1 + wingProgress * currentRadius)
-                            y = 0.5 + (wingProgress * currentRadius * 0.8) + math.sin(smoothAngle + wingProgress * 2) * 0.5
-                            z = 1.5 + (wingProgress * 0.5)
-                        elseif activeGeometry == "BlackHole Vortex" then
-                            local dynR = currentRadius * (0.5 + 0.5 * math.sin(smoothAngle * 2 + radRatio))
-                            x = math.cos(radRatio + smoothAngle * 2) * dynR
-                            z = math.sin(radRatio + smoothAngle * 2) * dynR
-                            y = math.sin(smoothAngle + radRatio) * 2
-                        elseif activeGeometry == "Quantum Pulsar" then
-                            local pulseR = currentRadius * (0.8 + 0.4 * math.sin(smoothAngle * 3))
-                            x = math.cos(radRatio + smoothAngle) * pulseR
-                            z = math.sin(radRatio + smoothAngle) * pulseR
-                        elseif activeGeometry == "Hyper Wave" then
-                            x = math.cos(radRatio + smoothAngle) * currentRadius
-                            z = math.sin(radRatio + smoothAngle) * currentRadius
-                            y = math.sin(smoothAngle * 3 + radRatio * 2) * 3
-                        elseif activeGeometry == "Supernova Explosion" then
-                            local expR = currentRadius * (0.3 + math.abs(math.sin(smoothAngle * 4)))
-                            x = math.cos(radRatio + smoothAngle) * expR
-                            z = math.sin(radRatio + smoothAngle) * expR
-                            y = math.sin(smoothAngle * 2) * 2
-                        elseif activeGeometry == "Matrix Grid" then
-                            local gridCol = math.fmod(myLocalIdx, 4) - 1.5
-                            local gridRow = math.floor((myLocalIdx - 1) / 4) - 1
-                            x = gridCol * (currentRadius * 0.3)
-                            z = gridRow * (currentRadius * 0.3)
-                            y = math.sin(smoothAngle + myLocalIdx) * 1.5
-                        elseif activeGeometry == "Eclipse Shadowing" then
-                            local ellipR = currentRadius * 1.3
-                            x = math.cos(radRatio + smoothAngle) * ellipR
-                            z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
-                            y = math.cos(smoothAngle * 2) * 1.2
-                        else 
-                            x = math.cos(radRatio + smoothAngle) * currentRadius
-                            z = math.sin(radRatio + smoothAngle) * currentRadius 
+                    local tRoot = plr.Character.HumanoidRootPart
+                    local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
+                    local pOffset = targetVelocities[plr] * predictionTime
+                    local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
+                    
+                    local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
+                    if flatLook.Magnitude > 0.01 then flatLook = flatLook.Unit else flatLook = Vector3.new(0, 0, -1) end
+                    local dynamicOrbitBase = CFrame.lookAt(bodyPos, bodyPos + flatLook)
+                    
+                    local propsForThisTarget = 0
+                    local myLocalIdx = 0
+                    
+                    for j = 1, #freeRemotes do
+                        if (((j - 1) % tCount) + 1) == targetIdx then
+                            propsForThisTarget = propsForThisTarget + 1
+                            if j <= idx then myLocalIdx = propsForThisTarget end
                         end
-                        
-                        dispatchRemote(remote, dynamicOrbitBase * CFrame.new(Vector3.new(x, y, z)) * CFrame.Angles(smoothSelfAngle, smoothSelfAngle, smoothSelfAngle))
                     end
+                    
+                    local x, y, z = 0, 0, 0
+                    local radRatio = (myLocalIdx / propsForThisTarget) * math.pi * 2 
+                    
+                    if activeGeometry == "Standard Orbit" then
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        z = math.sin(radRatio + smoothAngle) * currentRadius
+                    elseif activeGeometry == "Spin" then 
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        z = math.sin(radRatio + smoothAngle) * currentRadius
+                    elseif activeGeometry == "Reverse Spin" then 
+                        x = math.cos(radRatio - smoothAngle) * currentRadius
+                        z = math.sin(radRatio - smoothAngle) * currentRadius
+                    elseif activeGeometry == "Bobbing Orbit" then 
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        z = math.sin(radRatio + smoothAngle) * currentRadius
+                        y = math.sin((smoothAngle * 2) + radRatio) * (currentRadius * 0.3)
+                    elseif activeGeometry == "Vertical Halo" then
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        y = math.sin(radRatio + smoothAngle) * currentRadius
+                    elseif activeGeometry == "Atom" then
+                        local axis = myLocalIdx % 3
+                        if axis == 0 then x = math.cos(radRatio + smoothAngle) * currentRadius; z = math.sin(radRatio + smoothAngle) * currentRadius
+                        elseif axis == 1 then x = math.cos(radRatio + smoothAngle) * currentRadius; y = math.sin(radRatio + smoothAngle) * currentRadius
+                        else z = math.cos(radRatio + smoothAngle) * currentRadius; y = math.sin(radRatio + smoothAngle) * currentRadius end
+                    elseif activeGeometry == "Galaxy Spiral" then
+                        local dynRad = currentRadius * (0.4 + 0.6 * math.sin(smoothAngle + radRatio * 2))
+                        x = math.cos(radRatio + smoothAngle) * dynRad
+                        z = math.sin(radRatio + smoothAngle) * dynRad
+                    elseif activeGeometry == "Crown" then
+                        y = 2.5 + math.sin(radRatio * 3 + smoothAngle * 4) * 0.8
+                        x = math.cos(radRatio + smoothAngle) * (currentRadius * 0.5)
+                        z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
+                    elseif activeGeometry == "DNA" then
+                        local helixHeight = currentRadius * 1.5
+                        local phase = (myLocalIdx % 2 == 0) and math.pi or 0
+                        local heightProgress = math.floor((myLocalIdx - 1) / 2) / math.max(1, math.floor(propsForThisTarget / 2))
+                        y = (heightProgress * helixHeight) - (helixHeight/2) + math.sin(smoothAngle)
+                        local helixRad = currentRadius * 0.4
+                        x = math.cos(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
+                        z = math.sin(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
+                    elseif activeGeometry == "Snake Body" then
+                        local delay = myLocalIdx * 0.3
+                        x = math.cos(smoothAngle - delay) * currentRadius
+                        z = math.sin(smoothAngle - delay) * currentRadius
+                        y = math.sin((smoothAngle - delay) * 2) * (currentRadius * 0.3)
+                    elseif activeGeometry == "Wings" then
+                        local side = (myLocalIdx % 2 == 0) and 1 or -1
+                        local wingIdx = math.ceil(myLocalIdx / 2)
+                        local totalWings = math.max(1, math.ceil(propsForThisTarget / 2))
+                        local wingProgress = wingIdx / totalWings
+                        x = side * (1 + wingProgress * currentRadius)
+                        y = 0.5 + (wingProgress * currentRadius * 0.8) + math.sin(smoothAngle + wingProgress * 2) * 0.5
+                        z = 1.5 + (wingProgress * 0.5)
+                    elseif activeGeometry == "BlackHole Vortex" then
+                        local dynR = currentRadius * (0.5 + 0.5 * math.sin(smoothAngle * 2 + radRatio))
+                        x = math.cos(radRatio + smoothAngle * 2) * dynR
+                        z = math.sin(radRatio + smoothAngle * 2) * dynR
+                        y = math.sin(smoothAngle + radRatio) * 2
+                    elseif activeGeometry == "Quantum Pulsar" then
+                        local pulseR = currentRadius * (0.8 + 0.4 * math.sin(smoothAngle * 3))
+                        x = math.cos(radRatio + smoothAngle) * pulseR
+                        z = math.sin(radRatio + smoothAngle) * pulseR
+                    elseif activeGeometry == "Hyper Wave" then
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        z = math.sin(radRatio + smoothAngle) * currentRadius
+                        y = math.sin(smoothAngle * 3 + radRatio * 2) * 3
+                    elseif activeGeometry == "Supernova Explosion" then
+                        local expR = currentRadius * (0.3 + math.abs(math.sin(smoothAngle * 4)))
+                        x = math.cos(radRatio + smoothAngle) * expR
+                        z = math.sin(radRatio + smoothAngle) * expR
+                        y = math.sin(smoothAngle * 2) * 2
+                    elseif activeGeometry == "Matrix Grid" then
+                        local gridCol = math.fmod(myLocalIdx, 4) - 1.5
+                        local gridRow = math.floor((myLocalIdx - 1) / 4) - 1
+                        x = gridCol * (currentRadius * 0.3)
+                        z = gridRow * (currentRadius * 0.3)
+                        y = math.sin(smoothAngle + myLocalIdx) * 1.5
+                    elseif activeGeometry == "Eclipse Shadowing" then
+                        local ellipR = currentRadius * 1.3
+                        x = math.cos(radRatio + smoothAngle) * ellipR
+                        z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
+                        y = math.cos(smoothAngle * 2) * 1.2
+                    else 
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        z = math.sin(radRatio + smoothAngle) * currentRadius 
+                    end
+                    
+                    dispatchRemote(remote, dynamicOrbitBase * CFrame.new(Vector3.new(x, y, z)) * CFrame.Angles(smoothSelfAngle, smoothSelfAngle, smoothSelfAngle))
                 end
             end
         end
