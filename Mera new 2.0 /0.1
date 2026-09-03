@@ -3445,7 +3445,7 @@ local function dispatchRemote(remote, targetCFrame)
         end
 
         if inDangerZone then
-            targetCFrame = CFrame.new(120, -350, 150)
+            targetCFrame = SCHOOL_HIDE_CFRAME
             isEmergency = true
         end
     end
@@ -3661,7 +3661,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
 
                 if inDangerZone then
-                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
+                    targetSafeOffsets[plr] = SCHOOL_HIDE_CFRAME.Position - tRoot.Position
                 end
             end
         end
@@ -4197,7 +4197,7 @@ end)
 
 -- =================================================================
 -- 🚨 RGB THREAT RADAR ENGINE
--- =========================================================
+-- =================================================================
 local threatGuiParent = game:GetService("CoreGui")
 pcall(function() if not threatGuiParent then threatGuiParent = lp:WaitForChild("PlayerGui") end end)
 if _G.TXR_THREAT_ESP and _G.TXR_THREAT_ESP.Parent then _G.TXR_THREAT_ESP:Destroy() end
