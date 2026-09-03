@@ -2491,7 +2491,7 @@ end)
 local orbitBtn = createMainBtn("🪐 QUANTUM ORBIT", "Orbit", false, nil)
 local robotBtn = createMainBtn("🤖 RADIAL SURROUND", "Robot", false, "4x")
 local multiBtn = createMainBtn("🤖 DUAL SYSTEM", "MultiRobot", false, "2x")
-local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false, "multiple")
+local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false, "MULTIPLE")
 local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false, "HeAd BaNG")
 local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR", "Chair", false, "FLinG")
 
@@ -2690,13 +2690,13 @@ shieldBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
-        sendNotif("🛡️ SECURITY", "Anti Sit Activated.", 2)
+        sendNotif("🛡️ SECURITY", "Anti-Sit Activated.", 2)
     else 
         TweenService:Create(shieldBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
-        sendNotif("🛡️ SECURITY", "Anti Sit Deactivated.", 2)
+        sendNotif("🛡️ SECURITY", "Anti-Sit Deactivated.", 2)
         
         if lp.Character then
             local hum = lp.Character:FindFirstChildOfClass("Humanoid")
@@ -2745,7 +2745,7 @@ end)
 
 local isVisualZoneEnabled = false
 activeModes["VisualZone"] = false
-local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES ( Use If target On - props ban )", "VisualZone", false, nil)
+local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES ( Use If Target Enables Prop Ban )", "VisualZone", false, nil)
 visualZoneBtn.TextSize = 9.5
 visualZoneBtn.BackgroundColor3 = Colors.Surface
 visualZoneBtn.TextColor3 = Colors.Text
@@ -2925,7 +2925,7 @@ local escapeDebounce = false
 escapeBtn.MouseButton1Click:Connect(function()
     local houseData = getMyHouse()
     if not houseData then
-        sendNotif("⚠️ HOUSE REQUIRED", "First Spawn House! Pehle apna house spawn karein.", 3)
+        sendNotif("⚠️ HOUSE REQUIRED", "Spawn House First! Pehle apna house spawn karein.", 3)
         return
     end
 
@@ -3042,7 +3042,7 @@ local banTrapDebounce = false
 banTrapBtn.MouseButton1Click:Connect(function()
     local houseData = getMyHouse()
     if not houseData then
-        sendNotif("⚠️ HOUSE REQUIRED", "First Spawn House! Pehle apna house spawn karein.", 3)
+        sendNotif("⚠️ HOUSE REQUIRED", "Spawn House First! Pehle apna house spawn karein.", 3)
         return
     end
 
@@ -4543,7 +4543,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     sendNotif("SMART CLEAR", "Bang Props Banned & Cleared!", 2)
                 else
                     if not houseData then
-                        sendNotif("⚠️ HOUSE REQUIRED", "First Spawn House! Pehle apna house spawn karein.", 3)
+                        sendNotif("⚠️ HOUSE REQUIRED", "Spawn House First! Pehle apna house spawn karein.", 3)
                     end
                 end
             end)
