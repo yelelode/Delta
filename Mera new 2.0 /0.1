@@ -3382,14 +3382,17 @@ local lastRemoteScan = 0
 local cachedRemotes = {}
 
 local function getAvailableRemotes()
-    if tick() - lastRemoteScan < 0.25 then
+    if tick() - lastRemoteScan < 0.15 and #cachedRemotes > 0 then
         local valid = {}
         for _, r in ipairs(cachedRemotes) do
-            if r and r.Parent then 
+            if r and r.Parent and r:IsDescendantOf(workspace) then 
                 table.insert(valid, r) 
             end
         end
-        return valid
+        if #valid > 0 then
+            cachedRemotes = valid
+            return valid
+        end
     end
     
     lastRemoteScan = tick()
@@ -3409,7 +3412,7 @@ local function getAvailableRemotes()
     local remotes = {}
     for _, p in ipairs(propsCache) do 
         local r = p:FindFirstChild("SetCurrentCFrame")
-        if r and r.Parent then 
+        if r and r.Parent and r:IsDescendantOf(workspace) then 
             table.insert(remotes, r) 
         end 
     end 
@@ -3419,6 +3422,9 @@ local function getAvailableRemotes()
 end
 
 local function isRemoteAssigned(remote) 
+    if not remote or not remote.Parent or not remote:IsDescendantOf(workspace) then
+        return true
+    end
     for _, assigned in pairs(assignedRemotes) do 
         if type(assigned) == "table" then 
             for _, sr in pairs(assigned) do 
@@ -3434,43 +3440,43 @@ local function isRemoteAssigned(remote)
 end
 
 local lastRemoteFireTimes = {}
+local activeRemoteInvocations = {}
 local FIRE_INTERVAL = 0.035 
 
 -- =========================================================
 -- 🛑 UNIVERSAL BAN ZONE & LOT DETECTION SCANNER
 -- =========================================================
 local function checkPosInDangerZone(checkPos)
-    local params = OverlapParams.new()
-    local ignoreList = {lp.Character}
-    for _, p in ipairs(Players:GetPlayers()) do
-        if p.Character then table.insert(ignoreList, p.Character) end
-    end
-    if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
-    if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
-    params.FilterDescendantsInstances = ignoreList
-    params.FilterType = Enum.RaycastFilterType.Exclude
-
     local inDanger = false
-    local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
-    for _, hitInst in ipairs(partsInBubble) do
-        local currentInst = hitInst
-        local bName = string.lower(hitInst.Name)
-        local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
-        while currentInst and currentInst ~= workspace do
-            local lowerName = string.lower(currentInst.Name)
-            if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
-                inDanger = true
-                break
+    local checkRadius = 6
+    local partsInRadius = workspace:GetPartBoundsInRadius(checkPos, checkRadius)
+    
+    for _, hitInst in ipairs(partsInRadius) do
+        if hitInst and hitInst.Parent and not hitInst:IsDescendantOf(lp.Character) then
+            if hitInst.Name == "AsliBanZone_TXR" then
+                return true
             end
-            currentInst = currentInst.Parent
+            
+            local cur = hitInst
+            while cur and cur ~= workspace do
+                local curName = string.lower(cur.Name)
+                if string.find(curName, "plot") or string.find(curName, "road") or string.find(curName, "driveway") or string.find(curName, "sidewalk") then
+                    break
+                end
+                if string.find(curName, "banzone") or string.find(curName, "barrier") then
+                    inDanger = true
+                    break
+                end
+                cur = cur.Parent
+            end
+            if inDanger then break end
         end
-        if inDanger then break end
     end
     return inDanger
 end
 
 local function dispatchRemote(remote, targetCFrame)
-    if not remote or not remote.Parent then return end
+    if not remote or not remote.Parent or not remote:IsDescendantOf(workspace) then return end
     
     local isEmergency = false
     if activeModes["HouseProt"] or activeModes["VisualZone"] or isVisualZoneEnabled then
@@ -3507,10 +3513,18 @@ local function dispatchRemote(remote, targetCFrame)
     
     local now = tick()
     if isEmergency or not lastRemoteFireTimes[remote] or (now - lastRemoteFireTimes[remote]) >= FIRE_INTERVAL then
-        lastRemoteFireTimes[remote] = now
-        task.spawn(function() 
-            pcall(function() remote:InvokeServer(targetCFrame) end) 
-        end)
+        if not activeRemoteInvocations[remote] or isEmergency then
+            lastRemoteFireTimes[remote] = now
+            activeRemoteInvocations[remote] = true
+            task.spawn(function() 
+                pcall(function() 
+                    if remote and remote.Parent and remote:IsDescendantOf(workspace) then
+                        remote:InvokeServer(targetCFrame) 
+                    end
+                end)
+                activeRemoteInvocations[remote] = nil
+            end)
+        end
     end
 end
 
@@ -3610,10 +3624,20 @@ RunService.Heartbeat:Connect(function(dt)
     end
     if not isSystemActive then return end 
 
-    for plr in pairs(assignedRemotes) do
+    for plr, assigned in pairs(assignedRemotes) do
         if not selectedPlayers[plr] or not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then
             assignedRemotes[plr] = nil 
             targetVelocities[plr] = nil
+        else
+            if type(assigned) == "table" then
+                for slotName, rem in pairs(assigned) do
+                    if not rem or not rem.Parent or not rem:IsDescendantOf(workspace) then
+                        assigned[slotName] = nil
+                    end
+                end
+            elseif not assigned or not assigned.Parent or not assigned:IsDescendantOf(workspace) then
+                assignedRemotes[plr] = nil
+            end
         end
     end
     
@@ -3735,7 +3759,7 @@ RunService.Heartbeat:Connect(function(dt)
             if activeModes["HeadBang"] then
                 local slots = {"h_front", "h_back"}
                 for _, slot in ipairs(slots) do 
-                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then 
+                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent or not assignedRemotes[plr][slot]:IsDescendantOf(workspace) then 
                         for _, r in ipairs(allRemotes) do 
                             if not isRemoteAssigned(r) then 
                                 assignedRemotes[plr][slot] = r
@@ -3763,7 +3787,7 @@ RunService.Heartbeat:Connect(function(dt)
             if activeModes["Robot"] then
                 local slots = {"back", "front", "left", "right"}
                 for _, slot in ipairs(slots) do 
-                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then 
+                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent or not assignedRemotes[plr][slot]:IsDescendantOf(workspace) then 
                         for _, r in ipairs(allRemotes) do 
                             if not isRemoteAssigned(r) then 
                                 assignedRemotes[plr][slot] = r
@@ -3787,7 +3811,7 @@ RunService.Heartbeat:Connect(function(dt)
             if activeModes["MultiRobot"] then
                 local slots = {"m_back", "m_front"}
                 for _, slot in ipairs(slots) do 
-                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent then 
+                    if not assignedRemotes[plr][slot] or not assignedRemotes[plr][slot].Parent or not assignedRemotes[plr][slot]:IsDescendantOf(workspace) then 
                         for _, r in ipairs(allRemotes) do 
                             if not isRemoteAssigned(r) then 
                                 assignedRemotes[plr][slot] = r
