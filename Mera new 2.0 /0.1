@@ -512,7 +512,7 @@ local voidedPlayers = {}
 local propsCache = {}
 local autoRejoinTargets = {} 
 local activeModes = {}
-local activeGeometry = "Standard Orbit"
+local activeGeometry = "Normal Orbit"
 local isRainbowEnabled = false
 local isSoundEnabled = false
 local isSystemActive = false
@@ -1737,7 +1737,7 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
     local startPos = nil
     local targetPos = frame.Position
     local velocity = Vector2.new(0, 0)
-    local lastInputPos = Vector2.new(0, 0)
+    local lastInputPos = Vector2.new(inputPos or Vector2.new(0, 0))
     local dragLoop = nil
 
     local function getClampedTarget(newXScale, newXOffset, newYScale, newYOffset)
@@ -2197,7 +2197,32 @@ end)
 
 refreshPlayers()
 
-local geometries = {"Standard Orbit", "Spin", "Reverse Spin", "Bobbing Orbit", "Vertical Halo", "Atom", "Galaxy Spiral", "Crown", "DNA", "Snake Body", "Wings", "BlackHole Vortex", "Quantum Pulsar", "Hyper Wave", "Supernova Explosion", "Matrix Grid", "Eclipse Shadowing"}
+local geometries = {
+    "Normal Orbit", 
+    "Standard Orbit", 
+    "Spin", 
+    "Reverse Spin", 
+    "Bobbing Orbit", 
+    "Vertical Halo", 
+    "Atom", 
+    "Galaxy Spiral", 
+    "Crown", 
+    "DNA", 
+    "Snake Body", 
+    "Wings", 
+    "BlackHole Vortex", 
+    "Quantum Pulsar", 
+    "Hyper Wave", 
+    "Supernova Explosion", 
+    "Matrix Grid", 
+    "Eclipse Shadowing",
+    "Hyper Cube 4D",
+    "Saturn Rings",
+    "Double Helix Infinity",
+    "Orbital Shield Dome",
+    "Vortex Tornado"
+}
+
 for _, geo in ipairs(geometries) do
     local btn = Instance.new("TextButton", geoScroll)
     btn.Size = UDim2.new(1, 0, 0, 36)
@@ -3888,90 +3913,146 @@ RunService.Heartbeat:Connect(function(dt)
                     end
                     
                     local x, y, z = 0, 0, 0
-                    local radRatio = (myLocalIdx / propsForThisTarget) * math.pi * 2 
+                    local safeCount = math.max(1, propsForThisTarget)
+                    local radRatio = ((myLocalIdx - 1) / safeCount) * (math.pi * 2)
                     
-                    if activeGeometry == "Standard Orbit" then
+                    if activeGeometry == "Normal Orbit" then
+                        -- ⭕ PURE SYMMETRICAL ZERO-DEVIATION CIRCULAR ORBIT
                         x = math.cos(radRatio + smoothAngle) * currentRadius
                         z = math.sin(radRatio + smoothAngle) * currentRadius
+                        y = 0
+                    elseif activeGeometry == "Standard Orbit" then
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        z = math.sin(radRatio + smoothAngle) * currentRadius
+                        y = 0
                     elseif activeGeometry == "Spin" then 
                         x = math.cos(radRatio + smoothAngle) * currentRadius
                         z = math.sin(radRatio + smoothAngle) * currentRadius
+                        y = 0
                     elseif activeGeometry == "Reverse Spin" then 
                         x = math.cos(radRatio - smoothAngle) * currentRadius
                         z = math.sin(radRatio - smoothAngle) * currentRadius
+                        y = 0
                     elseif activeGeometry == "Bobbing Orbit" then 
                         x = math.cos(radRatio + smoothAngle) * currentRadius
                         z = math.sin(radRatio + smoothAngle) * currentRadius
-                        y = math.sin((smoothAngle * 2) + radRatio) * (currentRadius * 0.3)
+                        y = math.sin((smoothAngle * 2) + radRatio) * math.clamp(currentRadius * 0.25, 1, 6)
                     elseif activeGeometry == "Vertical Halo" then
                         x = math.cos(radRatio + smoothAngle) * currentRadius
                         y = math.sin(radRatio + smoothAngle) * currentRadius
+                        z = 0
                     elseif activeGeometry == "Atom" then
-                        local axis = myLocalIdx % 3
-                        if axis == 0 then x = math.cos(radRatio + smoothAngle) * currentRadius; z = math.sin(radRatio + smoothAngle) * currentRadius
-                        elseif axis == 1 then x = math.cos(radRatio + smoothAngle) * currentRadius; y = math.sin(radRatio + smoothAngle) * currentRadius
-                        else z = math.cos(radRatio + smoothAngle) * currentRadius; y = math.sin(radRatio + smoothAngle) * currentRadius end
+                        local axis = (myLocalIdx - 1) % 3
+                        local tiltAngleRot = math.rad(60) * axis
+                        local rawX = math.cos(radRatio + smoothAngle) * currentRadius
+                        local rawY = math.sin(radRatio + smoothAngle) * currentRadius
+                        x = rawX * math.cos(tiltAngleRot)
+                        z = rawX * math.sin(tiltAngleRot)
+                        y = rawY
                     elseif activeGeometry == "Galaxy Spiral" then
-                        local dynRad = currentRadius * (0.4 + 0.6 * math.sin(smoothAngle + radRatio * 2))
+                        local dynRad = currentRadius * (0.8 + 0.2 * math.sin(smoothAngle + radRatio * 2))
                         x = math.cos(radRatio + smoothAngle) * dynRad
                         z = math.sin(radRatio + smoothAngle) * dynRad
+                        y = math.sin(smoothAngle * 1.5 + radRatio) * (currentRadius * 0.2)
                     elseif activeGeometry == "Crown" then
-                        y = 2.5 + math.sin(radRatio * 3 + smoothAngle * 4) * 0.8
-                        x = math.cos(radRatio + smoothAngle) * (currentRadius * 0.5)
-                        z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
+                        y = 2.5 + math.sin(radRatio * 4 + smoothAngle * 3) * 0.8
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        z = math.sin(radRatio + smoothAngle) * currentRadius
                     elseif activeGeometry == "DNA" then
-                        local helixHeight = currentRadius * 1.5
-                        local phase = (myLocalIdx % 2 == 0) and math.pi or 0
-                        local heightProgress = math.floor((myLocalIdx - 1) / 2) / math.max(1, math.floor(propsForThisTarget / 2))
-                        y = (heightProgress * helixHeight) - (helixHeight/2) + math.sin(smoothAngle)
-                        local helixRad = currentRadius * 0.4
-                        x = math.cos(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
-                        z = math.sin(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
+                        local helixHeight = math.max(currentRadius * 1.2, 6)
+                        local phase = ((myLocalIdx - 1) % 2 == 0) and math.pi or 0
+                        local heightProgress = math.floor((myLocalIdx - 1) / 2) / math.max(1, math.floor(safeCount / 2))
+                        y = (heightProgress * helixHeight) - (helixHeight * 0.5)
+                        local helixRad = currentRadius * 0.65
+                        x = math.cos(heightProgress * math.pi * 3 + smoothAngle * 2 + phase) * helixRad
+                        z = math.sin(heightProgress * math.pi * 3 + smoothAngle * 2 + phase) * helixRad
                     elseif activeGeometry == "Snake Body" then
-                        local delay = myLocalIdx * 0.3
+                        local delay = (myLocalIdx - 1) * 0.25
                         x = math.cos(smoothAngle - delay) * currentRadius
                         z = math.sin(smoothAngle - delay) * currentRadius
-                        y = math.sin((smoothAngle - delay) * 2) * (currentRadius * 0.3)
+                        y = math.sin((smoothAngle - delay) * 2) * (currentRadius * 0.2)
                     elseif activeGeometry == "Wings" then
-                        local side = (myLocalIdx % 2 == 0) and 1 or -1
+                        local side = ((myLocalIdx - 1) % 2 == 0) and 1 or -1
                         local wingIdx = math.ceil(myLocalIdx / 2)
-                        local totalWings = math.max(1, math.ceil(propsForThisTarget / 2))
+                        local totalWings = math.max(1, math.ceil(safeCount / 2))
                         local wingProgress = wingIdx / totalWings
-                        x = side * (1 + wingProgress * currentRadius)
-                        y = 0.5 + (wingProgress * currentRadius * 0.8) + math.sin(smoothAngle + wingProgress * 2) * 0.5
-                        z = 1.5 + (wingProgress * 0.5)
+                        x = side * (currentRadius * 0.4 + wingProgress * currentRadius)
+                        y = 0.5 + (wingProgress * currentRadius * 0.5) + math.sin(smoothAngle + wingProgress * 2) * 0.5
+                        z = math.cos(smoothAngle + wingProgress) * (currentRadius * 0.3)
                     elseif activeGeometry == "BlackHole Vortex" then
-                        local dynR = currentRadius * (0.5 + 0.5 * math.sin(smoothAngle * 2 + radRatio))
+                        local dynR = currentRadius * (0.85 + 0.15 * math.sin(smoothAngle * 2 + radRatio))
                         x = math.cos(radRatio + smoothAngle * 2) * dynR
                         z = math.sin(radRatio + smoothAngle * 2) * dynR
-                        y = math.sin(smoothAngle + radRatio) * 2
+                        y = math.sin(smoothAngle * 2 + radRatio) * 1.5
                     elseif activeGeometry == "Quantum Pulsar" then
-                        local pulseR = currentRadius * (0.8 + 0.4 * math.sin(smoothAngle * 3))
+                        local pulseR = currentRadius * (0.85 + 0.15 * math.sin(smoothAngle * 3))
                         x = math.cos(radRatio + smoothAngle) * pulseR
                         z = math.sin(radRatio + smoothAngle) * pulseR
+                        y = math.cos(smoothAngle * 3 + radRatio) * 1.5
                     elseif activeGeometry == "Hyper Wave" then
                         x = math.cos(radRatio + smoothAngle) * currentRadius
                         z = math.sin(radRatio + smoothAngle) * currentRadius
-                        y = math.sin(smoothAngle * 3 + radRatio * 2) * 3
+                        y = math.sin(smoothAngle * 2.5 + radRatio * 3) * math.clamp(currentRadius * 0.3, 1, 8)
                     elseif activeGeometry == "Supernova Explosion" then
-                        local expR = currentRadius * (0.3 + math.abs(math.sin(smoothAngle * 4)))
+                        local expR = currentRadius * (0.75 + 0.25 * math.abs(math.sin(smoothAngle * 3)))
                         x = math.cos(radRatio + smoothAngle) * expR
                         z = math.sin(radRatio + smoothAngle) * expR
-                        y = math.sin(smoothAngle * 2) * 2
+                        y = math.sin(smoothAngle * 2 + radRatio) * 1.5
                     elseif activeGeometry == "Matrix Grid" then
-                        local gridCol = math.fmod(myLocalIdx, 4) - 1.5
+                        local gridCol = math.fmod(myLocalIdx - 1, 4) - 1.5
                         local gridRow = math.floor((myLocalIdx - 1) / 4) - 1
-                        x = gridCol * (currentRadius * 0.3)
-                        z = gridRow * (currentRadius * 0.3)
-                        y = math.sin(smoothAngle + myLocalIdx) * 1.5
+                        x = gridCol * (currentRadius * 0.45)
+                        z = gridRow * (currentRadius * 0.45)
+                        y = math.sin(smoothAngle + (myLocalIdx - 1)) * 1.2
                     elseif activeGeometry == "Eclipse Shadowing" then
-                        local ellipR = currentRadius * 1.3
+                        local ellipR = currentRadius * 1.25
                         x = math.cos(radRatio + smoothAngle) * ellipR
-                        z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
-                        y = math.cos(smoothAngle * 2) * 1.2
+                        z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.75)
+                        y = math.cos(smoothAngle * 2 + radRatio) * 1.0
+                    elseif activeGeometry == "Hyper Cube 4D" then
+                        -- 🌌 HYPER CUBE 4D ROTATING ORTHOGONAL PROJECTION
+                        local theta = smoothAngle + radRatio
+                        local phi = smoothAngle * 0.8 + ((myLocalIdx % 2 == 0) and math.pi/4 or -math.pi/4)
+                        x = (math.cos(theta) * math.cos(phi)) * currentRadius
+                        z = (math.sin(theta) * math.cos(phi)) * currentRadius
+                        y = math.sin(phi) * (currentRadius * 0.6)
+                    elseif activeGeometry == "Saturn Rings" then
+                        -- 🪐 SATURN RINGS MULTI-TIER PLANAR SYSTEM
+                        local ringTier = (myLocalIdx % 2 == 0) and 1.0 or 1.45
+                        local ringRad = currentRadius * ringTier
+                        local tiltAngle = math.rad(28)
+                        local ringX = math.cos(radRatio + smoothAngle) * ringRad
+                        local ringZ = math.sin(radRatio + smoothAngle) * ringRad
+                        x = ringX
+                        z = ringZ * math.cos(tiltAngle)
+                        y = ringZ * math.sin(tiltAngle)
+                    elseif activeGeometry == "Double Helix Infinity" then
+                        -- ♾️ MATHEMATICAL FIGURE-8 INFINITY LEMNISCATE
+                        local tVal = radRatio + smoothAngle
+                        local scale = currentRadius * 1.2
+                        local denom = 1 + (math.sin(tVal) * math.sin(tVal))
+                        x = (scale * math.cos(tVal)) / denom
+                        z = (scale * math.sin(tVal) * math.cos(tVal)) / denom
+                        y = math.sin(tVal * 2) * math.clamp(currentRadius * 0.25, 0.8, 4.5)
+                    elseif activeGeometry == "Orbital Shield Dome" then
+                        -- 🛡️ FULL 3D SPHERICAL GEODESIC DOME SHELL
+                        local phiAngle = math.acos(1 - (2 * (myLocalIdx - 0.5) / safeCount))
+                        local thetaAngle = math.pi * (1 + math.sqrt(5)) * (myLocalIdx - 1) + smoothAngle
+                        x = math.sin(phiAngle) * math.cos(thetaAngle) * currentRadius
+                        z = math.sin(phiAngle) * math.sin(thetaAngle) * currentRadius
+                        y = math.cos(phiAngle) * (currentRadius * 0.75)
+                    elseif activeGeometry == "Vortex Tornado" then
+                        -- 🌪️ UPWARD SPIRAL TAPERING TORNADO
+                        local vProgress = ((myLocalIdx - 1) / safeCount)
+                        local currentTierRad = currentRadius * (0.35 + (vProgress * 0.95))
+                        local vRot = radRatio + (smoothAngle * 2.5) + (vProgress * 4.0)
+                        x = math.cos(vRot) * currentTierRad
+                        z = math.sin(vRot) * currentTierRad
+                        y = (vProgress * currentRadius * 1.5) - (currentRadius * 0.4)
                     else 
                         x = math.cos(radRatio + smoothAngle) * currentRadius
-                        z = math.sin(radRatio + smoothAngle) * currentRadius 
+                        z = math.sin(radRatio + smoothAngle) * currentRadius
+                        y = 0
                     end
                     
                     dispatchRemote(remote, dynamicOrbitBase * CFrame.new(Vector3.new(x, y, z)) * CFrame.Angles(smoothSelfAngle, smoothSelfAngle, smoothSelfAngle))
