@@ -3469,7 +3469,7 @@ local function dispatchRemote(remote, targetCFrame)
         local inDangerZone = isPositionInsideAnyHousePlot(targetCFrame.Position)
 
         if inDangerZone then
-            targetCFrame = CFrame.new(120, -350, 150)
+            targetCFrame = CFrame.new(120, -65000, 150)
             isEmergency = true
         end
     end
@@ -3660,7 +3660,7 @@ RunService.Heartbeat:Connect(function(dt)
                 local inDangerZone = isPositionInsideAnyHousePlot(checkPos)
 
                 if inDangerZone then
-                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
+                    targetSafeOffsets[plr] = CFrame.new(120, -65000, 150).Position - tRoot.Position
                 end
             end
         end
@@ -3816,9 +3816,17 @@ RunService.Heartbeat:Connect(function(dt)
                     local isSeated = isPlayerSeated(plr)
                     if voidedPlayers[plr] and not isSeated and tRoot.Position.Y > -1000 then voidedPlayers[plr] = nil end
                     
+                    -- 🕳️ DEEP UNDERWORLD VOID-KILL POSITION (-65000 STUDS)
+                    local UNDERWORLD_KILL_CFRAME = CFrame.new(tRoot.Position.X, -65000, tRoot.Position.Z)
+
                     if isSeated or voidedPlayers[plr] then
                         voidedPlayers[plr] = true
-                        task.spawn(function() pcall(function() remote:InvokeServer(CFrame.new(120, -350, 150)) end) end)
+                        task.spawn(function() 
+                            pcall(function() 
+                                remote:InvokeServer(UNDERWORLD_KILL_CFRAME) 
+                            end) 
+                        end)
+                        dispatchRemote(remote, UNDERWORLD_KILL_CFRAME)
                     else
                         local propsForThisTarget = math.min(4, math.ceil(#freeRemotes / tCount))
                         local localChairIndex = (idx - 1) % propsForThisTarget
