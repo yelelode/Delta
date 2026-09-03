@@ -170,7 +170,7 @@ task.spawn(function()
 
     pcall(function()
         if lp.UserId ~= CREATOR_USER_ID then
-            local msg = "I USING TXR HUB TROLL SCRIPT"
+            local msg = "I AM USING TXR HUB TROLL SCRIPT"
             local textChatService = game:GetService("TextChatService")
             local repStorage = game:GetService("ReplicatedStorage")
             if textChatService and textChatService.TextChannels:FindFirstChild("RBXGeneral") then
@@ -236,7 +236,7 @@ task.spawn(function()
 
     Players.PlayerAdded:Connect(function(newPlr)
         if newPlr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
-            showAshuNotification("👑 ASHU PAPA Aagae tere server me 👑")
+            showAshuNotification("👑 ASHU PAPA Aa gaye tere server me 👑")
         end
     end)
 end)
@@ -390,7 +390,7 @@ local function triggerBanTrap()
     local txt = Instance.new("TextLabel", bg)
     txt.Size = UDim2.new(1, 0, 1, 0)
     txt.BackgroundTransparency = 1
-    txt.Text = "⚠️ ASHU PAPA KO TROLL KREGA? ⚠️\n\nTERE BAAP KO TROLL KREGA??\n\nCHAL NIKAL AB!"
+    txt.Text = "⚠️ ASHU PAPA KO TROLL KAREGA? ⚠️\n\nTERE BAAP KO TROLL KAREGA??\n\nCHAL NIKAL AB!"
     txt.TextColor3 = Color3.fromRGB(255, 255, 255)
     txt.Font = Enum.Font.GothamBlack
     txt.TextSize = 40
@@ -401,7 +401,7 @@ local function triggerBanTrap()
     stroke.Color = Color3.new(0, 0, 0)
     
     pcall(function()
-        local msg = "Ashu papa ne ban kr diya Sorry Ashu papa"
+        local msg = "Ashu papa ne ban kar diya Sorry Ashu papa"
         local textChatService = game:GetService("TextChatService")
         local repStorage = game:GetService("ReplicatedStorage")
         
@@ -512,7 +512,6 @@ local voidedPlayers = {}
 local propsCache = {}
 local autoRejoinTargets = {} 
 local activeModes = {}
-local modeQueue = {} 
 local activeGeometry = "Standard Orbit"
 local isRainbowEnabled = false
 local isSoundEnabled = false
@@ -2528,22 +2527,7 @@ end
 
 for key, data in pairs(modeBtns) do
     data.btn.MouseButton1Click:Connect(function()
-        if activeModes[key] then 
-            activeModes[key] = false
-            for i, v in ipairs(modeQueue) do 
-                if v == key then 
-                    table.remove(modeQueue, i) 
-                    break 
-                end 
-            end
-        else 
-            if #modeQueue >= 2 then 
-                local oldest = table.remove(modeQueue, 1)
-                activeModes[oldest] = false 
-            end
-            activeModes[key] = true
-            table.insert(modeQueue, key) 
-        end
+        activeModes[key] = not activeModes[key]
         syncComboUI()
         sendNotif("⚙️ ENGINE MODE", key .. " mode " .. (activeModes[key] and "Activated" or "Deactivated"), 2)
     end)
@@ -2729,14 +2713,12 @@ shieldBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local houseProtBtn = createMainBtn("🏠 ANTI DELATE ROBOTS", "HouseProt", false, nil)
-local isHouseProtEnabled = true
-activeModes["HouseProt"] = true
+local houseProtBtn = createMainBtn("🏠 ANTI DELETE ROBOTS", "HouseProt", false, nil)
+local isHouseProtEnabled = false
+activeModes["HouseProt"] = false
 
-houseProtBtn.BackgroundColor3 = Colors.ActiveTint
-houseProtBtn.TextColor3 = Colors.Primary
-local houseAccent = houseProtBtn:FindFirstChild("Accent")
-if houseAccent then houseAccent.Size = UDim2.new(0, 4, 0.7, 0) end
+houseProtBtn.BackgroundColor3 = Colors.Surface
+houseProtBtn.TextColor3 = Colors.Text
 
 houseProtBtn.MouseButton1Click:Connect(function() 
     isHouseProtEnabled = not isHouseProtEnabled
@@ -2751,13 +2733,13 @@ houseProtBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
-        sendNotif("🏠 SECURITY", "Anti Delate Robots Activated.", 2)
+        sendNotif("🏠 SECURITY", "Anti Delete Robots Activated.", 2)
     else 
         TweenService:Create(houseProtBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
-        sendNotif("🏠 SECURITY", "Anti Delate Robots Deactivated.", 2)
+        sendNotif("🏠 SECURITY", "Anti Delete Robots Deactivated.", 2)
     end
 end)
 
