@@ -504,6 +504,54 @@ local function ScanForRemotes()
 end
 ScanForRemotes()
 
+-- 🏫 ADVANCED SCHOOL HIDE BASEMENT DESTINATION & SMART ZONE ENGINE
+local SCHOOL_HIDE_CFRAME = CFrame.new(-27.5, -45.0, 155.0)
+
+local CachedDangerZones = {}
+local lastZoneScanTick = 0
+
+local function updateDangerZonesCache()
+    if tick() - lastZoneScanTick < 1.0 then return end
+    lastZoneScanTick = tick()
+    
+    local newZones = {}
+    local lots = workspace:FindFirstChild("001_Lots") or workspace:FindFirstChild("Lots")
+    if lots then
+        for _, lot in ipairs(lots:GetChildren()) do
+            local picked = lot:FindFirstChild("HousePickedByPlayer")
+            if picked and picked.Value and tostring(picked.Value) ~= "" then
+                local lotCF, lotSz = lot:GetBoundingBox()
+                table.insert(newZones, {
+                    Min = lotCF.Position - (lotSz * 0.5) - Vector3.new(2, 20, 2),
+                    Max = lotCF.Position + (lotSz * 0.5) + Vector3.new(2, 600, 2)
+                })
+            end
+        end
+    end
+    for _, obj in ipairs(workspace:GetChildren()) do
+        if obj.Name == "AsliBanZone_TXR" and obj:IsA("BasePart") then
+            local p = obj.Position
+            local sz = obj.Size
+            table.insert(newZones, {
+                Min = p - (sz * 0.5),
+                Max = p + (sz * 0.5)
+            })
+        end
+    end
+    CachedDangerZones = newZones
+end
+
+local function isPositionInDanger(pos)
+    for _, zone in ipairs(CachedDangerZones) do
+        if pos.X >= zone.Min.X and pos.X <= zone.Max.X and
+           pos.Y >= zone.Min.Y and pos.Y <= zone.Max.Y and
+           pos.Z >= zone.Min.Z and pos.Z <= zone.Max.Z then
+            return true
+        end
+    end
+    return false
+end
+
 -- --- CORE LOGIC ---
 local selectedPlayers = {}
 local targetSelectionOrder = {}
@@ -3417,34 +3465,7 @@ local function dispatchRemote(remote, targetCFrame)
     local isEmergency = false
     if activeModes["HouseProt"] then
         local checkPos = targetCFrame.Position
-        local params = OverlapParams.new()
-        local ignoreList = {lp.Character}
-        for _, p in ipairs(Players:GetPlayers()) do
-            if p.Character then table.insert(ignoreList, p.Character) end
-        end
-        if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
-        if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
-        params.FilterDescendantsInstances = ignoreList
-        params.FilterType = Enum.RaycastFilterType.Exclude
-        
-        local inDangerZone = false
-        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
-        for _, hitInst in ipairs(partsInBubble) do
-            local currentInst = hitInst
-            local bName = string.lower(hitInst.Name)
-            local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
-            while currentInst and currentInst ~= workspace do
-                local lowerName = string.lower(currentInst.Name)
-                if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
-                    inDangerZone = true
-                    break
-                end
-                currentInst = currentInst.Parent
-            end
-            if inDangerZone then break end
-        end
-
-        if inDangerZone then
+        if isPositionInDanger(checkPos) then
             targetCFrame = SCHOOL_HIDE_CFRAME
             isEmergency = true
         end
@@ -3579,6 +3600,10 @@ RunService.Heartbeat:Connect(function(dt)
     end
     if not isSystemActive then return end 
 
+    if activeModes["HouseProt"] or isVisualZoneEnabled then
+        updateDangerZonesCache()
+    end
+
     for plr in pairs(assignedRemotes) do
         if not selectedPlayers[plr] or not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then
             assignedRemotes[plr] = nil 
@@ -3633,34 +3658,7 @@ RunService.Heartbeat:Connect(function(dt)
                 local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
                 local checkPos = tRoot.Position + pOffset
                 
-                local params = OverlapParams.new()
-                local ignoreList = {lp.Character}
-                for _, p in ipairs(Players:GetPlayers()) do
-                    if p.Character then table.insert(ignoreList, p.Character) end
-                end
-                if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
-                if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
-                params.FilterDescendantsInstances = ignoreList
-                params.FilterType = Enum.RaycastFilterType.Exclude
-
-                local inDangerZone = false
-                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
-                for _, hitInst in ipairs(partsInBubble) do
-                    local currentInst = hitInst
-                    local bName = string.lower(hitInst.Name)
-                    local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
-                    while currentInst and currentInst ~= workspace do
-                        local lowerName = string.lower(currentInst.Name)
-                        if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
-                            inDangerZone = true
-                            break
-                        end
-                        currentInst = currentInst.Parent
-                    end
-                    if inDangerZone then break end
-                end
-
-                if inDangerZone then
+                if isPositionInDanger(checkPos) then
                     targetSafeOffsets[plr] = SCHOOL_HIDE_CFRAME.Position - tRoot.Position
                 end
             end
@@ -4197,7 +4195,7 @@ end)
 
 -- =================================================================
 -- 🚨 RGB THREAT RADAR ENGINE
--- =================================================================
+-- =========================================================
 local threatGuiParent = game:GetService("CoreGui")
 pcall(function() if not threatGuiParent then threatGuiParent = lp:WaitForChild("PlayerGui") end end)
 if _G.TXR_THREAT_ESP and _G.TXR_THREAT_ESP.Parent then _G.TXR_THREAT_ESP:Destroy() end
