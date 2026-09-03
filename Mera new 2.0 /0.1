@@ -466,6 +466,56 @@ local function getMyHouse()
     return nil
 end
 
+-- =========================================================
+-- 🛡️ BULLETPROOF ACCURATE LOT ZONE DETECTOR (NO SAFE DISAPPEAR)
+-- =========================================================
+local function isPositionInsideAnyHousePlot(targetPos)
+    local myHouseData = getMyHouse()
+    local myLot = myHouseData and myHouseData.Lot
+    
+    local function checkLotModel(lot)
+        if lot == myLot then return false end
+        local picked = lot:FindFirstChild("HousePickedByPlayer")
+        if not picked or not picked.Value or picked.Value == "" or picked.Value == lp.Name or picked.Value == lp then
+            return false
+        end
+        
+        local cf, size = lot:GetBoundingBox()
+        local rel = cf:PointToObjectSpace(targetPos)
+        local hX = (size.X / 2) - 2
+        local hZ = (size.Z / 2) - 2
+        
+        if math.abs(rel.X) <= hX and math.abs(rel.Z) <= hZ and rel.Y >= -15 and rel.Y <= 65 then
+            return true
+        end
+        return false
+    end
+
+    local lotsFolder = workspace:FindFirstChild("001_Lots") or workspace:FindFirstChild("Lots")
+    if lotsFolder then
+        for _, lot in ipairs(lotsFolder:GetChildren()) do
+            if lot:IsA("Model") then
+                if checkLotModel(lot) then
+                    return true
+                end
+            end
+        end
+    end
+
+    for _, obj in ipairs(workspace:GetChildren()) do
+        if obj.Name == "AsliBanZone_TXR" and obj:IsA("BasePart") then
+            local rel = obj.CFrame:PointToObjectSpace(targetPos)
+            local hX = obj.Size.X / 2
+            local hZ = obj.Size.Z / 2
+            if math.abs(rel.X) <= hX and math.abs(rel.Z) <= hZ and math.abs(rel.Y) <= (obj.Size.Y / 2) then
+                return true
+            end
+        end
+    end
+
+    return false
+end
+
 -- 🧠 V18.18 NEURAL ADAPTIVE ENGINE
 local DynamicRemotes = { 
     ClearProps = nil, 
@@ -3416,33 +3466,7 @@ local function dispatchRemote(remote, targetCFrame)
     
     local isEmergency = false
     if activeModes["HouseProt"] then
-        local checkPos = targetCFrame.Position
-        local params = OverlapParams.new()
-        local ignoreList = {lp.Character}
-        for _, p in ipairs(Players:GetPlayers()) do
-            if p.Character then table.insert(ignoreList, p.Character) end
-        end
-        if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
-        if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
-        params.FilterDescendantsInstances = ignoreList
-        params.FilterType = Enum.RaycastFilterType.Exclude
-        
-        local inDangerZone = false
-        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
-        for _, hitInst in ipairs(partsInBubble) do
-            local currentInst = hitInst
-            local bName = string.lower(hitInst.Name)
-            local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
-            while currentInst and currentInst ~= workspace do
-                local lowerName = string.lower(currentInst.Name)
-                if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
-                    inDangerZone = true
-                    break
-                end
-                currentInst = currentInst.Parent
-            end
-            if inDangerZone then break end
-        end
+        local inDangerZone = isPositionInsideAnyHousePlot(targetCFrame.Position)
 
         if inDangerZone then
             targetCFrame = CFrame.new(120, -350, 150)
@@ -3633,32 +3657,7 @@ RunService.Heartbeat:Connect(function(dt)
                 local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
                 local checkPos = tRoot.Position + pOffset
                 
-                local params = OverlapParams.new()
-                local ignoreList = {lp.Character}
-                for _, p in ipairs(Players:GetPlayers()) do
-                    if p.Character then table.insert(ignoreList, p.Character) end
-                end
-                if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
-                if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
-                params.FilterDescendantsInstances = ignoreList
-                params.FilterType = Enum.RaycastFilterType.Exclude
-
-                local inDangerZone = false
-                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
-                for _, hitInst in ipairs(partsInBubble) do
-                    local currentInst = hitInst
-                    local bName = string.lower(hitInst.Name)
-                    local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
-                    while currentInst and currentInst ~= workspace do
-                        local lowerName = string.lower(currentInst.Name)
-                        if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
-                            inDangerZone = true
-                            break
-                        end
-                        currentInst = currentInst.Parent
-                    end
-                    if inDangerZone then break end
-                end
+                local inDangerZone = isPositionInsideAnyHousePlot(checkPos)
 
                 if inDangerZone then
                     targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
