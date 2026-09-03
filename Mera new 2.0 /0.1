@@ -3445,7 +3445,7 @@ local function dispatchRemote(remote, targetCFrame)
         end
 
         if inDangerZone then
-            targetCFrame = SCHOOL_HIDE_CFRAME
+            targetCFrame = CFrame.new(120, -350, 150)
             isEmergency = true
         end
     end
@@ -3661,7 +3661,7 @@ RunService.Heartbeat:Connect(function(dt)
                 end
 
                 if inDangerZone then
-                    targetSafeOffsets[plr] = SCHOOL_HIDE_CFRAME.Position - tRoot.Position
+                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
                 end
             end
         end
