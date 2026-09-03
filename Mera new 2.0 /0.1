@@ -466,56 +466,6 @@ local function getMyHouse()
     return nil
 end
 
--- =========================================================
--- 🛡️ BULLETPROOF ACCURATE LOT ZONE DETECTOR (NO SAFE DISAPPEAR)
--- =========================================================
-local function isPositionInsideAnyHousePlot(targetPos)
-    local myHouseData = getMyHouse()
-    local myLot = myHouseData and myHouseData.Lot
-    
-    local function checkLotModel(lot)
-        if lot == myLot then return false end
-        local picked = lot:FindFirstChild("HousePickedByPlayer")
-        if not picked or not picked.Value or picked.Value == "" or picked.Value == lp.Name or picked.Value == lp then
-            return false
-        end
-        
-        local cf, size = lot:GetBoundingBox()
-        local rel = cf:PointToObjectSpace(targetPos)
-        local hX = (size.X / 2) - 4
-        local hZ = (size.Z / 2) - 4
-        
-        if math.abs(rel.X) <= hX and math.abs(rel.Z) <= hZ and rel.Y >= -10 and rel.Y <= 50 then
-            return true
-        end
-        return false
-    end
-
-    local lotsFolder = workspace:FindFirstChild("001_Lots") or workspace:FindFirstChild("Lots")
-    if lotsFolder then
-        for _, lot in ipairs(lotsFolder:GetChildren()) do
-            if lot:IsA("Model") then
-                if checkLotModel(lot) then
-                    return true
-                end
-            end
-        end
-    end
-
-    for _, obj in ipairs(workspace:GetChildren()) do
-        if obj.Name == "AsliBanZone_TXR" and obj:IsA("BasePart") then
-            local rel = obj.CFrame:PointToObjectSpace(targetPos)
-            local hX = (obj.Size.X / 2) - 3
-            local hZ = (obj.Size.Z / 2) - 3
-            if math.abs(rel.X) <= hX and math.abs(rel.Z) <= hZ and math.abs(rel.Y) <= (obj.Size.Y / 2) then
-                return true
-            end
-        end
-    end
-
-    return false
-end
-
 -- 🧠 V18.18 NEURAL ADAPTIVE ENGINE
 local DynamicRemotes = { 
     ClearProps = nil, 
@@ -768,12 +718,9 @@ local function PlayRobotBangMusic()
 
             pcall(function()
                 local pg = lp:FindFirstChild("PlayerGui")
-                if pg then
-                    local h = pg:FindFirstChild("MainGUIHandler")
-                    if h and h:FindFirstChild("MainAudio") and h.MainAudio:FindFirstChild("Catalog") then
-                        local vReq = h.MainAudio.Catalog.Header.VolumeContainer.VolumeChangeRequest
-                        vReq:FireServer(100)
-                    end
+                if pg and pg:FindFirstChild("MainGUIHandler") then
+                    local vReq = pg.MainGUIHandler.MainAudio.Catalog.Header.VolumeContainer.VolumeChangeRequest
+                    vReq:FireServer(100)
                 end
             end)
 
@@ -3469,7 +3416,33 @@ local function dispatchRemote(remote, targetCFrame)
     
     local isEmergency = false
     if activeModes["HouseProt"] then
-        local inDangerZone = isPositionInsideAnyHousePlot(targetCFrame.Position)
+        local checkPos = targetCFrame.Position
+        local params = OverlapParams.new()
+        local ignoreList = {lp.Character}
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p.Character then table.insert(ignoreList, p.Character) end
+        end
+        if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
+        if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
+        params.FilterDescendantsInstances = ignoreList
+        params.FilterType = Enum.RaycastFilterType.Exclude
+        
+        local inDangerZone = false
+        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 12, 6), params)
+        for _, hitInst in ipairs(partsInBubble) do
+            local currentInst = hitInst
+            local bName = string.lower(hitInst.Name)
+            local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway") or string.find(bName, "sidewalk")
+            while currentInst and currentInst ~= workspace do
+                local lowerName = string.lower(currentInst.Name)
+                if currentInst.Name == "AsliBanZone_TXR" or (string.find(lowerName, "housepickedbyplayer") and not isSafe) then
+                    inDangerZone = true
+                    break
+                end
+                currentInst = currentInst.Parent
+            end
+            if inDangerZone then break end
+        end
 
         if inDangerZone then
             targetCFrame = CFrame.new(120, -350, 150)
@@ -3478,7 +3451,7 @@ local function dispatchRemote(remote, targetCFrame)
     end
 
     if not isEmergency then
-        isEmergency = targetCFrame.Y < -5000 or targetCFrame.Y > 10000
+        isEmergency = targetCFrame.Y < -100 or targetCFrame.Y > 10000
     end
 
     pcall(function() 
@@ -3660,7 +3633,32 @@ RunService.Heartbeat:Connect(function(dt)
                 local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
                 local checkPos = tRoot.Position + pOffset
                 
-                local inDangerZone = isPositionInsideAnyHousePlot(checkPos)
+                local params = OverlapParams.new()
+                local ignoreList = {lp.Character}
+                for _, p in ipairs(Players:GetPlayers()) do
+                    if p.Character then table.insert(ignoreList, p.Character) end
+                end
+                if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
+                if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
+                params.FilterDescendantsInstances = ignoreList
+                params.FilterType = Enum.RaycastFilterType.Exclude
+
+                local inDangerZone = false
+                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 12, 6), params)
+                for _, hitInst in ipairs(partsInBubble) do
+                    local currentInst = hitInst
+                    local bName = string.lower(hitInst.Name)
+                    local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway") or string.find(bName, "sidewalk")
+                    while currentInst and currentInst ~= workspace do
+                        local lowerName = string.lower(currentInst.Name)
+                        if currentInst.Name == "AsliBanZone_TXR" or (string.find(lowerName, "housepickedbyplayer") and not isSafe) then
+                            inDangerZone = true
+                            break
+                        end
+                        currentInst = currentInst.Parent
+                    end
+                    if inDangerZone then break end
+                end
 
                 if inDangerZone then
                     targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
@@ -3819,21 +3817,9 @@ RunService.Heartbeat:Connect(function(dt)
                     local isSeated = isPlayerSeated(plr)
                     if voidedPlayers[plr] and not isSeated and tRoot.Position.Y > -1000 then voidedPlayers[plr] = nil end
                     
-                    -- 🕳️ DEEP UNDERWORLD VOID-KILL POSITION (-65000 STUDS ONLY FOR CHAIR)
-                    local UNDERWORLD_KILL_CFRAME = CFrame.new(tRoot.Position.X, -65000, tRoot.Position.Z)
-
                     if isSeated or voidedPlayers[plr] then
                         voidedPlayers[plr] = true
-                        task.spawn(function() 
-                            pcall(function() 
-                                remote:InvokeServer(UNDERWORLD_KILL_CFRAME) 
-                            end) 
-                        end)
-                        pcall(function()
-                            local parent = remote.Parent
-                            local part = parent:IsA("Model") and (parent.PrimaryPart or parent:FindFirstChildWhichIsA("BasePart")) or parent
-                            if part then part.CFrame = UNDERWORLD_KILL_CFRAME end
-                        end)
+                        task.spawn(function() pcall(function() remote:InvokeServer(CFrame.new(120, -350, 150)) end) end)
                     else
                         local propsForThisTarget = math.min(4, math.ceil(#freeRemotes / tCount))
                         local localChairIndex = (idx - 1) % propsForThisTarget
