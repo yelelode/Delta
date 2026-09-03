@@ -512,7 +512,7 @@ local voidedPlayers = {}
 local propsCache = {}
 local autoRejoinTargets = {} 
 local activeModes = {}
-local activeGeometry = "Standard Orbit"
+local activeGeometry = "Normal Orbit"
 local isRainbowEnabled = false
 local isSoundEnabled = false
 local isSystemActive = false
@@ -2197,7 +2197,31 @@ end)
 
 refreshPlayers()
 
-local geometries = {"Standard Orbit", "Spin", "Reverse Spin", "Bobbing Orbit", "Vertical Halo", "Atom", "Galaxy Spiral", "Crown", "DNA", "Snake Body", "Wings", "BlackHole Vortex", "Quantum Pulsar", "Hyper Wave", "Supernova Explosion", "Matrix Grid", "Eclipse Shadowing"}
+local geometries = {
+    "Normal Orbit",
+    "Standard Orbit", 
+    "Spin", 
+    "Reverse Spin", 
+    "Bobbing Orbit", 
+    "Vertical Halo", 
+    "Atom", 
+    "Galaxy Spiral", 
+    "Crown", 
+    "DNA", 
+    "Snake Body", 
+    "Wings", 
+    "BlackHole Vortex", 
+    "Quantum Pulsar", 
+    "Hyper Wave", 
+    "Supernova Explosion", 
+    "Matrix Grid", 
+    "Eclipse Shadowing",
+    "Infinity Nexus",
+    "Chaos Hypercube",
+    "Valkyrie Shield",
+    "God Eye Singularity",
+    "Solar Flare"
+}
 for _, geo in ipairs(geometries) do
     local btn = Instance.new("TextButton", geoScroll)
     btn.Size = UDim2.new(1, 0, 0, 36)
@@ -3909,9 +3933,13 @@ RunService.Heartbeat:Connect(function(dt)
                     end
                     
                     local x, y, z = 0, 0, 0
-                    local radRatio = (myLocalIdx / propsForThisTarget) * math.pi * 2 
+                    local radRatio = ((myLocalIdx - 1) / math.max(1, propsForThisTarget)) * math.pi * 2 
                     
-                    if activeGeometry == "Standard Orbit" then
+                    if activeGeometry == "Normal Orbit" then
+                        x = math.cos(radRatio + smoothAngle) * currentRadius
+                        y = 0
+                        z = math.sin(radRatio + smoothAngle) * currentRadius
+                    elseif activeGeometry == "Standard Orbit" then
                         x = math.cos(radRatio + smoothAngle) * currentRadius
                         z = math.sin(radRatio + smoothAngle) * currentRadius
                     elseif activeGeometry == "Spin" then 
@@ -3928,7 +3956,7 @@ RunService.Heartbeat:Connect(function(dt)
                         x = math.cos(radRatio + smoothAngle) * currentRadius
                         y = math.sin(radRatio + smoothAngle) * currentRadius
                     elseif activeGeometry == "Atom" then
-                        local axis = myLocalIdx % 3
+                        local axis = (myLocalIdx - 1) % 3
                         if axis == 0 then x = math.cos(radRatio + smoothAngle) * currentRadius; z = math.sin(radRatio + smoothAngle) * currentRadius
                         elseif axis == 1 then x = math.cos(radRatio + smoothAngle) * currentRadius; y = math.sin(radRatio + smoothAngle) * currentRadius
                         else z = math.cos(radRatio + smoothAngle) * currentRadius; y = math.sin(radRatio + smoothAngle) * currentRadius end
@@ -3942,19 +3970,19 @@ RunService.Heartbeat:Connect(function(dt)
                         z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
                     elseif activeGeometry == "DNA" then
                         local helixHeight = currentRadius * 1.5
-                        local phase = (myLocalIdx % 2 == 0) and math.pi or 0
+                        local phase = ((myLocalIdx - 1) % 2 == 0) and math.pi or 0
                         local heightProgress = math.floor((myLocalIdx - 1) / 2) / math.max(1, math.floor(propsForThisTarget / 2))
                         y = (heightProgress * helixHeight) - (helixHeight/2) + math.sin(smoothAngle)
                         local helixRad = currentRadius * 0.4
                         x = math.cos(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
                         z = math.sin(heightProgress * math.pi * 4 + smoothAngle * 2 + phase) * helixRad
                     elseif activeGeometry == "Snake Body" then
-                        local delay = myLocalIdx * 0.3
+                        local delay = (myLocalIdx - 1) * 0.3
                         x = math.cos(smoothAngle - delay) * currentRadius
                         z = math.sin(smoothAngle - delay) * currentRadius
                         y = math.sin((smoothAngle - delay) * 2) * (currentRadius * 0.3)
                     elseif activeGeometry == "Wings" then
-                        local side = (myLocalIdx % 2 == 0) and 1 or -1
+                        local side = ((myLocalIdx - 1) % 2 == 0) and 1 or -1
                         local wingIdx = math.ceil(myLocalIdx / 2)
                         local totalWings = math.max(1, math.ceil(propsForThisTarget / 2))
                         local wingProgress = wingIdx / totalWings
@@ -3980,7 +4008,7 @@ RunService.Heartbeat:Connect(function(dt)
                         z = math.sin(radRatio + smoothAngle) * expR
                         y = math.sin(smoothAngle * 2) * 2
                     elseif activeGeometry == "Matrix Grid" then
-                        local gridCol = math.fmod(myLocalIdx, 4) - 1.5
+                        local gridCol = math.fmod(myLocalIdx - 1, 4) - 1.5
                         local gridRow = math.floor((myLocalIdx - 1) / 4) - 1
                         x = gridCol * (currentRadius * 0.3)
                         z = gridRow * (currentRadius * 0.3)
@@ -3990,12 +4018,61 @@ RunService.Heartbeat:Connect(function(dt)
                         x = math.cos(radRatio + smoothAngle) * ellipR
                         z = math.sin(radRatio + smoothAngle) * (currentRadius * 0.5)
                         y = math.cos(smoothAngle * 2) * 1.2
+                    elseif activeGeometry == "Infinity Nexus" then
+                        local infT = radRatio + smoothAngle
+                        local scale = currentRadius * 1.25
+                        local denom = 1 + math.sin(infT) * math.sin(infT)
+                        x = (scale * math.cos(infT)) / denom
+                        z = (scale * math.sin(infT) * math.cos(infT)) / denom
+                        y = math.sin(infT * 2) * (currentRadius * 0.35)
+                    elseif activeGeometry == "Chaos Hypercube" then
+                        local cornerIdx = (myLocalIdx - 1) % 8
+                        local cx = (bit32 and bit32.btest(cornerIdx, 1) or ((cornerIdx % 2) == 1)) and 1 or -1
+                        local cy = (bit32 and bit32.btest(cornerIdx, 2) or (math.floor(cornerIdx / 2) % 2 == 1)) and 1 or -1
+                        local cz = (bit32 and bit32.btest(cornerIdx, 4) or (math.floor(cornerIdx / 4) % 2 == 1)) and 1 or -1
+                        local hyperScale = currentRadius * (0.7 + 0.3 * math.sin(smoothAngle * 2 + radRatio))
+                        local rx = cx * hyperScale
+                        local ry = cy * (hyperScale * 0.6)
+                        local rz = cz * hyperScale
+                        local cosA, sinA = math.cos(smoothAngle), math.sin(smoothAngle)
+                        x = rx * cosA - rz * sinA
+                        y = ry + math.sin(smoothAngle * 2 + cornerIdx) * 1.2
+                        z = rx * sinA + rz * cosA
+                    elseif activeGeometry == "Valkyrie Shield" then
+                        local layer = (myLocalIdx % 2 == 0) and 1 or -1
+                        local ringAngle = (layer == 1) and (radRatio + smoothAngle * 1.4) or (radRatio - smoothAngle * 1.4)
+                        local ringRadius = (layer == 1) and currentRadius or (currentRadius * 0.65)
+                        x = math.cos(ringAngle) * ringRadius
+                        y = math.sin(ringAngle) * ringRadius * 0.8
+                        z = math.sin(smoothAngle * 2 + ringAngle) * (currentRadius * 0.25)
+                    elseif activeGeometry == "God Eye Singularity" then
+                        local eyeSpeed = smoothAngle * 2.2 + radRatio
+                        local distFactor = 0.4 + 0.6 * ((myLocalIdx - 1) / math.max(1, propsForThisTarget))
+                        local eyeRad = currentRadius * distFactor
+                        x = math.cos(eyeSpeed) * eyeRad
+                        z = math.sin(eyeSpeed) * eyeRad
+                        y = math.sin(eyeSpeed * 3) * (currentRadius * 0.4 * (1 - distFactor))
+                    elseif activeGeometry == "Solar Flare" then
+                        local plane = ((myLocalIdx - 1) % 2 == 0)
+                        if plane then
+                            local a = radRatio + smoothAngle
+                            x = math.cos(a) * currentRadius
+                            y = math.sin(a) * (currentRadius * 0.75)
+                            z = math.sin(smoothAngle + radRatio) * 1.5
+                        else
+                            local a = radRatio - smoothAngle
+                            z = math.cos(a) * currentRadius
+                            y = math.sin(a) * (currentRadius * 0.75)
+                            x = math.cos(smoothAngle + radRatio) * 1.5
+                        end
                     else 
                         x = math.cos(radRatio + smoothAngle) * currentRadius
+                        y = 0
                         z = math.sin(radRatio + smoothAngle) * currentRadius 
                     end
                     
-                    dispatchRemote(remote, dynamicOrbitBase * CFrame.new(Vector3.new(x, y, z)) * CFrame.Angles(smoothSelfAngle, smoothSelfAngle, smoothSelfAngle))
+                    local selfSpin = (activeGeometry == "Normal Orbit") and 0 or smoothSelfAngle
+                    dispatchRemote(remote, dynamicOrbitBase * CFrame.new(Vector3.new(x, y, z)) * CFrame.Angles(selfSpin, selfSpin, selfSpin))
                 end
             end
         end
