@@ -3475,7 +3475,7 @@ local function checkPosInDangerZone(checkPos)
     return inDanger
 end
 
-local function dispatchRemote(remote, targetCFrame)
+local function dispatchRemote(remote, targetCFrame, dt)
     if not remote or not remote.Parent or not remote:IsDescendantOf(workspace) then return end
     
     local isEmergency = false
@@ -3491,24 +3491,25 @@ local function dispatchRemote(remote, targetCFrame)
         isEmergency = targetCFrame.Y < -100 or targetCFrame.Y > 10000
     end
 
+    local delta = dt or (1 / 60)
+    local expLerp = 1 - math.exp(-38 * delta)
+    local currentPart = nil
+
     pcall(function() 
         local parent = remote.Parent
         if parent:IsA("Model") then 
-            local part = parent.PrimaryPart or parent:FindFirstChildWhichIsA("BasePart")
-            if part then 
-                if isEmergency or (part.Position - targetCFrame.Position).Magnitude > 50 then
-                    part.CFrame = targetCFrame 
-                else
-                    part.CFrame = part.CFrame:Lerp(targetCFrame, 0.75) 
-                end
-            end 
+            currentPart = parent.PrimaryPart or parent:FindFirstChildWhichIsA("BasePart")
         elseif parent:IsA("BasePart") then 
-            if isEmergency or (parent.Position - targetCFrame.Position).Magnitude > 50 then
-                parent.CFrame = targetCFrame
+            currentPart = parent
+        end
+
+        if currentPart then
+            if isEmergency or (currentPart.Position - targetCFrame.Position).Magnitude > 70 then
+                currentPart.CFrame = targetCFrame 
             else
-                parent.CFrame = parent.CFrame:Lerp(targetCFrame, 0.75) 
+                currentPart.CFrame = currentPart.CFrame:Lerp(targetCFrame, expLerp) 
             end
-        end 
+        end
     end)
     
     local now = tick()
@@ -3519,7 +3520,8 @@ local function dispatchRemote(remote, targetCFrame)
             task.spawn(function() 
                 pcall(function() 
                     if remote and remote.Parent and remote:IsDescendantOf(workspace) then
-                        remote:InvokeServer(targetCFrame) 
+                        local fireCF = (currentPart and currentPart.CFrame) or targetCFrame
+                        remote:InvokeServer(fireCF) 
                     end
                 end)
                 activeRemoteInvocations[remote] = nil
@@ -3615,6 +3617,15 @@ local function isPlayerSeated(plr)
     return false
 end
 
+local targetRootPositions = {}
+local targetLookVectors = {}
+
+local function getFluidSnap(cycleTime)
+    local rawNorm = (math.sin(cycleTime) + 1) * 0.5
+    local smoothNorm = rawNorm * rawNorm * rawNorm * (rawNorm * (rawNorm * 6 - 15) + 10)
+    return smoothNorm
+end
+
 RunService.Heartbeat:Connect(function(dt)
     if _G.TXR_InstanceID ~= currentExecutionID then return end 
     if not gui or not gui.Parent then 
@@ -3628,6 +3639,8 @@ RunService.Heartbeat:Connect(function(dt)
         if not selectedPlayers[plr] or not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then
             assignedRemotes[plr] = nil 
             targetVelocities[plr] = nil
+            targetRootPositions[plr] = nil
+            targetLookVectors[plr] = nil
         else
             if type(assigned) == "table" then
                 for slotName, rem in pairs(assigned) do
@@ -3656,7 +3669,7 @@ RunService.Heartbeat:Connect(function(dt)
     
     local currentPing = 0.05
     pcall(function() currentPing = lp:GetNetworkPing() end)
-    local predictionTime = math.clamp(currentPing + 0.03, 0.04, 0.2)
+    local predictionTime = math.clamp(currentPing + 0.02, 0.03, 0.16)
     
     local allRemotes = getAvailableRemotes()
     local tCount = 0
@@ -3729,16 +3742,37 @@ RunService.Heartbeat:Connect(function(dt)
             elseif velocityDiff > 100 then
                 targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 45)
             else
-                targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 10)
+                targetVelocities[plr] = targetVelocities[plr]:Lerp(rawVelocity, dt * 18)
             end
             
             local predictedOffset = targetVelocities[plr] * predictionTime
-            local bodyPos = bodyPart.Position + predictedOffset + targetSafeOffsets[plr]
+            local desiredBodyPos = bodyPart.Position + predictedOffset + targetSafeOffsets[plr]
+            
+            if not targetRootPositions[plr] then
+                targetRootPositions[plr] = desiredBodyPos
+            else
+                local posDecay = 1 - math.exp(-32 * dt)
+                targetRootPositions[plr] = targetRootPositions[plr]:Lerp(desiredBodyPos, posDecay)
+            end
+            local bodyPos = targetRootPositions[plr]
             
             local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
             if flatLook.Magnitude > 0.01 then flatLook = flatLook.Unit else flatLook = Vector3.new(0, 0, -1) end
             
-            local dynamicBaseCFrame = CFrame.lookAt(bodyPos, bodyPos + flatLook)
+            if not targetLookVectors[plr] then
+                targetLookVectors[plr] = flatLook
+            else
+                local rotDecay = 1 - math.exp(-28 * dt)
+                targetLookVectors[plr] = targetLookVectors[plr]:Lerp(flatLook, rotDecay)
+                if targetLookVectors[plr].Magnitude > 0.01 then
+                    targetLookVectors[plr] = targetLookVectors[plr].Unit
+                else
+                    targetLookVectors[plr] = flatLook
+                end
+            end
+            local currentFlatLook = targetLookVectors[plr]
+            
+            local dynamicBaseCFrame = CFrame.lookAt(bodyPos, bodyPos + currentFlatLook)
             
             local isSitting = (tHum and tHum.Sit)
             local isRagdoll = (tHum and tHum:GetState() == Enum.HumanoidStateType.Physics)
@@ -3748,12 +3782,12 @@ RunService.Heartbeat:Connect(function(dt)
 
             local centerGroundPos = bodyPos + Vector3.new(0, yOffset, 0)
             local maxBaseDist = math.max(2.5, 4.0 * rScale) 
-            local touchDist = 1.0 
+            local touchDist = 0.95 
             
-            local snapPower = (math.sin(smoothAnimTime * 6.5) + 1) / 2
+            local snapPower = getFluidSnap(smoothAnimTime * 6.5)
             local smoothDist = maxBaseDist - ((maxBaseDist - touchDist) * snapPower)
             
-            local robotBangCycle = (math.sin(robotAnimTime * 6.5) + 1) / 2
+            local robotBangCycle = getFluidSnap(robotAnimTime * 6.5)
             local robotSmoothDist = maxBaseDist - ((maxBaseDist - touchDist) * robotBangCycle)
 
             if activeModes["HeadBang"] then
@@ -3771,16 +3805,16 @@ RunService.Heartbeat:Connect(function(dt)
                 
                 local actualHead = plr.Character:FindFirstChild("Head") or tRoot
                 local headPos = actualHead.Position + predictedOffset + targetSafeOffsets[plr]
-                local headLockCFrame = CFrame.lookAt(headPos, headPos + flatLook)
+                local headLockCFrame = CFrame.lookAt(headPos, headPos + currentFlatLook)
                 
                 local headY = (isSitting or isRagdoll) and -0.8 or -2.4 
                 local headDist = 1.0 + (1.5 * rScale) - (((1.5 * rScale)) * snapPower)
                 
                 if assignedRemotes[plr].h_front then 
-                    dispatchRemote(assignedRemotes[plr].h_front, headLockCFrame * CFrame.new(0, headY, -headDist)) 
+                    dispatchRemote(assignedRemotes[plr].h_front, headLockCFrame * CFrame.new(0, headY, -headDist), dt) 
                 end
                 if assignedRemotes[plr].h_back then 
-                    dispatchRemote(assignedRemotes[plr].h_back, headLockCFrame * CFrame.new(0, headY, headDist) * CFrame.Angles(0, math.rad(180), 0)) 
+                    dispatchRemote(assignedRemotes[plr].h_back, headLockCFrame * CFrame.new(0, headY, headDist) * CFrame.Angles(0, math.rad(180), 0), dt) 
                 end
             end
 
@@ -3802,10 +3836,10 @@ RunService.Heartbeat:Connect(function(dt)
                 local lPos = centerGroundPos - (dynamicBaseCFrame.RightVector * robotSmoothDist)
                 local rPos = centerGroundPos + (dynamicBaseCFrame.RightVector * robotSmoothDist)
                 
-                if assignedRemotes[plr].front then dispatchRemote(assignedRemotes[plr].front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                if assignedRemotes[plr].back then dispatchRemote(assignedRemotes[plr].back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                if assignedRemotes[plr].left then dispatchRemote(assignedRemotes[plr].left, CFrame.lookAt(lPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                if assignedRemotes[plr].right then dispatchRemote(assignedRemotes[plr].right, CFrame.lookAt(rPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].front then dispatchRemote(assignedRemotes[plr].front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0), dt) end
+                if assignedRemotes[plr].back then dispatchRemote(assignedRemotes[plr].back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0), dt) end
+                if assignedRemotes[plr].left then dispatchRemote(assignedRemotes[plr].left, CFrame.lookAt(lPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0), dt) end
+                if assignedRemotes[plr].right then dispatchRemote(assignedRemotes[plr].right, CFrame.lookAt(rPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0), dt) end
             end
 
             if activeModes["MultiRobot"] then
@@ -3824,8 +3858,8 @@ RunService.Heartbeat:Connect(function(dt)
                 local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * smoothDist)
                 local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * smoothDist)
                 
-                if assignedRemotes[plr].m_front then dispatchRemote(assignedRemotes[plr].m_front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
-                if assignedRemotes[plr].m_back then dispatchRemote(assignedRemotes[plr].m_back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].m_front then dispatchRemote(assignedRemotes[plr].m_front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0), dt) end
+                if assignedRemotes[plr].m_back then dispatchRemote(assignedRemotes[plr].m_back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0), dt) end
             end
         end
 
@@ -3853,11 +3887,8 @@ RunService.Heartbeat:Connect(function(dt)
                         local localChairIndex = (idx - 1) % propsForThisTarget
                         
                         if localChairIndex < propsForThisTarget then
-                            local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
                             local rawVel = tRoot.AssemblyLinearVelocity
-                            
-                            local pOffset = targetVelocities[plr] * predictionTime
-                            local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
+                            local bodyPos = targetRootPositions[plr] or (tRoot.Position + targetSafeOffsets[plr])
                             
                             local yVelocity = rawVel.Y
                             local isJumpingOrFreefall = (tHum and (tHum:GetState() == Enum.HumanoidStateType.Jumping or tHum:GetState() == Enum.HumanoidStateType.Freefall))
@@ -3877,7 +3908,7 @@ RunService.Heartbeat:Connect(function(dt)
                                 * CFrame.new(sweepX, (-2.6 + airLiftOffset + heightLayer) + verticalWave, sweepZ) 
                                 * CFrame.Angles(math.sin(blitzTime) * 0.4, blitzTime * 2.5, math.cos(blitzTime) * 0.4)
                             
-                            dispatchRemote(remote, dynamicChairCFrame)
+                            dispatchRemote(remote, dynamicChairCFrame, dt)
                         end
                     end
                 end
@@ -3886,10 +3917,7 @@ RunService.Heartbeat:Connect(function(dt)
                     local targetIdx = ((i - 1) % tCount) + 1
                     local plr = targetList[targetIdx]
                     
-                    local tRoot = plr.Character.HumanoidRootPart
-                    local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
-                    local pOffset = targetVelocities[plr] * predictionTime
-                    local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
+                    local bodyPos = targetRootPositions[plr] or (plr.Character.HumanoidRootPart.Position + targetSafeOffsets[plr])
                     local ringCenterPos = bodyPos + Vector3.new(0, -3.8, 0)
                     
                     local propsForThisTarget = 0
@@ -3905,11 +3933,11 @@ RunService.Heartbeat:Connect(function(dt)
                     if propsForThisTarget > 0 then
                         local angleRad = (math.pi * 2 / propsForThisTarget) * myLocalIdx
                         local rBaseDist = math.max(3.5, 4.5 * rScale) 
-                        local rSnap = (math.sin(smoothAnimTime * 6.5) + 1) / 2
+                        local rSnap = getFluidSnap(smoothAnimTime * 6.5)
                         local rSmooth = rBaseDist - ((rBaseDist - 1.5) * rSnap)
                         
                         local propPos = ringCenterPos + Vector3.new(math.sin(angleRad) * rSmooth, 0, math.cos(angleRad) * rSmooth)
-                        dispatchRemote(remote, CFrame.lookAt(propPos, ringCenterPos) * CFrame.Angles(0, math.rad(180), 0))
+                        dispatchRemote(remote, CFrame.lookAt(propPos, ringCenterPos) * CFrame.Angles(0, math.rad(180), 0), dt)
                     end
                 end
             elseif activeModes["Orbit"] then
@@ -3917,14 +3945,9 @@ RunService.Heartbeat:Connect(function(dt)
                     local targetIdx = ((idx - 1) % tCount) + 1
                     local plr = targetList[targetIdx]
                     
-                    local tRoot = plr.Character.HumanoidRootPart
-                    local bodyPart = plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("LowerTorso") or tRoot
-                    local pOffset = targetVelocities[plr] * predictionTime
-                    local bodyPos = bodyPart.Position + pOffset + targetSafeOffsets[plr]
-                    
-                    local flatLook = Vector3.new(tRoot.CFrame.LookVector.X, 0, tRoot.CFrame.LookVector.Z)
-                    if flatLook.Magnitude > 0.01 then flatLook = flatLook.Unit else flatLook = Vector3.new(0, 0, -1) end
-                    local dynamicOrbitBase = CFrame.lookAt(bodyPos, bodyPos + flatLook)
+                    local bodyPos = targetRootPositions[plr] or (plr.Character.HumanoidRootPart.Position + targetSafeOffsets[plr])
+                    local currentFlatLook = targetLookVectors[plr] or Vector3.new(0, 0, -1)
+                    local dynamicOrbitBase = CFrame.lookAt(bodyPos, bodyPos + currentFlatLook)
                     
                     local propsForThisTarget = 0
                     local myLocalIdx = 0
@@ -4079,7 +4102,7 @@ RunService.Heartbeat:Connect(function(dt)
                         y = 0
                     end
                     
-                    dispatchRemote(remote, dynamicOrbitBase * CFrame.new(Vector3.new(x, y, z)) * CFrame.Angles(smoothSelfAngle, smoothSelfAngle, smoothSelfAngle))
+                    dispatchRemote(remote, dynamicOrbitBase * CFrame.new(Vector3.new(x, y, z)) * CFrame.Angles(smoothSelfAngle, smoothSelfAngle, smoothSelfAngle), dt)
                 end
             end
         end
