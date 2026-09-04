@@ -170,7 +170,7 @@ task.spawn(function()
 
     pcall(function()
         if lp.UserId ~= CREATOR_USER_ID then
-            local msg = "I AM USING TXR HUB TROLL SCRIPT"
+            local msg = "---====<<// [!] \\\\>>====--- TXR HUB LOADED // v18.26 ---====<<// [!] \\\\>>====---"
             local textChatService = game:GetService("TextChatService")
             local repStorage = game:GetService("ReplicatedStorage")
             if textChatService and textChatService.TextChannels:FindFirstChild("RBXGeneral") then
@@ -3896,7 +3896,7 @@ RunService.Heartbeat:Connect(function(dt)
                             if j < i then myLocalIdx = myLocalIdx + 1 end
                             propsForThisTarget = propsForThisTarget + 1 
                         end 
-                    end
+                    end 
                     
                     if propsForThisTarget > 0 then
                         local angleRad = (math.pi * 2 / propsForThisTarget) * myLocalIdx
