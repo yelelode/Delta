@@ -666,6 +666,68 @@ local function animateWaterfall(container)
     end)
 end
 
+local function applySmartHover(btn, modeKey)
+    local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
+    btnScale.Scale = 1
+    
+    local corner = btn:FindFirstChildOfClass("UICorner")
+    if not corner then 
+        corner = Instance.new("UICorner", btn)
+        corner.CornerRadius = UDim.new(0, 8) 
+    end
+    
+    if not btn:GetAttribute("BaseColor") then 
+        btn:SetAttribute("BaseColor", btn.BackgroundColor3)
+        btn:SetAttribute("BaseTrans", btn.BackgroundTransparency)
+        btn:SetAttribute("BaseText", btn.TextColor3) 
+    end
+
+    local isHovered = false
+    local hoverInInfo = TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local hoverOutInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    local pressInfo = TweenInfo.new(0.08, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+    local releaseInfo = TweenInfo.new(0.65, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
+
+    btn.MouseEnter:Connect(function()
+        isHovered = true
+        uiHoverCount = uiHoverCount + 1 
+        TweenService:Create(btnScale, hoverInInfo, {Scale = 1.05}):Play()
+        TweenService:Create(corner, hoverInInfo, {CornerRadius = UDim.new(1, 0)}):Play() 
+        
+        if not modeKey or not activeModes[modeKey] then 
+            TweenService:Create(btn, hoverInInfo, { 
+                BackgroundColor3 = Color3.fromRGB(0, 0, 0), 
+                BackgroundTransparency = 0.1, 
+                TextColor3 = Color3.fromRGB(255, 255, 255) 
+            }):Play() 
+        end
+    end)
+
+    btn.MouseLeave:Connect(function()
+        isHovered = false
+        uiHoverCount = math.max(0, uiHoverCount - 1) 
+        TweenService:Create(btnScale, hoverOutInfo, {Scale = 1}):Play()
+        TweenService:Create(corner, hoverOutInfo, {CornerRadius = UDim.new(0, 8)}):Play() 
+        
+        if not modeKey or not activeModes[modeKey] then 
+            TweenService:Create(btn, hoverOutInfo, { 
+                BackgroundColor3 = btn:GetAttribute("BaseColor"), 
+                BackgroundTransparency = btn:GetAttribute("BaseTrans"), 
+                TextColor3 = btn:GetAttribute("BaseText") 
+            }):Play() 
+        end
+    end)
+
+    btn.MouseButton1Down:Connect(function() 
+        TweenService:Create(btnScale, pressInfo, {Scale = 0.85}):Play() 
+    end)
+    
+    btn.MouseButton1Up:Connect(function() 
+        local targetScale = isHovered and 1.05 or 1
+        TweenService:Create(btnScale, releaseInfo, {Scale = targetScale}):Play() 
+    end)
+end
+
 local function onPlayerJoinAlert(plr)
     if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
         local alertGui = Instance.new("ScreenGui")
@@ -885,68 +947,6 @@ local function StopRobotBangMusic()
                 end) 
             end
         end)
-    end)
-end
-
-local function applySmartHover(btn, modeKey)
-    local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
-    btnScale.Scale = 1
-    
-    local corner = btn:FindFirstChildOfClass("UICorner")
-    if not corner then 
-        corner = Instance.new("UICorner", btn)
-        corner.CornerRadius = UDim.new(0, 8) 
-    end
-    
-    if not btn:GetAttribute("BaseColor") then 
-        btn:SetAttribute("BaseColor", btn.BackgroundColor3)
-        btn:SetAttribute("BaseTrans", btn.BackgroundTransparency)
-        btn:SetAttribute("BaseText", btn.TextColor3) 
-    end
-
-    local isHovered = false
-    local hoverInInfo = TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    local hoverOutInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-    local pressInfo = TweenInfo.new(0.08, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-    local releaseInfo = TweenInfo.new(0.65, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
-
-    btn.MouseEnter:Connect(function()
-        isHovered = true
-        uiHoverCount = uiHoverCount + 1 
-        TweenService:Create(btnScale, hoverInInfo, {Scale = 1.05}):Play()
-        TweenService:Create(corner, hoverInInfo, {CornerRadius = UDim.new(1, 0)}):Play() 
-        
-        if not modeKey or not activeModes[modeKey] then 
-            TweenService:Create(btn, hoverInInfo, { 
-                BackgroundColor3 = Color3.fromRGB(0, 0, 0), 
-                BackgroundTransparency = 0.1, 
-                TextColor3 = Color3.fromRGB(255, 255, 255) 
-            }):Play() 
-        end
-    end)
-
-    btn.MouseLeave:Connect(function()
-        isHovered = false
-        uiHoverCount = math.max(0, uiHoverCount - 1) 
-        TweenService:Create(btnScale, hoverOutInfo, {Scale = 1}):Play()
-        TweenService:Create(corner, hoverOutInfo, {CornerRadius = UDim.new(0, 8)}):Play() 
-        
-        if not modeKey or not activeModes[modeKey] then 
-            TweenService:Create(btn, hoverOutInfo, { 
-                BackgroundColor3 = btn:GetAttribute("BaseColor"), 
-                BackgroundTransparency = btn:GetAttribute("BaseTrans"), 
-                TextColor3 = btn:GetAttribute("BaseText") 
-            }):Play() 
-        end
-    end)
-
-    btn.MouseButton1Down:Connect(function() 
-        TweenService:Create(btnScale, pressInfo, {Scale = 0.85}):Play() 
-    end)
-    
-    btn.MouseButton1Up:Connect(function() 
-        local targetScale = isHovered and 1.05 or 1
-        TweenService:Create(btnScale, releaseInfo, {Scale = targetScale}):Play() 
     end)
 end
 
@@ -1990,7 +1990,7 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
     local startPos = nil
     local targetPos = frame.Position
     local velocity = Vector2.new(0, 0)
-    local lastInputPos = Vector2.new(inputPos or Vector2.new(0, 0))
+    local lastInputPos = Vector2.new(0, 0)
     local dragLoop = nil
 
     local function getClampedTarget(newXScale, newXOffset, newYScale, newYOffset)
