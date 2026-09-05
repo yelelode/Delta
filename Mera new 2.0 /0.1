@@ -1173,7 +1173,7 @@ header.Active = true
 header.ZIndex = 10
 
 local headerTitle = Instance.new("TextLabel", header)
-headerTitle.Size = UDim2.new(1, -90, 1, 0)
+headerTitle.Size = UDim2.new(1, -125, 1, 0)
 headerTitle.Position = UDim2.fromOffset(16, 0)
 headerTitle.BackgroundTransparency = 1
 headerTitle.Text = "TXR HUB"
@@ -1221,6 +1221,29 @@ dividerGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0.5, Colors.PrimaryDark), 
     ColorSequenceKeypoint.new(1, Colors.Background)
 })
+
+-- 💡 PREMIUM MINI GUIDE (?) BUTTON
+local guideBtn = Instance.new("TextButton", header)
+guideBtn.Size = UDim2.fromOffset(28, 28)
+guideBtn.Position = UDim2.new(1, -104, 0.5, -14)
+guideBtn.BackgroundColor3 = Colors.Surface
+guideBtn.BackgroundTransparency = 0.5
+guideBtn.Text = "?"
+guideBtn.TextColor3 = Colors.Primary
+guideBtn.Font = Enum.Font.GothamBlack
+guideBtn.TextSize = 14
+guideBtn.AutoButtonColor = false
+guideBtn.ZIndex = 15
+
+local guideCorner = Instance.new("UICorner", guideBtn)
+guideCorner.CornerRadius = UDim.new(0, 8)
+
+local guideStroke = Instance.new("UIStroke", guideBtn)
+guideStroke.Thickness = 1.2
+guideStroke.Color = Colors.Primary
+guideStroke.Transparency = 0.5
+crispText(guideBtn)
+applySmartHover(guideBtn, nil)
 
 local minimizeBtn = Instance.new("TextButton", header)
 minimizeBtn.Size = UDim2.fromOffset(28, 28)
@@ -2117,6 +2140,96 @@ end
 
 local playerMenu, playerScroll = createMenu("👥 MATRIX TARGETS")
 local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
+
+-- 📖 SLICK MINI GUIDE SUBMENU (COMPACT & SCROLLABLE)
+local guideMenu, guideScroll = createMenu("📖 MINI GUIDE")
+
+guideBtn.MouseButton1Click:Connect(function()
+    mainList.Visible = false
+    isSubMenuOpen = true
+    sendNotif("📖 TXR GUIDE", "Opening Quick Operational Manual...", 2)
+    local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    TweenService:Create(guideMenu, tInfo, {Position = UDim2.fromScale(0, 0)}):Play()
+    animateWaterfall(guideScroll)
+end)
+
+local guideStepsData = {
+    {
+        Step = "STEP 01",
+        Title = "SELECT TARGETS",
+        Description = "Open 'LOCK ON TARGETS' menu and tap on player names to lock. Selected targets will be highlighted in cyan."
+    },
+    {
+        Step = "STEP 02",
+        Title = "CHOOSE MODE & GEOMETRY",
+        Description = "Toggle your preferred attack modules (Orbit, Radial, Dual, Void Chair). Open 'GEOMETRY CORE' to select 3D orbit patterns."
+    },
+    {
+        Step = "STEP 03",
+        Title = "ACTIVATE CORE ENGINE",
+        Description = "Press '▶ START' to deploy server props onto target. Click '⏹ STOP' anytime to instantly wipe all spawned props from the game."
+    },
+    {
+        Step = "STEP 04",
+        Title = "DEFENSIVE CONTROLS",
+        Description = "Turn ON 'ANTI SIT' to prevent getting stuck in seats. Press [F5] on keyboard for instant bang-prop removal. Press [Right Shift] to hide/show UI."
+    },
+    {
+        Step = "STEP 05",
+        Title = "CLAIM HOUSE / PLOT (IMPORTANT)",
+        Description = "Always claim a House or Apartment in the server first! Anti-Bang, Anti-Robots, and emergency wipe functions strictly require house permissions to work."
+    }
+}
+
+for _, item in ipairs(guideStepsData) do
+    local card = Instance.new("Frame", guideScroll)
+    card.Size = UDim2.new(1, 0, 0, 72)
+    card.BackgroundColor3 = Colors.Surface
+    card.BackgroundTransparency = 0.4
+    card.LayoutOrder = getOrder()
+    card.ZIndex = 23
+
+    local cardCorner = Instance.new("UICorner", card)
+    cardCorner.CornerRadius = UDim.new(0, 8)
+
+    local cardStroke = Instance.new("UIStroke", card)
+    cardStroke.Color = Colors.PrimaryDark
+    cardStroke.Thickness = 1
+    cardStroke.Transparency = 0.6
+
+    local stepAccent = Instance.new("Frame", card)
+    stepAccent.Size = UDim2.new(0, 3, 0.7, 0)
+    stepAccent.Position = UDim2.new(0, 0, 0.5, 0)
+    stepAccent.AnchorPoint = Vector2.new(0, 0.5)
+    stepAccent.BackgroundColor3 = Colors.Primary
+    stepAccent.BorderSizePixel = 0
+    Instance.new("UICorner", stepAccent).CornerRadius = UDim.new(1, 0)
+
+    local headerLabel = Instance.new("TextLabel", card)
+    headerLabel.Size = UDim2.new(1, -20, 0, 18)
+    headerLabel.Position = UDim2.fromOffset(12, 6)
+    headerLabel.BackgroundTransparency = 1
+    headerLabel.Text = item.Step .. " // " .. item.Title
+    headerLabel.TextColor3 = Colors.Primary
+    headerLabel.Font = Enum.Font.GothamBlack
+    headerLabel.TextSize = 10.5
+    headerLabel.TextXAlignment = Enum.TextXAlignment.Left
+    headerLabel.ZIndex = 24
+    crispText(headerLabel)
+
+    local descLabel = Instance.new("TextLabel", card)
+    descLabel.Size = UDim2.new(1, -24, 0, 42)
+    descLabel.Position = UDim2.fromOffset(12, 24)
+    descLabel.BackgroundTransparency = 1
+    descLabel.Text = item.Description
+    descLabel.TextColor3 = Colors.Text
+    descLabel.Font = Enum.Font.GothamMedium
+    descLabel.TextSize = 9.5
+    descLabel.TextWrapped = true
+    descLabel.TextXAlignment = Enum.TextXAlignment.Left
+    descLabel.TextYAlignment = Enum.TextYAlignment.Top
+    descLabel.ZIndex = 24
+end
 
 local function getFirstValidTarget()
     for _, plr in ipairs(targetSelectionOrder) do
@@ -4330,7 +4443,7 @@ end)
 
 -- =================================================================
 -- 🚨 RGB THREAT RADAR ENGINE
--- =================================================================
+-- =========================================================
 local threatGuiParent = game:GetService("CoreGui")
 pcall(function() if not threatGuiParent then threatGuiParent = lp:WaitForChild("PlayerGui") end end)
 if _G.TXR_THREAT_ESP and _G.TXR_THREAT_ESP.Parent then _G.TXR_THREAT_ESP:Destroy() end
