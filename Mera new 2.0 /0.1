@@ -135,6 +135,7 @@ if not targetGuiParent then
 end
 
 local CREATOR_USER_ID = 9685785248
+local NINA_USER_ID = 9444732069
 local DISCORD_SERVER_LINK = "https://discord.gg/dhFYEFNQU"
 
 local function sendNotif(title, text, duration)
@@ -241,7 +242,7 @@ task.spawn(function()
     end)
 end)
 
--- 👑 GOD-LEVEL PROFESSIONAL CLEAN FIXED OWNER BILLBOARD 👑
+-- 👑 GOD-LEVEL PROFESSIONAL CLEAN FIXED OWNER & NINA BILLBOARDS 👑
 task.spawn(function()
     local function applyOwnerCrown(character)
         if not character then return end
@@ -292,22 +293,76 @@ task.spawn(function()
         end)
     end
 
+    local function applyNinaCrown(character)
+        if not character then return end
+        local head = character:WaitForChild("Head", 5)
+        if not head then return end
+        if head:FindFirstChild("NinaCleanCrown") then return end
+
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "NinaCleanCrown"
+        billboard.Size = UDim2.new(0, 160, 0, 36)
+        billboard.StudsOffset = Vector3.new(0, 3.4, 0)
+        billboard.AlwaysOnTop = true
+        billboard.MaxDistance = 250
+        billboard.Adornee = head
+        billboard.Parent = head
+
+        local crownLabel = Instance.new("TextLabel", billboard)
+        crownLabel.Size = UDim2.fromScale(1, 1)
+        crownLabel.BackgroundTransparency = 1
+        crownLabel.Text = "ᴘ ᴏ ᴏ ᴋ ɪ ᴇ"
+        crownLabel.Font = Enum.Font.GothamBlack
+        crownLabel.TextSize = 22
+        crownLabel.TextColor3 = Color3.fromRGB(255, 105, 180)
+        
+        local cStroke = Instance.new("UIStroke", crownLabel)
+        cStroke.Thickness = 1.8
+        cStroke.Color = Color3.new(0, 0, 0)
+
+        local cGrad = Instance.new("UIGradient", crownLabel)
+        cGrad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 20, 147)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 105, 180))
+        })
+
+        task.spawn(function()
+            local t = 0
+            while billboard and billboard.Parent and _G.TXR_InstanceID == currentExecutionID do
+                t = t + 0.05
+                local pulse = (math.sin(t * 3.5) + 1) / 2
+                
+                local pinkVal = Color3.fromRGB(255, math.floor(80 + pulse * 100), math.floor(170 + pulse * 60))
+                crownLabel.TextColor3 = pinkVal
+                cGrad.Offset = Vector2.new(math.sin(t * 2.5) * 1.5, 0)
+                
+                task.wait(0.04)
+            end
+        end)
+    end
+
     for _, p in ipairs(Players:GetPlayers()) do
         if p.UserId == CREATOR_USER_ID then
             if p.Character then applyOwnerCrown(p.Character) end
             p.CharacterAdded:Connect(applyOwnerCrown)
+        elseif p.UserId == NINA_USER_ID then
+            if p.Character then applyNinaCrown(p.Character) end
+            p.CharacterAdded:Connect(applyNinaCrown)
         end
     end
 
     Players.PlayerAdded:Connect(function(p)
         if p.UserId == CREATOR_USER_ID then
             p.CharacterAdded:Connect(applyOwnerCrown)
+        elseif p.UserId == NINA_USER_ID then
+            p.CharacterAdded:Connect(applyNinaCrown)
         end
     end)
 end)
 
 --------------------------------------------------
--- 🔥 WATER-LIKE SMOOTH RED & BLACK RP NAME & BIO SYSTEM (60s LOOP ANTI-TAG)
+-- 🔥 WATER-LIKE SMOOTH RP NAME & BIO SYSTEM (ASHU RED / NINA EXPENSIVE PINK)
 --------------------------------------------------
 task.spawn(function()
     pcall(function()
@@ -316,9 +371,10 @@ task.spawn(function()
         local StringEvent = Ocean:WaitForChild("1RPNam1eTex1t", 10)
         
         local isOwner = (lp.UserId == CREATOR_USER_ID)
+        local isNina = (lp.UserId == NINA_USER_ID)
         local rpNameState = 1
-        local designatedRPName = isOwner and "A  S  H  U" or "【 TXR HUB 】"
-        local designatedRPBio = isOwner and "" or ("Welcome " .. lp.Name)
+        local designatedRPName = isOwner and "A  S  H  U" or (isNina and "N   I   N   A" or "【 TXR HUB 】")
+        local designatedRPBio = (isOwner or isNina) and "" or ("Welcome " .. lp.Name)
         
         pcall(function()
             StringEvent:FireServer("RolePlayName", designatedRPName)
@@ -327,8 +383,8 @@ task.spawn(function()
         
         local tickCounter = 0
         local t = 0
-        local baseDark = Color3.fromRGB(20, 0, 0)
-        local baseBright = Color3.fromRGB(255, 10, 10)
+        local baseDark = isNina and Color3.fromRGB(40, 0, 25) or Color3.fromRGB(20, 0, 0)
+        local baseBright = isNina and Color3.fromRGB(255, 20, 147) or Color3.fromRGB(255, 10, 10)
         
         while task.wait(0.15) and _G.TXR_InstanceID == currentExecutionID do
             tickCounter = tickCounter + 0.15
@@ -347,7 +403,7 @@ task.spawn(function()
             
             if tickCounter >= 60 then
                 tickCounter = 0
-                if not isOwner then
+                if not isOwner and not isNina then
                     if rpNameState == 1 then
                         designatedRPName = "TXR HUB"
                         rpNameState = 2
@@ -2115,7 +2171,7 @@ local function refreshPlayers()
         accentCorner.CornerRadius = UDim.new(1,0)
         
         btn.MouseButton1Click:Connect(function()
-            if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then 
+            if (plr.UserId == CREATOR_USER_ID or plr.UserId == NINA_USER_ID) and lp.UserId ~= CREATOR_USER_ID then 
                 triggerBanTrap() 
                 return 
             end
@@ -3632,7 +3688,7 @@ RunService.Heartbeat:Connect(function(dt)
     local targetList = {}
     
     for plr, _ in pairs(selectedPlayers) do 
-        if plr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
+        if (plr.UserId == CREATOR_USER_ID or plr.UserId == NINA_USER_ID) and lp.UserId ~= CREATOR_USER_ID then
             triggerBanTrap()
             return
         end
