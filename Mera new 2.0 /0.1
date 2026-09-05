@@ -2124,7 +2124,7 @@ local function createMenu(titleStr)
     scrollPad.PaddingRight = UDim.new(0, 10)
     
     lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() 
-        scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 10) 
+        scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 15) 
     end)
     
     backBtn.MouseButton1Click:Connect(function() 
@@ -2160,15 +2160,15 @@ local guideStepsData = {
     },
     {
         Header = "STEP 2 // ATTACK MODES & ORBITS",
-        Body = "Choose your combat style:\n• Orbits: Props smoothly rotate around target based on selected geometry.\n• Robots Bang: Choose 4x Radial Surround, Dual System, Cranial Head Bang, or Multiple Accelerator Rings to aggressively bang target."
+        Body = "Choose your combat style:\n\n• Orbits: Props will smoothly rotate and orbit around your target based on the geometry pattern selected.\n\n• Robots Bang: Choose between 4x Radial Surround, Dual System, Cranial Head Bang, or Multiple Accelerator Rings to aggressively bang your target."
     },
     {
         Header = "STEP 3 // UTILITIES & FEATURES",
-        Body = "• ESP & Spectate: Use Tactical ESP to track player stats and Spectate to watch target live.\n• Anti Delete Robots: Keeps active attack props secure from being wiped.\n• Show Ban Zones: Spot and avoid target plot prop-ban zones easily."
+        Body = "• ESP & Spectate: Use Tactical ESP to track player stats and Spectate to watch your target live.\n\n• Anti Delete Robots: Keeps your active attack props secure so other players cannot delete or wipe them away.\n\n• Show Ban Zones: Enable this if your target sets up plot prop-ban zones so you can easily spot and avoid them."
     },
     {
         Header = "STEP 4 // DEFENSE & SECURITY",
-        Body = "• Protection Tools: Utilize Anti Sit, Anti Robots, and Anti Bang to stay secure.\n• House Requirement: Must spawn a house/apartment on the map for Anti Bang & Anti Sit features to function properly."
+        Body = "• Protection Tools: Utilize Anti Sit, Anti Robots, and Anti Bang to stay secure.\n\n• House Requirement: You must spawn a house or apartment on the map for Anti Bang and Anti Sit features to work properly."
     },
     {
         Header = "// OFFICIAL COMMUNITY",
@@ -2177,61 +2177,56 @@ local guideStepsData = {
 }
 
 for _, item in ipairs(guideStepsData) do
+    local isCommunity = string.find(item.Header, "COMMUNITY") ~= nil
+    local themeColor = isCommunity and Colors.Purple or Colors.Primary
+
     local card = Instance.new("Frame", guideScroll)
-    card.Size = UDim2.new(1, 0, 0, 0)
-    card.AutomaticSize = Enum.AutomaticSize.Y
+    card.Size = UDim2.new(1, 0, 0, 100)
     card.BackgroundColor3 = Colors.Surface
-    card.BackgroundTransparency = 0.35
+    card.BackgroundTransparency = 0.25
     card.LayoutOrder = getOrder()
     card.ZIndex = 23
+    card.ClipsDescendants = false
 
     local cardCorner = Instance.new("UICorner", card)
     cardCorner.CornerRadius = UDim.new(0, 10)
 
     local cardStroke = Instance.new("UIStroke", card)
-    cardStroke.Color = Colors.PrimaryDark
-    cardStroke.Thickness = 1.1
-    cardStroke.Transparency = 0.5
+    cardStroke.Color = themeColor
+    cardStroke.Thickness = 1.2
+    cardStroke.Transparency = 0.55
 
     local cardGrad = Instance.new("UIGradient", card)
     cardGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(24, 30, 44)),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(24, 30, 46)),
         ColorSequenceKeypoint.new(1, Colors.Background)
     })
     cardGrad.Rotation = 90
 
-    local cardPadding = Instance.new("UIPadding", card)
-    cardPadding.PaddingTop = UDim.new(0, 10)
-    cardPadding.PaddingBottom = UDim.new(0, 10)
-    cardPadding.PaddingLeft = UDim.new(0, 14)
-    cardPadding.PaddingRight = UDim.new(0, 10)
-
     local stepAccent = Instance.new("Frame", card)
-    stepAccent.Size = UDim2.new(0, 3, 1, -12)
-    stepAccent.Position = UDim2.new(0, -8, 0, 6)
-    stepAccent.BackgroundColor3 = (string.find(item.Header, "COMMUNITY") and Colors.Purple or Colors.Primary)
+    stepAccent.Size = UDim2.new(0, 4, 1, -16)
+    stepAccent.Position = UDim2.new(0, 6, 0.5, 0)
+    stepAccent.AnchorPoint = Vector2.new(0, 0.5)
+    stepAccent.BackgroundColor3 = themeColor
     stepAccent.BorderSizePixel = 0
+    stepAccent.ZIndex = 24
     Instance.new("UICorner", stepAccent).CornerRadius = UDim.new(1, 0)
 
-    local contentLayout = Instance.new("UIListLayout", card)
-    contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    contentLayout.Padding = UDim.new(0, 4)
-
     local headerLabel = Instance.new("TextLabel", card)
-    headerLabel.Size = UDim2.new(1, 0, 0, 18)
+    headerLabel.Size = UDim2.new(1, -26, 0, 20)
+    headerLabel.Position = UDim2.new(0, 18, 0, 8)
     headerLabel.BackgroundTransparency = 1
     headerLabel.Text = item.Header
-    headerLabel.TextColor3 = (string.find(item.Header, "COMMUNITY") and Colors.Purple or Colors.Primary)
+    headerLabel.TextColor3 = themeColor
     headerLabel.Font = Enum.Font.GothamBlack
-    headerLabel.TextSize = 10.5
+    headerLabel.TextSize = 11
     headerLabel.TextXAlignment = Enum.TextXAlignment.Left
-    headerLabel.LayoutOrder = 1
-    headerLabel.ZIndex = 24
+    headerLabel.ZIndex = 25
     crispText(headerLabel)
 
     local descLabel = Instance.new("TextLabel", card)
-    descLabel.Size = UDim2.new(1, 0, 0, 0)
-    descLabel.AutomaticSize = Enum.AutomaticSize.Y
+    descLabel.Size = UDim2.new(1, -26, 1, -34)
+    descLabel.Position = UDim2.new(0, 18, 0, 28)
     descLabel.BackgroundTransparency = 1
     descLabel.Text = item.Body
     descLabel.TextColor3 = Colors.Text
@@ -2241,8 +2236,8 @@ for _, item in ipairs(guideStepsData) do
     descLabel.TextXAlignment = Enum.TextXAlignment.Left
     descLabel.TextYAlignment = Enum.TextYAlignment.Top
     descLabel.LineHeight = 1.15
-    descLabel.LayoutOrder = 2
-    descLabel.ZIndex = 24
+    descLabel.ZIndex = 25
+    crispText(descLabel)
 end
 
 local function getFirstValidTarget()
