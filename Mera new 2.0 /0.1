@@ -2124,7 +2124,7 @@ local function createMenu(titleStr)
     scrollPad.PaddingRight = UDim.new(0, 10)
     
     lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() 
-        scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 15) 
+        scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 10) 
     end)
     
     backBtn.MouseButton1Click:Connect(function() 
@@ -2142,7 +2142,7 @@ local playerMenu, playerScroll = createMenu("👥 MATRIX TARGETS")
 local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
 
 -- 📖 SLICK MINI GUIDE SUBMENU (COMPACT & SCROLLABLE)
-local guideMenu, guideScroll = createMenu("📖 MINI GUIDE")
+local guideMenu, guideScroll = createMenu("📖 OPERATIONAL GUIDE")
 
 guideBtn.MouseButton1Click:Connect(function()
     mainList.Visible = false
@@ -2155,90 +2155,249 @@ end)
 
 local guideStepsData = {
     {
-        Header = "STEP 1 // SELECT TARGET",
-        Body = "Open the Matrix Targets menu and tap any player you want to lock onto. Selected targets will be highlighted."
+        StepBadge = "PHASE 01",
+        Title = "STEP 1 // SELECT TARGET",
+        BodyLines = {
+            {Text = "Open the Matrix Targets menu and tap any player you want to lock onto.", Color = Colors.Text, Bold = false},
+            {Text = "Selected targets will be highlighted in bright cyan neon.", Color = Colors.Primary, Bold = true}
+        }
     },
     {
-        Header = "STEP 2 // ATTACK MODES & ORBITS",
-        Body = "Choose your combat style:\n\n• Orbits: Props will smoothly rotate and orbit around your target based on the geometry pattern selected.\n\n• Robots Bang: Choose between 4x Radial Surround, Dual System, Cranial Head Bang, or Multiple Accelerator Rings to aggressively bang your target."
+        StepBadge = "PHASE 02",
+        Title = "STEP 2 // ATTACK MODES & ORBITS",
+        SubHeader = "Choose your combat style:",
+        BodyLines = {
+            {Text = "• Orbits:", Color = Colors.Primary, Bold = true},
+            {Text = "Props will smoothly rotate and orbit around your target based on the geometry pattern selected.", Color = Colors.Text, Bold = false},
+            {Text = "• Robots Bang:", Color = Colors.Danger, Bold = true},
+            {Text = "Choose between 4x Radial Surround, Dual System, Cranial Head Bang, or Multiple Accelerator Rings to aggressively bang your target.", Color = Colors.Text, Bold = false}
+        }
     },
     {
-        Header = "STEP 3 // UTILITIES & FEATURES",
-        Body = "• ESP & Spectate: Use Tactical ESP to track player stats and Spectate to watch your target live.\n\n• Anti Delete Robots: Keeps your active attack props secure so other players cannot delete or wipe them away.\n\n• Show Ban Zones: Enable this if your target sets up plot prop-ban zones so you can easily spot and avoid them."
+        StepBadge = "PHASE 03",
+        Title = "STEP 3 // UTILITIES & FEATURES",
+        BodyLines = {
+            {Text = "• ESP & Spectate:", Color = Colors.Primary, Bold = true},
+            {Text = "Use Tactical ESP to track player stats and Spectate to watch your target live.", Color = Colors.Text, Bold = false},
+            {Text = "• Anti Delete Robots:", Color = Colors.Warning, Bold = true},
+            {Text = "Keeps your active attack props secure so other players cannot delete or wipe them away.", Color = Colors.Text, Bold = false},
+            {Text = "• Show Ban Zones:", Color = Colors.Danger, Bold = true},
+            {Text = "Enable this if your target sets up plot prop-ban zones so you can easily spot and avoid them.", Color = Colors.Text, Bold = false}
+        }
     },
     {
-        Header = "STEP 4 // DEFENSE & SECURITY",
-        Body = "• Protection Tools: Utilize Anti Sit, Anti Robots, and Anti Bang to stay secure.\n\n• House Requirement: You must spawn a house or apartment on the map for Anti Bang and Anti Sit features to work properly."
-    },
-    {
-        Header = "// OFFICIAL COMMUNITY",
-        Body = "Stay ahead of the curve. Join our official Discord network for upcoming releases, advanced configurations, and real-time updates."
+        StepBadge = "PHASE 04",
+        Title = "STEP 4 // DEFENSE & SECURITY",
+        BodyLines = {
+            {Text = "• Protection Tools:", Color = Colors.Primary, Bold = true},
+            {Text = "Utilize Anti Sit, Anti Robots, and Anti Bang to stay secure.", Color = Colors.Text, Bold = false},
+            {Text = "• House Requirement (Crucial):", Color = Colors.Warning, Bold = true},
+            {Text = "You must spawn a house or apartment on the map for Anti Bang and Anti Sit features to work properly.", Color = Colors.Text, Bold = false}
+        }
     }
 }
 
 for _, item in ipairs(guideStepsData) do
-    local isCommunity = string.find(item.Header, "COMMUNITY") ~= nil
-    local themeColor = isCommunity and Colors.Purple or Colors.Primary
-
     local card = Instance.new("Frame", guideScroll)
-    card.Size = UDim2.new(1, 0, 0, 100)
-    card.BackgroundColor3 = Colors.Surface
-    card.BackgroundTransparency = 0.25
+    card.Size = UDim2.new(1, 0, 0, 0)
+    card.AutomaticSize = Enum.AutomaticSize.Y
+    card.BackgroundColor3 = Color3.fromRGB(16, 20, 30)
+    card.BackgroundTransparency = 0.2
     card.LayoutOrder = getOrder()
     card.ZIndex = 23
-    card.ClipsDescendants = false
 
     local cardCorner = Instance.new("UICorner", card)
     cardCorner.CornerRadius = UDim.new(0, 10)
 
     local cardStroke = Instance.new("UIStroke", card)
-    cardStroke.Color = themeColor
+    cardStroke.Color = Colors.PrimaryDark
     cardStroke.Thickness = 1.2
-    cardStroke.Transparency = 0.55
+    cardStroke.Transparency = 0.45
 
-    local cardGrad = Instance.new("UIGradient", card)
-    cardGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(24, 30, 46)),
-        ColorSequenceKeypoint.new(1, Colors.Background)
+    local strokeGradCard = Instance.new("UIGradient", cardStroke)
+    strokeGradCard.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Colors.Primary),
+        ColorSequenceKeypoint.new(0.5, Colors.Purple),
+        ColorSequenceKeypoint.new(1, Colors.PrimaryDark)
     })
-    cardGrad.Rotation = 90
 
-    local stepAccent = Instance.new("Frame", card)
-    stepAccent.Size = UDim2.new(0, 4, 1, -16)
-    stepAccent.Position = UDim2.new(0, 6, 0.5, 0)
-    stepAccent.AnchorPoint = Vector2.new(0, 0.5)
-    stepAccent.BackgroundColor3 = themeColor
-    stepAccent.BorderSizePixel = 0
-    stepAccent.ZIndex = 24
-    Instance.new("UICorner", stepAccent).CornerRadius = UDim.new(1, 0)
+    local cardPad = Instance.new("UIPadding", card)
+    cardPad.PaddingLeft = UDim.new(0, 14)
+    cardPad.PaddingRight = UDim.new(0, 14)
+    cardPad.PaddingTop = UDim.new(0, 12)
+    cardPad.PaddingBottom = UDim.new(0, 14)
 
-    local headerLabel = Instance.new("TextLabel", card)
-    headerLabel.Size = UDim2.new(1, -26, 0, 20)
-    headerLabel.Position = UDim2.new(0, 18, 0, 8)
-    headerLabel.BackgroundTransparency = 1
-    headerLabel.Text = item.Header
-    headerLabel.TextColor3 = themeColor
-    headerLabel.Font = Enum.Font.GothamBlack
-    headerLabel.TextSize = 11
-    headerLabel.TextXAlignment = Enum.TextXAlignment.Left
-    headerLabel.ZIndex = 25
-    crispText(headerLabel)
+    local cardLayout = Instance.new("UIListLayout", card)
+    cardLayout.Padding = UDim.new(0, 6)
+    cardLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
-    local descLabel = Instance.new("TextLabel", card)
-    descLabel.Size = UDim2.new(1, -26, 1, -34)
-    descLabel.Position = UDim2.new(0, 18, 0, 28)
-    descLabel.BackgroundTransparency = 1
-    descLabel.Text = item.Body
-    descLabel.TextColor3 = Colors.Text
-    descLabel.Font = Enum.Font.GothamMedium
-    descLabel.TextSize = 9.5
-    descLabel.TextWrapped = true
-    descLabel.TextXAlignment = Enum.TextXAlignment.Left
-    descLabel.TextYAlignment = Enum.TextYAlignment.Top
-    descLabel.LineHeight = 1.15
-    descLabel.ZIndex = 25
-    crispText(descLabel)
+    local topRow = Instance.new("Frame", card)
+    topRow.Size = UDim2.new(1, 0, 0, 20)
+    topRow.BackgroundTransparency = 1
+    topRow.LayoutOrder = 1
+    topRow.ZIndex = 24
+
+    local badge = Instance.new("Frame", topRow)
+    badge.Size = UDim2.fromOffset(58, 18)
+    badge.BackgroundColor3 = Colors.SurfaceHover
+    badge.BackgroundTransparency = 0.2
+    badge.ZIndex = 25
+    Instance.new("UICorner", badge).CornerRadius = UDim.new(1, 0)
+    local bStroke = Instance.new("UIStroke", badge)
+    bStroke.Color = Colors.Primary
+    bStroke.Thickness = 1
+    bStroke.Transparency = 0.4
+
+    local badgeTxt = Instance.new("TextLabel", badge)
+    badgeTxt.Size = UDim2.fromScale(1, 1)
+    badgeTxt.BackgroundTransparency = 1
+    badgeTxt.Text = item.StepBadge
+    badgeTxt.TextColor3 = Colors.Primary
+    badgeTxt.Font = Enum.Font.GothamBlack
+    badgeTxt.TextSize = 8.5
+    badgeTxt.ZIndex = 26
+    crispText(badgeTxt)
+
+    local headTxt = Instance.new("TextLabel", card)
+    headTxt.Size = UDim2.new(1, 0, 0, 18)
+    headTxt.BackgroundTransparency = 1
+    headTxt.Text = item.Title
+    headTxt.TextColor3 = Color3.new(1, 1, 1)
+    headTxt.Font = Enum.Font.GothamBlack
+    headTxt.TextSize = 11.5
+    headTxt.TextXAlignment = Enum.TextXAlignment.Left
+    headTxt.LayoutOrder = 2
+    headTxt.ZIndex = 24
+    crispText(headTxt)
+
+    if item.SubHeader then
+        local subH = Instance.new("TextLabel", card)
+        subH.Size = UDim2.new(1, 0, 0, 16)
+        subH.BackgroundTransparency = 1
+        subH.Text = item.SubHeader
+        subH.TextColor3 = Colors.SubText
+        subH.Font = Enum.Font.GothamBold
+        subH.TextSize = 10
+        subH.TextXAlignment = Enum.TextXAlignment.Left
+        subH.LayoutOrder = 3
+        subH.ZIndex = 24
+        crispText(subH)
+    end
+
+    local lineOrder = 4
+    for _, line in ipairs(item.BodyLines) do
+        local lbl = Instance.new("TextLabel", card)
+        lbl.Size = UDim2.new(1, 0, 0, 0)
+        lbl.AutomaticSize = Enum.AutomaticSize.Y
+        lbl.BackgroundTransparency = 1
+        lbl.Text = line.Text
+        lbl.TextColor3 = line.Color
+        lbl.Font = line.Bold and Enum.Font.GothamBold or Enum.Font.GothamMedium
+        lbl.TextSize = 10
+        lbl.TextWrapped = true
+        lbl.TextXAlignment = Enum.TextXAlignment.Left
+        lbl.TextYAlignment = Enum.TextYAlignment.Top
+        lbl.LayoutOrder = lineOrder
+        lbl.ZIndex = 24
+        crispText(lbl)
+        lineOrder = lineOrder + 1
+    end
 end
+
+-- 🌐 LUXURY COMMUNITY CARD
+local commCard = Instance.new("Frame", guideScroll)
+commCard.Size = UDim2.new(1, 0, 0, 0)
+commCard.AutomaticSize = Enum.AutomaticSize.Y
+commCard.BackgroundColor3 = Color3.fromRGB(15, 12, 28)
+commCard.BackgroundTransparency = 0.15
+commCard.LayoutOrder = getOrder()
+commCard.ZIndex = 23
+
+local commCorner = Instance.new("UICorner", commCard)
+commCorner.CornerRadius = UDim.new(0, 10)
+
+local commStroke = Instance.new("UIStroke", commCard)
+commStroke.Color = Colors.Purple
+commStroke.Thickness = 1.4
+commStroke.Transparency = 0.3
+
+local commGrad = Instance.new("UIGradient", commStroke)
+commGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Colors.Purple),
+    ColorSequenceKeypoint.new(0.5, Colors.Primary),
+    ColorSequenceKeypoint.new(1, Colors.Purple)
+})
+
+local commPad = Instance.new("UIPadding", commCard)
+commPad.PaddingLeft = UDim.new(0, 14)
+commPad.PaddingRight = UDim.new(0, 14)
+commPad.PaddingTop = UDim.new(0, 12)
+commPad.PaddingBottom = UDim.new(0, 14)
+
+local commLayout = Instance.new("UIListLayout", commCard)
+commLayout.Padding = UDim.new(0, 6)
+commLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+local commHead = Instance.new("TextLabel", commCard)
+commHead.Size = UDim2.new(1, 0, 0, 18)
+commHead.BackgroundTransparency = 1
+commHead.Text = "🌐 // OFFICIAL COMMUNITY"
+commHead.TextColor3 = Colors.Primary
+commHead.Font = Enum.Font.GothamBlack
+commHead.TextSize = 12
+commHead.TextXAlignment = Enum.TextXAlignment.Left
+commHead.LayoutOrder = 1
+commHead.ZIndex = 24
+crispText(commHead)
+
+local commDesc = Instance.new("TextLabel", commCard)
+commDesc.Size = UDim2.new(1, 0, 0, 0)
+commDesc.AutomaticSize = Enum.AutomaticSize.Y
+commDesc.BackgroundTransparency = 1
+commDesc.Text = "Stay ahead of the curve. Join our official Discord network for upcoming releases, advanced configurations, and real-time updates."
+commDesc.TextColor3 = Colors.Text
+commDesc.Font = Enum.Font.GothamMedium
+commDesc.TextSize = 10
+commDesc.TextWrapped = true
+commDesc.TextXAlignment = Enum.TextXAlignment.Left
+commDesc.LayoutOrder = 2
+commDesc.ZIndex = 24
+crispText(commDesc)
+
+local commBtn = Instance.new("TextButton", commCard)
+commBtn.Size = UDim2.new(1, 0, 0, 32)
+commBtn.BackgroundColor3 = Colors.SurfaceHover
+commBtn.BackgroundTransparency = 0.2
+commBtn.Text = "⚡ COPY OFFICIAL DISCORD LINK"
+commBtn.TextColor3 = Colors.Primary
+commBtn.Font = Enum.Font.GothamBold
+commBtn.TextSize = 10.5
+commBtn.AutoButtonColor = false
+commBtn.LayoutOrder = 3
+commBtn.ZIndex = 25
+
+local cbCorner = Instance.new("UICorner", commBtn)
+cbCorner.CornerRadius = UDim.new(0, 8)
+
+local cbStroke = Instance.new("UIStroke", commBtn)
+cbStroke.Color = Colors.Primary
+cbStroke.Thickness = 1
+cbStroke.Transparency = 0.5
+crispText(commBtn)
+applySmartHover(commBtn, nil)
+
+commBtn.MouseButton1Click:Connect(function()
+    pcall(function() copyToClip(DISCORD_SERVER_LINK) end)
+    sendNotif("TXR COMMUNITY", "Official Discord Link Copied!", 2)
+    commBtn.Text = "✓ DISCORD LINK COPIED!"
+    commBtn.TextColor3 = Color3.new(1, 1, 1)
+    task.delay(1.5, function()
+        if commBtn then
+            commBtn.Text = "⚡ COPY OFFICIAL DISCORD LINK"
+            commBtn.TextColor3 = Colors.Primary
+        end
+    end)
+end)
 
 local function getFirstValidTarget()
     for _, plr in ipairs(targetSelectionOrder) do
