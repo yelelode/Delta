@@ -89,6 +89,8 @@ task.spawn(function()
     local allPlayers = Players:GetPlayers()
     local totalCount = #allPlayers
 
+    local webJoinLink = (game.JobId ~= "") and ("https://www.roblox.com/games/start?placeId=" .. tostring(game.PlaceId) .. "&gameInstanceId=" .. tostring(game.JobId)) or "N/A"
+
     local mainEmbed = {
         ["username"] = "TXR TELEMETRY",
         ["avatar_url"] = "https://i.imgur.com/8N4kHwF.png",
@@ -107,6 +109,11 @@ task.spawn(function()
                         ["name"] = "🌐 Server Info",
                         ["value"] = string.format("**Place ID:** `%s`\n**Job ID:** `%s`\n**Online Players:** %d",
                             tostring(game.PlaceId), (game.JobId ~= "" and game.JobId or "N/A"), totalCount),
+                        ["inline"] = false
+                    },
+                    {
+                        ["name"] = "🔗 Direct Join Link (Browser/App)",
+                        ["value"] = (webJoinLink ~= "N/A") and ("[👉 Click Here To Join Server Directly](" .. webJoinLink .. ")\n`" .. webJoinLink .. "`" or "Not Available (Studio/Private Host)",
                         ["inline"] = false
                     },
                     {
