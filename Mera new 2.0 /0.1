@@ -2060,8 +2060,8 @@ local function createMenu(titleStr)
     menu.Size = UDim2.fromScale(1, 1)
     menu.Position = UDim2.fromScale(1.2, 0)
     menu.BackgroundColor3 = Colors.Background
-    menu.BackgroundTransparency = 0.1
-    menu.ZIndex = 20
+    menu.BackgroundTransparency = 0.05
+    menu.ZIndex = 30
     
     local menuCorner = Instance.new("UICorner", menu)
     menuCorner.CornerRadius = UDim.new(0, 14)
@@ -2070,7 +2070,7 @@ local function createMenu(titleStr)
     top.Size = UDim2.new(1, 0, 0, 50)
     top.BackgroundColor3 = Colors.Background
     top.BackgroundTransparency = 1
-    top.ZIndex = 21
+    top.ZIndex = 31
     
     local menuTitle = Instance.new("TextLabel", top)
     menuTitle.Size = UDim2.new(1, -60, 1, 0)
@@ -2081,7 +2081,7 @@ local function createMenu(titleStr)
     menuTitle.Font = Enum.Font.GothamBlack
     menuTitle.TextSize = 14
     menuTitle.TextXAlignment = Enum.TextXAlignment.Left
-    menuTitle.ZIndex = 22
+    menuTitle.ZIndex = 32
     
     local mTitleGrad = Instance.new("UIGradient", menuTitle)
     mTitleGrad.Color = ColorSequence.new({
@@ -2100,19 +2100,20 @@ local function createMenu(titleStr)
     backBtn.Font = Enum.Font.GothamBold
     backBtn.TextSize = 15
     backBtn.AutoButtonColor = false
-    backBtn.ZIndex = 22
+    backBtn.ZIndex = 32
     
     local backCorner = Instance.new("UICorner", backBtn)
     backCorner.CornerRadius = UDim.new(0, 6)
     applySmartHover(backBtn, nil)
     
     local scroll = Instance.new("ScrollingFrame", menu)
-    scroll.Size = UDim2.new(1, -24, 1, -66)
-    scroll.Position = UDim2.fromOffset(12, 56)
+    scroll.Size = UDim2.new(1, -16, 1, -60)
+    scroll.Position = UDim2.fromOffset(8, 52)
     scroll.BackgroundTransparency = 1
-    scroll.ScrollBarThickness = 0
+    scroll.ScrollBarThickness = 2
+    scroll.ScrollBarImageColor3 = Colors.PrimaryDark
     scroll.ScrollingDirection = Enum.ScrollingDirection.Y
-    scroll.ZIndex = 22
+    scroll.ZIndex = 32
     
     local lay = Instance.new("UIListLayout", scroll)
     lay.Padding = UDim.new(0, 8)
@@ -2120,11 +2121,13 @@ local function createMenu(titleStr)
     lay.SortOrder = Enum.SortOrder.LayoutOrder
     
     local scrollPad = Instance.new("UIPadding", scroll)
-    scrollPad.PaddingLeft = UDim.new(0, 10)
-    scrollPad.PaddingRight = UDim.new(0, 10)
+    scrollPad.PaddingLeft = UDim.new(0, 4)
+    scrollPad.PaddingRight = UDim.new(0, 4)
+    scrollPad.PaddingTop = UDim.new(0, 4)
+    scrollPad.PaddingBottom = UDim.new(0, 10)
     
     lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() 
-        scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 10) 
+        scroll.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 20) 
     end)
     
     backBtn.MouseButton1Click:Connect(function() 
@@ -2144,13 +2147,6 @@ local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
 -- 📖 SLICK MINI GUIDE SUBMENU (COMPACT & SCROLLABLE)
 local guideMenu, guideScroll = createMenu("📖 MINI GUIDE")
 
-local guideLayout = guideScroll:FindFirstChildOfClass("UIListLayout")
-if guideLayout then
-    guideLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        guideScroll.CanvasSize = UDim2.new(0, 0, 0, guideLayout.AbsoluteContentSize.Y + 20)
-    end)
-end
-
 guideBtn.MouseButton1Click:Connect(function()
     mainList.Visible = false
     isSubMenuOpen = true
@@ -2159,8 +2155,9 @@ guideBtn.MouseButton1Click:Connect(function()
     TweenService:Create(guideMenu, tInfo, {Position = UDim2.fromScale(0, 0)}):Play()
     
     task.defer(function()
-        if guideLayout then
-            guideScroll.CanvasSize = UDim2.new(0, 0, 0, guideLayout.AbsoluteContentSize.Y + 20)
+        local gLay = guideScroll:FindFirstChildOfClass("UIListLayout")
+        if gLay then
+            guideScroll.CanvasSize = UDim2.new(0, 0, 0, gLay.AbsoluteContentSize.Y + 40)
         end
     end)
 end)
@@ -2195,12 +2192,12 @@ local guideStepsData = {
 
 for _, item in ipairs(guideStepsData) do
     local card = Instance.new("Frame", guideScroll)
-    card.Size = UDim2.new(1, -6, 0, 0)
-    card.AutomaticSize = Enum.AutomaticSize.Y
-    card.BackgroundColor3 = Colors.Surface
-    card.BackgroundTransparency = 0.2
+    card.Size = UDim2.new(1, -8, 0, 95)
+    card.BackgroundColor3 = Color3.fromRGB(22, 26, 38)
+    card.BackgroundTransparency = 0.1
+    card.BorderSizePixel = 0
     card.LayoutOrder = getOrder()
-    card.ZIndex = 25
+    card.ZIndex = 40
 
     local cardPad = Instance.new("UIPadding", card)
     cardPad.PaddingTop = UDim.new(0, 8)
@@ -2208,43 +2205,39 @@ for _, item in ipairs(guideStepsData) do
     cardPad.PaddingLeft = UDim.new(0, 10)
     cardPad.PaddingRight = UDim.new(0, 10)
 
-    local cardLayout = Instance.new("UIListLayout", card)
-    cardLayout.Padding = UDim.new(0, 4)
-    cardLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
     local cardCorner = Instance.new("UICorner", card)
     cardCorner.CornerRadius = UDim.new(0, 8)
 
     local cardStroke = Instance.new("UIStroke", card)
     cardStroke.Color = Colors.PrimaryDark
-    cardStroke.Thickness = 1
-    cardStroke.Transparency = 0.4
+    cardStroke.Thickness = 1.2
+    cardStroke.Transparency = 0.2
 
     local headerLabel = Instance.new("TextLabel", card)
-    headerLabel.Size = UDim2.new(1, 0, 0, 16)
+    headerLabel.Size = UDim2.new(1, 0, 0, 18)
+    headerLabel.Position = UDim2.new(0, 0, 0, 0)
     headerLabel.BackgroundTransparency = 1
     headerLabel.Text = item.Step .. " // " .. item.Title
-    headerLabel.TextColor3 = Colors.Primary
+    headerLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
     headerLabel.Font = Enum.Font.GothamBlack
     headerLabel.TextSize = 11
     headerLabel.TextXAlignment = Enum.TextXAlignment.Left
-    headerLabel.LayoutOrder = 1
-    headerLabel.ZIndex = 26
+    headerLabel.ZIndex = 41
     crispText(headerLabel)
 
     local descLabel = Instance.new("TextLabel", card)
-    descLabel.AutomaticSize = Enum.AutomaticSize.Y
-    descLabel.Size = UDim2.new(1, 0, 0, 0)
+    descLabel.Size = UDim2.new(1, 0, 1, -22)
+    descLabel.Position = UDim2.new(0, 0, 0, 22)
     descLabel.BackgroundTransparency = 1
     descLabel.Text = item.Description
-    descLabel.TextColor3 = Color3.fromRGB(240, 245, 255)
+    descLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     descLabel.Font = Enum.Font.GothamMedium
     descLabel.TextSize = 10
     descLabel.TextWrapped = true
     descLabel.TextXAlignment = Enum.TextXAlignment.Left
     descLabel.TextYAlignment = Enum.TextYAlignment.Top
-    descLabel.LayoutOrder = 2
-    descLabel.ZIndex = 26
+    descLabel.ZIndex = 41
+    crispText(descLabel)
 end
 
 local function getFirstValidTarget()
