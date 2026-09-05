@@ -2144,13 +2144,25 @@ local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
 -- 📖 SLICK MINI GUIDE SUBMENU (COMPACT & SCROLLABLE)
 local guideMenu, guideScroll = createMenu("📖 MINI GUIDE")
 
+local guideLayout = guideScroll:FindFirstChildOfClass("UIListLayout")
+if guideLayout then
+    guideLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        guideScroll.CanvasSize = UDim2.new(0, 0, 0, guideLayout.AbsoluteContentSize.Y + 20)
+    end)
+end
+
 guideBtn.MouseButton1Click:Connect(function()
     mainList.Visible = false
     isSubMenuOpen = true
     sendNotif("📖 TXR GUIDE", "Opening Quick Operational Manual...", 2)
     local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     TweenService:Create(guideMenu, tInfo, {Position = UDim2.fromScale(0, 0)}):Play()
-    animateWaterfall(guideScroll)
+    
+    task.defer(function()
+        if guideLayout then
+            guideScroll.CanvasSize = UDim2.new(0, 0, 0, guideLayout.AbsoluteContentSize.Y + 20)
+        end
+    end)
 end)
 
 local guideStepsData = {
@@ -2162,33 +2174,33 @@ local guideStepsData = {
     {
         Step = "STEP 2",
         Title = "ATTACK MODES & ORBITS",
-        Description = "Choose your combat style:\nOrbits: Props will smoothly rotate and orbit around your target based on the geometry pattern selected.\nRobots Bang: Choose between 4x Radial Surround, Dual System, Cranial Head Bang, or Multiple Accelerator Rings to aggressively bang your target."
+        Description = "Choose your combat style:\n• Orbits: Props rotate around target.\n• Robots Bang: 4x Radial Surround, Dual System, Cranial Head Bang, or Accelerator Rings to bang targets."
     },
     {
         Step = "STEP 3",
         Title = "UTILITIES & FEATURES",
-        Description = "ESP & Spectate: Use Tactical ESP to track player stats and Spectate to watch your target live.\nAnti Delete Robots: Keeps your active attack props secure so other players cannot delete or wipe them away.\nShow Ban Zones: Enable this if your target sets up plot prop-ban zones so you can easily spot and avoid them."
+        Description = "• ESP & Spectate: Track player stats and spectate live.\n• Anti Delete Robots: Secures attack props from being deleted.\n• Show Ban Zones: Easily spot and avoid enemy plot prop-ban zones."
     },
     {
         Step = "STEP 4",
         Title = "DEFENSE & SECURITY",
-        Description = "Protection Tools: Utilize Anti Sit, Anti Robots, and Anti Bang to stay secure.\nHouse Requirement: You must spawn a house or apartment on the map for Anti Bang and Anti Sit features to work properly."
+        Description = "• Protection: Anti Sit, Anti Robots, and Anti Bang.\n• Note: House/Apartment spawn karna zaroori hai Anti Bang aur Anti Sit work karne ke liye."
     },
     {
         Step = "//",
         Title = "OFFICIAL COMMUNITY",
-        Description = "Stay ahead of the curve. Join our official Discord network for upcoming releases, advanced configurations, and real-time updates."
+        Description = "Join our official Discord network for upcoming releases, configurations, and real-time updates: discord.gg/dhFYEFNQU"
     }
 }
 
 for _, item in ipairs(guideStepsData) do
     local card = Instance.new("Frame", guideScroll)
+    card.Size = UDim2.new(1, -6, 0, 0)
     card.AutomaticSize = Enum.AutomaticSize.Y
-    card.Size = UDim2.new(1, 0, 0, 0)
     card.BackgroundColor3 = Colors.Surface
-    card.BackgroundTransparency = 0.4
+    card.BackgroundTransparency = 0.2
     card.LayoutOrder = getOrder()
-    card.ZIndex = 23
+    card.ZIndex = 25
 
     local cardPad = Instance.new("UIPadding", card)
     cardPad.PaddingTop = UDim.new(0, 8)
@@ -2206,26 +2218,18 @@ for _, item in ipairs(guideStepsData) do
     local cardStroke = Instance.new("UIStroke", card)
     cardStroke.Color = Colors.PrimaryDark
     cardStroke.Thickness = 1
-    cardStroke.Transparency = 0.6
-
-    local stepAccent = Instance.new("Frame", card)
-    stepAccent.Size = UDim2.new(0, 3, 0.7, 0)
-    stepAccent.Position = UDim2.new(0, -6, 0.5, 0)
-    stepAccent.AnchorPoint = Vector2.new(0, 0.5)
-    stepAccent.BackgroundColor3 = Colors.Primary
-    stepAccent.BorderSizePixel = 0
-    Instance.new("UICorner", stepAccent).CornerRadius = UDim.new(1, 0)
+    cardStroke.Transparency = 0.4
 
     local headerLabel = Instance.new("TextLabel", card)
-    headerLabel.Size = UDim2.new(1, 0, 0, 18)
+    headerLabel.Size = UDim2.new(1, 0, 0, 16)
     headerLabel.BackgroundTransparency = 1
     headerLabel.Text = item.Step .. " // " .. item.Title
     headerLabel.TextColor3 = Colors.Primary
     headerLabel.Font = Enum.Font.GothamBlack
-    headerLabel.TextSize = 10.5
+    headerLabel.TextSize = 11
     headerLabel.TextXAlignment = Enum.TextXAlignment.Left
     headerLabel.LayoutOrder = 1
-    headerLabel.ZIndex = 24
+    headerLabel.ZIndex = 26
     crispText(headerLabel)
 
     local descLabel = Instance.new("TextLabel", card)
@@ -2233,14 +2237,14 @@ for _, item in ipairs(guideStepsData) do
     descLabel.Size = UDim2.new(1, 0, 0, 0)
     descLabel.BackgroundTransparency = 1
     descLabel.Text = item.Description
-    descLabel.TextColor3 = Colors.Text
+    descLabel.TextColor3 = Color3.fromRGB(240, 245, 255)
     descLabel.Font = Enum.Font.GothamMedium
-    descLabel.TextSize = 9.5
+    descLabel.TextSize = 10
     descLabel.TextWrapped = true
     descLabel.TextXAlignment = Enum.TextXAlignment.Left
     descLabel.TextYAlignment = Enum.TextYAlignment.Top
     descLabel.LayoutOrder = 2
-    descLabel.ZIndex = 24
+    descLabel.ZIndex = 26
 end
 
 local function getFirstValidTarget()
