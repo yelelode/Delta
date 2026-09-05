@@ -1222,6 +1222,23 @@ dividerGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, Colors.Background)
 })
 
+-- ❓ HELP MODAL BUTTON (PREMIUM ONYX CYBER ACCENT)
+local helpBtn = Instance.new("TextButton", header)
+helpBtn.Size = UDim2.fromOffset(28, 28)
+helpBtn.Position = UDim2.new(1, -104, 0.5, -14)
+helpBtn.BackgroundColor3 = Colors.Surface
+helpBtn.BackgroundTransparency = 0.5
+helpBtn.Text = "?"
+helpBtn.TextColor3 = Colors.Primary
+helpBtn.Font = Enum.Font.GothamBold
+helpBtn.TextSize = 14
+helpBtn.AutoButtonColor = false
+helpBtn.ZIndex = 15
+
+local helpCorner = Instance.new("UICorner", helpBtn)
+helpCorner.CornerRadius = UDim.new(0, 8)
+applySmartHover(helpBtn, nil)
+
 local minimizeBtn = Instance.new("TextButton", header)
 minimizeBtn.Size = UDim2.fromOffset(28, 28)
 minimizeBtn.Position = UDim2.new(1, -70, 0.5, -14)
@@ -1285,6 +1302,186 @@ discordBtn.MouseButton1Click:Connect(function()
             discordBtn.TextColor3 = Colors.Primary
         end 
     end) 
+end)
+
+-- =========================================================
+-- 📖 COMPACT QUICKSTART GUIDE MODAL (SCROLLABLE ONYX ENGINE)
+-- =========================================================
+local guideOverlay = Instance.new("Frame", mainFrame)
+guideOverlay.Size = UDim2.fromScale(1, 1)
+guideOverlay.BackgroundColor3 = Color3.new(0, 0, 0)
+guideOverlay.BackgroundTransparency = 1
+guideOverlay.ZIndex = 60
+guideOverlay.Visible = false
+
+local guideModal = Instance.new("Frame", guideOverlay)
+guideModal.Size = UDim2.new(0.9, 0, 0.78, 0)
+guideModal.AnchorPoint = Vector2.new(0.5, 0.5)
+guideModal.Position = UDim2.fromScale(0.5, 0.5)
+guideModal.BackgroundColor3 = Colors.Background
+guideModal.BackgroundTransparency = 0.05
+guideModal.ClipsDescendants = true
+guideModal.ZIndex = 61
+
+local gmCorner = Instance.new("UICorner", guideModal)
+gmCorner.CornerRadius = UDim.new(0, 12)
+
+local gmStroke = Instance.new("UIStroke", guideModal)
+gmStroke.Color = Colors.Primary
+gmStroke.Thickness = 1.5
+gmStroke.Transparency = 0.3
+
+local gmTop = Instance.new("Frame", guideModal)
+gmTop.Size = UDim2.new(1, 0, 0, 38)
+gmTop.BackgroundTransparency = 1
+gmTop.ZIndex = 62
+
+local gmTitle = Instance.new("TextLabel", gmTop)
+gmTitle.Size = UDim2.new(1, -45, 1, 0)
+gmTitle.Position = UDim2.fromOffset(14, 0)
+gmTitle.BackgroundTransparency = 1
+gmTitle.Text = "SYSTEM QUICKSTART GUIDE"
+gmTitle.TextColor3 = Colors.Primary
+gmTitle.Font = Enum.Font.GothamBlack
+gmTitle.TextSize = 13
+gmTitle.TextXAlignment = Enum.TextXAlignment.Left
+gmTitle.ZIndex = 63
+crispText(gmTitle)
+
+local gmClose = Instance.new("TextButton", gmTop)
+gmClose.Size = UDim2.fromOffset(24, 24)
+gmClose.Position = UDim2.new(1, -32, 0.5, -12)
+gmClose.BackgroundColor3 = Colors.Surface
+gmClose.BackgroundTransparency = 0.4
+gmClose.Text = "×"
+gmClose.TextColor3 = Colors.Danger
+gmClose.Font = Enum.Font.GothamBold
+gmClose.TextSize = 15
+gmClose.AutoButtonColor = false
+gmClose.ZIndex = 63
+
+local gmcCorner = Instance.new("UICorner", gmClose)
+gmcCorner.CornerRadius = UDim.new(0, 6)
+applySmartHover(gmClose, nil)
+
+local gmDivider = Instance.new("Frame", guideModal)
+gmDivider.Size = UDim2.new(1, -20, 0, 1)
+gmDivider.Position = UDim2.new(0, 10, 0, 38)
+gmDivider.BackgroundColor3 = Colors.SurfaceHover
+gmDivider.BorderSizePixel = 0
+gmDivider.ZIndex = 62
+
+local guideScroll = Instance.new("ScrollingFrame", guideModal)
+guideScroll.Size = UDim2.new(1, -16, 1, -48)
+guideScroll.Position = UDim2.fromOffset(8, 44)
+guideScroll.BackgroundTransparency = 1
+guideScroll.ScrollBarThickness = 2
+guideScroll.ScrollBarImageColor3 = Colors.Primary
+guideScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+guideScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+guideScroll.ZIndex = 62
+
+local gsLayout = Instance.new("UIListLayout", guideScroll)
+gsLayout.Padding = UDim.new(0, 8)
+gsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+local gsPadding = Instance.new("UIPadding", guideScroll)
+gsPadding.PaddingLeft = UDim.new(0, 6)
+gsPadding.PaddingRight = UDim.new(0, 8)
+gsPadding.PaddingTop = UDim.new(0, 2)
+gsPadding.PaddingBottom = UDim.new(0, 10)
+
+local guideSections = {
+    {
+        num = "1",
+        title = "LOCK TARGET",
+        body = "Open 👥 LOCK ON TARGETS and tap any player to lock onto them.\nThe selected button turns cyan/teal when active."
+    },
+    {
+        num = "2",
+        title = "SELECT MODE",
+        body = "Choose how you want the robots/props to act around the target:\n• Radial Surround (4x): Deploys 4 robots surrounding the target closely.\n• Cranial Force: Rapidly tracks and hits the target's head area.\n• Smart Void Chair: Spawns a bleacher chair beneath the target to fling them."
+    },
+    {
+        num = "3",
+        title = "START ATTACK",
+        body = "Click ▶ START to spawn your assets and run the attack loop.\nClick ⏹ STOP anytime to immediately clear and wipe all spawned props."
+    },
+    {
+        num = "4",
+        title = "DEFENSE & ANTI-BANG",
+        body = "If another exploiter targets you with robots/props:\n• Claim a house first: You must own an active house/apartment on the map.\n• Click 🛡️ ANTI BANG (or press F5 on PC) to auto-teleport, ban the attacker from your plot, and wipe their props."
+    }
+}
+
+for i, sec in ipairs(guideSections) do
+    local card = Instance.new("Frame", guideScroll)
+    card.Size = UDim2.new(1, 0, 0, 0)
+    card.AutomaticSize = Enum.AutomaticSize.Y
+    card.BackgroundColor3 = Colors.Surface
+    card.BackgroundTransparency = 0.4
+    card.LayoutOrder = i
+    card.ZIndex = 63
+    
+    local cCorner = Instance.new("UICorner", card)
+    cCorner.CornerRadius = UDim.new(0, 6)
+    
+    local cStroke = Instance.new("UIStroke", card)
+    cStroke.Color = Colors.PrimaryDark
+    cStroke.Thickness = 0.8
+    cStroke.Transparency = 0.6
+    
+    local cPad = Instance.new("UIPadding", card)
+    cPad.PaddingTop = UDim.new(0, 6)
+    cPad.PaddingBottom = UDim.new(0, 8)
+    cPad.PaddingLeft = UDim.new(0, 8)
+    cPad.PaddingRight = UDim.new(0, 8)
+    
+    local cList = Instance.new("UIListLayout", card)
+    cList.Padding = UDim.new(0, 4)
+    cList.SortOrder = Enum.SortOrder.LayoutOrder
+    
+    local headerTxt = Instance.new("TextLabel", card)
+    headerTxt.Size = UDim2.new(1, 0, 0, 16)
+    headerTxt.BackgroundTransparency = 1
+    headerTxt.Text = string.format("%s. %s", sec.num, sec.title)
+    headerTxt.TextColor3 = Colors.Primary
+    headerTxt.Font = Enum.Font.GothamBlack
+    headerTxt.TextSize = 11
+    headerTxt.TextXAlignment = Enum.TextXAlignment.Left
+    headerTxt.LayoutOrder = 1
+    headerTxt.ZIndex = 64
+    crispText(headerTxt)
+    
+    local bodyTxt = Instance.new("TextLabel", card)
+    bodyTxt.Size = UDim2.new(1, 0, 0, 0)
+    bodyTxt.AutomaticSize = Enum.AutomaticSize.Y
+    bodyTxt.BackgroundTransparency = 1
+    bodyTxt.Text = sec.body
+    bodyTxt.TextColor3 = Colors.Text
+    bodyTxt.Font = Enum.Font.GothamMedium
+    bodyTxt.TextSize = 10
+    bodyTxt.TextWrapped = true
+    bodyTxt.TextXAlignment = Enum.TextXAlignment.Left
+    bodyTxt.LineHeight = 1.15
+    bodyTxt.LayoutOrder = 2
+    bodyTxt.ZIndex = 64
+end
+
+helpBtn.MouseButton1Click:Connect(function()
+    guideOverlay.Visible = true
+    guideModal.Position = UDim2.fromScale(0.5, 0.46)
+    TweenService:Create(guideOverlay, TweenInfo.new(0.25), {BackgroundTransparency = 0.6}):Play()
+    TweenService:Create(guideModal, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0.5, 0.5)}):Play()
+end)
+
+gmClose.MouseButton1Click:Connect(function()
+    TweenService:Create(guideOverlay, TweenInfo.new(0.25), {BackgroundTransparency = 1}):Play()
+    local closeTween = TweenService:Create(guideModal, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.fromScale(0.5, 0.54)})
+    closeTween.Completed:Connect(function()
+        guideOverlay.Visible = false
+    end)
+    closeTween:Play()
 end)
 
 local openBtnContainer = Instance.new("Frame", gui)
