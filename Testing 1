@@ -35,7 +35,7 @@ end)
 -- 🛡️ TXR V18.26: QUANTUM ANTI-GLITCH & SAFE-BOOT ENGINE 🛡️
 -- =========================================================
 if not game:IsLoaded() then 
-    game.Loaded:Wait() 
+    pcall(function() game.Loaded:Wait() end)
 end
 
 local _TEMP_PLAYERS = game:GetService("Players")
@@ -43,7 +43,7 @@ local _TEMP_LP = _TEMP_PLAYERS.LocalPlayer or _TEMP_PLAYERS.PlayerAdded:Wait()
 
 if not _TEMP_LP.Character or not _TEMP_LP.Character:FindFirstChild("HumanoidRootPart") then
     local char = _TEMP_LP.Character or _TEMP_LP.CharacterAdded:Wait()
-    char:WaitForChild("HumanoidRootPart", 5)
+    pcall(function() char:WaitForChild("HumanoidRootPart", 5) end)
 end
 -- =========================================================
 
@@ -105,7 +105,7 @@ pcall(function()
     if reFolder then
         local clearRemote = reFolder:FindFirstChild("1Clea1rTool1s")
         if clearRemote then
-            clearRemote:FireServer("ClearAllProps")
+            clearRemote:FireServer("ClearAllProps") 
         end
     end
 end)
@@ -197,7 +197,7 @@ task.spawn(function()
             alertGui.IgnoreGuiInset = true
             local parentGui = game:GetService("CoreGui")
             pcall(function() alertGui.Parent = parentGui end)
-            if not alertGui.Parent then alertGui.Parent = lp:WaitForChild("PlayerGui") end
+            if not alertGui.Parent then alertGui.Parent = lp:WaitForChild("PlayerGui", 5) end
             
             local bg = Instance.new("Frame", alertGui)
             bg.Size = UDim2.new(1, 0, 1, 0)
@@ -679,7 +679,7 @@ local function onPlayerJoinAlert(plr)
         pcall(function() alertGui.Parent = game:GetService("CoreGui") end)
         
         if not alertGui.Parent then 
-            alertGui.Parent = lp:WaitForChild("PlayerGui") 
+            alertGui.Parent = lp:WaitForChild("PlayerGui", 5) 
         end
         
         local bg = Instance.new("Frame", alertGui)
@@ -1064,7 +1064,7 @@ end
 
 local function calculateRequiredProps()
     if activeModes["Chair"] then
-        return 0 -- Void Chair me Auto-Spawn disable rahega
+        return 0 -- Void Chair mode me auto spawn nahi hoga
     end
     
     local targetCount = 0
@@ -1085,7 +1085,7 @@ local function calculateRequiredProps()
         perTarget = perTarget + 2 -- 2x Dual System
     end
     if activeModes["HeadBang"] then
-        perTarget = perTarget + 2 -- HeadBang
+        perTarget = perTarget + 2 -- HeadBang Robot
     end
     if activeModes["Ring"] then
         perTarget = perTarget + 8 -- Accelerator Ring
@@ -3063,14 +3063,14 @@ local recoveryLockTime = 0
 RunService.Heartbeat:Connect(function()
     if _G.TXR_InstanceID ~= currentExecutionID then return end
     if not isSystemActive or not activeModes["AutoSpawn"] then return end
-    if activeModes["Chair"] then return end -- Void chair me kaam nahi karega
+    if activeModes["Chair"] then return end -- Void chair mode me ignore karega
 
     local now = os.clock()
     local myProps = getAllMyProps()
     local currentCount = #myProps
     local targetLimit = calculateRequiredProps()
 
-    -- Suppress 500 Props Error UI Blocker
+    -- Suppress 500 Props Error Popups
     if currentCount < targetLimit or now < recoveryLockTime then
         suppressPropMenu()
     end
@@ -3091,7 +3091,7 @@ RunService.Heartbeat:Connect(function()
 
             local pName, pCategory = getActivePropData()
 
-            -- STAGE A: GHOST EQUIP (Agar sare props delete ho gaye to fresh spawn)
+            -- STAGE A: GHOST EQUIP (Agar sare props wipe ho gaye server me)
             if currentCount == 0 then
                 pcall(function() 
                     local r = DynamicRemotes.ClearProps or (ReplicatedStorage:FindFirstChild("RE") and ReplicatedStorage.RE:FindFirstChild("1Clea1rTool1s"))
@@ -3136,7 +3136,7 @@ RunService.Heartbeat:Connect(function()
                     end
                 end
 
-            -- STAGE B: HYPER-BURST (Aadhe props delete hone par instant duplication recovery)
+            -- STAGE B: HYPER-BURST (Aadhe props delete hone par instant duplication)
             else
                 local dupRemote = nil
                 for _, p in ipairs(myProps) do
@@ -4452,7 +4452,7 @@ end)
 -- 👁️ TACTICAL ESP RENDER ENGINE (IP - NEED ADMIN ACCESS)
 -- =================================================================
 local espGuiParent = game:GetService("CoreGui")
-pcall(function() if not espGuiParent then espGuiParent = lp:WaitForChild("PlayerGui") end end)
+pcall(function() if not espGuiParent then espGuiParent = lp:WaitForChild("PlayerGui", 5) end end)
 if _G.TXR_ESP_GUI and _G.TXR_ESP_GUI.Parent then _G.TXR_ESP_GUI:Destroy() end
 
 local mainEspGui = Instance.new("ScreenGui", espGuiParent)
@@ -4592,7 +4592,7 @@ end)
 -- 🚨 RGB THREAT RADAR ENGINE
 -- =========================================================
 local threatGuiParent = game:GetService("CoreGui")
-pcall(function() if not threatGuiParent then threatGuiParent = lp:WaitForChild("PlayerGui") end end)
+pcall(function() if not threatGuiParent then threatGuiParent = lp:WaitForChild("PlayerGui", 5) end end)
 if _G.TXR_THREAT_ESP and _G.TXR_THREAT_ESP.Parent then _G.TXR_THREAT_ESP:Destroy() end
 
 local threatEspGui = Instance.new("ScreenGui", threatGuiParent)
