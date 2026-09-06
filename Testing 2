@@ -1,4 +1,3 @@
-
 -- =========================================================
 -- ⚡ TXR AUTO PROPS SPAWN (STANDALONE LOADSTRING MODULE) ⚡
 -- =========================================================
@@ -19,17 +18,14 @@ local function sendNotif(title, text)
     end)
 end
 
--- Stop purana instance agar already chal raha ho
+-- Purana loop agar active ho to clean karo (bina return kiye naya loop chalu hoga)
 if _G.TXR_AutoSpawnConnection then
-    _G.TXR_AutoSpawnConnection:Disconnect()
+    pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
     _G.TXR_AutoSpawnConnection = nil
-    _G.TXR_AutoSpawnActive = false
-    sendNotif("⚡ AUTO SPAWN", "Previous Module Halted.")
-    return
 end
 
 _G.TXR_AutoSpawnActive = true
-sendNotif("⚡ AUTO SPAWN", "Stealth Module Injected & Active!")
+sendNotif("⚡ AUTO SPAWN", "Stealth Module Active & Ready!")
 
 -- 🥷 500 Props Error UI Suppressor
 local function suppressPropMenu()
@@ -53,7 +49,7 @@ local function suppressPropMenu()
     end)
 end
 
--- Player ke active props scan karo
+-- Player ke active props count karo
 local function getAllMyProps()
     local props = {}
     local com = workspace:FindFirstChild("WorkspaceCom")
@@ -69,7 +65,7 @@ local function getAllMyProps()
     return props
 end
 
--- Dynamic Mode Target Limits
+-- Mode ke hisaab se target count
 local function getModeTargetLimit()
     -- Void Chair me auto-spawn execute nahi hona chahiye
     if _G.TXR_ActiveModes and _G.TXR_ActiveModes["Chair"] then
@@ -85,6 +81,7 @@ local function getModeTargetLimit()
         if _G.TXR_ActiveModes["Orbit"] then perTarget = perTarget + 12 end
     end
 
+    -- Agar koi mode select nahi kiya to default 15 props
     if perTarget == 0 then perTarget = 15 end
 
     local targets = _G.TXR_SelectedTargets or 1
@@ -92,6 +89,7 @@ local function getModeTargetLimit()
 end
 
 local recoveryLockTime = 0
+local isRecovering = false
 
 -- ⚡ ULTRA-FAST CHRONO RECOVERY LOOP
 _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
@@ -109,8 +107,10 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
         suppressPropMenu()
     end
 
-    if currentCount < targetLimit and now > recoveryLockTime then
-        recoveryLockTime = now + 0.28
+    -- Trigger recovery agar props target limit se kam ho gaye
+    if currentCount < targetLimit and now > recoveryLockTime and not isRecovering then
+        isRecovering = true
+        recoveryLockTime = now + 0.25
 
         task.spawn(function()
             local char = lp.Character
@@ -118,15 +118,21 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
             local root = char and char:FindFirstChild("HumanoidRootPart")
             local backpack = lp:FindFirstChild("Backpack")
 
-            if not char or not hum or not root or hum.Health <= 0 then return end
+            if not char or not hum or not root or hum.Health <= 0 then 
+                isRecovering = false 
+                return 
+            end
 
             local needed = targetLimit - currentCount
-            if needed <= 0 then return end
+            if needed <= 0 then 
+                isRecovering = false 
+                return 
+            end
 
             local propName = _G.TXR_CustomPropName or "ScreensRobotBig"
             local propCategory = _G.TXR_CustomPropCategory or "Screens"
 
-            -- STAGE A: GHOST EQUIP (Agar sare props server se wipe ho gaye)
+            -- STAGE A: GHOST EQUIP (House se sare props delete ho gaye)
             if currentCount == 0 then
                 pcall(function()
                     local re = ReplicatedStorage:FindFirstChild("RE")
@@ -157,7 +163,7 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
                 end
 
                 local dupRemote = nil
-                for i = 1, 30 do
+                for i = 1, 35 do
                     local latestProps = getAllMyProps()
                     if #latestProps > 0 then
                         dupRemote = latestProps[1]:FindFirstChild("DuplicateProp")
@@ -172,7 +178,7 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
                     end
                 end
 
-            -- STAGE B: HYPER-BURST (Aadhe props delete hone par instant duplication recovery)
+            -- STAGE B: HYPER-BURST (Aadhe props delete hone par duplicate)
             else
                 local dupRemote = nil
                 for _, p in ipairs(myProps) do
@@ -189,6 +195,8 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
                     end
                 end
             end
+
+            isRecovering = false
         end)
     end
 end)
