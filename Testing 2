@@ -1,1 +1,194 @@
 
+-- =========================================================
+-- ⚡ TXR AUTO PROPS SPAWN (STANDALONE LOADSTRING MODULE) ⚡
+-- =========================================================
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StarterGui = game:GetService("StarterGui")
+local lp = Players.LocalPlayer
+
+local function sendNotif(title, text)
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = title,
+            Text = text,
+            Duration = 2
+        })
+    end)
+end
+
+-- Stop purana instance agar already chal raha ho
+if _G.TXR_AutoSpawnConnection then
+    _G.TXR_AutoSpawnConnection:Disconnect()
+    _G.TXR_AutoSpawnConnection = nil
+    _G.TXR_AutoSpawnActive = false
+    sendNotif("⚡ AUTO SPAWN", "Previous Module Halted.")
+    return
+end
+
+_G.TXR_AutoSpawnActive = true
+sendNotif("⚡ AUTO SPAWN", "Stealth Module Injected & Active!")
+
+-- 🥷 500 Props Error UI Suppressor
+local function suppressPropMenu()
+    pcall(function()
+        local pGui = lp:FindFirstChild("PlayerGui")
+        if pGui then
+            for _, v in ipairs(pGui:GetDescendants()) do
+                if v:IsA("TextLabel") and string.find(string.lower(v.Text), "props") and string.find(v.Text, "500") then
+                    local parentFrame = v
+                    for i = 1, 6 do
+                        if parentFrame.Parent and parentFrame.Parent:IsA("Frame") then
+                            parentFrame = parentFrame.Parent
+                            if parentFrame.Visible then
+                                parentFrame.Visible = false
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end
+
+-- Player ke active props scan karo
+local function getAllMyProps()
+    local props = {}
+    local com = workspace:FindFirstChild("WorkspaceCom")
+    if com then
+        for _, folder in ipairs(com:GetChildren()) do
+            for _, ch in ipairs(folder:GetChildren()) do
+                if string.find(ch.Name, "Prop") and string.find(ch.Name, lp.Name) then
+                    table.insert(props, ch)
+                end
+            end
+        end
+    end
+    return props
+end
+
+-- Dynamic Mode Target Limits
+local function getModeTargetLimit()
+    -- Void Chair me auto-spawn execute nahi hona chahiye
+    if _G.TXR_ActiveModes and _G.TXR_ActiveModes["Chair"] then
+        return 0
+    end
+
+    local perTarget = 0
+    if _G.TXR_ActiveModes then
+        if _G.TXR_ActiveModes["Robot"] then perTarget = perTarget + 4 end
+        if _G.TXR_ActiveModes["MultiRobot"] then perTarget = perTarget + 2 end
+        if _G.TXR_ActiveModes["HeadBang"] then perTarget = perTarget + 2 end
+        if _G.TXR_ActiveModes["Ring"] then perTarget = perTarget + 8 end
+        if _G.TXR_ActiveModes["Orbit"] then perTarget = perTarget + 12 end
+    end
+
+    if perTarget == 0 then perTarget = 15 end
+
+    local targets = _G.TXR_SelectedTargets or 1
+    return math.clamp(perTarget * targets, 2, 30)
+end
+
+local recoveryLockTime = 0
+
+-- ⚡ ULTRA-FAST CHRONO RECOVERY LOOP
+_G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
+    if not _G.TXR_AutoSpawnActive then return end
+
+    local targetLimit = getModeTargetLimit()
+    if targetLimit == 0 then return end -- Chair mode bypass
+
+    local now = os.clock()
+    local myProps = getAllMyProps()
+    local currentCount = #myProps
+
+    -- Error UI popup hide karo
+    if currentCount < targetLimit or now < recoveryLockTime then
+        suppressPropMenu()
+    end
+
+    if currentCount < targetLimit and now > recoveryLockTime then
+        recoveryLockTime = now + 0.28
+
+        task.spawn(function()
+            local char = lp.Character
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
+            local root = char and char:FindFirstChild("HumanoidRootPart")
+            local backpack = lp:FindFirstChild("Backpack")
+
+            if not char or not hum or not root or hum.Health <= 0 then return end
+
+            local needed = targetLimit - currentCount
+            if needed <= 0 then return end
+
+            local propName = _G.TXR_CustomPropName or "ScreensRobotBig"
+            local propCategory = _G.TXR_CustomPropCategory or "Screens"
+
+            -- STAGE A: GHOST EQUIP (Agar sare props server se wipe ho gaye)
+            if currentCount == 0 then
+                pcall(function()
+                    local re = ReplicatedStorage:FindFirstChild("RE")
+                    local clearRemote = re and re:FindFirstChild("1Clea1rTool1s")
+                    if clearRemote then
+                        clearRemote:FireServer("RequestingPropName", propName, propCategory)
+                    end
+                end)
+
+                local tool = char:FindFirstChild("PropMaker") or (backpack and backpack:FindFirstChild("PropMaker"))
+                local wasAlreadyEquipped = (tool and tool.Parent == char)
+
+                if tool then
+                    if not wasAlreadyEquipped then
+                        tool.Parent = char
+                        RunService.Heartbeat:Wait()
+                    end
+
+                    local toolRemote = tool:FindFirstChild("Tool_PropMake")
+                    if toolRemote then
+                        local spawnPos = root.Position + (root.CFrame.LookVector * 4)
+                        pcall(function() toolRemote:FireServer(workspace.Terrain, spawnPos) end)
+                    end
+
+                    if not wasAlreadyEquipped and backpack then
+                        tool.Parent = backpack
+                    end
+                end
+
+                local dupRemote = nil
+                for i = 1, 30 do
+                    local latestProps = getAllMyProps()
+                    if #latestProps > 0 then
+                        dupRemote = latestProps[1]:FindFirstChild("DuplicateProp")
+                        if dupRemote and dupRemote.Parent then break end
+                    end
+                    RunService.Heartbeat:Wait()
+                end
+
+                if dupRemote and dupRemote.Parent then
+                    for i = 1, targetLimit - 1 do
+                        task.spawn(function() pcall(function() dupRemote:InvokeServer() end) end)
+                    end
+                end
+
+            -- STAGE B: HYPER-BURST (Aadhe props delete hone par instant duplication recovery)
+            else
+                local dupRemote = nil
+                for _, p in ipairs(myProps) do
+                    local d = p:FindFirstChild("DuplicateProp")
+                    if d and d.Parent then
+                        dupRemote = d
+                        break
+                    end
+                end
+
+                if dupRemote and dupRemote.Parent then
+                    for i = 1, needed do
+                        task.spawn(function() pcall(function() dupRemote:InvokeServer() end) end)
+                    end
+                end
+            end
+        end)
+    end
+end)
