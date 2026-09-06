@@ -2026,8 +2026,9 @@ openBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+-- ✨ MAIN LIST ADJUSTED HEIGHT TO PREVENT ANY BOTTOM OVERLAP
 local mainList = Instance.new("ScrollingFrame", mainFrame)
-mainList.Size = UDim2.new(1, -24, 1, -88)
+mainList.Size = UDim2.new(1, -24, 1, -136)
 mainList.Position = UDim2.fromOffset(12, 56)
 mainList.BackgroundTransparency = 1
 mainList.ScrollBarThickness = 0
@@ -2043,10 +2044,10 @@ local mainPadding = Instance.new("UIPadding", mainList)
 mainPadding.PaddingLeft = UDim.new(0, 10)
 mainPadding.PaddingRight = UDim.new(0, 10)
 mainPadding.PaddingTop = UDim.new(0, 2)
-mainPadding.PaddingBottom = UDim.new(0, 2)
+mainPadding.PaddingBottom = UDim.new(0, 12)
 
 listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() 
-    mainList.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10) 
+    mainList.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 20) 
 end)
 
 local layoutIdx = 1
@@ -2561,8 +2562,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     valBadge.BackgroundTransparency = 0.85
     valBadge.ZIndex = 8
     
-    local badgeCorner = Instance.new("UICorner", badgeCorner)
-    badgeCorner = Instance.new("UICorner", valBadge)
+    local badgeCorner = Instance.new("UICorner", valBadge)
     badgeCorner.CornerRadius = UDim.new(0, 4)
     
     local valStroke = Instance.new("UIStroke", valBadge)
@@ -3470,13 +3470,13 @@ banTrapBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- ⚡ START / STOP ENGINE CONTROLS
+-- ⚡ START / STOP ENGINE CONTROLS (PERMANENTLY FIXED AT BOTTOM)
 -- =========================================================
-local toggleRow = Instance.new("Frame", mainList)
-toggleRow.Size = UDim2.new(1, 0, 0, 42)
+local toggleRow = Instance.new("Frame", mainFrame)
+toggleRow.Size = UDim2.new(1, -24, 0, 42)
+toggleRow.Position = UDim2.new(0, 12, 1, -80)
 toggleRow.BackgroundTransparency = 1
-toggleRow.LayoutOrder = getOrder()
-toggleRow.ZIndex = 7
+toggleRow.ZIndex = 15
 
 local startBtn = Instance.new("TextButton", toggleRow)
 startBtn.Size = UDim2.new(0.48, 0, 1, 0)
@@ -3486,7 +3486,7 @@ startBtn.TextColor3 = Colors.TextDark
 startBtn.Font = Enum.Font.GothamBlack
 startBtn.TextSize = 11
 startBtn.AutoButtonColor = false
-startBtn.ZIndex = 8
+startBtn.ZIndex = 16
 
 local startCorner = Instance.new("UICorner", startBtn)
 startCorner.CornerRadius = UDim.new(0, 8)
@@ -3502,7 +3502,7 @@ stopBtn.TextColor3 = Colors.Danger
 stopBtn.Font = Enum.Font.GothamBold
 stopBtn.TextSize = 11
 stopBtn.AutoButtonColor = false
-stopBtn.ZIndex = 8
+stopBtn.ZIndex = 16
 
 local stopCorner = Instance.new("UICorner", stopBtn)
 stopCorner.CornerRadius = UDim.new(0, 8)
