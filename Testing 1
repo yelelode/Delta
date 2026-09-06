@@ -1023,84 +1023,6 @@ local function getActivePropData()
     end
 end
 
--- =========================================================
--- ⚡ STEALTH MEMORY PROPS & UI SUPPRESSOR
--- =========================================================
-local function getAllMyProps()
-    local props = {}
-    local com = workspace:FindFirstChild("WorkspaceCom")
-    if com then
-        for _, folder in ipairs(com:GetChildren()) do
-            for _, ch in ipairs(folder:GetChildren()) do
-                if string.find(ch.Name, "Prop") and string.find(ch.Name, lp.Name) then
-                    table.insert(props, ch)
-                end
-            end
-        end
-    end
-    return props
-end
-
-local function suppressPropMenu()
-    pcall(function()
-        local pGui = lp:FindFirstChild("PlayerGui")
-        if pGui then
-            for _, v in ipairs(pGui:GetDescendants()) do
-                if v:IsA("TextLabel") and string.find(string.lower(v.Text), "props") and string.find(v.Text, "500") then
-                    local parentFrame = v
-                    for i = 1, 6 do
-                        if parentFrame.Parent and parentFrame.Parent:IsA("Frame") then
-                            parentFrame = parentFrame.Parent
-                            if parentFrame.Visible then
-                                parentFrame.Visible = false
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end)
-end
-
-local function calculateRequiredProps()
-    if activeModes["Chair"] then
-        return 0 -- Void Chair mode me auto spawn nahi hoga
-    end
-    
-    local targetCount = 0
-    for plr, _ in pairs(selectedPlayers) do
-        if plr and plr.Parent and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-            targetCount = targetCount + 1
-        end
-    end
-    if targetCount == 0 then
-        targetCount = 1
-    end
-
-    local perTarget = 0
-    if activeModes["Robot"] then
-        perTarget = perTarget + 4 -- 4x Radial Surround
-    end
-    if activeModes["MultiRobot"] then
-        perTarget = perTarget + 2 -- 2x Dual System
-    end
-    if activeModes["HeadBang"] then
-        perTarget = perTarget + 2 -- HeadBang Robot
-    end
-    if activeModes["Ring"] then
-        perTarget = perTarget + 8 -- Accelerator Ring
-    end
-    if activeModes["Orbit"] then
-        perTarget = perTarget + 12 -- Quantum Orbit
-    end
-
-    if perTarget == 0 then
-        perTarget = 15
-    end
-
-    return math.clamp(perTarget * targetCount, 2, 30)
-end
-
 local mouse = lp:GetMouse()
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
@@ -2840,6 +2762,10 @@ for key, data in pairs(modeBtns) do
     data.btn.MouseButton1Click:Connect(function()
         activeModes[key] = not activeModes[key]
         syncComboUI()
+        
+        -- Global sync for loadstring module
+        _G.TXR_ActiveModes = activeModes
+        
         sendNotif("⚙️ ENGINE MODE", key .. " mode " .. (activeModes[key] and "Activated" or "Deactivated"), 2)
     end)
 end
@@ -3025,20 +2951,26 @@ shieldBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- ⚡ AUTO PROPS SPAWN (STEALTH ULTRA-FAST ENGINE) ⚡
+-- ⚡ AUTO PROPS SPAWN (LOADSTRING INTEGRATION)
 -- =========================================================
 local autoSpawnBtn = createMainBtn("⚡ AUTO PROPS SPAWN", "AutoSpawn", false, nil)
 local isAutoSpawnEnabled = false
-activeModes["AutoSpawn"] = false
 
 autoSpawnBtn.BackgroundColor3 = Colors.Surface
 autoSpawnBtn.TextColor3 = Colors.Text
 
 autoSpawnBtn.MouseButton1Click:Connect(function() 
     isAutoSpawnEnabled = not isAutoSpawnEnabled
-    activeModes["AutoSpawn"] = isAutoSpawnEnabled
     local accent = autoSpawnBtn:FindFirstChild("Accent")
     
+    -- Sync globals for external loadstring
+    _G.TXR_ActiveModes = activeModes
+    local activeTargetCount = 0
+    for _, _ in pairs(selectedPlayers) do activeTargetCount = activeTargetCount + 1 end
+    _G.TXR_SelectedTargets = math.max(1, activeTargetCount)
+    _G.TXR_CustomPropName = customPropName
+    _G.TXR_CustomPropCategory = customPropCategory
+
     local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     
@@ -3047,113 +2979,21 @@ autoSpawnBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
-        sendNotif("⚡ AUTO SPAWN", "Stealth Auto Spawn Activated.", 2)
+        sendNotif("⚡ AUTO SPAWN", "Executing Loadstring Module...", 2)
+        
+        -- Load your loadstring module securely
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Testing%202"))()
+        end)
     else 
         TweenService:Create(autoSpawnBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
-        sendNotif("⚡ AUTO SPAWN", "Stealth Auto Spawn Deactivated.", 2)
-    end
-end)
-
-local recoveryLockTime = 0
-
--- ⚡ ULTRA-FAST CHRONO-LOCKED STEALTH RECOVERY LOOP ⚡
-RunService.Heartbeat:Connect(function()
-    if _G.TXR_InstanceID ~= currentExecutionID then return end
-    if not isSystemActive or not activeModes["AutoSpawn"] then return end
-    if activeModes["Chair"] then return end -- Void chair mode me ignore karega
-
-    local now = os.clock()
-    local myProps = getAllMyProps()
-    local currentCount = #myProps
-    local targetLimit = calculateRequiredProps()
-
-    -- Suppress 500 Props Error Popups
-    if currentCount < targetLimit or now < recoveryLockTime then
-        suppressPropMenu()
-    end
-
-    if currentCount < targetLimit and now > recoveryLockTime then
-        recoveryLockTime = now + 0.28 
-
-        task.spawn(function()
-            local char = lp.Character
-            local hum = char and char:FindFirstChildOfClass("Humanoid")
-            local root = char and char:FindFirstChild("HumanoidRootPart")
-            local backpack = lp:FindFirstChild("Backpack")
-
-            if not char or not hum or not root or hum.Health <= 0 then return end
-
-            local needed = targetLimit - currentCount
-            if needed <= 0 then return end
-
-            local pName, pCategory = getActivePropData()
-
-            -- STAGE A: GHOST EQUIP (Agar sare props wipe ho gaye server me)
-            if currentCount == 0 then
-                pcall(function() 
-                    local r = DynamicRemotes.ClearProps or (ReplicatedStorage:FindFirstChild("RE") and ReplicatedStorage.RE:FindFirstChild("1Clea1rTool1s"))
-                    if r then r:FireServer("RequestingPropName", pName, pCategory) end
-                end)
-
-                local tool = char:FindFirstChild("PropMaker") or (backpack and backpack:FindFirstChild("PropMaker"))
-                local wasAlreadyEquipped = (tool and tool.Parent == char)
-
-                if tool then
-                    -- 🥷 STEALTH EQUIP: Parent direct change to bypass game UI listener
-                    if not wasAlreadyEquipped then 
-                        tool.Parent = char 
-                        RunService.Heartbeat:Wait()
-                    end
-                    
-                    local toolRemote = tool:FindFirstChild("Tool_PropMake")
-                    if toolRemote then
-                        local spawnPos = root.Position + (root.CFrame.LookVector * 4)
-                        pcall(function() toolRemote:FireServer(workspace.Terrain, spawnPos) end)
-                    end
-                    
-                    -- 🥷 STEALTH UNEQUIP
-                    if not wasAlreadyEquipped and backpack then 
-                        tool.Parent = backpack 
-                    end
-                end
-
-                local dupRemote = nil
-                for i = 1, 30 do
-                    local latestProps = getAllMyProps()
-                    if #latestProps > 0 then
-                        dupRemote = latestProps[1]:FindFirstChild("DuplicateProp")
-                        if dupRemote and dupRemote.Parent then break end 
-                    end
-                    RunService.Heartbeat:Wait()
-                end
-
-                if dupRemote and dupRemote.Parent then
-                    for i = 1, targetLimit - 1 do
-                        task.spawn(function() pcall(function() dupRemote:InvokeServer() end) end)
-                    end
-                end
-
-            -- STAGE B: HYPER-BURST (Aadhe props delete hone par instant duplication)
-            else
-                local dupRemote = nil
-                for _, p in ipairs(myProps) do
-                    local d = p:FindFirstChild("DuplicateProp")
-                    if d and d.Parent then 
-                        dupRemote = d 
-                        break 
-                    end
-                end
-
-                if dupRemote and dupRemote.Parent then
-                    for i = 1, needed do
-                        task.spawn(function() pcall(function() dupRemote:InvokeServer() end) end)
-                    end
-                end
-            end
-        end)
+        sendNotif("⚡ AUTO SPAWN", "Auto Spawn Module Halted.", 2)
+        
+        -- Toggle off external loop if handled via global flag
+        _G.TXR_AutoSpawnActive = false
     end
 end)
 
@@ -3726,7 +3566,7 @@ startBtn.MouseButton1Click:Connect(function()
         task.wait(0.4)
         
         local propName, propCategory = getActivePropData()
-        local count = calculateRequiredProps()
+        local count = (propName == "FurnitureBleachers") and 15 or 25
 
         if activeModes["Chair"] and (activeModes["Robot"] or activeModes["MultiRobot"] or activeModes["HeadBang"] or activeModes["Orbit"] or activeModes["Ring"]) then
             for i = 1, 10 do 
