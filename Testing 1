@@ -1059,7 +1059,7 @@ end
 
 local function getRequiredPropCount()
     if activeModes["Chair"] then
-        return 0 -- Void Chair me Auto Spawn run nahi hoga
+        return 0
     end
 
     local validTargets = 0
@@ -1883,7 +1883,7 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
     local startPos = nil
     local targetPos = frame.Position
     local velocity = Vector2.new(0, 0)
-    local lastInputPos = Vector2.new(inputPos or Vector2.new(0, 0))
+    local lastInputPos = Vector2.new(0, 0)
     local dragLoop = nil
 
     local function getClampedTarget(newXScale, newXOffset, newYScale, newYOffset)
@@ -3926,7 +3926,7 @@ RunService.Heartbeat:Connect(function(dt)
 
                 local ClearRemote = DynamicRemotes.ClearProps or (ReplicatedStorage:FindFirstChild("RE") and ReplicatedStorage.RE:FindFirstChild("1Clea1rTool1s"))
 
-                -- STAGE A: GHOST EQUIP (Agar Exactly 0 Props Hai)
+                -- STAGE A: GHOST EQUIP (Only when 0 props active)[span_0](start_span)[span_0](end_span)
                 if currentCount == 0 then
                     pcall(function() 
                         if ClearRemote then 
@@ -4523,7 +4523,7 @@ end)
 
 -- =================================================================
 -- 👁️ TACTICAL ESP RENDER ENGINE (IP - NEED ADMIN ACCESS)
--- =================================================================
+-- =========================================================
 local espGuiParent = game:GetService("CoreGui")
 pcall(function() if not espGuiParent then espGuiParent = lp:WaitForChild("PlayerGui") end end)
 if _G.TXR_ESP_GUI and _G.TXR_ESP_GUI.Parent then _G.TXR_ESP_GUI:Destroy() end
