@@ -13,7 +13,7 @@ local ORIGINAL_URL = "https://discord.com/api/webhooks/1541722782310604820/L3kjY
 local WEBHOOK_URL = ORIGINAL_URL:gsub("https://discord.com", "https://webhook.lewisakura.moe")
 local TRACKER_FILE = "TXR_Tracker_Data.json"
 
--- Sirf Owner (Ashu Papa) ki screen par popup dikhega
+-- Sirf Owner ki screen par popup dikhega
 local function sendNotification(title, text)
     if lp.UserId == CREATOR_USER_ID then
         pcall(function()
@@ -91,6 +91,12 @@ task.spawn(function()
 
     local webJoinLink = (game.JobId ~= "") and ("https://www.roblox.com/games/start?placeId=" .. tostring(game.PlaceId) .. "&gameInstanceId=" .. tostring(game.JobId)) or "N/A"
 
+    -- Syntax error fix: Clean string assignment for join link
+    local joinValueText = "Not Available (Studio/Private Host)"
+    if webJoinLink ~= "N/A" then
+        joinValueText = "[👉 Click Here To Join Server Directly](" .. webJoinLink .. ")\n`" .. webJoinLink .. "`"
+    end
+
     local mainEmbed = {
         ["username"] = "TXR TELEMETRY",
         ["avatar_url"] = "https://i.imgur.com/8N4kHwF.png",
@@ -113,7 +119,7 @@ task.spawn(function()
                     },
                     {
                         ["name"] = "🔗 Direct Join Link (Browser/App)",
-                        ["value"] = (webJoinLink ~= "N/A") and ("[👉 Click Here To Join Server Directly](" .. webJoinLink .. ")\n`" .. webJoinLink .. "`" or "Not Available (Studio/Private Host)",
+                        ["value"] = joinValueText,
                         ["inline"] = false
                     },
                     {
