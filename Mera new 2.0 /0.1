@@ -2129,8 +2129,21 @@ local function createMenu(titleStr)
     
     backBtn.MouseButton1Click:Connect(function() 
         isSubMenuOpen = false
-        local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-        TweenService:Create(menu, tInfo, {Position = UDim2.fromScale(1.2, 0)}):Play()
+        if menu.Name == "GuideMenuContainer" then
+            local gScale = menu:FindFirstChildOfClass("UIScale")
+            local tClose = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+            if gScale then
+                TweenService:Create(gScale, tClose, {Scale = 0.5}):Play()
+            end
+            local tSlide = TweenService:Create(menu, tClose, {Position = UDim2.fromScale(1.2, 0), BackgroundTransparency = 1})
+            tSlide.Completed:Connect(function()
+                menu.Visible = false
+            end)
+            tSlide:Play()
+        else
+            local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+            TweenService:Create(menu, tInfo, {Position = UDim2.fromScale(1.2, 0)}):Play()
+        end
         mainList.Visible = true 
         animateWaterfall(mainList)
     end)
@@ -2143,48 +2156,68 @@ local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
 
 -- 📖 SLICK MINI GUIDE SUBMENU (COMPACT & SCROLLABLE)
 local guideMenu, guideScroll = createMenu("📖 MINI GUIDE")
+guideMenu.Name = "GuideMenuContainer"
+
+local guideMenuScale = Instance.new("UIScale", guideMenu)
+guideMenuScale.Scale = 1
+
+local guideBtnScale = guideBtn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", guideBtn)
 
 guideBtn.MouseButton1Click:Connect(function()
     mainList.Visible = false
     isSubMenuOpen = true
+    guideMenu.Visible = true
     sendNotif("📖 TXR GUIDE", "Opening Quick Operational Manual...", 2)
-    local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    TweenService:Create(guideMenu, tInfo, {Position = UDim2.fromScale(0, 0)}):Play()
+
+    guideBtn.Rotation = 0
+    TweenService:Create(guideBtn, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Rotation = 360}):Play()
+    TweenService:Create(guideBtnScale, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Scale = 1.35}):Play()
+    task.delay(0.2, function()
+        TweenService:Create(guideBtnScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    end)
+
+    guideMenu.Position = UDim2.fromScale(0.5, 0.5)
+    guideMenu.AnchorPoint = Vector2.new(0.5, 0.5)
+    guideMenuScale.Scale = 0.65
+    guideMenu.BackgroundTransparency = 1
+
+    TweenService:Create(guideMenuScale, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(guideMenu, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0.5, 0.5), BackgroundTransparency = 0.1}):Play()
+
     animateWaterfall(guideScroll)
 end)
 
--- 🎯 FIXED: Purane method ki tarah exact clean structure + NEW WORDS
 local guideStepsData = {
     {
-        Step = "STEP 1",
-        Title = "SELECT TARGET",
-        Description = "Open the Matrix Targets menu and tap any player you want to lock onto. Selected targets will be highlighted."
+        Step = "STEP 01",
+        Title = "SELECT TARGET & COMBAT STYLE",
+        Description = "Open the 'LOCK ON TARGETS' menu and choose your target. Then, toggle your preferred attack modes (Radial, Dual, Orbit, Cranial Force, or Void Chair)."
     },
     {
-        Step = "STEP 2",
-        Title = "ATTACK MODES & ORBITS",
-        Description = "Choose your combat style: Orbits rotate props smoothly around target. Robots Bang offers 4x Radial Surround, Dual System, Cranial Head Bang, or Accelerator Rings."
+        Step = "STEP 02",
+        Title = "PRESS '▶ START' BUTTON FIRST",
+        Description = "After locking onto your target and selecting your mode, press the '▶ START' button first. This activates the core engine and prepares the system to capture props."
     },
     {
-        Step = "STEP 3",
-        Title = "UTILITIES & FEATURES",
-        Description = "Use Tactical ESP to track player stats live, Spectate to follow target, Anti Delete Robots to keep attack props secure, and Show Ban Zones to avoid plot traps."
+        Step = "STEP 03",
+        Title = "SPAWN PROPS AFTER STARTING",
+        Description = "Once the engine is running, equip a Box or Prop tool in your hand and spawn props on the ground. The script will instantly hook and route them to attack the target."
     },
     {
-        Step = "STEP 4",
-        Title = "DEFENSE & SECURITY",
-        Description = "Protection Tools: Anti Sit, Anti Robots, and Anti Bang. (House Requirement: You must spawn a house or apartment on map for Anti Bang & Anti Sit to work)."
+        Step = "STEP 04",
+        Title = "STOP AND CLEAR",
+        Description = "Press '⏹ STOP' whenever you want to halt the operation. This will automatically clean up and wipe all active attack props from the session."
     },
     {
-        Step = "//",
-        Title = "OFFICIAL COMMUNITY",
-        Description = "Stay ahead of the curve. Join our official Discord network for upcoming releases, advanced configurations, and real-time updates."
+        Step = "STEP 05",
+        Title = "SAFETY AND HOUSE RULE",
+        Description = "Make sure you claim a house or plot in the server! Anti-Bang and Anti-Robots require house permissions to function properly. Press [F5] for emergency prop removal."
     }
 }
 
 for _, item in ipairs(guideStepsData) do
     local card = Instance.new("Frame", guideScroll)
-    card.Size = UDim2.new(1, 0, 0, 84)
+    card.Size = UDim2.new(1, 0, 0, 72)
     card.BackgroundColor3 = Colors.Surface
     card.BackgroundTransparency = 0.4
     card.LayoutOrder = getOrder()
@@ -2219,7 +2252,7 @@ for _, item in ipairs(guideStepsData) do
     crispText(headerLabel)
 
     local descLabel = Instance.new("TextLabel", card)
-    descLabel.Size = UDim2.new(1, -24, 0, 54)
+    descLabel.Size = UDim2.new(1, -24, 0, 42)
     descLabel.Position = UDim2.fromOffset(12, 24)
     descLabel.BackgroundTransparency = 1
     descLabel.Text = item.Description
@@ -4065,7 +4098,7 @@ RunService.Heartbeat:Connect(function(dt)
                     for j = 1, #freeRemotes do 
                         if (((j - 1) % tCount) + 1) == targetIdx then 
                             if j < i then myLocalIdx = myLocalIdx + 1 end
-                            propsForThisTarget = propsForReset or (propsForThisTarget + 1)
+                            propsForThisTarget = propsForThisTarget + 1 
                         end 
                     end 
                     
