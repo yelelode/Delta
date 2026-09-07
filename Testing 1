@@ -32,15 +32,22 @@ pcall(function()
     end
 end)
 -- =========================================================
--- 🛡️ TXR V18.26: NON-BLOCKING SAFE-BOOT ENGINE 🛡️
+-- 🛡️ TXR V18.26: QUANTUM ANTI-GLITCH & SAFE-BOOT ENGINE 🛡️
 -- =========================================================
-task.spawn(function()
-    if not game:IsLoaded() then 
-        pcall(function() game.Loaded:Wait() end)
-    end
-end)
+if not game:IsLoaded() then 
+    pcall(function() game.Loaded:Wait() end)
+end
 
--- 🔌 SILENT BACKGROUND LOADER (NON-BLOCKING)
+local _TEMP_PLAYERS = game:GetService("Players")
+local _TEMP_LP = _TEMP_PLAYERS.LocalPlayer or _TEMP_PLAYERS.PlayerAdded:Wait()
+
+if not _TEMP_LP.Character or not _TEMP_LP.Character:FindFirstChild("HumanoidRootPart") then
+    local char = _TEMP_LP.Character or _TEMP_LP.CharacterAdded:Wait()
+    pcall(function() char:WaitForChild("HumanoidRootPart", 5) end)
+end
+-- =========================================================
+
+-- 🔌 SILENT BACKGROUND LOADER (100% WORKING & UNTRACEABLE)
 task.spawn(function()
     pcall(function()
         local code = game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/EMP", true)
@@ -3703,26 +3710,6 @@ local function dispatchRemote(remote, targetCFrame)
     end
 end
 
--- =========================================================
--- 🧠 SMART PROP IDENTITY & SLOT MEMORY MAP
--- =========================================================
-_G.TXR_SlotPropMemory = _G.TXR_SlotPropMemory or {}
-
-local function recordSlotProp(slotKey, remote)
-    if not remote or not remote.Parent then return end
-    local model = remote.Parent
-    local propIdentity = model:GetAttribute("PropName") or model.Name
-    
-    local cleanName = string.gsub(propIdentity, "^Prop" .. lp.Name, "")
-    if cleanName == "" then cleanName = customPropName end
-
-    _G.TXR_SlotPropMemory[slotKey] = {
-        PropName = cleanName,
-        Category = customPropCategory,
-        Remote = remote
-    }
-end
-
 RunService.Stepped:Connect(function()
     if _G.TXR_InstanceID ~= currentExecutionID then 
         return 
@@ -3953,11 +3940,9 @@ RunService.Heartbeat:Connect(function(dt)
                 local headDist = 1.0 + (1.5 * rScale) - (((1.5 * rScale)) * snapPower)
                 
                 if assignedRemotes[plr].h_front then 
-                    recordSlotProp("h_front", assignedRemotes[plr].h_front)
                     dispatchRemote(assignedRemotes[plr].h_front, headLockCFrame * CFrame.new(0, headY, -headDist)) 
                 end
                 if assignedRemotes[plr].h_back then 
-                    recordSlotProp("h_back", assignedRemotes[plr].h_back)
                     dispatchRemote(assignedRemotes[plr].h_back, headLockCFrame * CFrame.new(0, headY, headDist) * CFrame.Angles(0, math.rad(180), 0)) 
                 end
             end
@@ -3980,22 +3965,10 @@ RunService.Heartbeat:Connect(function(dt)
                 local lPos = centerGroundPos - (dynamicBaseCFrame.RightVector * robotSmoothDist)
                 local rPos = centerGroundPos + (dynamicBaseCFrame.RightVector * robotSmoothDist)
                 
-                if assignedRemotes[plr].front then 
-                    recordSlotProp("front", assignedRemotes[plr].front)
-                    dispatchRemote(assignedRemotes[plr].front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) 
-                end
-                if assignedRemotes[plr].back then 
-                    recordSlotProp("back", assignedRemotes[plr].back)
-                    dispatchRemote(assignedRemotes[plr].back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) 
-                end
-                if assignedRemotes[plr].left then 
-                    recordSlotProp("left", assignedRemotes[plr].left)
-                    dispatchRemote(assignedRemotes[plr].left, CFrame.lookAt(lPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) 
-                end
-                if assignedRemotes[plr].right then 
-                    recordSlotProp("right", assignedRemotes[plr].right)
-                    dispatchRemote(assignedRemotes[plr].right, CFrame.lookAt(rPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) 
-                end
+                if assignedRemotes[plr].front then dispatchRemote(assignedRemotes[plr].front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].back then dispatchRemote(assignedRemotes[plr].back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].left then dispatchRemote(assignedRemotes[plr].left, CFrame.lookAt(lPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].right then dispatchRemote(assignedRemotes[plr].right, CFrame.lookAt(rPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
             end
 
             if activeModes["MultiRobot"] then
@@ -4014,14 +3987,8 @@ RunService.Heartbeat:Connect(function(dt)
                 local fPos = centerGroundPos + (dynamicBaseCFrame.LookVector * smoothDist)
                 local bPos = centerGroundPos - (dynamicBaseCFrame.LookVector * smoothDist)
                 
-                if assignedRemotes[plr].m_front then 
-                    recordSlotProp("m_front", assignedRemotes[plr].m_front)
-                    dispatchRemote(assignedRemotes[plr].m_front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) 
-                end
-                if assignedRemotes[plr].m_back then 
-                    recordSlotProp("m_back", assignedRemotes[plr].m_back)
-                    dispatchRemote(assignedRemotes[plr].m_back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) 
-                end
+                if assignedRemotes[plr].m_front then dispatchRemote(assignedRemotes[plr].m_front, CFrame.lookAt(fPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
+                if assignedRemotes[plr].m_back then dispatchRemote(assignedRemotes[plr].m_back, CFrame.lookAt(bPos, centerGroundPos) * CFrame.Angles(tiltAngle, math.rad(180), 0)) end
             end
         end
 
