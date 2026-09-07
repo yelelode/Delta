@@ -1,5 +1,5 @@
 -- =========================================================
--- ⚡ TXR AUTO PROPS SPAWN (EXACT LIMIT & INSTANT ATTACK ENGINE) ⚡
+-- ⚡ TXR AUTO PROPS SPAWN (ULTRA-FAST MIXED RESTORE ENGINE) ⚡
 -- =========================================================
 
 local Players = game:GetService("Players")
@@ -18,14 +18,16 @@ local function sendNotif(title, text)
     end)
 end
 
+-- Purana loop aur connections reset karo
 if _G.TXR_AutoSpawnConnection then
     pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
     _G.TXR_AutoSpawnConnection = nil
 end
 
 _G.TXR_AutoSpawnActive = true
-sendNotif("⚡ AUTO SPAWN", "Exact-Cap & Solo Attack Engine Loaded!")
+sendNotif("⚡ AUTO SPAWN", "Exact-Identity & Mixed Spawner Active!")
 
+-- 🥷 500 Props Error UI Suppressor
 local function suppressPropMenu()
     pcall(function()
         local pGui = lp:FindFirstChild("PlayerGui")
@@ -47,6 +49,7 @@ local function suppressPropMenu()
     end)
 end
 
+-- Player ke active props count karo
 local function getAllMyProps()
     local props = {}
     local com = workspace:FindFirstChild("WorkspaceCom")
@@ -62,6 +65,7 @@ local function getAllMyProps()
     return props
 end
 
+-- Mode ke hisaab se target count calculate karo
 local function getModeTargetLimit()
     if _G.TXR_ActiveModes and _G.TXR_ActiveModes["Chair"] then
         return 0
@@ -76,16 +80,33 @@ local function getModeTargetLimit()
         if _G.TXR_ActiveModes["Orbit"] then perTarget = perTarget + 12 end
     end
 
-    if perTarget == 0 then perTarget = 6 end -- default strictly set to 6
+    if perTarget == 0 then perTarget = 6 end
 
     local targets = _G.TXR_SelectedTargets or 1
     return math.clamp(perTarget * targets, 2, 30)
 end
 
+-- 🔍 Check karega ki kaunse slot ka prop gayab hua hai (Guns, Robots, etc.)
+local function getMissingSlotRequirements()
+    local missingList = {}
+    if not _G.TXR_SlotPropMemory then return missingList end
+
+    for slotKey, data in pairs(_G.TXR_SlotPropMemory) do
+        if not data.Remote or not data.Remote.Parent or not data.Remote.Parent.Parent then
+            table.insert(missingList, {
+                Slot = slotKey,
+                PropName = data.PropName or (_G.TXR_CustomPropName or "ScreensRobotBig"),
+                Category = data.Category or (_G.TXR_CustomPropCategory or "Screens")
+            })
+        end
+    end
+    return missingList
+end
+
 local isSpawningLocked = false
 local lastSpawnActionTime = 0
 
--- ⚡ PRECISION SYNC ENGINE
+-- ⚡ PRECISION SYNC & IDENTITY RESTORE LOOP
 _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
     if not _G.TXR_AutoSpawnActive then return end
 
@@ -98,14 +119,14 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
 
     suppressPropMenu()
 
-    -- Hard Reset Lock jab tak props delete na ho
+    -- Exact count hone par lock release karo
     if currentCount >= targetLimit then
         isSpawningLocked = false
         return
     end
 
-    -- Duplicate burst ko exact count me lock rakhna
-    if currentCount < targetLimit and not isSpawningLocked and (now - lastSpawnActionTime > 0.35) then
+    -- Trigger recovery jab count limit se kam ho
+    if currentCount < targetLimit and not isSpawningLocked and (now - lastSpawnActionTime > 0.25) then
         isSpawningLocked = true
         lastSpawnActionTime = now
 
@@ -120,16 +141,18 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
                 return 
             end
 
-            local propName = _G.TXR_CustomPropName or "ScreensRobotBig"
-            local propCategory = _G.TXR_CustomPropCategory or "Screens"
+            local re = ReplicatedStorage:FindFirstChild("RE")
+            local clearRemote = re and re:FindFirstChild("1Clea1rTool1s")
+            local missingSlots = getMissingSlotRequirements()
 
-            -- CASE A: Ek bhi prop nahi hai (Pehla single prop banao)
+            -- CASE A: Ek bhi prop nahi bacha (Fresh Starter Prop)
             if currentCount == 0 then
+                local defaultProp = _G.TXR_CustomPropName or "ScreensRobotBig"
+                local defaultCat = _G.TXR_CustomPropCategory or "Screens"
+
                 pcall(function()
-                    local re = ReplicatedStorage:FindFirstChild("RE")
-                    local clearRemote = re and re:FindFirstChild("1Clea1rTool1s")
                     if clearRemote then
-                        clearRemote:FireServer("RequestingPropName", propName, propCategory)
+                        clearRemote:FireServer("RequestingPropName", defaultProp, defaultCat)
                     end
                 end)
 
@@ -153,9 +176,8 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
                     end
                 end
 
-                -- 1st robot ko instantly register karo taaki wo akele attack chalu kar sake
                 local firstProp = nil
-                for i = 1, 40 do
+                for i = 1, 35 do
                     local check = getAllMyProps()
                     if #check > 0 then
                         firstProp = check[1]
@@ -164,7 +186,6 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
                     task.wait(0.02)
                 end
 
-                -- Remaining exact duplicate burst
                 if firstProp then
                     local dupRemote = firstProp:FindFirstChild("DuplicateProp")
                     if dupRemote then
@@ -173,37 +194,61 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
                             task.spawn(function()
                                 pcall(function() dupRemote:InvokeServer() end)
                             end)
-                            task.wait(0.02) -- Millisecond spacing taaki over-spawn (11 props) na ho
+                            task.wait(0.015)
                         end
                     end
                 end
 
-            -- CASE B: Partial Props Lost (Bina wait kiye bache hue exact slot fill karna)
+            -- CASE B: Specific Props Gayab Hue (Slot-Aware Restore)
             else
-                local dupRemote = nil
-                for _, p in ipairs(myProps) do
-                    local d = p:FindFirstChild("DuplicateProp")
-                    if d and d.Parent then
-                        dupRemote = d
-                        break
-                    end
-                end
+                local neededNow = targetLimit - currentCount
 
-                if dupRemote then
-                    local neededNow = targetLimit - #getAllMyProps()
-                    if neededNow > 0 then
+                if #missingSlots > 0 then
+                    for _, req in ipairs(missingSlots) do
+                        pcall(function()
+                            if clearRemote then
+                                clearRemote:FireServer("RequestingPropName", req.PropName, req.Category)
+                            end
+                        end)
+
+                        local matchedRemote = nil
+                        for _, p in ipairs(myProps) do
+                            local d = p:FindFirstChild("DuplicateProp")
+                            if d and d.Parent then
+                                matchedRemote = d
+                                break
+                            end
+                        end
+
+                        if matchedRemote then
+                            task.spawn(function()
+                                pcall(function() matchedRemote:InvokeServer() end)
+                            end)
+                            task.wait(0.02)
+                        end
+                    end
+                else
+                    local dupRemote = nil
+                    for _, p in ipairs(myProps) do
+                        local d = p:FindFirstChild("DuplicateProp")
+                        if d and d.Parent then
+                            dupRemote = d
+                            break
+                        end
+                    end
+
+                    if dupRemote and neededNow > 0 then
                         for i = 1, neededNow do
                             task.spawn(function()
                                 pcall(function() dupRemote:InvokeServer() end)
                             end)
-                            task.wait(0.02)
+                            task.wait(0.015)
                         end
                     end
                 end
             end
 
-            -- Verify final count
-            task.wait(0.2)
+            task.wait(0.18)
             isSpawningLocked = false
         end)
     end
