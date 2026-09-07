@@ -1,5 +1,5 @@
 -- =========================================================
--- ⚡ TXR AUTO PROPS SPAWN (EXACT LIMIT & MAXIMUM SPEED) ⚡
+-- ⚡ TXR AUTO PROPS SPAWN (EXACT LIMIT & INSTANT ATTACK ENGINE) ⚡
 -- =========================================================
 
 local Players = game:GetService("Players")
@@ -18,16 +18,14 @@ local function sendNotif(title, text)
     end)
 end
 
--- Purana loop clean karo
 if _G.TXR_AutoSpawnConnection then
     pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
     _G.TXR_AutoSpawnConnection = nil
 end
 
 _G.TXR_AutoSpawnActive = true
-sendNotif("⚡ AUTO SPAWN", "Exact-Count & Zero-Lag Engine Active!")
+sendNotif("⚡ AUTO SPAWN", "Exact-Cap & Solo Attack Engine Loaded!")
 
--- 🥷 500 Props Error UI Suppressor
 local function suppressPropMenu()
     pcall(function()
         local pGui = lp:FindFirstChild("PlayerGui")
@@ -49,7 +47,6 @@ local function suppressPropMenu()
     end)
 end
 
--- Player ke active props count karo
 local function getAllMyProps()
     local props = {}
     local com = workspace:FindFirstChild("WorkspaceCom")
@@ -65,7 +62,6 @@ local function getAllMyProps()
     return props
 end
 
--- Mode ke hisaab se target count
 local function getModeTargetLimit()
     if _G.TXR_ActiveModes and _G.TXR_ActiveModes["Chair"] then
         return 0
@@ -80,17 +76,16 @@ local function getModeTargetLimit()
         if _G.TXR_ActiveModes["Orbit"] then perTarget = perTarget + 12 end
     end
 
-    if perTarget == 0 then perTarget = 15 end
+    if perTarget == 0 then perTarget = 6 end -- default strictly set to 6
 
     local targets = _G.TXR_SelectedTargets or 1
     return math.clamp(perTarget * targets, 2, 30)
 end
 
-local recoveryLockTime = 0
-local isRecovering = false
-local inFlightSpawns = 0
+local isSpawningLocked = false
+local lastSpawnActionTime = 0
 
--- ⚡ ULTRA-FAST ZERO-OVERSPAWN LOOP
+-- ⚡ PRECISION SYNC ENGINE
 _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
     if not _G.TXR_AutoSpawnActive then return end
 
@@ -101,21 +96,18 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
     local myProps = getAllMyProps()
     local currentCount = #myProps
 
-    -- Exact count sync: in-flight count reset
+    suppressPropMenu()
+
+    -- Hard Reset Lock jab tak props delete na ho
     if currentCount >= targetLimit then
-        inFlightSpawns = 0
+        isSpawningLocked = false
+        return
     end
 
-    local effectiveCount = currentCount + inFlightSpawns
-
-    if currentCount < targetLimit or now < recoveryLockTime then
-        suppressPropMenu()
-    end
-
-    -- Trigger recovery: zero-lag aur exact count guard
-    if effectiveCount < targetLimit and now > recoveryLockTime and not isRecovering then
-        isRecovering = true
-        recoveryLockTime = now + 0.18
+    -- Duplicate burst ko exact count me lock rakhna
+    if currentCount < targetLimit and not isSpawningLocked and (now - lastSpawnActionTime > 0.35) then
+        isSpawningLocked = true
+        lastSpawnActionTime = now
 
         task.spawn(function()
             local char = lp.Character
@@ -124,26 +116,15 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
             local backpack = lp:FindFirstChild("Backpack")
 
             if not char or not hum or not root or hum.Health <= 0 then 
-                isRecovering = false 
-                return 
-            end
-
-            -- Ek baar fir re-calculate for absolute accuracy
-            local freshProps = getAllMyProps()
-            currentCount = #freshProps
-            local needed = targetLimit - currentCount - inFlightSpawns
-            if needed <= 0 then 
-                isRecovering = false 
+                isSpawningLocked = false 
                 return 
             end
 
             local propName = _G.TXR_CustomPropName or "ScreensRobotBig"
             local propCategory = _G.TXR_CustomPropCategory or "Screens"
 
-            -- STAGE A: GHOST EQUIP (0 props hone par)
-            if currentCount == 0 and inFlightSpawns == 0 then
-                inFlightSpawns = targetLimit
-
+            -- CASE A: Ek bhi prop nahi hai (Pehla single prop banao)
+            if currentCount == 0 then
                 pcall(function()
                     local re = ReplicatedStorage:FindFirstChild("RE")
                     local clearRemote = re and re:FindFirstChild("1Clea1rTool1s")
@@ -172,30 +153,35 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
                     end
                 end
 
-                local dupRemote = nil
-                for i = 1, 35 do
-                    local latestProps = getAllMyProps()
-                    if #latestProps > 0 then
-                        dupRemote = latestProps[1]:FindFirstChild("DuplicateProp")
-                        if dupRemote and dupRemote.Parent then break end
+                -- 1st robot ko instantly register karo taaki wo akele attack chalu kar sake
+                local firstProp = nil
+                for i = 1, 40 do
+                    local check = getAllMyProps()
+                    if #check > 0 then
+                        firstProp = check[1]
+                        break
                     end
-                    RunService.Heartbeat:Wait()
+                    task.wait(0.02)
                 end
 
-                if dupRemote and dupRemote.Parent then
-                    -- Exactly (targetLimit - 1) duplicate karega
-                    local toDuplicate = math.max(0, targetLimit - #getAllMyProps())
-                    for i = 1, toDuplicate do
-                        task.spawn(function() 
-                            pcall(function() dupRemote:InvokeServer() end) 
-                        end)
+                -- Remaining exact duplicate burst
+                if firstProp then
+                    local dupRemote = firstProp:FindFirstChild("DuplicateProp")
+                    if dupRemote then
+                        local remainingNeeded = targetLimit - #getAllMyProps()
+                        for i = 1, remainingNeeded do
+                            task.spawn(function()
+                                pcall(function() dupRemote:InvokeServer() end)
+                            end)
+                            task.wait(0.02) -- Millisecond spacing taaki over-spawn (11 props) na ho
+                        end
                     end
                 end
 
-            -- STAGE B: FAST HYPER-DUPLICATION (Exact remaining slots)
+            -- CASE B: Partial Props Lost (Bina wait kiye bache hue exact slot fill karna)
             else
                 local dupRemote = nil
-                for _, p in ipairs(freshProps) do
+                for _, p in ipairs(myProps) do
                     local d = p:FindFirstChild("DuplicateProp")
                     if d and d.Parent then
                         dupRemote = d
@@ -203,19 +189,22 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
                     end
                 end
 
-                if dupRemote and dupRemote.Parent then
-                    local spawnCount = math.max(0, targetLimit - currentCount)
-                    inFlightSpawns = inFlightSpawns + spawnCount
-                    
-                    for i = 1, spawnCount do
-                        task.spawn(function()
-                            pcall(function() dupRemote:InvokeServer() end)
-                        end)
+                if dupRemote then
+                    local neededNow = targetLimit - #getAllMyProps()
+                    if neededNow > 0 then
+                        for i = 1, neededNow do
+                            task.spawn(function()
+                                pcall(function() dupRemote:InvokeServer() end)
+                            end)
+                            task.wait(0.02)
+                        end
                     end
                 end
             end
 
-            isRecovering = false
+            -- Verify final count
+            task.wait(0.2)
+            isSpawningLocked = false
         end)
     end
 end)
