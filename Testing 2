@@ -1,5 +1,5 @@
 -- =========================================================
--- ⚡ TXR AUTO PROPS SPAWN (EVENT HOOK & REMOTE SPY V18.28) ⚡
+-- ⚡ TXR AUTO PROPS SPAWN (CLEAN & ULTRA-FAST ENGINE) ⚡
 -- =========================================================
 
 local Players = game:GetService("Players")
@@ -18,21 +18,14 @@ local function sendNotif(title, text)
     end)
 end
 
--- Purana loop aur listeners clean karo
+-- Purana loop clean karo
 if _G.TXR_AutoSpawnConnection then
     pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
     _G.TXR_AutoSpawnConnection = nil
 end
 
-if _G.TXR_PlotEventCleanups then
-    for _, cleanup in ipairs(_G.TXR_PlotEventCleanups) do
-        pcall(function() cleanup:Disconnect() end)
-    end
-end
-_G.TXR_PlotEventCleanups = {}
-
 _G.TXR_AutoSpawnActive = true
-sendNotif("⚡ AUTO SPAWN", "Event-Hook & Spy Engine Ready!")
+sendNotif("⚡ AUTO SPAWN", "Auto Props Spawner Active!")
 
 -- 🥷 500 Props Error UI Suppressor
 local function suppressPropMenu()
@@ -56,92 +49,7 @@ local function suppressPropMenu()
     end)
 end
 
--- Cache state for fast access
-local ActiveBanHouses = {}
-local PlotBoundingBoxes = {}
-
--- 📡 REMOTE SPY & EVENT HOOKING SETUP
-pcall(function()
-    if hookmetamethod and newcclosure then
-        local oldNamecall
-        oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
-            local method = getnamecallmethod()
-            local args = {...}
-
-            -- Spy on incoming/outgoing ClearProps / Disallow triggers
-            if method == "FireServer" or method == "InvokeServer" then
-                if tostring(self.Name) == "Permissions:ClearProps" or tostring(self.Name) == "1Clea1rTool1s" then
-                    -- Agar ban trigger fire ho raha ho to temporary pause flag set karo
-                    _G.TXR_LastWipeTime = os.clock()
-                end
-            end
-
-            return oldNamecall(self, ...)
-        end))
-    end
-end)
-
--- 🏠 REAL-TIME EVENT HOOK ON ALL HOUSES / LOTS
-local function bindLotListeners(lot)
-    local function evaluateLotBanState()
-        local isBanned = false
-        local picked = lot:FindFirstChild("HousePickedByPlayer")
-        local houseModel = picked and picked:FindFirstChild("HouseModel")
-
-        -- 1. Value/Attribute checks
-        if lot:GetAttribute("PropBanActive") == true then
-            isBanned = true
-        end
-
-        local banSetting = lot:FindFirstChild("BanProps") or (houseModel and houseModel:FindFirstChild("BanProps"))
-        if banSetting and (banSetting.Value == true or banSetting.Value == 1) then
-            isBanned = true
-        end
-
-        local permFolder = lot:FindFirstChild("Permissions") or (houseModel and houseModel:FindFirstChild("Permissions"))
-        if permFolder then
-            local propBanVal = permFolder:FindFirstChild("PropBan") or permFolder:FindFirstChild("ClearPropsActive")
-            if propBanVal and (propBanVal.Value == true or propBanVal.Value == 1) then
-                isBanned = true
-            end
-            local disallowList = permFolder:FindFirstChild("Disallowed")
-            if disallowList and (disallowList:FindFirstChild(lp.Name) or disallowList:FindFirstChild("All")) then
-                isBanned = true
-            end
-        end
-
-        ActiveBanHouses[lot] = isBanned
-    end
-
-    -- Initial state calculation
-    evaluateLotBanState()
-    local cf, sz = lot:GetBoundingBox()
-    PlotBoundingBoxes[lot] = {CFrame = cf, Size = sz}
-
-    -- Instant Event Listeners (Zero Polling Overhead)
-    local con1 = lot.DescendantAdded:Connect(function() evaluateLotBanState() end)
-    local con2 = lot.DescendantRemoving:Connect(function() evaluateLotBanState() end)
-    local con3 = lot.AttributeChanged:Connect(function() evaluateLotBanState() end)
-
-    table.insert(_G.TXR_PlotEventCleanups, con1)
-    table.insert(_G.TXR_PlotEventCleanups, con2)
-    table.insert(_G.TXR_PlotEventCleanups, con3)
-end
-
--- Initialize listeners across all plots
-local lotsFolder = workspace:FindFirstChild("001_Lots") or workspace:FindFirstChild("Lots")
-if lotsFolder then
-    for _, lot in ipairs(lotsFolder:GetChildren()) do
-        bindLotListeners(lot)
-    end
-    local folderCon = lotsFolder.ChildAdded:Connect(function(newLot)
-        task.wait(0.2)
-        bindLotListeners(newLot)
-    end)
-    table.insert(_G.TXR_PlotEventCleanups, folderCon)
-end
-
--- Player ke active props scan karo
+-- Player ke active props count karo
 local function getAllMyProps()
     local props = {}
     local com = workspace:FindFirstChild("WorkspaceCom")
@@ -157,50 +65,7 @@ local function getAllMyProps()
     return props
 end
 
--- Check if target is inside an ACTIVE ban lot using cached data
-local function isTargetInBannedHouse(targetPos)
-    for lot, isBanned in pairs(ActiveBanHouses) do
-        if isBanned then
-            local data = PlotBoundingBoxes[lot]
-            if data then
-                local rel = data.CFrame:PointToObjectSpace(targetPos)
-                local halfX = (data.Size.X / 2)
-                local halfZ = (data.Size.Z / 2)
-                
-                -- Exact 1cm edge check
-                if math.abs(rel.X) <= halfX and math.abs(rel.Z) <= halfZ and rel.Y >= -10 and rel.Y <= 80 then
-                    return true
-                end
-            end
-        end
-    end
-    return false
-end
-
-local function areAllTargetsBlocked()
-    local targetPlrs = {}
-    if _G.TXR_ActiveModes and _G.TXR_ActiveModes["SelectedTargetList"] then
-        targetPlrs = _G.TXR_ActiveModes["SelectedTargetList"]
-    end
-
-    local validCount = 0
-    local blockedCount = 0
-
-    for plr, active in pairs(targetPlrs) do
-        if active and plr and plr.Parent and plr.Character then
-            local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                validCount = validCount + 1
-                if isTargetInBannedHouse(hrp.Position) then
-                    blockedCount = blockedCount + 1
-                end
-            end
-        end
-    end
-
-    return (validCount > 0 and validCount == blockedCount)
-end
-
+-- Mode ke hisaab se target count
 local function getModeTargetLimit()
     if _G.TXR_ActiveModes and _G.TXR_ActiveModes["Chair"] then
         return 0
@@ -216,32 +81,17 @@ local function getModeTargetLimit()
     end
 
     if perTarget == 0 then perTarget = 15 end
+
     local targets = _G.TXR_SelectedTargets or 1
     return math.clamp(perTarget * targets, 2, 30)
 end
 
 local recoveryLockTime = 0
 local isRecovering = false
-local wasTargetBlocked = false
 
--- ⚡ ULTRA LEAN AUTO-SPAWN LOOP
+-- ⚡ ULTRA-FAST INSTANT SPAWN & RECOVERY LOOP
 _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
     if not _G.TXR_AutoSpawnActive then return end
-
-    -- 🛑 INSTANT HOOK-DRIVEN BAN PROPS CHECK
-    local isBlocked = areAllTargetsBlocked()
-    if isBlocked then
-        if not wasTargetBlocked then
-            wasTargetBlocked = true
-            sendNotif("🛑 BAN PROPS ACTIVE", "Spy Hook: Target inside Active Ban Zone! Pausing.")
-        end
-        return
-    else
-        if wasTargetBlocked then
-            wasTargetBlocked = false
-            sendNotif("⚡ ATTACK RESUMED", "Target clear or Ban OFF! Spawning props.")
-        end
-    end
 
     local targetLimit = getModeTargetLimit()
     if targetLimit == 0 then return end
@@ -254,6 +104,7 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
         suppressPropMenu()
     end
 
+    -- Trigger recovery agar props limit se kam hain
     if currentCount < targetLimit and now > recoveryLockTime and not isRecovering then
         isRecovering = true
         recoveryLockTime = now + 0.2
@@ -278,7 +129,7 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
             local propName = _G.TXR_CustomPropName or "ScreensRobotBig"
             local propCategory = _G.TXR_CustomPropCategory or "Screens"
 
-            -- STAGE A: GHOST EQUIP (0 Props Remaining)
+            -- STAGE A: GHOST EQUIP (Pehla prop create karna)
             if currentCount == 0 then
                 pcall(function()
                     local re = ReplicatedStorage:FindFirstChild("RE")
@@ -309,7 +160,7 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
                 end
 
                 local dupRemote = nil
-                for i = 1, 40 do
+                for i = 1, 35 do
                     local latestProps = getAllMyProps()
                     if #latestProps > 0 then
                         dupRemote = latestProps[1]:FindFirstChild("DuplicateProp")
@@ -324,7 +175,7 @@ _G.TXR_AutoSpawnConnection = RunService.Heartbeat:Connect(function()
                     end
                 end
 
-            -- STAGE B: FAST HYPER-DUPLICATION BURST
+            -- STAGE B: FAST HYPER-DUPLICATION (Existing prop se duplicate karna)
             else
                 local dupRemote = nil
                 for _, p in ipairs(myProps) do
