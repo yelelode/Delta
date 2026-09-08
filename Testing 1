@@ -377,7 +377,6 @@ task.spawn(function()
         
         local isOwner = (lp.UserId == CREATOR_USER_ID)
         local isNina = (lp.UserId == NINA_USER_ID)
-        local rpNameState = 1
         local designatedRPName = isOwner and "A  S  H  U" or (isNina and "N   I   N   A" or "【 TXR HUB 】")
         local designatedRPBio = (isOwner or isNina) and "" or ("Welcome " .. lp.Name)
         
@@ -386,13 +385,11 @@ task.spawn(function()
             StringEvent:FireServer("RolePlayBio", designatedRPBio)
         end)
         
-        local tickCounter = 0
         local t = 0
         local baseDark = isNina and Color3.fromRGB(40, 0, 25) or Color3.fromRGB(20, 0, 0)
         local baseBright = isNina and Color3.fromRGB(255, 20, 147) or Color3.fromRGB(255, 10, 10)
         
         while task.wait(0.15) and _G.TXR_InstanceID == currentExecutionID do
-            tickCounter = tickCounter + 0.15
             t = t + 0.15
             
             pcall(function()
@@ -405,23 +402,6 @@ task.spawn(function()
                 River:FireServer("PickingRPNameColor", nameRgb)
                 River:FireServer("PickingRPBioColor", bioRgb)
             end)
-            
-            if tickCounter >= 60 then
-                tickCounter = 0
-                if not isOwner and not isNina then
-                    if rpNameState == 1 then
-                        designatedRPName = "TXR HUB"
-                        rpNameState = 2
-                    else
-                        designatedRPName = "【 TXR HUB 】"
-                        rpNameState = 1
-                    end
-                end
-                pcall(function()
-                    StringEvent:FireServer("RolePlayName", designatedRPName)
-                    StringEvent:FireServer("RolePlayBio", designatedRPBio)
-                end)
-            end
         end
     end)
 end)
@@ -1120,7 +1100,7 @@ matrixContainer.ZIndex = 2
 matrixContainer.ClipsDescendants = true
 
 local matrixDrops = {}
-local matrixChars = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "Z", "X", "V", "ア", "イ", "ウ", "エ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "セ", "ソ"}
+local matrixChars = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "Z", "X", "V", "ア", "इ", "उ", "ए", "ओ", "क", "कि", "कु", "के", "को", "स", "शि", "सु", "से", "सो"}
 
 for i = 1, 55 do
     local drop = Instance.new("TextLabel", matrixContainer)
@@ -1968,6 +1948,12 @@ cmConfirm.MouseButton1Click:Connect(function()
     activeModes = {}
     isSystemActive = false 
     
+    _G.TXR_AutoSpawnActive = false
+    if _G.TXR_AutoSpawnConnection then
+        pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
+        _G.TXR_AutoSpawnConnection = nil
+    end
+
     if _G.TXR_ESP_GUI then 
         _G.TXR_ESP_GUI:Destroy() 
     end 
@@ -2994,6 +2980,10 @@ autoSpawnBtn.MouseButton1Click:Connect(function()
         
         -- Toggle off external loop if handled via global flag
         _G.TXR_AutoSpawnActive = false
+        if _G.TXR_AutoSpawnConnection then
+            pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
+            _G.TXR_AutoSpawnConnection = nil
+        end
     end
 end)
 
@@ -3166,120 +3156,16 @@ visualZoneBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🛡️ ANTI ROBOTS (PUBLIC ACCESS)
+-- 🛡️ ANTI ROBOTS (PUBLIC ACCESS -> LOCKED)
 -- =========================================================
-local escapeBtn = createMainBtn("⚡ ANTI ROBOTS ( House Spawn Required )", nil, false, nil)
+local escapeBtn = createMainBtn("⚡ ANTI ROBOTS ( Locked )", nil, false, nil)
 escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
 escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
 escapeBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
 
-local escapeDebounce = false
-
 escapeBtn.MouseButton1Click:Connect(function()
-    local houseData = getMyHouse()
-    if not houseData then
-        sendNotif("⚠️ HOUSE REQUIRED", "Spawn House First! Pehle apna house spawn karein.", 3)
-        return
-    end
-
-    if escapeDebounce then return end
-    escapeDebounce = true
-    
-    task.spawn(function()
-        local success, err = pcall(function()
-            isEvading = true 
-            local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-            if not hrp then return end
-            
-            local originalPos = hrp.CFrame
-            local propsDetectedBefore = false
-            
-            local partsInRadius = workspace:GetPartBoundsInRadius(hrp.Position, 40)
-            for _, obj in ipairs(partsInRadius) do
-                if string.sub(obj.Name, 1, 4) == "Prop" then
-                    local ownerName = string.sub(obj.Name, 5)
-                    if ownerName ~= "" and ownerName ~= lp.Name then
-                        propsDetectedBefore = true
-                        break
-                    end
-                end
-            end
-
-            local com = workspace:FindFirstChild("WorkspaceCom")
-            if com then
-                for _, f in ipairs(com:GetChildren()) do
-                    for _, c in ipairs(f:GetChildren()) do
-                        if c.Name == "Prop" .. lp.Name then
-                            local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
-                            local r = c:FindFirstChild("SetCurrentCFrame")
-                            if pt and r then
-                                task.spawn(function() pcall(function() r:InvokeServer(CFrame.new(pt.Position.X, 15000, pt.Position.Z)) end) end)
-                            end
-                        end
-                    end
-                end
-            end
-            task.wait(0.2) 
-            
-            if houseData then
-                local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
-                hrp.CFrame = CFrame.new(safePos) 
-                
-                if propsDetectedBefore then
-                    local maxWait = 0
-                    while maxWait < 0.7 do
-                        task.wait(0.05)
-                        maxWait = maxWait + 0.05
-                        local propsFollowed = false
-                        local checkParts = workspace:GetPartBoundsInRadius(hrp.Position, 40)
-                        for _, obj in ipairs(checkParts) do
-                            if string.sub(obj.Name, 1, 4) == "Prop" then
-                                local ownerName = string.sub(obj.Name, 5)
-                                if ownerName ~= "" and ownerName ~= lp.Name then
-                                    propsFollowed = true
-                                    break
-                                end
-                            end
-                        end
-                        if propsFollowed then break end
-                    end
-                end
-                
-                if houseData.Remote then
-                    for i = 1, 20 do
-                        task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
-                        task.wait(0.01) 
-                    end
-                end
-                
-                task.wait(0.05) 
-                hrp.CFrame = originalPos
-                sendNotif("🚀 BOOM!", "Evaded & Wiped Attackers!", 2)
-            else
-                sendNotif("⚠️ ALERT", "House Not Found! Deploying Global Wipe...", 2)
-            end
-
-            task.spawn(function()
-                local myHouseData = getMyHouse()
-                local myClearRemote = myHouseData and myHouseData.Remote
-
-                for _, obj in ipairs(workspace:GetDescendants()) do
-                    if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
-                        if obj ~= myClearRemote then 
-                            task.spawn(function() pcall(function() obj:InvokeServer() end) end)
-                            task.wait(0.01) 
-                        end
-                    end
-                end
-            end)
-        end)
-        
-        if not success then warn("TXR Error:", err) end
-        task.wait(0.3) 
-        isEvading = false 
-        escapeDebounce = false
-    end)
+    sendNotif("🔒 LOCKED", "Anti Robots feature lock hai abhi!", 2)
 end)
 
 -- =========================================================
@@ -3496,50 +3382,117 @@ banTrapBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- ⚡ START / STOP ENGINE CONTROLS (PERMANENTLY FIXED AT BOTTOM)
+-- ⚡ START / STOP ENGINE CONTROLS (HIGH-TECH POLISHED & FIXED AT BOTTOM)
 -- =========================================================
 local toggleRow = Instance.new("Frame", mainFrame)
-toggleRow.Size = UDim2.new(1, -24, 0, 42)
-toggleRow.Position = UDim2.new(0, 12, 1, -80)
+toggleRow.Size = UDim2.new(1, -24, 0, 44)
+toggleRow.Position = UDim2.new(0, 12, 1, -82)
 toggleRow.BackgroundTransparency = 1
 toggleRow.ZIndex = 15
 
-local startBtn = Instance.new("TextButton", toggleRow)
-startBtn.Size = UDim2.new(0.48, 0, 1, 0)
-startBtn.BackgroundColor3 = Colors.Primary
-startBtn.Text = "▶ START"
-startBtn.TextColor3 = Colors.TextDark
+-- Modern Glow / Backdrop container
+local startContainer = Instance.new("Frame", toggleRow)
+startContainer.Size = UDim2.new(0.48, 0, 1, 0)
+startContainer.Position = UDim2.new(0, 0, 0, 0)
+startContainer.BackgroundTransparency = 1
+startContainer.ZIndex = 16
+
+local startBtn = Instance.new("TextButton", startContainer)
+startBtn.Size = UDim2.fromScale(1, 1)
+startBtn.BackgroundColor3 = Color3.fromRGB(0, 230, 180)
+startBtn.Text = "▶  START"
+startBtn.TextColor3 = Color3.fromRGB(10, 15, 22)
 startBtn.Font = Enum.Font.GothamBlack
-startBtn.TextSize = 11
+startBtn.TextSize = 11.5
 startBtn.AutoButtonColor = false
-startBtn.ZIndex = 16
+startBtn.ZIndex = 17
 
 local startCorner = Instance.new("UICorner", startBtn)
-startCorner.CornerRadius = UDim.new(0, 8)
-applySmartHover(startBtn, nil)
+startCorner.CornerRadius = UDim.new(0, 9)
 
-local stopBtn = Instance.new("TextButton", toggleRow)
-stopBtn.Size = UDim2.new(0.48, 0, 1, 0)
-stopBtn.Position = UDim2.new(0.52, 0, 0, 0)
-stopBtn.BackgroundColor3 = Colors.Surface
-stopBtn.BackgroundTransparency = 0.5
-stopBtn.Text = "⏹ STOP"
-stopBtn.TextColor3 = Colors.Danger
-stopBtn.Font = Enum.Font.GothamBold
-stopBtn.TextSize = 11
+local startStroke = Instance.new("UIStroke", startBtn)
+startStroke.Color = Color3.fromRGB(180, 255, 240)
+startStroke.Thickness = 1.2
+startStroke.Transparency = 0.35
+
+local startGrad = Instance.new("UIGradient", startBtn)
+startGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 200)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 175, 150))
+})
+startGrad.Rotation = 45
+
+local startScale = Instance.new("UIScale", startBtn)
+startScale.Scale = 1
+
+local stopContainer = Instance.new("Frame", toggleRow)
+stopContainer.Size = UDim2.new(0.48, 0, 1, 0)
+stopContainer.Position = UDim2.new(0.52, 0, 0, 0)
+stopContainer.BackgroundTransparency = 1
+stopContainer.ZIndex = 16
+
+local stopBtn = Instance.new("TextButton", stopContainer)
+stopBtn.Size = UDim2.fromScale(1, 1)
+stopBtn.BackgroundColor3 = Color3.fromRGB(25, 20, 28)
+stopBtn.BackgroundTransparency = 0.2
+stopBtn.Text = "⏹  STOP"
+stopBtn.TextColor3 = Color3.fromRGB(255, 75, 105)
+stopBtn.Font = Enum.Font.GothamBlack
+stopBtn.TextSize = 11.5
 stopBtn.AutoButtonColor = false
-stopBtn.ZIndex = 16
+stopBtn.ZIndex = 17
 
 local stopCorner = Instance.new("UICorner", stopBtn)
-stopCorner.CornerRadius = UDim.new(0, 8)
-applySmartHover(stopBtn, nil)
+stopCorner.CornerRadius = UDim.new(0, 9)
 
 local stopStroke = Instance.new("UIStroke", stopBtn)
-stopStroke.Color = Colors.Danger
-stopStroke.Thickness = 1
-stopStroke.Transparency = 0.5
+stopStroke.Color = Color3.fromRGB(255, 50, 90)
+stopStroke.Thickness = 1.2
+stopStroke.Transparency = 0.4
+
+local stopGrad = Instance.new("UIGradient", stopBtn)
+stopGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 22, 32)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 16, 24))
+})
+stopGrad.Rotation = 45
+
+local stopScale = Instance.new("UIScale", stopBtn)
+stopScale.Scale = 1
+
 crispText(startBtn)
 crispText(stopBtn)
+
+-- Polished Micro-Interactions (Hover/Press)
+startBtn.MouseEnter:Connect(function()
+    TweenService:Create(startScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = 1.03}):Play()
+    TweenService:Create(startStroke, TweenInfo.new(0.2), {Transparency = 0, Thickness = 1.8}):Play()
+end)
+startBtn.MouseLeave:Connect(function()
+    TweenService:Create(startScale, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(startStroke, TweenInfo.new(0.3), {Transparency = 0.35, Thickness = 1.2}):Play()
+end)
+startBtn.MouseButton1Down:Connect(function()
+    TweenService:Create(startScale, TweenInfo.new(0.08, Enum.EasingStyle.Sine), {Scale = 0.94}):Play()
+end)
+startBtn.MouseButton1Up:Connect(function()
+    TweenService:Create(startScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1.03}):Play()
+end)
+
+stopBtn.MouseEnter:Connect(function()
+    TweenService:Create(stopScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = 1.03}):Play()
+    TweenService:Create(stopStroke, TweenInfo.new(0.2), {Transparency = 0.1, Thickness = 1.8}):Play()
+end)
+stopBtn.MouseLeave:Connect(function()
+    TweenService:Create(stopScale, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(stopStroke, TweenInfo.new(0.3), {Transparency = 0.4, Thickness = 1.2}):Play()
+end)
+stopBtn.MouseButton1Down:Connect(function()
+    TweenService:Create(stopScale, TweenInfo.new(0.08, Enum.EasingStyle.Sine), {Scale = 0.94}):Play()
+end)
+stopBtn.MouseButton1Up:Connect(function()
+    TweenService:Create(stopScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1.03}):Play()
+end)
 
 startBtn.MouseButton1Click:Connect(function() 
     if isSystemActive then 
@@ -3551,10 +3504,23 @@ startBtn.MouseButton1Click:Connect(function()
     table.clear(voidedPlayers)
     table.clear(targetVelocities)
     
-    local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Colors.PrimaryDark, TextColor3 = Colors.Text}):Play()
-    TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Colors.Danger, TextColor3 = Colors.TextDark}):Play()
-    TweenService:Create(stopStroke, tInfo, {Transparency = 1}):Play()
+    local tInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    
+    -- Visual Transition: START (Active state)
+    startGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 180, 140)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 120, 100))
+    })
+    TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Color3.fromRGB(0, 160, 130), TextColor3 = Color3.fromRGB(240, 255, 250)}):Play()
+    TweenService:Create(startStroke, tInfo, {Color = Color3.fromRGB(0, 255, 200), Transparency = 0.2}):Play()
+    
+    -- Visual Transition: STOP (Danger active state)
+    stopGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 45, 85)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(190, 15, 50))
+    })
+    TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Color3.fromRGB(240, 35, 75), BackgroundTransparency = 0, TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+    TweenService:Create(stopStroke, tInfo, {Color = Color3.fromRGB(255, 140, 160), Transparency = 0.2, Thickness = 1.5}):Play()
     
     if isSoundEnabled then 
         task.spawn(PlayRobotBangMusic) 
@@ -3592,10 +3558,39 @@ stopBtn.MouseButton1Click:Connect(function()
     isSystemActive = false
     table.clear(assignedRemotes)
     
-    local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Colors.Primary, TextColor3 = Colors.TextDark}):Play()
-    TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Danger}):Play()
-    TweenService:Create(stopStroke, tInfo, {Transparency = 0.5}):Play()
+    -- 🛑 Auto Spawn Freeze on STOP
+    _G.TXR_AutoSpawnActive = false
+    if _G.TXR_AutoSpawnConnection then
+        pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
+        _G.TXR_AutoSpawnConnection = nil
+    end
+    isAutoSpawnEnabled = false
+    if autoSpawnBtn then
+        local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+        TweenService:Create(autoSpawnBtn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        local accent = autoSpawnBtn:FindFirstChild("Accent")
+        if accent then 
+            TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+        end
+    end
+    
+    local tInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    
+    -- Visual Reset: START
+    startGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 200)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 175, 150))
+    })
+    TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Color3.fromRGB(0, 230, 180), TextColor3 = Color3.fromRGB(10, 15, 22)}):Play()
+    TweenService:Create(startStroke, tInfo, {Color = Color3.fromRGB(180, 255, 240), Transparency = 0.35, Thickness = 1.2}):Play()
+    
+    -- Visual Reset: STOP
+    stopGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 22, 32)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 16, 24))
+    })
+    TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Color3.fromRGB(25, 20, 28), BackgroundTransparency = 0.2, TextColor3 = Color3.fromRGB(255, 75, 105)}):Play()
+    TweenService:Create(stopStroke, tInfo, {Color = Color3.fromRGB(255, 50, 90), Transparency = 0.4, Thickness = 1.2}):Play()
     
     if isSoundEnabled then 
         task.spawn(StopRobotBangMusic) 
