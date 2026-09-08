@@ -1973,7 +1973,7 @@ cmConfirm.MouseButton1Click:Connect(function()
         pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
         _G.TXR_AutoSpawnConnection = nil
     end
-
+    
     if _G.TXR_ESP_GUI then 
         _G.TXR_ESP_GUI:Destroy() 
     end 
@@ -2668,7 +2668,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
             TweenService:Create(knobDot, tInfo2, {Size = UDim2.new(0, 8, 0, 8)}):Play()
             TweenService:Create(knobStroke, tInfo2, {Transparency = 0.1, Thickness = 4}):Play()
             TweenService:Create(valBadge, tInfo2, {BackgroundTransparency = 0.2}):Play()
-            TweenService:Create(valStroke, tInfo2, {Transparency = 0}):Play()
+            TweenService:Create(valStroke, tInfo2, {Transparency = 0.5}):Play()
             
             TweenService:Create(fill, tInfo2, {BackgroundColor3 = Color3.fromRGB(150, 255, 240)}):Play()
             update(input) 
@@ -2957,32 +2957,13 @@ shieldBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- ⚡ AUTO PROPS SPAWN (EXACT LIMIT & INSTANT ATTACK LOADSTRING)
+-- ⚡ AUTO PROPS SPAWN (LOADSTRING INTEGRATION)
 -- =========================================================
-local autoSpawnBtn = createMainBtn("✨ AUTO PROPS SPAWN", "AutoSpawn", false, "NEW")
+local autoSpawnBtn = createMainBtn("⚡ AUTO PROPS SPAWN", "AutoSpawn", false, nil)
 local isAutoSpawnEnabled = false
 
--- Glowing visual styling
-local autoSpawnStroke = Instance.new("UIStroke", autoSpawnBtn)
-autoSpawnStroke.Thickness = 1.8
-autoSpawnStroke.Color = Colors.Primary
-autoSpawnStroke.Transparency = 0.2
-
-local autoSpawnStrokeGrad = Instance.new("UIGradient", autoSpawnStroke)
-autoSpawnStrokeGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 200)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(200, 50, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 200))
-})
-
-task.spawn(function()
-    local rot = 0
-    while autoSpawnBtn and autoSpawnBtn.Parent and _G.TXR_InstanceID == currentExecutionID do
-        rot = (rot + 2) % 360
-        autoSpawnStrokeGrad.Rotation = rot
-        task.wait(0.03)
-    end
-end)
+autoSpawnBtn.BackgroundColor3 = Colors.Surface
+autoSpawnBtn.TextColor3 = Colors.Text
 
 autoSpawnBtn.MouseButton1Click:Connect(function() 
     isAutoSpawnEnabled = not isAutoSpawnEnabled
@@ -3197,14 +3178,14 @@ end)
 -- =========================================================
 -- 🛡️ ANTI ROBOTS (TEMPORARILY LOCKED SCRIPT-WIDE)
 -- =========================================================
-local escapeBtn = createMainBtn("⚡ ANTI ROBOTS [LOCKED]", nil, false, "LOCK")
-escapeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-escapeBtn.TextColor3 = Color3.fromRGB(160, 160, 170)
-escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(50, 50, 60))
-escapeBtn:SetAttribute("BaseText", Color3.fromRGB(160, 160, 170))
+local escapeBtn = createMainBtn("⚡ ANTI ROBOTS ( Locked )", nil, false, nil)
+escapeBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
+escapeBtn.TextColor3 = Color3.fromRGB(150, 150, 150)
+escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(60, 60, 65))
+escapeBtn:SetAttribute("BaseText", Color3.fromRGB(150, 150, 150))
 
 escapeBtn.MouseButton1Click:Connect(function()
-    sendNotif("🔒 LOCKED", "Anti Robots feature lock hai abhi!", 2)
+    sendNotif("🔒 FEATURE LOCKED", "Anti-Robots abhi ke liye lock hai!", 2)
 end)
 
 -- =========================================================
@@ -3517,7 +3498,7 @@ stopBtn.MouseButton1Click:Connect(function()
     isSystemActive = false
     table.clear(assignedRemotes)
     
-    -- Auto Spawn Freeze & Shutdown
+    -- Auto Spawn Freeze on Stop
     _G.TXR_AutoSpawnActive = false
     if _G.TXR_AutoSpawnConnection then
         pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
