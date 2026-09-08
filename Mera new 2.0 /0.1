@@ -1818,8 +1818,8 @@ end)
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart = nil
-    local startPos = frame.Position
-    local targetPos = startPos
+    local startPos = nil
+    local targetPos = frame.Position
     local velocity = Vector2.new(0, 0)
     local lastInputPos = Vector2.new(0, 0)
     local dragLoop = nil
@@ -1973,7 +1973,7 @@ cmConfirm.MouseButton1Click:Connect(function()
         pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
         _G.TXR_AutoSpawnConnection = nil
     end
-    
+
     if _G.TXR_ESP_GUI then 
         _G.TXR_ESP_GUI:Destroy() 
     end 
@@ -2957,33 +2957,29 @@ shieldBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- ⚡ AUTO PROPS SPAWN (EXPENSIVE GLOW EDITION)
+-- ⚡ AUTO PROPS SPAWN (EXACT LIMIT & INSTANT ATTACK LOADSTRING)
 -- =========================================================
 local autoSpawnBtn = createMainBtn("✨ AUTO PROPS SPAWN", "AutoSpawn", false, "NEW")
 local isAutoSpawnEnabled = false
 
-autoSpawnBtn.BackgroundColor3 = Color3.fromRGB(15, 25, 45)
-autoSpawnBtn.TextColor3 = Color3.fromRGB(0, 255, 220)
-autoSpawnBtn:SetAttribute("BaseColor", Color3.fromRGB(15, 25, 45))
-autoSpawnBtn:SetAttribute("BaseText", Color3.fromRGB(0, 255, 220))
+-- Glowing visual styling
+local autoSpawnStroke = Instance.new("UIStroke", autoSpawnBtn)
+autoSpawnStroke.Thickness = 1.8
+autoSpawnStroke.Color = Colors.Primary
+autoSpawnStroke.Transparency = 0.2
 
-local autoGlowStroke = Instance.new("UIStroke", autoSpawnBtn)
-autoGlowStroke.Thickness = 1.8
-autoGlowStroke.Color = Color3.fromRGB(0, 255, 200)
-autoGlowStroke.Transparency = 0.2
-
-local autoGlowGrad = Instance.new("UIGradient", autoGlowStroke)
-autoGlowGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 220)),
+local autoSpawnStrokeGrad = Instance.new("UIGradient", autoSpawnStroke)
+autoSpawnStrokeGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 200)),
     ColorSequenceKeypoint.new(0.5, Color3.fromRGB(200, 50, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 220))
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 200))
 })
 
 task.spawn(function()
     local rot = 0
     while autoSpawnBtn and autoSpawnBtn.Parent and _G.TXR_InstanceID == currentExecutionID do
         rot = (rot + 2) % 360
-        autoGlowGrad.Rotation = rot
+        autoSpawnStrokeGrad.Rotation = rot
         task.wait(0.03)
     end
 end)
@@ -3004,7 +3000,7 @@ autoSpawnBtn.MouseButton1Click:Connect(function()
     local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     
     if isAutoSpawnEnabled then 
-        TweenService:Create(autoSpawnBtn, tInfo1, {BackgroundColor3 = Color3.fromRGB(25, 10, 50), TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+        TweenService:Create(autoSpawnBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
@@ -3015,13 +3011,13 @@ autoSpawnBtn.MouseButton1Click:Connect(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Testing%202"))()
         end)
     else 
-        TweenService:Create(autoSpawnBtn, tInfo1, {BackgroundColor3 = Color3.fromRGB(15, 25, 45), TextColor3 = Color3.fromRGB(0, 255, 220)}):Play()
+        TweenService:Create(autoSpawnBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
         sendNotif("⚡ AUTO SPAWN", "Auto Spawn Module Halted.", 2)
         
-        -- Toggle off external loop
+        -- Toggle off external loop if handled via global flag
         _G.TXR_AutoSpawnActive = false
         if _G.TXR_AutoSpawnConnection then
             pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
@@ -3201,14 +3197,14 @@ end)
 -- =========================================================
 -- 🛡️ ANTI ROBOTS (TEMPORARILY LOCKED SCRIPT-WIDE)
 -- =========================================================
-local escapeBtn = createMainBtn("⚡ ANTI ROBOTS [LOCKED / UNDER DEV]", nil, false, "LOCKED")
+local escapeBtn = createMainBtn("⚡ ANTI ROBOTS [LOCKED]", nil, false, "LOCK")
 escapeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-escapeBtn.TextColor3 = Color3.fromRGB(150, 150, 160)
+escapeBtn.TextColor3 = Color3.fromRGB(160, 160, 170)
 escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(50, 50, 60))
-escapeBtn:SetAttribute("BaseText", Color3.fromRGB(150, 150, 160))
+escapeBtn:SetAttribute("BaseText", Color3.fromRGB(160, 160, 170))
 
 escapeBtn.MouseButton1Click:Connect(function()
-    sendNotif("🔒 FEATURE LOCKED", "Anti Robots feature lock hai abhi! Jab proper method aayega tab unlock hoga.", 3)
+    sendNotif("🔒 LOCKED", "Anti Robots feature lock hai abhi!", 2)
 end)
 
 -- =========================================================
@@ -3521,7 +3517,7 @@ stopBtn.MouseButton1Click:Connect(function()
     isSystemActive = false
     table.clear(assignedRemotes)
     
-    -- Sync auto spawn to immediately stop
+    -- Auto Spawn Freeze & Shutdown
     _G.TXR_AutoSpawnActive = false
     if _G.TXR_AutoSpawnConnection then
         pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
@@ -3530,13 +3526,13 @@ stopBtn.MouseButton1Click:Connect(function()
     isAutoSpawnEnabled = false
     if autoSpawnBtn then
         local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-        TweenService:Create(autoSpawnBtn, tInfo, {BackgroundColor3 = Color3.fromRGB(15, 25, 45), TextColor3 = Color3.fromRGB(0, 255, 220)}):Play()
+        TweenService:Create(autoSpawnBtn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         local accent = autoSpawnBtn:FindFirstChild("Accent")
-        if accent then
-            TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play()
+        if accent then 
+            TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end
     end
-    
+
     local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Colors.Primary, TextColor3 = Colors.TextDark}):Play()
     TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Danger}):Play()
