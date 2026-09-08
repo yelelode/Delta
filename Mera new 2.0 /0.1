@@ -1120,7 +1120,7 @@ matrixContainer.ZIndex = 2
 matrixContainer.ClipsDescendants = true
 
 local matrixDrops = {}
-local matrixChars = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "Z", "X", "V", "ア", "イ", "ウ", "エ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "セ", "ソ"}
+local matrixChars = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "Z", "X", "V", "ア", "इ", "उ", "ए", "ओ", "क", "कि", "कु", "के", "को", "स", "शि", "सु", "से", "सो"}
 
 for i = 1, 55 do
     local drop = Instance.new("TextLabel", matrixContainer)
@@ -1973,7 +1973,7 @@ cmConfirm.MouseButton1Click:Connect(function()
         pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
         _G.TXR_AutoSpawnConnection = nil
     end
-    
+
     if _G.TXR_ESP_GUI then 
         _G.TXR_ESP_GUI:Destroy() 
     end 
@@ -2668,7 +2668,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
             TweenService:Create(knobDot, tInfo2, {Size = UDim2.new(0, 8, 0, 8)}):Play()
             TweenService:Create(knobStroke, tInfo2, {Transparency = 0.1, Thickness = 4}):Play()
             TweenService:Create(valBadge, tInfo2, {BackgroundTransparency = 0.2}):Play()
-            TweenService:Create(valStroke, tInfo2, {Transparency = 0.5}):Play()
+            TweenService:Create(valStroke, tInfo2, {Transparency = 0}):Play()
             
             TweenService:Create(fill, tInfo2, {BackgroundColor3 = Color3.fromRGB(150, 255, 240)}):Play()
             update(input) 
@@ -3176,16 +3176,16 @@ visualZoneBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🛡️ ANTI ROBOTS (TEMPORARILY LOCKED SCRIPT-WIDE)
+-- 🛡️ ANTI ROBOTS (PUBLIC ACCESS -> LOCKED)
 -- =========================================================
 local escapeBtn = createMainBtn("⚡ ANTI ROBOTS ( Locked )", nil, false, nil)
-escapeBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
-escapeBtn.TextColor3 = Color3.fromRGB(150, 150, 150)
-escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(60, 60, 65))
-escapeBtn:SetAttribute("BaseText", Color3.fromRGB(150, 150, 150))
+escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
+escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
+escapeBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
 
 escapeBtn.MouseButton1Click:Connect(function()
-    sendNotif("🔒 FEATURE LOCKED", "Anti-Robots abhi ke liye lock hai!", 2)
+    sendNotif("🔒 LOCKED", "Anti Robots feature lock hai abhi!", 2)
 end)
 
 -- =========================================================
@@ -3498,7 +3498,7 @@ stopBtn.MouseButton1Click:Connect(function()
     isSystemActive = false
     table.clear(assignedRemotes)
     
-    -- Auto Spawn Freeze on Stop
+    -- 🛑 Auto Spawn Freeze on STOP
     _G.TXR_AutoSpawnActive = false
     if _G.TXR_AutoSpawnConnection then
         pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
@@ -3513,7 +3513,7 @@ stopBtn.MouseButton1Click:Connect(function()
             TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end
     end
-
+    
     local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Colors.Primary, TextColor3 = Colors.TextDark}):Play()
     TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Danger}):Play()
@@ -4641,7 +4641,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                         end
                     end
 
-                    local rawhrp = hrp
+                    rawhrp = hrp
                     hrp.CFrame = CFrame.new(safePos)
                     
                     local isCleared = false
