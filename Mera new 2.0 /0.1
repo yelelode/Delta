@@ -1798,7 +1798,7 @@ end)
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart = nil
-    local startPos = frame.Position
+    local startPos = nil
     local targetPos = frame.Position
     local velocity = Vector2.new(0, 0)
     local lastInputPos = Vector2.new(0, 0)
@@ -3382,7 +3382,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- ⚡ START / STOP ENGINE CONTROLS (HIGH-TECH POLISHED DOCK)
+-- ⚡ START / STOP ENGINE CONTROLS (HIGH-TECH POLISHED & FIXED AT BOTTOM)
 -- =========================================================
 local toggleRow = Instance.new("Frame", mainFrame)
 toggleRow.Size = UDim2.new(1, -24, 0, 44)
@@ -3390,87 +3390,109 @@ toggleRow.Position = UDim2.new(0, 12, 1, -82)
 toggleRow.BackgroundTransparency = 1
 toggleRow.ZIndex = 15
 
-local startBtn = Instance.new("TextButton", toggleRow)
-startBtn.Size = UDim2.new(0.485, 0, 1, 0)
-startBtn.Position = UDim2.new(0, 0, 0, 0)
-startBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 200)
-startBtn.BackgroundTransparency = 0.05
-startBtn.Text = "▶ START ENGINE"
-startBtn.TextColor3 = Color3.fromRGB(6, 12, 16)
+-- Modern Glow / Backdrop container
+local startContainer = Instance.new("Frame", toggleRow)
+startContainer.Size = UDim2.new(0.48, 0, 1, 0)
+startContainer.Position = UDim2.new(0, 0, 0, 0)
+startContainer.BackgroundTransparency = 1
+startContainer.ZIndex = 16
+
+local startBtn = Instance.new("TextButton", startContainer)
+startBtn.Size = UDim2.fromScale(1, 1)
+startBtn.BackgroundColor3 = Color3.fromRGB(0, 230, 180)
+startBtn.Text = "▶  START"
+startBtn.TextColor3 = Color3.fromRGB(10, 15, 22)
 startBtn.Font = Enum.Font.GothamBlack
-startBtn.TextSize = 11
+startBtn.TextSize = 11.5
 startBtn.AutoButtonColor = false
-startBtn.ZIndex = 16
+startBtn.ZIndex = 17
 
 local startCorner = Instance.new("UICorner", startBtn)
-startCorner.CornerRadius = UDim.new(0, 10)
+startCorner.CornerRadius = UDim.new(0, 9)
 
 local startStroke = Instance.new("UIStroke", startBtn)
-startStroke.Thickness = 1.6
-startStroke.Color = Color3.fromRGB(0, 255, 200)
-startStroke.Transparency = 0.15
+startStroke.Color = Color3.fromRGB(180, 255, 240)
+startStroke.Thickness = 1.2
+startStroke.Transparency = 0.35
 
 local startGrad = Instance.new("UIGradient", startBtn)
 startGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 200)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 190, 150))
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 175, 150))
 })
 startGrad.Rotation = 45
 
-local stopBtn = Instance.new("TextButton", toggleRow)
-stopBtn.Size = UDim2.new(0.485, 0, 1, 0)
-stopBtn.Position = UDim2.new(0.515, 0, 0, 0)
-stopBtn.BackgroundColor3 = Color3.fromRGB(24, 18, 24)
-stopBtn.BackgroundTransparency = 0.25
-stopBtn.Text = "⏹ STOP ENGINE"
-stopBtn.TextColor3 = Color3.fromRGB(255, 70, 100)
+local startScale = Instance.new("UIScale", startBtn)
+startScale.Scale = 1
+
+local stopContainer = Instance.new("Frame", toggleRow)
+stopContainer.Size = UDim2.new(0.48, 0, 1, 0)
+stopContainer.Position = UDim2.new(0.52, 0, 0, 0)
+stopContainer.BackgroundTransparency = 1
+stopContainer.ZIndex = 16
+
+local stopBtn = Instance.new("TextButton", stopContainer)
+stopBtn.Size = UDim2.fromScale(1, 1)
+stopBtn.BackgroundColor3 = Color3.fromRGB(25, 20, 28)
+stopBtn.BackgroundTransparency = 0.2
+stopBtn.Text = "⏹  STOP"
+stopBtn.TextColor3 = Color3.fromRGB(255, 75, 105)
 stopBtn.Font = Enum.Font.GothamBlack
-stopBtn.TextSize = 11
+stopBtn.TextSize = 11.5
 stopBtn.AutoButtonColor = false
-stopBtn.ZIndex = 16
+stopBtn.ZIndex = 17
 
 local stopCorner = Instance.new("UICorner", stopBtn)
-stopCorner.CornerRadius = UDim.new(0, 10)
+stopCorner.CornerRadius = UDim.new(0, 9)
 
 local stopStroke = Instance.new("UIStroke", stopBtn)
-stopStroke.Thickness = 1.6
-stopStroke.Color = Color3.fromRGB(255, 40, 80)
-stopStroke.Transparency = 0.45
+stopStroke.Color = Color3.fromRGB(255, 50, 90)
+stopStroke.Thickness = 1.2
+stopStroke.Transparency = 0.4
 
 local stopGrad = Instance.new("UIGradient", stopBtn)
 stopGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 20, 28)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 14, 20))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 22, 32)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 16, 24))
 })
 stopGrad.Rotation = 45
+
+local stopScale = Instance.new("UIScale", stopBtn)
+stopScale.Scale = 1
 
 crispText(startBtn)
 crispText(stopBtn)
 
-local startScale = Instance.new("UIScale", startBtn)
-local stopScale = Instance.new("UIScale", stopBtn)
+-- Polished Micro-Interactions (Hover/Press)
+startBtn.MouseEnter:Connect(function()
+    TweenService:Create(startScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = 1.03}):Play()
+    TweenService:Create(startStroke, TweenInfo.new(0.2), {Transparency = 0, Thickness = 1.8}):Play()
+end)
+startBtn.MouseLeave:Connect(function()
+    TweenService:Create(startScale, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(startStroke, TweenInfo.new(0.3), {Transparency = 0.35, Thickness = 1.2}):Play()
+end)
+startBtn.MouseButton1Down:Connect(function()
+    TweenService:Create(startScale, TweenInfo.new(0.08, Enum.EasingStyle.Sine), {Scale = 0.94}):Play()
+end)
+startBtn.MouseButton1Up:Connect(function()
+    TweenService:Create(startScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1.03}):Play()
+end)
 
-local function applyPolishedHover(btn, scaleObj, glowStroke, normalStrokeTrans, hoverStrokeTrans)
-    btn.MouseEnter:Connect(function()
-        uiHoverCount = uiHoverCount + 1
-        TweenService:Create(scaleObj, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1.04}):Play()
-        TweenService:Create(glowStroke, TweenInfo.new(0.3, Enum.EasingStyle.Sine), {Transparency = hoverStrokeTrans, Thickness = 2.2}):Play()
-    end)
-    btn.MouseLeave:Connect(function()
-        uiHoverCount = math.max(0, uiHoverCount - 1)
-        TweenService:Create(scaleObj, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1.0}):Play()
-        TweenService:Create(glowStroke, TweenInfo.new(0.3, Enum.EasingStyle.Sine), {Transparency = normalStrokeTrans, Thickness = 1.6}):Play()
-    end)
-    btn.MouseButton1Down:Connect(function()
-        TweenService:Create(scaleObj, TweenInfo.new(0.08, Enum.EasingStyle.Sine), {Scale = 0.92}):Play()
-    end)
-    btn.MouseButton1Up:Connect(function()
-        TweenService:Create(scaleObj, TweenInfo.new(0.35, Enum.EasingStyle.Back), {Scale = 1.04}):Play()
-    end)
-end
-
-applyPolishedHover(startBtn, startScale, startStroke, 0.15, 0.0)
-applyPolishedHover(stopBtn, stopScale, stopStroke, 0.45, 0.1)
+stopBtn.MouseEnter:Connect(function()
+    TweenService:Create(stopScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = 1.03}):Play()
+    TweenService:Create(stopStroke, TweenInfo.new(0.2), {Transparency = 0.1, Thickness = 1.8}):Play()
+end)
+stopBtn.MouseLeave:Connect(function()
+    TweenService:Create(stopScale, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(stopStroke, TweenInfo.new(0.3), {Transparency = 0.4, Thickness = 1.2}):Play()
+end)
+stopBtn.MouseButton1Down:Connect(function()
+    TweenService:Create(stopScale, TweenInfo.new(0.08, Enum.EasingStyle.Sine), {Scale = 0.94}):Play()
+end)
+stopBtn.MouseButton1Up:Connect(function()
+    TweenService:Create(stopScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1.03}):Play()
+end)
 
 startBtn.MouseButton1Click:Connect(function() 
     if isSystemActive then 
@@ -3483,15 +3505,22 @@ startBtn.MouseButton1Click:Connect(function()
     table.clear(targetVelocities)
     
     local tInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Color3.fromRGB(0, 160, 130), TextColor3 = Color3.fromRGB(230, 255, 250)}):Play()
-    TweenService:Create(startStroke, tInfo, {Color = Color3.fromRGB(0, 200, 170), Transparency = 0.5}):Play()
     
-    TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Color3.fromRGB(255, 40, 80), TextColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 0.1}):Play()
-    TweenService:Create(stopStroke, tInfo, {Color = Color3.fromRGB(255, 120, 150), Transparency = 0.1}):Play()
-    stopGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 60, 100)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 20, 60))
+    -- Visual Transition: START (Active state)
+    startGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 180, 140)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 120, 100))
     })
+    TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Color3.fromRGB(0, 160, 130), TextColor3 = Color3.fromRGB(240, 255, 250)}):Play()
+    TweenService:Create(startStroke, tInfo, {Color = Color3.fromRGB(0, 255, 200), Transparency = 0.2}):Play()
+    
+    -- Visual Transition: STOP (Danger active state)
+    stopGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 45, 85)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(190, 15, 50))
+    })
+    TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Color3.fromRGB(240, 35, 75), BackgroundTransparency = 0, TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+    TweenService:Create(stopStroke, tInfo, {Color = Color3.fromRGB(255, 140, 160), Transparency = 0.2, Thickness = 1.5}):Play()
     
     if isSoundEnabled then 
         task.spawn(PlayRobotBangMusic) 
@@ -3546,15 +3575,22 @@ stopBtn.MouseButton1Click:Connect(function()
     end
     
     local tInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Color3.fromRGB(0, 255, 200), TextColor3 = Color3.fromRGB(6, 12, 16), BackgroundTransparency = 0.05}):Play()
-    TweenService:Create(startStroke, tInfo, {Color = Color3.fromRGB(0, 255, 200), Transparency = 0.15}):Play()
     
-    TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Color3.fromRGB(24, 18, 24), TextColor3 = Color3.fromRGB(255, 70, 100), BackgroundTransparency = 0.25}):Play()
-    TweenService:Create(stopStroke, tInfo, {Color = Color3.fromRGB(255, 40, 80), Transparency = 0.45}):Play()
-    stopGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 20, 28)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 14, 20))
+    -- Visual Reset: START
+    startGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 200)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 175, 150))
     })
+    TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Color3.fromRGB(0, 230, 180), TextColor3 = Color3.fromRGB(10, 15, 22)}):Play()
+    TweenService:Create(startStroke, tInfo, {Color = Color3.fromRGB(180, 255, 240), Transparency = 0.35, Thickness = 1.2}):Play()
+    
+    -- Visual Reset: STOP
+    stopGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 22, 32)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 16, 24))
+    })
+    TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Color3.fromRGB(25, 20, 28), BackgroundTransparency = 0.2, TextColor3 = Color3.fromRGB(255, 75, 105)}):Play()
+    TweenService:Create(stopStroke, tInfo, {Color = Color3.fromRGB(255, 50, 90), Transparency = 0.4, Thickness = 1.2}):Play()
     
     if isSoundEnabled then 
         task.spawn(StopRobotBangMusic) 
