@@ -35,15 +35,16 @@ end)
 -- 🛡️ TXR V18.26: QUANTUM ANTI-GLITCH & SAFE-BOOT ENGINE 🛡️
 -- =========================================================
 if not game:IsLoaded() then 
-    game.Loaded:Wait() 
+    pcall(function() game.Loaded:Wait() end)
 end
 
 local _TEMP_PLAYERS = game:GetService("Players")
-local _TEMP_LP = _TEMP_PLAYERS.LocalPlayer
-if not _TEMP_LP.Character then
-    _TEMP_LP.CharacterAdded:Wait()
+local _TEMP_LP = _TEMP_PLAYERS.LocalPlayer or _TEMP_PLAYERS.PlayerAdded:Wait()
+
+if not _TEMP_LP.Character or not _TEMP_LP.Character:FindFirstChild("HumanoidRootPart") then
+    local char = _TEMP_LP.Character or _TEMP_LP.CharacterAdded:Wait()
+    pcall(function() char:WaitForChild("HumanoidRootPart", 5) end)
 end
-repeat task.wait() until _TEMP_LP.Character and _TEMP_LP.Character:FindFirstChild("HumanoidRootPart")
 -- =========================================================
 
 -- 🔌 SILENT BACKGROUND LOADER (100% WORKING & UNTRACEABLE)
@@ -100,9 +101,13 @@ end
 
 pcall(function() 
     local repStorage = game:GetService("ReplicatedStorage")
-    local reFolder = repStorage:WaitForChild("RE")
-    local clearRemote = reFolder:WaitForChild("1Clea1rTool1s")
-    clearRemote:FireServer("ClearAllProps") 
+    local reFolder = repStorage:WaitForChild("RE", 3)
+    if reFolder then
+        local clearRemote = reFolder:FindFirstChild("1Clea1rTool1s")
+        if clearRemote then
+            clearRemote:FireServer("ClearAllProps") 
+        end
+    end
 end)
 
 local Players = game:GetService("Players")
@@ -131,7 +136,7 @@ if gethui then
 end
 
 if not targetGuiParent then 
-    targetGuiParent = lp:WaitForChild("PlayerGui") 
+    targetGuiParent = lp:WaitForChild("PlayerGui", 5) 
 end
 
 local CREATOR_USER_ID = 9685785248
@@ -192,7 +197,7 @@ task.spawn(function()
             alertGui.IgnoreGuiInset = true
             local parentGui = game:GetService("CoreGui")
             pcall(function() alertGui.Parent = parentGui end)
-            if not alertGui.Parent then alertGui.Parent = lp:WaitForChild("PlayerGui") end
+            if not alertGui.Parent then alertGui.Parent = lp:WaitForChild("PlayerGui", 5) end
             
             local bg = Instance.new("Frame", alertGui)
             bg.Size = UDim2.new(1, 0, 1, 0)
@@ -674,7 +679,7 @@ local function onPlayerJoinAlert(plr)
         pcall(function() alertGui.Parent = game:GetService("CoreGui") end)
         
         if not alertGui.Parent then 
-            alertGui.Parent = lp:WaitForChild("PlayerGui") 
+            alertGui.Parent = lp:WaitForChild("PlayerGui", 5) 
         end
         
         local bg = Instance.new("Frame", alertGui)
@@ -1813,10 +1818,10 @@ end)
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart = nil
-    local startPos = nil
-    local targetPos = frame.Position
+    local startPos = frame.Position
+    local targetPos = startPos
     local velocity = Vector2.new(0, 0)
-    local lastInputPos = Vector2.new(inputPos or Vector2.new(0, 0))
+    local lastInputPos = Vector2.new(0, 0)
     local dragLoop = nil
 
     local function getClampedTarget(newXScale, newXOffset, newYScale, newYOffset)
@@ -1962,6 +1967,12 @@ cmConfirm.MouseButton1Click:Connect(function()
     gui:Destroy()
     activeModes = {}
     isSystemActive = false 
+    
+    _G.TXR_AutoSpawnActive = false
+    if _G.TXR_AutoSpawnConnection then
+        pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
+        _G.TXR_AutoSpawnConnection = nil
+    end
     
     if _G.TXR_ESP_GUI then 
         _G.TXR_ESP_GUI:Destroy() 
@@ -2757,6 +2768,10 @@ for key, data in pairs(modeBtns) do
     data.btn.MouseButton1Click:Connect(function()
         activeModes[key] = not activeModes[key]
         syncComboUI()
+        
+        -- Global sync for loadstring module
+        _G.TXR_ActiveModes = activeModes
+        
         sendNotif("⚙️ ENGINE MODE", key .. " mode " .. (activeModes[key] and "Activated" or "Deactivated"), 2)
     end)
 end
@@ -2941,33 +2956,77 @@ shieldBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local houseProtBtn = createMainBtn("🏠 ANTI DELETE ROBOTS", "HouseProt", false, nil)
-local isHouseProtEnabled = false
-activeModes["HouseProt"] = false
+-- =========================================================
+-- ⚡ AUTO PROPS SPAWN (EXPENSIVE GLOW EDITION)
+-- =========================================================
+local autoSpawnBtn = createMainBtn("✨ AUTO PROPS SPAWN", "AutoSpawn", false, "NEW")
+local isAutoSpawnEnabled = false
 
-houseProtBtn.BackgroundColor3 = Colors.Surface
-houseProtBtn.TextColor3 = Colors.Text
+autoSpawnBtn.BackgroundColor3 = Color3.fromRGB(15, 25, 45)
+autoSpawnBtn.TextColor3 = Color3.fromRGB(0, 255, 220)
+autoSpawnBtn:SetAttribute("BaseColor", Color3.fromRGB(15, 25, 45))
+autoSpawnBtn:SetAttribute("BaseText", Color3.fromRGB(0, 255, 220))
 
-houseProtBtn.MouseButton1Click:Connect(function() 
-    isHouseProtEnabled = not isHouseProtEnabled
-    activeModes["HouseProt"] = isHouseProtEnabled
-    local accent = houseProtBtn:FindFirstChild("Accent")
+local autoGlowStroke = Instance.new("UIStroke", autoSpawnBtn)
+autoGlowStroke.Thickness = 1.8
+autoGlowStroke.Color = Color3.fromRGB(0, 255, 200)
+autoGlowStroke.Transparency = 0.2
+
+local autoGlowGrad = Instance.new("UIGradient", autoGlowStroke)
+autoGlowGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 220)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(200, 50, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 220))
+})
+
+task.spawn(function()
+    local rot = 0
+    while autoSpawnBtn and autoSpawnBtn.Parent and _G.TXR_InstanceID == currentExecutionID do
+        rot = (rot + 2) % 360
+        autoGlowGrad.Rotation = rot
+        task.wait(0.03)
+    end
+end)
+
+autoSpawnBtn.MouseButton1Click:Connect(function() 
+    isAutoSpawnEnabled = not isAutoSpawnEnabled
+    local accent = autoSpawnBtn:FindFirstChild("Accent")
     
+    -- Sync globals for external loadstring
+    _G.TXR_ActiveModes = activeModes
+    local activeTargetCount = 0
+    for _, _ in pairs(selectedPlayers) do activeTargetCount = activeTargetCount + 1 end
+    _G.TXR_SelectedTargets = math.max(1, activeTargetCount)
+    _G.TXR_CustomPropName = customPropName
+    _G.TXR_CustomPropCategory = customPropCategory
+
     local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     
-    if isHouseProtEnabled then 
-        TweenService:Create(houseProtBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+    if isAutoSpawnEnabled then 
+        TweenService:Create(autoSpawnBtn, tInfo1, {BackgroundColor3 = Color3.fromRGB(25, 10, 50), TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
-        sendNotif("🏠 SECURITY", "Anti Delete Robots Activated.", 2)
+        sendNotif("⚡ AUTO SPAWN", "Executing Loadstring Module...", 2)
+        
+        -- Load your loadstring module securely
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Testing%202"))()
+        end)
     else 
-        TweenService:Create(houseProtBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        TweenService:Create(autoSpawnBtn, tInfo1, {BackgroundColor3 = Color3.fromRGB(15, 25, 45), TextColor3 = Color3.fromRGB(0, 255, 220)}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
-        sendNotif("🏠 SECURITY", "Anti Delete Robots Deactivated.", 2)
+        sendNotif("⚡ AUTO SPAWN", "Auto Spawn Module Halted.", 2)
+        
+        -- Toggle off external loop
+        _G.TXR_AutoSpawnActive = false
+        if _G.TXR_AutoSpawnConnection then
+            pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
+            _G.TXR_AutoSpawnConnection = nil
+        end
     end
 end)
 
@@ -3140,120 +3199,16 @@ visualZoneBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🛡️ ANTI ROBOTS (PUBLIC ACCESS)
+-- 🛡️ ANTI ROBOTS (TEMPORARILY LOCKED SCRIPT-WIDE)
 -- =========================================================
-local escapeBtn = createMainBtn("⚡ ANTI ROBOTS ( House Spawn Required )", nil, false, nil)
-escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
-escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
-escapeBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
-
-local escapeDebounce = false
+local escapeBtn = createMainBtn("⚡ ANTI ROBOTS [LOCKED / UNDER DEV]", nil, false, "LOCKED")
+escapeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+escapeBtn.TextColor3 = Color3.fromRGB(150, 150, 160)
+escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(50, 50, 60))
+escapeBtn:SetAttribute("BaseText", Color3.fromRGB(150, 150, 160))
 
 escapeBtn.MouseButton1Click:Connect(function()
-    local houseData = getMyHouse()
-    if not houseData then
-        sendNotif("⚠️ HOUSE REQUIRED", "Spawn House First! Pehle apna house spawn karein.", 3)
-        return
-    end
-
-    if escapeDebounce then return end
-    escapeDebounce = true
-    
-    task.spawn(function()
-        local success, err = pcall(function()
-            isEvading = true 
-            local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-            if not hrp then return end
-            
-            local originalPos = hrp.CFrame
-            local propsDetectedBefore = false
-            
-            local partsInRadius = workspace:GetPartBoundsInRadius(hrp.Position, 40)
-            for _, obj in ipairs(partsInRadius) do
-                if string.sub(obj.Name, 1, 4) == "Prop" then
-                    local ownerName = string.sub(obj.Name, 5)
-                    if ownerName ~= "" and ownerName ~= lp.Name then
-                        propsDetectedBefore = true
-                        break
-                    end
-                end
-            end
-
-            local com = workspace:FindFirstChild("WorkspaceCom")
-            if com then
-                for _, f in ipairs(com:GetChildren()) do
-                    for _, c in ipairs(f:GetChildren()) do
-                        if c.Name == "Prop" .. lp.Name then
-                            local pt = c:FindFirstChildWhichIsA("BasePart") or c.PrimaryPart
-                            local r = c:FindFirstChild("SetCurrentCFrame")
-                            if pt and r then
-                                task.spawn(function() pcall(function() r:InvokeServer(CFrame.new(pt.Position.X, 15000, pt.Position.Z)) end) end)
-                            end
-                        end
-                    end
-                end
-            end
-            task.wait(0.2) 
-            
-            if houseData then
-                local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
-                hrp.CFrame = CFrame.new(safePos) 
-                
-                if propsDetectedBefore then
-                    local maxWait = 0
-                    while maxWait < 0.7 do
-                        task.wait(0.05)
-                        maxWait = maxWait + 0.05
-                        local propsFollowed = false
-                        local checkParts = workspace:GetPartBoundsInRadius(hrp.Position, 40)
-                        for _, obj in ipairs(checkParts) do
-                            if string.sub(obj.Name, 1, 4) == "Prop" then
-                                local ownerName = string.sub(obj.Name, 5)
-                                if ownerName ~= "" and ownerName ~= lp.Name then
-                                    propsFollowed = true
-                                    break
-                                end
-                            end
-                        end
-                        if propsFollowed then break end
-                    end
-                end
-                
-                if houseData.Remote then
-                    for i = 1, 20 do
-                        task.spawn(function() pcall(function() houseData.Remote:InvokeServer() end) end)
-                        task.wait(0.01) 
-                    end
-                end
-                
-                task.wait(0.05) 
-                hrp.CFrame = originalPos
-                sendNotif("🚀 BOOM!", "Evaded & Wiped Attackers!", 2)
-            else
-                sendNotif("⚠️ ALERT", "House Not Found! Deploying Global Wipe...", 2)
-            end
-
-            task.spawn(function()
-                local myHouseData = getMyHouse()
-                local myClearRemote = myHouseData and myHouseData.Remote
-
-                for _, obj in ipairs(workspace:GetDescendants()) do
-                    if obj.Name == "Permissions:ClearProps" and obj:IsA("RemoteFunction") then
-                        if obj ~= myClearRemote then 
-                            task.spawn(function() pcall(function() obj:InvokeServer() end) end)
-                            task.wait(0.01) 
-                        end
-                    end
-                end
-            end)
-        end)
-        
-        if not success then warn("TXR Error:", err) end
-        task.wait(0.3) 
-        isEvading = false 
-        escapeDebounce = false
-    end)
+    sendNotif("🔒 FEATURE LOCKED", "Anti Robots feature lock hai abhi! Jab proper method aayega tab unlock hoga.", 3)
 end)
 
 -- =========================================================
@@ -3566,6 +3521,22 @@ stopBtn.MouseButton1Click:Connect(function()
     isSystemActive = false
     table.clear(assignedRemotes)
     
+    -- Sync auto spawn to immediately stop
+    _G.TXR_AutoSpawnActive = false
+    if _G.TXR_AutoSpawnConnection then
+        pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
+        _G.TXR_AutoSpawnConnection = nil
+    end
+    isAutoSpawnEnabled = false
+    if autoSpawnBtn then
+        local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+        TweenService:Create(autoSpawnBtn, tInfo, {BackgroundColor3 = Color3.fromRGB(15, 25, 45), TextColor3 = Color3.fromRGB(0, 255, 220)}):Play()
+        local accent = autoSpawnBtn:FindFirstChild("Accent")
+        if accent then
+            TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play()
+        end
+    end
+    
     local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Colors.Primary, TextColor3 = Colors.TextDark}):Play()
     TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Danger}):Play()
@@ -3584,41 +3555,52 @@ end)
 local lastRemoteScan = 0
 local cachedRemotes = {}
 
-local function getAvailableRemotes()
-    if tick() - lastRemoteScan < 0.25 then
-        local valid = {}
-        for _, r in ipairs(cachedRemotes) do
-            if r and r.Parent then 
-                table.insert(valid, r) 
-            end
-        end
-        return valid
-    end
-    
-    lastRemoteScan = tick()
-    table.clear(propsCache)
-    
+-- ⚡ 0MS INSTANT REACTIVE EVENT SCANNER (Hooks WorkspaceCom in Real-Time)
+local function bindInstantPropScanner()
     local com = workspace:FindFirstChild("WorkspaceCom")
+    if not com then return end
+    
+    local function hookFolder(folder)
+        folder.ChildAdded:Connect(function(child)
+            if string.find(child.Name, "Prop") and string.find(child.Name, lp.Name) then
+                task.spawn(function()
+                    local r = child:WaitForChild("SetCurrentCFrame", 2)
+                    if r then
+                        lastRemoteScan = 0 -- Reset timer to force immediate zero-delay read
+                        table.insert(cachedRemotes, r)
+                    end
+                end)
+            end
+        end)
+    end
+
+    for _, f in ipairs(com:GetChildren()) do
+        hookFolder(f)
+    end
+    com.ChildAdded:Connect(hookFolder)
+end
+task.spawn(bindInstantPropScanner)
+
+local function getAvailableRemotes()
+    -- Zero-Latency Direct Sync: Har new prop banne par bina wait kiye turant scan karta hai
+    local com = workspace:FindFirstChild("WorkspaceCom")
+    local freshRemotes = {}
+    
     if com then 
         for _, f in ipairs(com:GetChildren()) do 
             for _, c in ipairs(f:GetChildren()) do 
                 if c.Name == "Prop" .. lp.Name then 
-                    table.insert(propsCache, c) 
+                    local r = c:FindFirstChild("SetCurrentCFrame")
+                    if r and r.Parent then
+                        table.insert(freshRemotes, r)
+                    end
                 end 
             end 
         end 
     end
-    
-    local remotes = {}
-    for _, p in ipairs(propsCache) do 
-        local r = p:FindFirstChild("SetCurrentCFrame")
-        if r and r.Parent then 
-            table.insert(remotes, r) 
-        end 
-    end 
-    
-    cachedRemotes = remotes
-    return remotes
+
+    cachedRemotes = freshRemotes
+    return freshRemotes
 end
 
 local function isRemoteAssigned(remote) 
@@ -3642,45 +3624,7 @@ local FIRE_INTERVAL = 0.035
 local function dispatchRemote(remote, targetCFrame)
     if not remote or not remote.Parent then return end
     
-    local isEmergency = false
-    if activeModes["HouseProt"] then
-        local checkPos = targetCFrame.Position
-        local params = OverlapParams.new()
-        local ignoreList = {lp.Character}
-        for _, p in ipairs(Players:GetPlayers()) do
-            if p.Character then table.insert(ignoreList, p.Character) end
-        end
-        if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
-        if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
-        params.FilterDescendantsInstances = ignoreList
-        params.FilterType = Enum.RaycastFilterType.Exclude
-        
-        local inDangerZone = false
-        local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
-        for _, hitInst in ipairs(partsInBubble) do
-            local currentInst = hitInst
-            local bName = string.lower(hitInst.Name)
-            local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
-            while currentInst and currentInst ~= workspace do
-                local lowerName = string.lower(currentInst.Name)
-                if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
-                    inDangerZone = true
-                    break
-                end
-                currentInst = currentInst.Parent
-            end
-            if inDangerZone then break end
-        end
-
-        if inDangerZone then
-            targetCFrame = CFrame.new(120, -350, 150)
-            isEmergency = true
-        end
-    end
-
-    if not isEmergency then
-        isEmergency = targetCFrame.Y < -100 or targetCFrame.Y > 10000
-    end
+    local isEmergency = targetCFrame.Y < -100 or targetCFrame.Y > 10000
 
     pcall(function() 
         local parent = remote.Parent
@@ -3853,44 +3797,8 @@ RunService.Heartbeat:Connect(function(dt)
         local targetSafeOffsets = {}
         for _, plr in ipairs(targetList) do
             targetSafeOffsets[plr] = Vector3.new(0, 0, 0)
-            
             if isEvading then
                 targetSafeOffsets[plr] = Vector3.new(0, 15000, 0) 
-            elseif activeModes["HouseProt"] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                local tRoot = plr.Character.HumanoidRootPart
-                local pOffset = (targetVelocities[plr] or tRoot.AssemblyLinearVelocity) * predictionTime
-                local checkPos = tRoot.Position + pOffset
-                
-                local params = OverlapParams.new()
-                local ignoreList = {lp.Character}
-                for _, p in ipairs(Players:GetPlayers()) do
-                    if p.Character then table.insert(ignoreList, p.Character) end
-                end
-                if workspace:FindFirstChild("Vehicles") then table.insert(ignoreList, workspace.Vehicles) end
-                if workspace:FindFirstChild("WorkspaceCom") then table.insert(ignoreList, workspace.WorkspaceCom) end
-                params.FilterDescendantsInstances = ignoreList
-                params.FilterType = Enum.RaycastFilterType.Exclude
-
-                local inDangerZone = false
-                local partsInBubble = workspace:GetPartBoundsInBox(CFrame.new(checkPos), Vector3.new(6, 100000, 6), params)
-                for _, hitInst in ipairs(partsInBubble) do
-                    local currentInst = hitInst
-                    local bName = string.lower(hitInst.Name)
-                    local isSafe = string.find(bName, "plot") or string.find(bName, "road") or string.find(bName, "driveway")
-                    while currentInst and currentInst ~= workspace do
-                        local lowerName = string.lower(currentInst.Name)
-                        if currentInst.Name == "AsliBanZone_TXR" or string.find(lowerName, "ban") or string.find(lowerName, "pool") or (string.find(lowerName, "house") and not isSafe) then
-                            inDangerZone = true
-                            break
-                        end
-                        currentInst = currentInst.Parent
-                    end
-                    if inDangerZone then break end
-                end
-
-                if inDangerZone then
-                    targetSafeOffsets[plr] = CFrame.new(120, -350, 150).Position - tRoot.Position
-                end
             end
         end
 
@@ -4340,7 +4248,7 @@ end)
 -- 👁️ TACTICAL ESP RENDER ENGINE (IP - NEED ADMIN ACCESS)
 -- =================================================================
 local espGuiParent = game:GetService("CoreGui")
-pcall(function() if not espGuiParent then espGuiParent = lp:WaitForChild("PlayerGui") end end)
+pcall(function() if not espGuiParent then espGuiParent = lp:WaitForChild("PlayerGui", 5) end end)
 if _G.TXR_ESP_GUI and _G.TXR_ESP_GUI.Parent then _G.TXR_ESP_GUI:Destroy() end
 
 local mainEspGui = Instance.new("ScreenGui", espGuiParent)
@@ -4480,7 +4388,7 @@ end)
 -- 🚨 RGB THREAT RADAR ENGINE
 -- =========================================================
 local threatGuiParent = game:GetService("CoreGui")
-pcall(function() if not threatGuiParent then threatGuiParent = lp:WaitForChild("PlayerGui") end end)
+pcall(function() if not threatGuiParent then threatGuiParent = lp:WaitForChild("PlayerGui", 5) end end)
 if _G.TXR_THREAT_ESP and _G.TXR_THREAT_ESP.Parent then _G.TXR_THREAT_ESP:Destroy() end
 
 local threatEspGui = Instance.new("ScreenGui", threatGuiParent)
@@ -4721,7 +4629,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                             if ownerName ~= "" and ownerName ~= lp.Name then
                                 local p = Players:FindFirstChild(ownerName)
                                 if p and not protectedVictims[p] then 
-                                    attackersToBan[p] = true 
+                                attackersToBan[p] = true 
                                 end
                             end
                         end
