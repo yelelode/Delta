@@ -4629,7 +4629,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                             if ownerName ~= "" and ownerName ~= lp.Name then
                                 local p = Players:FindFirstChild(ownerName)
                                 if p and not protectedVictims[p] then 
-                                attackersToBan[p] = true 
+                                    attackersToBan[p] = true 
                                 end
                             end
                         end
@@ -4664,7 +4664,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                         end
                     end
 
-                    rawhrp = hrp
+                    local rawhrp = hrp
                     hrp.CFrame = CFrame.new(safePos)
                     
                     local isCleared = false
