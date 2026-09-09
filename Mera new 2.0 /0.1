@@ -3026,7 +3026,7 @@ visualZoneBtn.MouseButton1Click:Connect(function()
                 genjutsuCC = Instance.new("ColorCorrectionEffect")
                 genjutsuCC.Name = "TXR_Tsukuyomi"
                 genjutsuCC.Parent = lighting
-                genjutsuCC.TintColor = Color3.fromRGB(255, 255, 255)
+                genjutsuCC.TintColor = Color3.fromRGB(255, 180, 180)
                 genjutsuCC.Brightness = 0
                 genjutsuCC.Contrast = 0
                 genjutsuCC.Saturation = 0
@@ -3156,16 +3156,34 @@ visualZoneBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🛡️ ANTI ROBOTS (PUBLIC ACCESS -> LOCKED)
+-- 🛡️ ANTI ROBOTS (UNLOCKED - VOID LOCK INTEGRATION)
 -- =========================================================
-local escapeBtn = createMainBtn("⚡ ANTI ROBOTS ( Locked )", nil, false, nil)
-escapeBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 50)
-escapeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-escapeBtn:SetAttribute("BaseColor", Color3.fromRGB(180, 20, 50))
-escapeBtn:SetAttribute("BaseText", Color3.fromRGB(255, 255, 255))
+local isAntiRobotsActive = false
+local escapeBtn = createMainBtn("⚡ ANTI ROBOTS", "AntiRobots", false, nil)
+escapeBtn.BackgroundColor3 = Colors.Surface
+escapeBtn.TextColor3 = Colors.Text
 
 escapeBtn.MouseButton1Click:Connect(function()
-    sendNotif("🔒 LOCKED", "Anti Robots feature lock hai abhi!", 2)
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Testing%203"))()
+    end)
+    
+    isAntiRobotsActive = (_G.TXR_VoidLock_Active == true)
+    local accent = escapeBtn:FindFirstChild("Accent")
+    local tInfo1 = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    if isAntiRobotsActive then
+        TweenService:Create(escapeBtn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+        if accent then
+            TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play()
+        end
+    else
+        TweenService:Create(escapeBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+        if accent then
+            TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play()
+        end
+    end
 end)
 
 -- =========================================================
@@ -4412,7 +4430,7 @@ RunService.Heartbeat:Connect(function()
     
     local currentFrameThreats = {}
     local partsInRadius = workspace:GetPartBoundsInRadius(myRoot.Position, 8)
-    for _, part in ipairs(partsInRadius) do
+    for _, part in ipairs(partsinRadius) do
         if part:IsA("BasePart") and not part:IsDescendantOf(myChar) then
             local currentInst = part
             local attackerName = nil
