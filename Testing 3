@@ -1,0 +1,95 @@
+-- =========================================================
+-- 🕳️ TXR ANTI-ROBOT (AUTO-TOGGLE -1000 VOID LOCK ENGINE)
+-- =========================================================
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+local lp = Players.LocalPlayer
+
+local function sendNotify(title, text)
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = title,
+            Text = text,
+            Duration = 2.5
+        })
+    end)
+end
+
+-- Toggle Switch Engine
+if _G.TXR_VoidLock_Active then
+    -- ================= OFF LOGIC =================
+    _G.TXR_VoidLock_Active = false
+
+    if _G.TXR_VoidLock_Stepped then
+        _G.TXR_VoidLock_Stepped:Disconnect()
+        _G.TXR_VoidLock_Stepped = nil
+    end
+
+    if _G.TXR_VoidLock_Heartbeat then
+        _G.TXR_VoidLock_Heartbeat:Disconnect()
+        _G.TXR_VoidLock_Heartbeat = nil
+    end
+
+    local char = lp.Character
+    if char then
+        local root = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        
+        if root then
+            root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        end
+        if hum then
+            hum:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+        end
+    end
+
+    sendNotify("🕳️ ANTI-ROBOT", "DEACTIVATED: Robots wapas aa gaye.")
+else
+    -- ================= ON LOGIC =================
+    _G.TXR_VoidLock_Active = true
+
+    -- Stepped: Local physics engine ko zero upward/downward velocity dikhana (0% Bounce & Ground Lock)
+    _G.TXR_VoidLock_Stepped = RunService.Stepped:Connect(function()
+        if not _G.TXR_VoidLock_Active then return end
+        
+        local char = lp.Character
+        local root = char and char:FindFirstChild("HumanoidRootPart")
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+
+        if root and hum then
+            local vel = root.AssemblyLinearVelocity
+            root.AssemblyLinearVelocity = Vector3.new(vel.X, 0, vel.Z)
+
+            if hum.Sit then hum.Sit = false end
+            hum:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+
+            for _, p in ipairs(char:GetChildren()) do
+                if p:IsA("BasePart") and p.CanCollide then
+                    p.CanCollide = false
+                end
+            end
+
+            for _, v in ipairs(char:GetDescendants()) do
+                if v:IsA("Weld") and (v.Name == "SeatWeld" or string.find(v.Name:lower(), "seat")) then
+                    pcall(function() v:Destroy() end)
+                end
+            end
+        end
+    end)
+
+    -- Heartbeat: Server ko -1000 negative velocity broadcast karna (Robots seedha void me)
+    _G.TXR_VoidLock_Heartbeat = RunService.Heartbeat:Connect(function()
+        if not _G.TXR_VoidLock_Active then return end
+        
+        local char = lp.Character
+        local root = char and char:FindFirstChild("HumanoidRootPart")
+        if root then
+            local vel = root.AssemblyLinearVelocity
+            root.AssemblyLinearVelocity = Vector3.new(vel.X, -1000, vel.Z)
+        end
+    end)
+
+    sendNotify("🕳️ ANTI-ROBOT", "ACTIVATED: Robots -1000 Void me bhej diye!")
+end
