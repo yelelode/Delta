@@ -1,5 +1,5 @@
 -- =========================================================
--- ðŸ‘‘ TXR HUB: 100% CLEAN VOID (GLOBAL LOADSTRING FIX) ðŸ‘‘
+-- 👑 TXR HUB: 100% CLEAN VOID (GLOBAL LOADSTRING FIX) 👑
 -- =========================================================
 
 local LOAD_DURATION = 5.0 -- 5-Second Runtime
@@ -10,7 +10,7 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
 
--- ðŸ›¡ï¸ ADVANCED ASCII URL ENCRYPTION (100% Undumpable & Fail-Proof)
+-- 🛡️ ADVANCED ASCII URL ENCRYPTION (100% Undumpable & Fail-Proof)
 local function GetCoreURL()
     local bytes = {104, 116, 116, 112, 115, 58, 47, 47, 114, 97, 119, 46, 103, 105, 116, 104, 117, 98, 117, 115, 101, 114, 99, 111, 110, 116, 101, 110, 116, 46, 99, 111, 109, 47, 121, 101, 108, 101, 108, 111, 100, 101, 47, 68, 101, 108, 116, 97, 47, 114, 101, 102, 115, 47, 104, 101, 97, 100, 115, 47, 109, 97, 105, 110, 47, 83, 101, 99, 117, 114, 101, 49, 86, 101, 114, 115, 105, 111, 110, 46, 108, 117, 97}
     local url = ""
@@ -20,7 +20,7 @@ local function GetCoreURL()
     return url
 end
 
--- ðŸš€ GLOBAL PRE-FETCH ENGINE (Fixes Nested Loadstring Bugs)
+-- 🚀 GLOBAL PRE-FETCH ENGINE (Fixes Nested Loadstring Bugs)
 local preloadedCode = nil
 task.spawn(function()
     pcall(function()
@@ -45,14 +45,14 @@ introGui.DisplayOrder = 9999999
 introGui.Parent = targetParent
 _G.TXR_MonogramIntro = introGui
 
--- ðŸŒŒ Cinematic Depth Blur Effect 
+-- 🌌 Cinematic Depth Blur Effect 
 local blur = Instance.new("BlurEffect")
 blur.Name = "TXR_IntroBlur"
 blur.Size = 0
 blur.Parent = Lighting
 TweenService:Create(blur, TweenInfo.new(1.0, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = 28}):Play()
 
--- ðŸ–¤ Deep OLED Clean Void Background
+-- 🖤 Deep OLED Clean Void Background
 local bg = Instance.new("Frame", introGui)
 bg.Size = UDim2.new(1, 0, 1, 0)
 bg.BackgroundColor3 = Color3.fromRGB(1, 2, 6)
@@ -68,7 +68,7 @@ bgGrad.Color = ColorSequence.new({
 bgGrad.Rotation = 45
 TweenService:Create(bg, TweenInfo.new(1.0, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 0.04}):Play()
 
--- âœ¨ 2-Layer Ambient Starfield 
+-- ✨ 2-Layer Ambient Starfield 
 local bgParticles = {}
 for i = 1, 36 do
     local p = Instance.new("Frame", bg)
@@ -83,7 +83,7 @@ for i = 1, 36 do
     table.insert(bgParticles, {frame = p, baseX = p.Position.X.Scale, speed = math.random(8, 20) / 10, offset = math.random() * 10, alpha = baseAlpha})
 end
 
--- ðŸ”® Master UI Canvas Group
+-- 🔮 Master UI Canvas Group
 local mainCanvas = Instance.new("CanvasGroup", introGui)
 mainCanvas.Size = UDim2.fromOffset(500, 390)
 mainCanvas.Position = UDim2.fromScale(0.5, 0.5)
@@ -92,14 +92,14 @@ mainCanvas.BackgroundTransparency = 1
 mainCanvas.GroupTransparency = 1
 mainCanvas.ZIndex = 10
 
--- ðŸŒŸ Flawless Hologram Entry
+-- 🌟 Flawless Hologram Entry
 local canvasScale = Instance.new("UIScale", mainCanvas)
 canvasScale.Scale = 0.8
 TweenService:Create(mainCanvas, TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {GroupTransparency = 0}):Play()
 TweenService:Create(canvasScale, TweenInfo.new(1.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1}):Play()
 
 -- =========================================================
--- âš¡ 3D HOLOGRAPHIC TESSERACT & CORE MONOGRAM
+-- ⚡ 3D HOLOGRAPHIC TESSERACT & CORE MONOGRAM
 -- =========================================================
 local logoContainer = Instance.new("Frame", mainCanvas)
 logoContainer.Size = UDim2.fromOffset(170, 170)
@@ -187,7 +187,7 @@ plateStroke.Color = Color3.fromRGB(0, 255, 200)
 local jisEmblem = Instance.new("TextLabel", centerPlate)
 jisEmblem.Size = UDim2.fromScale(1, 1)
 jisEmblem.BackgroundTransparency = 1
-jisEmblem.Text = "ã€„"
+jisEmblem.Text = "〄"
 jisEmblem.Font = Enum.Font.GothamBlack
 jisEmblem.TextSize = 36
 jisEmblem.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -219,7 +219,7 @@ for i = 1, 10 do
 end
 
 -- =========================================================
--- ðŸ‘‘ CHROMATIC "TXR HUB" TITLE
+-- 👑 CHROMATIC "TXR HUB" TITLE
 -- =========================================================
 local titleRow = Instance.new("Frame", mainCanvas)
 titleRow.AutomaticSize = Enum.AutomaticSize.XY
@@ -305,14 +305,14 @@ tagBadge.Size = UDim2.new(1, 0, 0, 16)
 tagBadge.Position = UDim2.new(0.5, 0, 0.72, 0)
 tagBadge.AnchorPoint = Vector2.new(0.5, 0.5)
 tagBadge.BackgroundTransparency = 1
-tagBadge.Text = "âš¡ QUANTUM CORE ARCHITECTURE â€¢ V55 âš¡"
+tagBadge.Text = "⚡ QUANTUM CORE ARCHITECTURE • V55 ⚡"
 tagBadge.Font = Enum.Font.Code
 tagBadge.TextSize = 10.5
 tagBadge.TextColor3 = Color3.fromRGB(130, 160, 200)
 tagBadge.ZIndex = 30
 
 -- =========================================================
--- ðŸ“Š ULTRA-SMOOTH PROGRESS LINE WITH GLOW UNDERLAY
+-- 📊 ULTRA-SMOOTH PROGRESS LINE WITH GLOW UNDERLAY
 -- =========================================================
 local barGlow = Instance.new("Frame", mainCanvas)
 barGlow.Size = UDim2.new(0, 348, 0, 9)
@@ -404,7 +404,7 @@ percentLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
 percentLabel.ZIndex = 33
 
 -- =========================================================
--- ðŸ”„ 144HZ ADVANCED FLUID ENGINE
+-- 🔄 144HZ ADVANCED FLUID ENGINE
 -- =========================================================
 local isIntroActive = true
 local currentProgress = 0.0
@@ -481,16 +481,16 @@ local renderConn = RunService.RenderStepped:Connect(function(dt)
 end)
 
 -- =========================================================
--- âš¡ 5-SECOND PROGRESSION SEQUENCE
+-- ⚡ 5-SECOND PROGRESSION SEQUENCE
 -- =========================================================
 task.spawn(function()
     local bootSteps = {
-        {target = 0.22, text = "ðŸ” Establishing Quantum Encryption Bridge...", duration = LOAD_DURATION * 0.16},
-        {target = 0.48, text = "âš¡ Synchronizing 144Hz Lerp Subsystems...", duration = LOAD_DURATION * 0.20},
-        {target = 0.72, text = "ðŸ›¡ï¸ Loading Apex Cyber Memory Allocator...", duration = LOAD_DURATION * 0.24},
-        {target = 0.90, text = "ðŸ”® Injecting Dynamic Shader Layer...", duration = LOAD_DURATION * 0.22},
-        {target = 0.97, text = "âœ¨ Finalizing Secure Runtime Core...", duration = LOAD_DURATION * 0.10},
-        {target = 1.00, text = "ðŸ‘‘ TXR HUB READY!", duration = LOAD_DURATION * 0.08}
+        {target = 0.22, text = "🔒 Establishing Quantum Encryption Bridge...", duration = LOAD_DURATION * 0.16},
+        {target = 0.48, text = "⚡ Synchronizing 144Hz Lerp Subsystems...", duration = LOAD_DURATION * 0.20},
+        {target = 0.72, text = "🛡️ Loading Apex Cyber Memory Allocator...", duration = LOAD_DURATION * 0.24},
+        {target = 0.90, text = "🔮 Injecting Dynamic Shader Layer...", duration = LOAD_DURATION * 0.22},
+        {target = 0.97, text = "✨ Finalizing Secure Runtime Core...", duration = LOAD_DURATION * 0.10},
+        {target = 1.00, text = "👑 TXR HUB READY!", duration = LOAD_DURATION * 0.08}
     }
     
     for _, step in ipairs(bootSteps) do
@@ -510,7 +510,7 @@ task.spawn(function()
     targetProgress = 1.0
     
     -- =========================================================
-    -- ðŸŒ¿ THE SEAMLESS "CHAIN-REACTION" OUTRO
+    -- 🌿 THE SEAMLESS "CHAIN-REACTION" OUTRO
     -- =========================================================
     
     task.spawn(function()
@@ -604,7 +604,7 @@ task.spawn(function()
     end)
 
     -- =========================================================
-    -- ðŸš€ FINAL DEPLOYMENT WITH GLOBAL LOADSTRING FIX
+    -- 🚀 FINAL DEPLOYMENT WITH GLOBAL LOADSTRING FIX
     -- =========================================================
     local global_load = getgenv and getgenv().loadstring or loadstring
     
