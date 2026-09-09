@@ -414,7 +414,8 @@ local renderConn = RunService.RenderStepped:Connect(function(dt)
     if not isIntroActive then return end
     local t = os.clock() 
     
-    currentProgress = currentProgress + (targetProgress - currentProgress) * math.clamp(dt * 14, 0, 1)
+    local lerpAlpha = 1 - math.exp(-18 * dt)
+    currentProgress = currentProgress + (targetProgress - currentProgress) * lerpAlpha
     local displayPct = math.clamp(math.floor(currentProgress * 100), 0, 100)
     percentLabel.Text = displayPct .. "%"
     
@@ -501,7 +502,7 @@ task.spawn(function()
             local alpha = (os.clock() - startTime) / step.duration
             local smoothAlpha = alpha * alpha * (3 - 2 * alpha)
             targetProgress = startPct + (step.target - startPct) * smoothAlpha
-            task.wait()
+            RunService.RenderStepped:Wait()
         end
         targetProgress = step.target
     end
