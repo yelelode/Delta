@@ -1,10 +1,11 @@
 -- =========================================================
--- 🕳️ TXR ANTI-ROBOT (AUTO-TOGGLE -1000 VOID LOCK ENGINE)
+-- 🕳️ TXR ANTI-ROBOT v2 (ZERO-FLICKER -1000 VOID LOCK)
 -- =========================================================
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local StarterGui = game:GetService("StarterGui")
+local UserInputService = game:GetService("UserInputService")
 local lp = Players.LocalPlayer
 
 local function sendNotify(title, text)
@@ -17,61 +18,55 @@ local function sendNotify(title, text)
     end)
 end
 
--- Toggle Switch Engine
-if _G.TXR_VoidLock_Active then
-    -- ================= OFF LOGIC =================
-    _G.TXR_VoidLock_Active = false
-
-    if _G.TXR_VoidLock_Stepped then
-        _G.TXR_VoidLock_Stepped:Disconnect()
-        _G.TXR_VoidLock_Stepped = nil
-    end
-
-    if _G.TXR_VoidLock_Heartbeat then
-        _G.TXR_VoidLock_Heartbeat:Disconnect()
-        _G.TXR_VoidLock_Heartbeat = nil
-    end
+-- Cleanup Function
+local function cleanupVoidLock()
+    if _G.TXR_VoidLock_Stepped then _G.TXR_VoidLock_Stepped:Disconnect() _G.TXR_VoidLock_Stepped = nil end
+    if _G.TXR_VoidLock_Heartbeat then _G.TXR_VoidLock_Heartbeat:Disconnect() _G.TXR_VoidLock_Heartbeat = nil end
+    if _G.TXR_VoidLock_MoveConn then _G.TXR_VoidLock_MoveConn:Disconnect() _G.TXR_VoidLock_MoveConn = nil end
+    if _G.TXR_VoidLock_InputConn then _G.TXR_VoidLock_InputConn:Disconnect() _G.TXR_VoidLock_InputConn = nil end
 
     local char = lp.Character
     if char then
         local root = char:FindFirstChild("HumanoidRootPart")
         local hum = char:FindFirstChildOfClass("Humanoid")
-        
-        if root then
-            root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-        end
-        if hum then
-            hum:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
-        end
+        if root then root.AssemblyLinearVelocity = Vector3.new(0, 0, 0) end
+        if hum then hum:SetStateEnabled(Enum.HumanoidStateType.Seated, true) end
     end
+end
 
+-- Toggle Switch
+if _G.TXR_VoidLock_Active then
+    _G.TXR_VoidLock_Active = false
+    cleanupVoidLock()
     sendNotify("🕳️ ANTI-ROBOT", "DEACTIVATED: Robots wapas aa gaye.")
 else
-    -- ================= ON LOGIC =================
     _G.TXR_VoidLock_Active = true
 
-    -- Stepped: Local physics engine ko zero upward/downward velocity dikhana (0% Bounce & Ground Lock)
+    local char = lp.Character
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+
+    -- 1. STEPPED: Local Physics Engine Clamp (Zameen par 100% smooth)
     _G.TXR_VoidLock_Stepped = RunService.Stepped:Connect(function()
         if not _G.TXR_VoidLock_Active then return end
-        
-        local char = lp.Character
-        local root = char and char:FindFirstChild("HumanoidRootPart")
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        local c = lp.Character
+        local r = c and c:FindFirstChild("HumanoidRootPart")
+        local h = c and c:FindFirstChildOfClass("Humanoid")
 
-        if root and hum then
-            local vel = root.AssemblyLinearVelocity
-            root.AssemblyLinearVelocity = Vector3.new(vel.X, 0, vel.Z)
+        if r and h then
+            local vel = r.AssemblyLinearVelocity
+            r.AssemblyLinearVelocity = Vector3.new(vel.X, 0, vel.Z)
 
-            if hum.Sit then hum.Sit = false end
-            hum:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+            if h.Sit then h.Sit = false end
+            h:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
 
-            for _, p in ipairs(char:GetChildren()) do
+            for _, p in ipairs(c:GetChildren()) do
                 if p:IsA("BasePart") and p.CanCollide then
                     p.CanCollide = false
                 end
             end
 
-            for _, v in ipairs(char:GetDescendants()) do
+            for _, v in ipairs(c:GetDescendants()) do
                 if v:IsA("Weld") and (v.Name == "SeatWeld" or string.find(v.Name:lower(), "seat")) then
                     pcall(function() v:Destroy() end)
                 end
@@ -79,17 +74,52 @@ else
         end
     end)
 
-    -- Heartbeat: Server ko -1000 negative velocity broadcast karna (Robots seedha void me)
+    -- 2. HEARTBEAT: Continuous -1000 Server Broadcast
     _G.TXR_VoidLock_Heartbeat = RunService.Heartbeat:Connect(function()
         if not _G.TXR_VoidLock_Active then return end
-        
-        local char = lp.Character
-        local root = char and char:FindFirstChild("HumanoidRootPart")
-        if root then
-            local vel = root.AssemblyLinearVelocity
-            root.AssemblyLinearVelocity = Vector3.new(vel.X, -1000, vel.Z)
+        local c = lp.Character
+        local r = c and c:FindFirstChild("HumanoidRootPart")
+        local h = c and c:FindFirstChildOfClass("Humanoid")
+
+        if r and h then
+            local moveDir = h.MoveDirection
+            local speed = h.WalkSpeed
+            local vx = (moveDir.Magnitude > 0) and (moveDir.X * speed) or r.AssemblyLinearVelocity.X
+            local vz = (moveDir.Magnitude > 0) and (moveDir.Z * speed) or r.AssemblyLinearVelocity.Z
+            
+            r.AssemblyLinearVelocity = Vector3.new(vx, -1000, vz)
         end
     end)
 
-    sendNotify("🕳️ ANTI-ROBOT", "ACTIVATED: Robots -1000 Void me bhej diye!")
+    -- 3. INSTANT MOVE-HOOK (Joystick drag hote hi 0MS par trigger - No Millisecond Leak)
+    if hum then
+        _G.TXR_VoidLock_MoveConn = hum:GetPropertyChangedSignal("MoveDirection"):Connect(function()
+            if not _G.TXR_VoidLock_Active then return end
+            local c = lp.Character
+            local r = c and c:FindFirstChild("HumanoidRootPart")
+            local h = c and c:FindFirstChildOfClass("Humanoid")
+            if r and h then
+                local moveDir = h.MoveDirection
+                local speed = h.WalkSpeed
+                r.AssemblyLinearVelocity = Vector3.new(moveDir.X * speed, -1000, moveDir.Z * speed)
+            end
+        end)
+    end
+
+    -- 4. TOUCH INTERCEPTOR (Mobile screen touch detect hote hi packet lock)
+    _G.TXR_VoidLock_InputConn = UserInputService.InputChanged:Connect(function(input)
+        if not _G.TXR_VoidLock_Active then return end
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
+            local c = lp.Character
+            local r = c and c:FindFirstChild("HumanoidRootPart")
+            local h = c and c:FindFirstChildOfClass("Humanoid")
+            if r and h and h.MoveDirection.Magnitude > 0 then
+                local moveDir = h.MoveDirection
+                local speed = h.WalkSpeed
+                r.AssemblyLinearVelocity = Vector3.new(moveDir.X * speed, -1000, moveDir.Z * speed)
+            end
+        end
+    end)
+
+    sendNotify("🕳️ ANTI-ROBOT", "ACTIVATED: Zero-Flicker Void Lock Active!")
 end
