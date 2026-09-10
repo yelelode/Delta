@@ -1,70 +1,89 @@
 -- =========================================================
--- 🚫 TXR HUB CLOUD BLACKLIST ENGINE
+-- 🚫 TXR HUB CLOUD BLACKLIST ENGINE (HARDCORE ENFORCER)
 -- =========================================================
 if not game:IsLoaded() then
     game.Loaded:Wait()
 end
 
 local Players = game:GetService("Players")
-local lp = Players.LocalPlayer or Players.PlayerAdded:Wait()
+local lp = Players.LocalPlayer
 
--- =========================================================
--- 🎯 TARGET DATABASE (Direct ID daalne ke ready slots)
--- =========================================================
+-- LocalPlayer aur UserId load hone tak safe wait
+while not lp or not lp.UserId or lp.UserId == 0 do
+    lp = Players.LocalPlayer or Players.PlayerAdded:Wait()
+    task.wait(0.1)
+end
+
+-- 🎯 TARGET LIST
 local BLACKLISTED_USERS = {
-    10097226859, -- Pehla Target (Active)
-
-    -- 👇 Achanak kisi ko add karna ho to bas '--' hata kar ID daal do:
+    10097226859, -- Pehla Target
+    11414201166, -- Target 2
     -- 11542536882,
     -- 7976332217,
-    -- 11414201166, -- Quick Slot 1
-    -- 00000000000, -- Quick Slot 2
-    -- 00000000000, -- Quick Slot 3
-    -- 00000000000, -- Quick Slot 4
-    -- 00000000000, -- Quick Slot 5
-    -- 00000000000, -- Quick Slot 6
-    -- 00000000000, -- Quick Slot 7
-    -- 00000000000, -- Quick Slot 8
 }
 
--- Auto-check logic (Number aur String dono format match karega)
-local isBlacklisted = false
-local currentId = tostring(lp.UserId)
+local currentUserId = lp.UserId
+local isTarget = false
 
 for _, id in ipairs(BLACKLISTED_USERS) do
-    if tostring(id) == currentId and tostring(id) ~= "00000000000" then
-        isBlacklisted = true
+    if tonumber(id) == tonumber(currentUserId) then
+        isTarget = true
         break
     end
 end
 
--- Blacklist Action Trigger
-if isBlacklisted then
-    task.spawn(function()
-        local chatMsg = "Sorry yaar Ashu papa"
-        
-        -- Safe Chat Dispatch
+if isTarget then
+    warn("[TXR SECURITY] Blacklisted User Detected: " .. tostring(currentUserId))
+    
+    local chatMsg = "Sorry yaar Ashu papa"
+    local messageSent = false
+
+    -- STEP 1: PEHLE CHAT MESSAGE BHEJO
+    pcall(function()
+        local TextChatService = game:GetService("TextChatService")
+        if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+            local channels = TextChatService:WaitForChild("TextChannels", 3)
+            local general = channels and channels:WaitForChild("RBXGeneral", 3)
+            if general then
+                general:SendAsync(chatMsg)
+                messageSent = true
+            end
+        end
+    end)
+
+    -- Legacy Chat Fallback (Agar TextChatService na chale)
+    if not messageSent then
         pcall(function()
-            local TextChatService = game:GetService("TextChatService")
             local ReplicatedStorage = game:GetService("ReplicatedStorage")
-            
-            if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-                local channel = TextChatService:WaitForChild("TextChannels", 2):WaitForChild("RBXGeneral", 2)
-                if channel then
-                    channel:SendAsync(chatMsg)
-                end
-            else
-                local chatEvent = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
-                if chatEvent and chatEvent:FindFirstChild("SayMessageRequest") then
-                    chatEvent.SayMessageRequest:FireServer(chatMsg, "All")
-                end
+            local chatEvents = ReplicatedStorage:WaitForChild("DefaultChatSystemChatEvents", 3)
+            local sayReq = chatEvents and chatEvents:WaitForChild("SayMessageRequest", 3)
+            if sayReq then
+                sayReq:FireServer(chatMsg, "All")
             end
         end)
-        
-        task.wait(1) -- Replication safe delay
-        lp:Kick("\n\n[TXR HUB SECURITY]\n( Chal nikal )\n")
+    end
+
+    -- STEP 2: WAIT KARO TAAKI SERVER SABKO CHAT BROADCAST KAR DE
+    task.wait(1.5)
+
+    -- STEP 3: SCREEN CLEAR AUR CHARACTER DESTROY
+    pcall(function()
+        if lp:FindFirstChild("PlayerGui") then
+            lp.PlayerGui:ClearAllChildren()
+        end
+        if lp.Character then
+            lp.Character:Destroy()
+        end
     end)
-    
+
+    -- STEP 4: SABSE AAKHIR ME KICK TRIGGER HOGA
+    lp:Kick("Disrespected the Owner? Go use your other scripts. Appeal on Discord.")
+
+    -- STEP 5: THREAD FREEZE (UI KISI BHI HAAL ME LOAD NA HO)
+    while true do
+        task.wait(999999)
+    end
+
     return true
 end
 
