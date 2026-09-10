@@ -1285,7 +1285,7 @@ footer.ZIndex = 15
 local discordBtn = Instance.new("TextButton", footer)
 discordBtn.Size = UDim2.fromScale(1, 1)
 discordBtn.BackgroundTransparency = 1
-discordBtn.Text = "Discord: @flegzy.."
+discordBtn.Text = "Discord: @flegzy."
 discordBtn.TextColor3 = Colors.Primary
 discordBtn.Font = Enum.Font.GothamBold
 discordBtn.TextSize = 11
@@ -1297,12 +1297,12 @@ discordBtn.MouseButton1Click:Connect(function()
     pcall(function() 
         copyToClip("not_ashu.") 
     end)
-    sendNotif("TXR System", "Discord Tag (@not_ashu.) Copied!", 2)
+    sendNotif("TXR System", "Discord Tag (@flegzy.) Copied!", 2)
     discordBtn.Text = "⚡ Copied Discord!"
     discordBtn.TextColor3 = Colors.PrimaryDark
     task.delay(1.5, function() 
         if discordBtn then 
-            discordBtn.Text = "Discord: @not_ashu."
+            discordBtn.Text = "Discord: @flegzy."
             discordBtn.TextColor3 = Colors.Primary
         end 
     end) 
