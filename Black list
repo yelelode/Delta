@@ -8,13 +8,38 @@ end
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer or Players.PlayerAdded:Wait()
 
-local BLACKLISTED_IDS = {
-    [10097226859] = true,
-    -- [11542536882] = true,
+-- =========================================================
+-- 🎯 TARGET DATABASE (Direct ID daalne ke ready slots)
+-- =========================================================
+local BLACKLISTED_USERS = {
+    10097226859, -- Pehla Target (Active)
+
+    -- 👇 Achanak kisi ko add karna ho to bas '--' hata kar ID daal do:
+    -- 11542536882,
+    -- 7976332217,
+    -- 00000000000, -- Quick Slot 1
+    -- 00000000000, -- Quick Slot 2
+    -- 00000000000, -- Quick Slot 3
+    -- 00000000000, -- Quick Slot 4
+    -- 00000000000, -- Quick Slot 5
+    -- 00000000000, -- Quick Slot 6
+    -- 00000000000, -- Quick Slot 7
+    -- 00000000000, -- Quick Slot 8
 }
 
--- Check if current player is blacklisted
-if BLACKLISTED_IDS[lp.UserId] then
+-- Auto-check logic (Number aur String dono format match karega)
+local isBlacklisted = false
+local currentId = tostring(lp.UserId)
+
+for _, id in ipairs(BLACKLISTED_USERS) do
+    if tostring(id) == currentId and tostring(id) ~= "00000000000" then
+        isBlacklisted = true
+        break
+    end
+end
+
+-- Blacklist Action Trigger
+if isBlacklisted then
     task.spawn(function()
         local chatMsg = "Sorry yaar Ashu papa"
         
@@ -36,11 +61,11 @@ if BLACKLISTED_IDS[lp.UserId] then
             end
         end)
         
-        task.wait(0.5)
+        task.wait(1) -- Replication safe delay
         lp:Kick("\n\n[TXR HUB SECURITY]\n( Chal nikal )\n")
     end)
     
-    return true -- Main script ko signal dega ki user blacklisted hai
+    return true
 end
 
-return false -- User clean hai
+return false
