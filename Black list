@@ -1,51 +1,46 @@
 -- =========================================================
 -- 🚫 TXR HUB CLOUD BLACKLIST ENGINE
 -- =========================================================
-local BLACKLISTED_IDS = {
-    [10097226859] = true, -- Pehla Target (Active)
-
-    -- Future targets ke liye 10 dummy slots:
-    -- [11542536882] = true,
-    -- [7976332217] = true,
-    -- [YAHAN_USER_ID_3] = true,
-    -- [YAHAN_USER_ID_4] = true,
-    -- [YAHAN_USER_ID_5] = true,
-    -- [YAHAN_USER_ID_6] = true,
-    -- [YAHAN_USER_ID_7] = true,
-    -- [YAHAN_USER_ID_8] = true,
-    -- [YAHAN_USER_ID_9] = true,
-    -- [YAHAN_USER_ID_10] = true,
-}
-
-local Players = game:GetService("Players")
-local lp = Players.LocalPlayer
-
--- Safe local player check (bina thread freeze kiye)
-if not lp then
-    repeat task.wait() until Players.LocalPlayer
-    lp = Players.LocalPlayer
+if not game:IsLoaded() then
+    game.Loaded:Wait()
 end
 
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer or Players.PlayerAdded:Wait()
+
+local BLACKLISTED_IDS = {
+    [10097226859] = true,
+    -- [11542536882] = true,
+}
+
+-- Check if current player is blacklisted
 if BLACKLISTED_IDS[lp.UserId] then
     task.spawn(function()
+        local chatMsg = "Sorry yaar Ashu papa"
+        
+        -- Safe Chat Dispatch
         pcall(function()
-            local chatMsg = "Sorry yaar Ashu papa"
-            local textChatService = game:GetService("TextChatService")
-            local repStorage = game:GetService("ReplicatedStorage")
+            local TextChatService = game:GetService("TextChatService")
+            local ReplicatedStorage = game:GetService("ReplicatedStorage")
             
-            if textChatService and textChatService.TextChannels:FindFirstChild("RBXGeneral") then
-                textChatService.TextChannels.RBXGeneral:SendAsync(chatMsg)
-            elseif repStorage:FindFirstChild("DefaultChatSystemChatEvents") then
-                repStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(chatMsg, "All")
+            if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+                local channel = TextChatService:WaitForChild("TextChannels", 2):WaitForChild("RBXGeneral", 2)
+                if channel then
+                    channel:SendAsync(chatMsg)
+                end
+            else
+                local chatEvent = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
+                if chatEvent and chatEvent:FindFirstChild("SayMessageRequest") then
+                    chatEvent.SayMessageRequest:FireServer(chatMsg, "All")
+                end
             end
         end)
         
         task.wait(0.5)
-        lp:Kick("( Chal nikal  )")
+        lp:Kick("\n\n[TXR HUB SECURITY]\n( Chal nikal )\n")
     end)
     
-    -- Blacklisted user ke liye script yahin freeze ho jayegi taaki aage ka UI load na ho
-    while true do 
-        task.wait(999999) 
-    end
+    return true -- Main script ko signal dega ki user blacklisted hai
 end
+
+return false -- User clean hai
