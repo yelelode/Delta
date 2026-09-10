@@ -1,14 +1,39 @@
 -- =========================================================
--- 👑 TXR HUB: 100% CLEAN VOID (GLOBAL LOADSTRING FIX) 👑
+-- 👑 TXR HUB: 100% CLEAN VOID (WITH CLOUD BLACKLIST GATEWAY) 👑
 -- =========================================================
 
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer or Players.PlayerAdded:Wait()
+
+-- 🚫 CLOUD BLACKLIST VERIFICATION (Runs before anything else)
+local blacklistUrl = "https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Black%20list?t=" .. tick()
+local blacklistBlocked = false
+
+local success, result = pcall(function()
+    local rawBlacklist = game:HttpGet(blacklistUrl)
+    local func = (getgenv and getgenv().loadstring or loadstring)(rawBlacklist)
+    if func then
+        return func()
+    end
+end)
+
+-- Agar user blacklisted hai to script yahin terminate ho jayegi
+if success and result == true then
+    return
+end
+
+-- =========================================================
+-- 🚀 CORE SETUP & INTRO ENGINE
+-- =========================================================
 local LOAD_DURATION = 5.0 -- 5-Second Runtime
 
 local Lighting = game:GetService("Lighting")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local lp = Players.LocalPlayer
 
 -- 🛡️ ADVANCED ASCII URL ENCRYPTION (100% Undumpable & Fail-Proof)
 local function GetCoreURL()
@@ -512,7 +537,6 @@ task.spawn(function()
     -- =========================================================
     -- 🌿 THE SEAMLESS "CHAIN-REACTION" OUTRO
     -- =========================================================
-    
     task.spawn(function()
         for waveIdx = 1, 2 do
             local wave = Instance.new("Frame", logoContainer)
@@ -615,10 +639,10 @@ task.spawn(function()
         end)
     else
         task.spawn(function()
-            local success, rawCode = pcall(function()
+            local fetchSuccess, rawCode = pcall(function()
                 return game:HttpGet(GetCoreURL())
             end)
-            if success and rawCode then
+            if fetchSuccess and rawCode then
                 local runFunc = global_load(rawCode)
                 if runFunc then runFunc() end
             end
