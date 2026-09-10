@@ -14,19 +14,34 @@ while not lp or not lp.UserId or lp.UserId == 0 do
     task.wait(0.1)
 end
 
--- 🎯 TARGET LIST
+-- =========================================================
+-- 🎯 15 TARGET DATABASE SLOTS (Bas '0' ki jagah ID daal do)
+-- =========================================================
 local BLACKLISTED_USERS = {
-    10097226859, -- Pehla Target
-    11414201166, -- Target 2
-    -- 11542536882,
-    -- 7976332217,
+    10097226859, -- [Slot 01] Active Target
+    11414201166, -- [Slot 02] Active Target
+    0,           -- [Slot 03] Khali Slot (Yahan ID paste karein)
+    0,           -- [Slot 04] Khali Slot
+    0,           -- [Slot 05] Khali Slot
+    0,           -- [Slot 06] Khali Slot
+    0,           -- [Slot 07] Khali Slot
+    0,           -- [Slot 08] Khali Slot
+    0,           -- [Slot 09] Khali Slot
+    0,           -- [Slot 10] Khali Slot
+    0,           -- [Slot 11] Khali Slot
+    0,           -- [Slot 12] Khali Slot
+    0,           -- [Slot 13] Khali Slot
+    0,           -- [Slot 14] Khali Slot
+    0,           -- [Slot 15] Khali Slot
 }
 
 local currentUserId = lp.UserId
 local isTarget = false
 
+-- Safe ID Matching (Ignored if 0 or empty)
 for _, id in ipairs(BLACKLISTED_USERS) do
-    if tonumber(id) == tonumber(currentUserId) then
+    local targetId = tonumber(id)
+    if targetId and targetId > 0 and targetId == tonumber(currentUserId) then
         isTarget = true
         break
     end
@@ -76,7 +91,7 @@ if isTarget then
         end
     end)
 
-    -- STEP 4: SABSE AAKHIR ME KICK TRIGGER HOGA
+    -- STEP 4: SABSE AAKHIR ME KICK TRIGGER HOGA (Option 3 Dialog)
     lp:Kick("Disrespected the Owner? Go use your other scripts. Appeal on Discord.")
 
     -- STEP 5: THREAD FREEZE (UI KISI BHI HAAL ME LOAD NA HO)
