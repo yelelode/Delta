@@ -5,7 +5,7 @@ local BLACKLISTED_IDS = {
     [10097226859] = true, -- Pehla Target (Active)
 
     -- Future targets ke liye 10 dummy slots:
-    -- [YAHAN_USER_ID_1] = true,
+    -- [11542536882] = true,
     -- [YAHAN_USER_ID_2] = true,
     -- [YAHAN_USER_ID_3] = true,
     -- [YAHAN_USER_ID_4] = true,
