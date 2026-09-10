@@ -3164,6 +3164,11 @@ escapeBtn.BackgroundColor3 = Colors.Surface
 escapeBtn.TextColor3 = Colors.Text
 
 escapeBtn.MouseButton1Click:Connect(function()
+    if not checkAdminAccess(lp) then
+        sendNotif("🔒 ACCESS DENIED", "Need admin access", 2.5)
+        return
+    end
+
     pcall(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Testing%203"))()
     end)
@@ -4430,7 +4435,7 @@ RunService.Heartbeat:Connect(function()
     
     local currentFrameThreats = {}
     local partsInRadius = workspace:GetPartBoundsInRadius(myRoot.Position, 8)
-    for _, part in ipairs(partsinRadius) do
+    for _, part in ipairs(partsInRadius) do
         if part:IsA("BasePart") and not part:IsDescendantOf(myChar) then
             local currentInst = part
             local attackerName = nil
