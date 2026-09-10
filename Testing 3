@@ -1,6 +1,5 @@
 -- =========================================================
--- 🕳️ TXR ANTI-ROBOT (HEADLESS AUTO-TOGGLE MODULE - TESTING 3)
--- Features: Direct Main-Script Toggle (No Extra Screen Buttons)
+-- 🕳️ TXR ANTI-ROBOT (100% PURE HEADLESS TOGGLE - TESTING 3)
 -- =========================================================
 
 local Players = game:GetService("Players")
@@ -16,10 +15,6 @@ local ADMIN_WHITELIST = {
     [9685785248] = true, -- Ashu Papa (Main ID)
     [lp.UserId] = true,  -- Script Executor ID
     [lp.Name] = true,    -- Script Executor Name
-
-    -- Yahan Nothing Panel ke tagged accounts ya trusted IDs add kar sakte ho:
-    -- [123456789] = true,
-    -- ["TargetUsername"] = true,
 }
 
 local function checkAdminAccess(player)
@@ -32,27 +27,28 @@ local function sendNotify(title, text, duration)
         StarterGui:SetCore("SendNotification", {
             Title = title,
             Text = text,
-            Duration = duration or 2.5
+            Duration = duration or 2
         })
     end)
 end
 
--- Admin Verification
+-- Admin Check: Agar authorized nahi hai toh yahi block ho jayega
 if not checkAdminAccess(lp) then
     sendNotify("🔒 ACCESS DENIED", "Need admin access", 2.5)
+    _G.TXR_VoidLock_Active = false
     return
 end
 
--- Purana floating GUI agar bacha ho toh safely destroy karna
+-- Kisi purane screen GUI ko clean karna (taaki screen par koi button na dikhe)
 if _G.VoidBypassGui then
     pcall(function() _G.VoidBypassGui:Destroy() end)
     _G.VoidBypassGui = nil
 end
 
 -- =========================================================
--- 🛑 DEACTIVATION ENGINE (CLEANUP)
+-- 🛑 STOP ENGINE FUNCTION
 -- =========================================================
-local function stopVoidLock()
+local function stopVoidEngine()
     if _G.TXR_Void_Stepped then
         pcall(function() _G.TXR_Void_Stepped:Disconnect() end)
         _G.TXR_Void_Stepped = nil
@@ -87,9 +83,9 @@ local function stopVoidLock()
 end
 
 -- =========================================================
--- ⚡ ACTIVATION ENGINE (96.5 SAFE CLAMP + KINEMATIC JUMP)
+-- ⚡ START ENGINE FUNCTION (96.5 SAFE CLAMP + KINEMATICS)
 -- =========================================================
-local function startVoidLock()
+local function startVoidEngine()
     local char = lp.Character
     if not char or not char:FindFirstChild("HumanoidRootPart") then return end
     local root = char.HumanoidRootPart
@@ -123,7 +119,6 @@ local function startVoidLock()
         end
     end
 
-    -- Jump Event Listeners
     _G.TXR_Void_JumpConn = UserInputService.JumpRequest:Connect(onJumpTrigger)
     _G.TXR_Void_StateConn = hum.StateChanged:Connect(function(_, new)
         if new == Enum.HumanoidStateType.Jumping then
@@ -134,7 +129,7 @@ local function startVoidLock()
         end
     end)
 
-    -- 1. STEPPED: Local Physics Engine (Smooth Walk & Natural Jump Simulation)
+    -- 1. Stepped: Local Physics Engine (Smooth Walk & Natural Jump Simulation)
     _G.TXR_Void_Stepped = RunService.Stepped:Connect(function(_, dt)
         if not _G.TXR_VoidLock_Active then return end
         local c = lp.Character
@@ -180,7 +175,7 @@ local function startVoidLock()
             end
         end
 
-        -- Hostile Prop Ghost Stripper
+        -- Hostile Prop Ghost Stripper (WorkspaceCom props neutralize karna)
         local com = workspace:FindFirstChild("WorkspaceCom")
         if com then
             for _, folder in ipairs(com:GetChildren()) do
@@ -198,7 +193,7 @@ local function startVoidLock()
         end
     end)
 
-    -- 2. HEARTBEAT: Server Replication (Bypasses Nothing Panel 100-Clamp)
+    -- 2. Heartbeat: Server Replication (Vector Balancing + Safe Ground Dip)
     _G.TXR_Void_Heartbeat = RunService.Heartbeat:Connect(function()
         if not _G.TXR_VoidLock_Active then return end
         local c = lp.Character
@@ -231,14 +226,14 @@ local function startVoidLock()
 end
 
 -- =========================================================
--- 🔄 TOGGLE CONTROLLER (EXECUTES INSTANTLY ON MAIN BUTTON CLICK)
+-- 🔄 DIRECT STATE TOGGLE CONTROLLER
 -- =========================================================
 if _G.TXR_VoidLock_Active then
     _G.TXR_VoidLock_Active = false
-    stopVoidLock()
+    stopVoidEngine()
     sendNotify("🛡️ ANTI ROBOTS", "Deactivated", 2)
 else
     _G.TXR_VoidLock_Active = true
-    startVoidLock()
+    startVoidEngine()
     sendNotify("🛡️ ANTI ROBOTS", "Activated: 96.5 Safe-Void Active", 2.5)
 end
