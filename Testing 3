@@ -1,125 +1,284 @@
 -- =========================================================
--- 🕳️ TXR ANTI-ROBOT v2 (ZERO-FLICKER -1000 VOID LOCK)
+-- 🕳️ TXR ULTIMATE VOID LOCK (96.5 SAFE CLAMP + GLITCH-FREE JUMP + ADMIN GATE)
+-- Features:
+--  1. Admin Whitelist Gatekeeper ("Need admin access")
+--  2. 96.5 Strict Sub-100 Clamping (Bypasses Nothing Panel 100-limit)
+--  3. Virtual Kinematic Jump Engine (Smooth natural jumping, zero sticking)
+--  4. Ground-Only Alternate Frame Micro-Dip (Anti-Delta-Tracking)
+--  5. Hostile Prop Ghost-Stripper (Auto-immunize WorkspaceCom troll props)
 -- =========================================================
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local StarterGui = game:GetService("StarterGui")
 local UserInputService = game:GetService("UserInputService")
+local StarterGui = game:GetService("StarterGui")
 local lp = Players.LocalPlayer
 
-local function sendNotify(title, text)
+-- =========================================================
+-- 🔐 ADMIN ACCESS / WHITELIST CONFIGURATION
+-- =========================================================
+local ADMIN_WHITELIST = {
+    [9685785248] = true, -- Ashu Papa (Main ID)
+    [lp.UserId] = true,  -- Script Executor ID
+    [lp.Name] = true,    -- Script Executor Name
+
+    -- Yahan Nothing Panel ke tagged accounts ya trusted IDs add kar sakte ho:
+    -- [123456789] = true,
+    -- ["TargetUsername"] = true,
+}
+
+local function checkAdminAccess(player)
+    player = player or lp
+    return (ADMIN_WHITELIST[player.UserId] == true or ADMIN_WHITELIST[player.Name] == true)
+end
+
+local function sendNotify(title, text, duration)
     pcall(function()
         StarterGui:SetCore("SendNotification", {
             Title = title,
             Text = text,
-            Duration = 2.5
+            Duration = duration or 2.5
         })
     end)
 end
 
--- Cleanup Function
-local function cleanupVoidLock()
-    if _G.TXR_VoidLock_Stepped then _G.TXR_VoidLock_Stepped:Disconnect() _G.TXR_VoidLock_Stepped = nil end
-    if _G.TXR_VoidLock_Heartbeat then _G.TXR_VoidLock_Heartbeat:Disconnect() _G.TXR_VoidLock_Heartbeat = nil end
-    if _G.TXR_VoidLock_MoveConn then _G.TXR_VoidLock_MoveConn:Disconnect() _G.TXR_VoidLock_MoveConn = nil end
-    if _G.TXR_VoidLock_InputConn then _G.TXR_VoidLock_InputConn:Disconnect() _G.TXR_VoidLock_InputConn = nil end
+-- =========================================================
+-- 🧹 CLEANUP PREVIOUS INSTANCES
+-- =========================================================
+if _G.VoidBypassGui then
+    pcall(function() _G.VoidBypassGui:Destroy() end)
+end
 
+if _G.TXR_VoidLock_Cleanup then
+    pcall(function() _G.TXR_VoidLock_Cleanup() end)
+end
+
+local pGui = lp:FindFirstChildOfClass("PlayerGui") or lp:WaitForChild("PlayerGui", 5)
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "VoidBypassGui"
+gui.ResetOnSpawn = false
+gui.DisplayOrder = 999999
+gui.IgnoreGuiInset = true
+gui.Parent = pGui
+_G.VoidBypassGui = gui
+
+-- =========================================================
+-- 🔘 MAIN TOGGLE BUTTON
+-- =========================================================
+local btn = Instance.new("TextButton")
+btn.Name = "VoidToggleBtn"
+btn.Size = UDim2.new(0, 165, 0, 42)
+btn.Position = UDim2.new(0.04, 0, 0.35, 0)
+btn.BackgroundColor3 = Color3.fromRGB(18, 14, 28)
+btn.Text = "🕳️ VOID LOCK: OFF"
+btn.TextColor3 = Color3.fromRGB(255, 75, 75)
+btn.Font = Enum.Font.GothamBlack
+btn.TextSize = 11
+btn.Active = true
+btn.Draggable = true
+btn.Parent = gui
+
+Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+local stroke = Instance.new("UIStroke", btn)
+stroke.Thickness = 2
+stroke.Color = Color3.fromRGB(255, 75, 75)
+
+-- =========================================================
+-- ⚙️ CORE ENGINE STATES & KINEMATICS
+-- =========================================================
+local isActive = false
+local loopStepped = nil
+local loopHeartbeat = nil
+local jumpConnection = nil
+local stateConnection = nil
+
+local MAX_SAFE_LIMIT = 96.5
+local isAirborne = false
+local airVelY = 0
+
+local function getJumpImpulse(hum)
+    local g = workspace.Gravity
+    if g <= 0 then g = 196.2 end
+    if hum.UseJumpPower then
+        local jp = hum.JumpPower
+        return (jp > 0 and jp) or 50
+    else
+        local jh = hum.JumpHeight
+        jh = (jh > 0 and jh) or 7.2
+        return math.sqrt(2 * g * jh)
+    end
+end
+
+local function onJumpTrigger()
+    if not isActive then return end
     local char = lp.Character
-    if char then
-        local root = char:FindFirstChild("HumanoidRootPart")
-        local hum = char:FindFirstChildOfClass("Humanoid")
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    if hum and hum.FloorMaterial ~= Enum.Material.Air and not isAirborne then
+        isAirborne = true
+        airVelY = getJumpImpulse(hum)
+    end
+end
+
+local function startVoidLock()
+    local char = lp.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    local root = char.HumanoidRootPart
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+
+    isAirborne = false
+    airVelY = 0
+
+    -- JUMP LISTENERS (Mobile Screen Button & PC Spacebar)
+    jumpConnection = UserInputService.JumpRequest:Connect(onJumpTrigger)
+    stateConnection = hum.StateChanged:Connect(function(_, new)
+        if new == Enum.HumanoidStateType.Jumping then
+            onJumpTrigger()
+        elseif new == Enum.HumanoidStateType.Landed then
+            isAirborne = false
+            airVelY = 0
+        end
+    end)
+
+    -- 1. STEPPED: Local Physics Engine (Smooth Walk, Natural Air Arc & Ghost Stripper)
+    loopStepped = RunService.Stepped:Connect(function(_, dt)
+        if not isActive or not root or not hum then return end
+
+        local vel = root.AssemblyLinearVelocity
+        local g = (workspace.Gravity > 0 and workspace.Gravity) or 196.2
+        local onFloor = (hum.FloorMaterial ~= Enum.Material.Air)
+
+        -- Glitch-Free Kinematic Jump Simulation
+        if isAirborne then
+            airVelY = airVelY - (g * dt)
+            if onFloor and airVelY < 0 then
+                isAirborne = false
+                airVelY = 0
+                root.AssemblyLinearVelocity = Vector3.new(vel.X, 0, vel.Z)
+            else
+                root.AssemblyLinearVelocity = Vector3.new(vel.X, airVelY, vel.Z)
+            end
+        else
+            if not onFloor then
+                isAirborne = true
+                airVelY = -4
+                root.AssemblyLinearVelocity = Vector3.new(vel.X, airVelY, vel.Z)
+            else
+                root.AssemblyLinearVelocity = Vector3.new(vel.X, 0, vel.Z)
+            end
+        end
+
+        if hum.Sit then hum.Sit = false end
+        hum:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+
+        -- Local Part Immunity (Anti-Fling & Clean Floor Contact)
+        for _, p in ipairs(char:GetChildren()) do
+            if p:IsA("BasePart") and p.CanCollide then
+                p.CanCollide = false
+            end
+        end
+
+        -- Auto-Strip Hostile Welds
+        for _, v in ipairs(char:GetDescendants()) do
+            if v:IsA("Weld") and (v.Name == "SeatWeld" or string.find(v.Name:lower(), "seat")) then
+                pcall(function() v:Destroy() end)
+            end
+        end
+
+        -- PREEMPTIVE COUNTER: Hostile Prop Ghost-Stripper (Disables collisions & touch triggers)
+        local com = workspace:FindFirstChild("WorkspaceCom")
+        if com then
+            for _, folder in ipairs(com:GetChildren()) do
+                for _, prop in ipairs(folder:GetChildren()) do
+                    if string.sub(prop.Name, 1, 4) == "Prop" and string.sub(prop.Name, 5) ~= lp.Name then
+                        for _, part in ipairs(prop:GetDescendants()) do
+                            if part:IsA("BasePart") then
+                                part.CanCollide = false
+                                part.CanTouch = false
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end)
+
+    -- 2. HEARTBEAT: Server Replication (Sub-100 Vector Budgeting + Ground Micro-Dip)
+    loopHeartbeat = RunService.Heartbeat:Connect(function()
+        if not isActive or not root or not hum then return end
+
+        local currentVel = root.AssemblyLinearVelocity
+        local hSpeedSq = (currentVel.X * currentVel.X) + (currentVel.Z * currentVel.Z)
+
+        local targetY = -MAX_SAFE_LIMIT
+        if hSpeedSq > 0 then
+            local remainSq = (MAX_SAFE_LIMIT * MAX_SAFE_LIMIT) - hSpeedSq
+            if remainSq > 400 then
+                targetY = -math.sqrt(remainSq)
+            else
+                targetY = -55.0
+            end
+        end
+
+        -- Replicate safe downward vector to server (Keeps robots deep underground)
+        root.AssemblyLinearVelocity = Vector3.new(currentVel.X, targetY, currentVel.Z)
+
+        -- Micro-Dip ONLY on Ground (Protects against Delta-Position math; skipped while jumping)
+        if not isAirborne and hum.FloorMaterial ~= Enum.Material.Air then
+            if math.floor(os.clock() * 60) % 2 == 0 then
+                root.CFrame = root.CFrame * CFrame.new(0, -0.04, 0)
+            end
+        end
+    end)
+end
+
+local function stopVoidLock()
+    if loopStepped then loopStepped:Disconnect() loopStepped = nil end
+    if loopHeartbeat then loopHeartbeat:Disconnect() loopHeartbeat = nil end
+    if jumpConnection then jumpConnection:Disconnect() jumpConnection = nil end
+    if stateConnection then stateConnection:Disconnect() stateConnection = nil end
+
+    isAirborne = false
+    airVelY = 0
+
+    if lp.Character then
+        local root = lp.Character:FindFirstChild("HumanoidRootPart")
+        local hum = lp.Character:FindFirstChildOfClass("Humanoid")
         if root then root.AssemblyLinearVelocity = Vector3.new(0, 0, 0) end
         if hum then hum:SetStateEnabled(Enum.HumanoidStateType.Seated, true) end
     end
 end
 
--- Toggle Switch
-if _G.TXR_VoidLock_Active then
-    _G.TXR_VoidLock_Active = false
-    cleanupVoidLock()
-    sendNotify("🕳️ ANTI-ROBOT", "DEACTIVATED: Robots wapas aa gaye.")
-else
-    _G.TXR_VoidLock_Active = true
+-- Store cleanup in global table for re-execution safety
+_G.TXR_VoidLock_Cleanup = stopVoidLock
 
-    local char = lp.Character
-    local root = char and char:FindFirstChild("HumanoidRootPart")
-    local hum = char and char:FindFirstChildOfClass("Humanoid")
-
-    -- 1. STEPPED: Local Physics Engine Clamp (Zameen par 100% smooth)
-    _G.TXR_VoidLock_Stepped = RunService.Stepped:Connect(function()
-        if not _G.TXR_VoidLock_Active then return end
-        local c = lp.Character
-        local r = c and c:FindFirstChild("HumanoidRootPart")
-        local h = c and c:FindFirstChildOfClass("Humanoid")
-
-        if r and h then
-            local vel = r.AssemblyLinearVelocity
-            r.AssemblyLinearVelocity = Vector3.new(vel.X, 0, vel.Z)
-
-            if h.Sit then h.Sit = false end
-            h:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
-
-            for _, p in ipairs(c:GetChildren()) do
-                if p:IsA("BasePart") and p.CanCollide then
-                    p.CanCollide = false
-                end
-            end
-
-            for _, v in ipairs(c:GetDescendants()) do
-                if v:IsA("Weld") and (v.Name == "SeatWeld" or string.find(v.Name:lower(), "seat")) then
-                    pcall(function() v:Destroy() end)
-                end
-            end
-        end
-    end)
-
-    -- 2. HEARTBEAT: Continuous -1000 Server Broadcast
-    _G.TXR_VoidLock_Heartbeat = RunService.Heartbeat:Connect(function()
-        if not _G.TXR_VoidLock_Active then return end
-        local c = lp.Character
-        local r = c and c:FindFirstChild("HumanoidRootPart")
-        local h = c and c:FindFirstChildOfClass("Humanoid")
-
-        if r and h then
-            local moveDir = h.MoveDirection
-            local speed = h.WalkSpeed
-            local vx = (moveDir.Magnitude > 0) and (moveDir.X * speed) or r.AssemblyLinearVelocity.X
-            local vz = (moveDir.Magnitude > 0) and (moveDir.Z * speed) or r.AssemblyLinearVelocity.Z
-            
-            r.AssemblyLinearVelocity = Vector3.new(vx, -1000, vz)
-        end
-    end)
-
-    -- 3. INSTANT MOVE-HOOK (Joystick drag hote hi 0MS par trigger - No Millisecond Leak)
-    if hum then
-        _G.TXR_VoidLock_MoveConn = hum:GetPropertyChangedSignal("MoveDirection"):Connect(function()
-            if not _G.TXR_VoidLock_Active then return end
-            local c = lp.Character
-            local r = c and c:FindFirstChild("HumanoidRootPart")
-            local h = c and c:FindFirstChildOfClass("Humanoid")
-            if r and h then
-                local moveDir = h.MoveDirection
-                local speed = h.WalkSpeed
-                r.AssemblyLinearVelocity = Vector3.new(moveDir.X * speed, -1000, moveDir.Z * speed)
-            end
-        end)
+-- =========================================================
+-- 🖱️ BUTTON TRIGGER WITH ADMIN VERIFICATION
+-- =========================================================
+btn.MouseButton1Click:Connect(function()
+    -- Gatekeeper: Check for Whitelisted Admin Access
+    if not checkAdminAccess(lp) then
+        sendNotify("🔒 ACCESS DENIED", "Need admin access", 2.5)
+        return
     end
 
-    -- 4. TOUCH INTERCEPTOR (Mobile screen touch detect hote hi packet lock)
-    _G.TXR_VoidLock_InputConn = UserInputService.InputChanged:Connect(function(input)
-        if not _G.TXR_VoidLock_Active then return end
-        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
-            local c = lp.Character
-            local r = c and c:FindFirstChild("HumanoidRootPart")
-            local h = c and c:FindFirstChildOfClass("Humanoid")
-            if r and h and h.MoveDirection.Magnitude > 0 then
-                local moveDir = h.MoveDirection
-                local speed = h.WalkSpeed
-                r.AssemblyLinearVelocity = Vector3.new(moveDir.X * speed, -1000, moveDir.Z * speed)
-            end
-        end
-    end)
+    isActive = not isActive
+    _G.TXR_VoidLock_Active = isActive
 
-    sendNotify("🕳️ ANTI-ROBOT", "ACTIVATED: Zero-Flicker Void Lock Active!")
-end
+    if isActive then
+        btn.Text = "🕳️ VOID LOCK: ON"
+        btn.TextColor3 = Color3.fromRGB(0, 255, 180)
+        stroke.Color = Color3.fromRGB(0, 255, 180)
+        btn.BackgroundColor3 = Color3.fromRGB(25, 45, 35)
+        startVoidLock()
+        sendNotify("🕳️ VOID ENGINE", "Activated: 96.5 Void Protection Active", 2.5)
+    else
+        btn.Text = "🕳️ VOID LOCK: OFF"
+        btn.TextColor3 = Color3.fromRGB(255, 75, 75)
+        stroke.Color = Color3.fromRGB(255, 75, 75)
+        btn.BackgroundColor3 = Color3.fromRGB(18, 14, 28)
+        stopVoidLock()
+        sendNotify("🕳️ VOID ENGINE", "Deactivated", 2.5)
+    end
+end)
