@@ -18,7 +18,7 @@ end
 -- 🎯 15 TARGET DATABASE SLOTS (Bas '0' ki jagah ID daal do)
 -- =========================================================
 local BLACKLISTED_USERS = {
-    10097226859, -- [Slot 01] Active Target
+    0, -- [Slot 01] Active Target
     11414201166, -- [Slot 02] Active Target
     0,           -- [Slot 03] Khali Slot (Yahan ID paste karein)
     0,           -- [Slot 04] Khali Slot
