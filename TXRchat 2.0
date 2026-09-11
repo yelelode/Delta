@@ -12,7 +12,7 @@ pcall(function()
 end)
 
 -- =========================================================
--- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V12.1 MEME FIXED) 👑
+-- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V12.1 ULTRA SPEED) 👑
 -- =========================================================
 
 local currentExecutionID = tick()
@@ -53,7 +53,7 @@ for _, v in pairs(targetGuiParent:GetChildren()) do
 end
 
 -- =========================================================
--- 🛡️ STRING SANITIZATION (PREVENTS RICHTEXT CRASHES)
+-- 🛡️ STRING SANITIZATION (RICHTEXT SAFETY)
 -- =========================================================
 local function sanitizeXml(str)
     if not str then return "" end
@@ -115,7 +115,7 @@ local Colors = {
 }
 
 -- =========================================================
--- 🎭 POPULAR / BRAINROT MEME PACK (THUMBNAIL SAFE IDs)
+-- 🎭 MEME PACK
 -- =========================================================
 local MemeLibrary = {
     { name = "Mewing Shhh", id = 15632128790 },
@@ -204,6 +204,7 @@ local isGhostMode = false
 local ghostDebounce = false
 local userIdCache = {}
 local searchQuery = ""
+local recentSentCache = {}
 
 local MY_VIP_ID = 9685785248 
 local Admin = { 
@@ -849,8 +850,10 @@ serverBtn.MouseButton1Click:Connect(function()
     globalBtn.TextColor3 = Colors.SubText
 end)
 
--- Message Feed
-messageFeed.Size = UDim2.new(1, -24, 1, -162)
+-- =========================================================
+-- 💬 FULL-HEIGHT CHAT FEED (FALTU BOXES REMOVED)
+-- =========================================================
+messageFeed.Size = UDim2.new(1, -24, 1, -126)
 messageFeed.Position = UDim2.new(0, 12, 0, 72)
 messageFeed.BackgroundTransparency = 1
 messageFeed.ScrollBarThickness = 3
@@ -920,45 +923,8 @@ local function createActionBtn(text, color, onClick)
     end)
 end
 
--- Macro Bar
-local macroScroll = Instance.new("ScrollingFrame", mainFrame)
-macroScroll.Size = UDim2.new(1, -24, 0, 22)
-macroScroll.Position = UDim2.new(0, 12, 1, -74)
-macroScroll.BackgroundTransparency = 1
-macroScroll.ScrollBarThickness = 0
-macroScroll.ScrollingDirection = Enum.ScrollingDirection.X
-macroScroll.AutomaticCanvasSize = Enum.AutomaticSize.X
-macroScroll.ZIndex = 11
-
-local macroLayout = Instance.new("UIListLayout", macroScroll)
-macroLayout.FillDirection = Enum.FillDirection.Horizontal
-macroLayout.Padding = UDim.new(0, 5)
-
-local quickSlangs = {"GG", "Lol", "Trade?", "Help", "W", "L", "Wait", "Rip", "Noob", "Follow me"}
-for _, slang in ipairs(quickSlangs) do
-    local mBtn = Instance.new("TextButton", macroScroll)
-    mBtn.Size = UDim2.new(0, math.max(34, #slang * 8 + 14), 1, 0)
-    mBtn.BackgroundColor3 = Colors.MacroBg
-    mBtn.Text = slang
-    mBtn.TextColor3 = Colors.Primary
-    mBtn.Font = Enum.Font.GothamBold
-    mBtn.TextSize = 10
-    mBtn.AutoButtonColor = false
-    mBtn.ZIndex = 12
-    Instance.new("UICorner", mBtn).CornerRadius = UDim.new(0, 4)
-    local ms = Instance.new("UIStroke", mBtn)
-    ms.Color = Colors.PrimaryDark
-    ms.Transparency = 0.6
-
-    mBtn.MouseButton1Click:Connect(function()
-        if sendMessageFunc then
-            sendMessageFunc(slang)
-        end
-    end)
-end
-
 -- =========================================================
--- 💬 MESSAGE PIPELINE (FIXED MEME / STICKER RENDERER)
+-- 💬 MESSAGE PIPELINE (RED RGB DADDY GLOW + ZERO LATENCY)
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -1018,7 +984,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     local card = Instance.new("TextButton", messageFeed)
     card.Size = memeIdMatch and UDim2.new(1, 0, 0, 130) or UDim2.new(1, 0, 0, 0)
     card.AutomaticSize = memeIdMatch and Enum.AutomaticSize.None or Enum.AutomaticSize.Y
-    card.BackgroundColor3 = isMentioned and Colors.MentionBg or Colors.Surface
+    card.BackgroundColor3 = isMentioned and Colors.MentionBg or (Admin[userName:lower()] and Color3.fromRGB(28, 14, 20) or Colors.Surface)
     card.BackgroundTransparency = isGhostMode and 0.65 or 0.4
     card.Text = ""
     card.AutoButtonColor = false
@@ -1034,27 +1000,29 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     accentStrip.Size = UDim2.new(0, 3, 1, 0)
     accentStrip.Position = UDim2.new(0, 0, 0, 0)
     accentStrip.BorderSizePixel = 0
-    accentStrip.BackgroundColor3 = isMentioned and Colors.MentionGold or (privateUserTarget and Colors.Purple or (Admin[userName:lower()] and Color3.fromRGB(255, 45, 85) or Colors.Primary))
+    accentStrip.BackgroundColor3 = isMentioned and Colors.MentionGold or (privateUserTarget and Colors.Purple or (Admin[userName:lower()] and Color3.fromRGB(255, 0, 50) or Colors.Primary))
     accentStrip.ZIndex = 10
 
     local cardStroke = Instance.new("UIStroke", card)
-    cardStroke.Thickness = isMentioned and 1.5 or 1
-    cardStroke.Transparency = isMentioned and 0.2 or 0.85
-    cardStroke.Color = isMentioned and Colors.MentionGold or Colors.PrimaryDark
+    cardStroke.Thickness = isMentioned and 1.5 or (Admin[userName:lower()] and 1.4 or 1)
+    cardStroke.Transparency = isMentioned and 0.2 or (Admin[userName:lower()] and 0.15 or 0.85)
+    cardStroke.Color = isMentioned and Colors.MentionGold or (Admin[userName:lower()] and Color3.fromRGB(255, 0, 50) or Colors.PrimaryDark)
 
+    -- Animated Red RGB Stroke Glow for Admin cards
     if Admin[userName:lower()] then
         local royalGrad = Instance.new("UIGradient", cardStroke)
         royalGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 60, 60)),
-            ColorSequenceKeypoint.new(0.5, Colors.MentionGold),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 60, 60))
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 55)),
+            ColorSequenceKeypoint.new(0.3, Color3.fromRGB(255, 90, 110)),
+            ColorSequenceKeypoint.new(0.6, Color3.fromRGB(255, 0, 30)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 55))
         })
         task.spawn(function()
             local gt = 0
             while card and card.Parent and _G.TXR_ChatInstanceID == currentExecutionID do
                 gt = gt + 0.05
-                royalGrad.Offset = Vector2.new(math.sin(gt * 2) * 0.8, 0)
-                task.wait(0.04)
+                royalGrad.Offset = Vector2.new(math.sin(gt * 2.5) * 0.85, 0)
+                task.wait(0.03)
             end
         end)
     end
@@ -1097,9 +1065,10 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     local timeStr = os.date("%H:%M")
     local timeTag = string.format("<font color='#657388'>[%s]</font> ", timeStr)
 
+    -- RED RGB GLOW DADDY TAG
     local prefix = ""
     if Admin[userName:lower()] then
-        prefix = "<font color='#FF4545'><b>[👑 DADDY]</b></font> "
+        prefix = "<font color='#FFFFFF'><b><stroke color='#FF0038' thickness='1.8' transparency='0.05'>[👑 DADDY]</stroke></b></font> "
     end
 
     local cleanUserName = sanitizeXml(userName)
@@ -1343,7 +1312,7 @@ emojiBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🎭 MODERN MEME / STICKER MODAL DRAWER
+-- 🎭 MEME / STICKER DRAWER
 -- =========================================================
 memeFrame = Instance.new("Frame", mainFrame)
 memeFrame.Size = UDim2.new(0, 280, 0, 190)
@@ -1405,7 +1374,7 @@ memeBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🚀 BULLETPROOF SAFE CLAMP DRAG ENGINE & ORB RESTORE
+-- 🚀 BULLETPROOF DRAG ENGINE & ORB RESTORE
 -- =========================================================
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
@@ -1730,7 +1699,7 @@ task.spawn(function()
 end)
 
 -- =========================================================
--- 📡 SEND MESSAGE (WITH LASER COOLDOWN BAR)
+-- 📡 SEND MESSAGE (INSTANT 0MS OPTIMISTIC FEED ENGINE)
 -- =========================================================
 local isSendingCooldown = false
 sendMessageFunc = function(overrideText)
@@ -1752,7 +1721,20 @@ sendMessageFunc = function(overrideText)
         finalMsg = "( 🔐 " .. lp.Name .. " Private " .. privateTarget .. ") " .. text
     end
 
+    -- ⚡ 0MS ZERO DELAY: Instant Local Render in UI
+    if privateTarget then
+        addMessageToFeed(lp.Name, text, privateTarget, true)
+    else
+        addMessageToFeed(lp.Name, text, nil, false)
+    end
     displayBubble(lp.Name, text)
+
+    -- Deduplication cache entry
+    table.insert(recentSentCache, { msg = finalMsg, time = os.time() })
+    if #recentSentCache > 25 then
+        table.remove(recentSentCache, 1)
+    end
+
     if not overrideText then chatInput.Text = "" end
 
     isSendingCooldown = true
@@ -1761,7 +1743,7 @@ sendMessageFunc = function(overrideText)
 
     cdBar.Visible = true
     cdBar.Size = UDim2.new(0, 0, 0, 2)
-    TweenService:Create(cdBar, TweenInfo.new(1.2, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 0, 2)}):Play()
+    TweenService:Create(cdBar, TweenInfo.new(0.6, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 0, 2)}):Play()
 
     task.spawn(function()
         if req then
@@ -1781,7 +1763,7 @@ sendMessageFunc = function(overrideText)
             end)
         end
 
-        task.wait(1.2)
+        task.wait(0.6)
         isSendingCooldown = false
         cdBar.Visible = false
         sendBtn.BackgroundColor3 = Colors.Primary
@@ -1795,10 +1777,10 @@ chatInput.FocusLost:Connect(function(enterPressed)
 end)
 
 -- =========================================================
--- 📥 POLLING ENGINE & UNREAD PIPELINE
+-- 📥 HIGH-FREQUENCY POLLING ENGINE (FAST SYNC)
 -- =========================================================
 task.spawn(function()
-    while _G.TXR_IsPolling and task.wait(0.5) do
+    while _G.TXR_IsPolling and task.wait(0.25) do
         if req then
             local success, res = pcall(function()
                 return req({
@@ -1849,6 +1831,22 @@ task.spawn(function()
                             if m.hidden then continue end
                             if chatMode == "server" and m.jobId ~= game.JobId then continue end
 
+                            -- Check for local echo (prevent duplicate print of our own instant message)
+                            local isLocalEcho = false
+                            if m.user:lower() == lp.Name:lower() then
+                                for idx, sent in ipairs(recentSentCache) do
+                                    if sent.msg == m.msg and math.abs(m.time - sent.time) <= 20 then
+                                        isLocalEcho = true
+                                        table.remove(recentSentCache, idx)
+                                        break
+                                    end
+                                end
+                            end
+
+                            if isLocalEcho then
+                                continue
+                            end
+
                             local pSender, pTarget, pMsg = string.match(m.msg, "^%( 🔐 ([%w_]+) Private ([%w_]+)%) (.*)$")
                             if pSender and pTarget then
                                 if lp.Name == pSender then
@@ -1898,5 +1896,5 @@ task.spawn(function()
             })
         end)
     end
-    addMessageToFeed("System", "TXR Cyber-Titan Online! Tap 🎭 for new Meme Stickers.")
+    addMessageToFeed("System", "TXR Cyber-Titan Online! Tap 🎭 for Meme Stickers.")
 end)
