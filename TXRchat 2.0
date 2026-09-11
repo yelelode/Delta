@@ -12,7 +12,7 @@ pcall(function()
 end)
 
 -- =========================================================
--- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V15.0 REAL RGB CHROMA) 👑
+-- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V14.0 ELITE SUITE) 👑
 -- =========================================================
 
 local currentExecutionID = tick()
@@ -115,171 +115,216 @@ local Colors = {
 }
 
 -- =========================================================
--- 👑 16 ELITE REAL RGB CHROMA TYPOGRAPHY BADGES
+-- 👑 16 LUXURY CUSTOM TYPOGRAPHY BADGES (ZERO BOXES / NO CARTOON)
 -- =========================================================
 local BadgePresets = {
     ["OWNER"] = {
         Title = "OWNER",
-        Speed = 3.5,
+        Mode = "RAINBOW",
+        Accent = Color3.fromRGB(255, 75, 114),
+        Stroke = Color3.fromRGB(15, 15, 25),
+        Speed = 0.85,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 60, 60)),
-            ColorSequenceKeypoint.new(0.20, Color3.fromRGB(255, 200, 40)),
-            ColorSequenceKeypoint.new(0.40, Color3.fromRGB(60, 255, 120)),
-            ColorSequenceKeypoint.new(0.60, Color3.fromRGB(40, 220, 255)),
-            ColorSequenceKeypoint.new(0.80, Color3.fromRGB(180, 60, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 60, 60))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 75, 114)),
+            ColorSequenceKeypoint.new(0.20, Color3.fromRGB(252, 163, 17)),
+            ColorSequenceKeypoint.new(0.40, Color3.fromRGB(46, 196, 182)),
+            ColorSequenceKeypoint.new(0.60, Color3.fromRGB(58, 134, 255)),
+            ColorSequenceKeypoint.new(0.80, Color3.fromRGB(168, 85, 247)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 75, 114))
         }
     },
     ["DADDY"] = {
         Title = "DADDY",
-        Speed = 3.8,
+        Mode = "AMBER",
+        Accent = Color3.fromRGB(255, 65, 108),
+        Stroke = Color3.fromRGB(40, 10, 15),
+        Speed = 1.0,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 20, 60)),
-            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(180, 0, 30)),
-            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(255, 100, 120)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 20, 60))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 65, 108)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 120, 50)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(249, 212, 35)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 65, 108))
         }
     },
     ["TITAN"] = {
         Title = "TITAN",
-        Speed = 3.2,
+        Mode = "CYBER",
+        Accent = Color3.fromRGB(0, 242, 254),
+        Stroke = Color3.fromRGB(10, 20, 40),
+        Speed = 0.95,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 180, 255)),
-            ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.66, Color3.fromRGB(0, 90, 200)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 180, 255))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 242, 254)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(79, 172, 254)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(127, 0, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 242, 254))
         }
     },
     ["OVERLORD"] = {
         Title = "OVERLORD",
-        Speed = 2.9,
+        Mode = "RAINBOW",
+        Accent = Color3.fromRGB(190, 70, 255),
+        Stroke = Color3.fromRGB(30, 10, 45),
+        Speed = 0.85,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(160, 30, 255)),
-            ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 150, 255)),
-            ColorSequenceKeypoint.new(0.66, Color3.fromRGB(90, 0, 150)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(160, 30, 255))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(168, 85, 247)),
+            ColorSequenceKeypoint.new(0.33, Color3.fromRGB(236, 72, 153)),
+            ColorSequenceKeypoint.new(0.66, Color3.fromRGB(99, 102, 241)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(168, 85, 247))
         }
     },
     ["PHANTOM"] = {
         Title = "PHANTOM",
-        Speed = 3.6,
+        Mode = "CYBER",
+        Accent = Color3.fromRGB(0, 255, 140),
+        Stroke = Color3.fromRGB(0, 40, 20),
+        Speed = 1.0,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 120)),
-            ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.66, Color3.fromRGB(0, 130, 70)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 120))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 140)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(0, 220, 255)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(80, 255, 190)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 140))
         }
     },
     ["DEV"] = {
         Title = "DEV",
-        Speed = 3.3,
+        Mode = "CYBER",
+        Accent = Color3.fromRGB(0, 255, 205),
+        Stroke = Color3.fromRGB(10, 30, 25),
+        Speed = 1.0,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(40, 140, 255)),
-            ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.66, Color3.fromRGB(200, 50, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(40, 140, 255))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 205)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(60, 130, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 205))
         }
     },
     ["VIP"] = {
         Title = "VIP",
-        Speed = 3.0,
+        Mode = "AMBER",
+        Accent = Color3.fromRGB(255, 160, 50),
+        Stroke = Color3.fromRGB(45, 25, 10),
+        Speed = 1.0,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 180, 0)),
-            ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.66, Color3.fromRGB(200, 110, 0)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 180, 0))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 140, 40)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 200, 70)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(255, 90, 40)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 140, 40))
         }
     },
     ["GOD"] = {
         Title = "GOD",
-        Speed = 4.2,
+        Mode = "RAINBOW",
+        Accent = Color3.fromRGB(255, 255, 255),
+        Stroke = Color3.fromRGB(30, 30, 40),
+        Speed = 1.15,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.20, Color3.fromRGB(255, 215, 0)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.80, Color3.fromRGB(200, 200, 230)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 100, 150)),
+            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 220, 100)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(120, 255, 180)),
+            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(120, 200, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 100, 150))
         }
     },
     ["CYBER"] = {
         Title = "CYBER",
-        Speed = 3.5,
+        Mode = "CYBER",
+        Accent = Color3.fromRGB(255, 0, 210),
+        Stroke = Color3.fromRGB(40, 0, 35),
+        Speed = 1.1,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 180)),
-            ColorSequenceKeypoint.new(0.33, Color3.fromRGB(0, 255, 255)),
-            ColorSequenceKeypoint.new(0.66, Color3.fromRGB(150, 0, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 180))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 210)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(160, 50, 255)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(0, 230, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 210))
         }
     },
     ["VOID"] = {
         Title = "VOID",
-        Speed = 2.5,
+        Mode = "CYBER",
+        Accent = Color3.fromRGB(140, 140, 180),
+        Stroke = Color3.fromRGB(25, 25, 35),
+        Speed = 0.8,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(100, 100, 130)),
-            ColorSequenceKeypoint.new(0.33, Color3.fromRGB(200, 200, 255)),
-            ColorSequenceKeypoint.new(0.66, Color3.fromRGB(50, 50, 70)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(100, 100, 130))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(90, 90, 130)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(160, 160, 210)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(110, 130, 170)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(90, 90, 130))
         }
     },
     ["ZENITH"] = {
         Title = "ZENITH",
-        Speed = 3.4,
+        Mode = "CYBER",
+        Accent = Color3.fromRGB(0, 255, 210),
+        Stroke = Color3.fromRGB(0, 35, 30),
+        Speed = 1.0,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 180)),
-            ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.66, Color3.fromRGB(0, 140, 100)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 180))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 210)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(50, 200, 255)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(0, 255, 140)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 210))
         }
     },
     ["APEX"] = {
         Title = "APEX",
-        Speed = 3.2,
+        Mode = "AMBER",
+        Accent = Color3.fromRGB(255, 75, 40),
+        Stroke = Color3.fromRGB(40, 15, 10),
+        Speed = 1.05,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 60, 30)),
-            ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.66, Color3.fromRGB(180, 20, 0)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 60, 30))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 45, 85)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 150, 40)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 45, 85))
         }
     },
     ["LUCIFER"] = {
         Title = "LUCIFER",
-        Speed = 3.9,
+        Mode = "AMBER",
+        Accent = Color3.fromRGB(255, 10, 30),
+        Stroke = Color3.fromRGB(45, 0, 5),
+        Speed = 1.1,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)),
-            ColorSequenceKeypoint.new(0.33, Color3.fromRGB(100, 0, 0)),
-            ColorSequenceKeypoint.new(0.66, Color3.fromRGB(255, 80, 80)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 0))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 10, 30)),
+            ColorSequenceKeypoint.new(0.40, Color3.fromRGB(255, 80, 30)),
+            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(200, 0, 40)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 10, 30))
         }
     },
     ["SUPREME"] = {
         Title = "SUPREME",
-        Speed = 3.0,
+        Mode = "AMBER",
+        Accent = Color3.fromRGB(255, 220, 120),
+        Stroke = Color3.fromRGB(40, 30, 10),
+        Speed = 0.9,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 210, 100)),
-            ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.66, Color3.fromRGB(180, 140, 40)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 210, 100))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 215, 80)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 240, 160)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(240, 180, 50)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 215, 80))
         }
     },
     ["ROYAL"] = {
         Title = "ROYAL",
-        Speed = 2.8,
+        Mode = "AMBER",
+        Accent = Color3.fromRGB(255, 215, 60),
+        Stroke = Color3.fromRGB(45, 30, 10),
+        Speed = 0.75,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(120, 100, 255)),
-            ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.66, Color3.fromRGB(60, 40, 180)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(120, 100, 255))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(218, 165, 32)),
+            ColorSequenceKeypoint.new(0.40, Color3.fromRGB(255, 223, 100)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(255, 140, 40)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(218, 165, 32))
         }
     },
     ["DEMON"] = {
         Title = "DEMON",
-        Speed = 3.7,
+        Mode = "AMBER",
+        Accent = Color3.fromRGB(255, 0, 90),
+        Stroke = Color3.fromRGB(40, 0, 15),
+        Speed = 1.05,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 80)),
-            ColorSequenceKeypoint.new(0.33, Color3.fromRGB(120, 0, 40)),
-            ColorSequenceKeypoint.new(0.66, Color3.fromRGB(255, 100, 150)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 80))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 90)),
+            ColorSequenceKeypoint.new(0.45, Color3.fromRGB(255, 60, 40)),
+            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(210, 0, 80)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 90))
         }
     }
 }
@@ -376,7 +421,7 @@ local ghostDebounce = false
 local userIdCache = {}
 local searchQuery = ""
 local recentSentCache = {}
-local activeChromaBadges = {}
+local activeBadgesList = {}
 
 local MY_VIP_ID = 9685785248 
 local Admin = { 
@@ -930,7 +975,7 @@ createHeaderBtn("🗑️", -82, function()
             c:Destroy()
         end
     end
-    table.clear(activeChromaBadges)
+    table.clear(activeBadgesList)
 end)
 
 local actionMenu
@@ -1096,7 +1141,7 @@ for _, bKey in ipairs(badgeKeysOrder) do
     bBtn.BackgroundColor3 = Colors.Surface
     bBtn.BackgroundTransparency = 0.5
     bBtn.Text = "  [ " .. bData.Title .. " ]"
-    bBtn.TextColor3 = bData.Colors[2].Value
+    bBtn.TextColor3 = bData.Accent
     bBtn.Font = Enum.Font.GothamBlack
     bBtn.TextSize = 10.5
     bBtn.TextXAlignment = Enum.TextXAlignment.Left
@@ -1105,7 +1150,7 @@ for _, bKey in ipairs(badgeKeysOrder) do
     Instance.new("UICorner", bBtn).CornerRadius = UDim.new(0, 4)
     
     local btnStroke = Instance.new("UIStroke", bBtn)
-    btnStroke.Color = bData.Colors[2].Value
+    btnStroke.Color = bData.Accent
     btnStroke.Thickness = 0.8
     btnStroke.Transparency = 0.7
     
@@ -1191,7 +1236,7 @@ local function createActionBtn(text, color, onClick)
 end
 
 -- =========================================================
--- 💬 MESSAGE PIPELINE (REAL-TIME RGB CHROMA TAGS)
+-- 💬 MESSAGE PIPELINE (CLEAN PURE-TEXT LASER BADGES)
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -1269,7 +1314,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     accentStrip.Size = UDim2.new(0, 3, 1, 0)
     accentStrip.Position = UDim2.new(0, 0, 0, 0)
     accentStrip.BorderSizePixel = 0
-    accentStrip.BackgroundColor3 = isMentioned and Colors.MentionGold or (privateUserTarget and Colors.Purple or (isAdminUser and badgeProfile.Colors[2].Value or Colors.Primary))
+    accentStrip.BackgroundColor3 = isMentioned and Colors.MentionGold or (privateUserTarget and Colors.Purple or (isAdminUser and badgeProfile.Accent or Colors.Primary))
     accentStrip.ZIndex = 10
     Instance.new("UICorner", accentStrip).CornerRadius = UDim.new(0, 4)
 
@@ -1309,7 +1354,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     local hLayout = Instance.new("UIListLayout", headerRow)
     hLayout.FillDirection = Enum.FillDirection.Horizontal
     hLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-    hLayout.Padding = UDim.new(0, 6)
+    hLayout.Padding = UDim.new(0, 5)
     hLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
     local timeLbl = Instance.new("TextLabel", headerRow)
@@ -1336,7 +1381,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         dmLbl.ZIndex = 12
     end
 
-    -- ⚡ REAL RGB CHROMA ANIMATED TEXT BADGE (NO BOXES)
+    -- ⚡ REAL RGB / AMBER LIVE CHROMA BADGE
     if isAdminUser then
         local badgeLabel = Instance.new("TextLabel", headerRow)
         badgeLabel.AutomaticSize = Enum.AutomaticSize.XY
@@ -1345,22 +1390,25 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         badgeLabel.Text = "[ " .. badgeProfile.Title .. " ]"
         badgeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
         badgeLabel.Font = Enum.Font.GothamBlack
-        badgeLabel.TextSize = 11.5
+        badgeLabel.TextSize = 11
         badgeLabel.LayoutOrder = 3
         badgeLabel.ZIndex = 13
 
         local bStroke = Instance.new("UIStroke", badgeLabel)
-        bStroke.Thickness = 1.1
-        bStroke.Color = Color3.fromRGB(0, 0, 0)
+        bStroke.Thickness = 1.2
+        bStroke.Color = badgeProfile.Stroke or Color3.fromRGB(10, 12, 18)
         bStroke.Transparency = 0.2
 
         local tGrad = Instance.new("UIGradient", badgeLabel)
-        tGrad.Rotation = 15
+        tGrad.Rotation = 20
         tGrad.Color = ColorSequence.new(badgeProfile.Colors)
 
-        table.insert(activeChromaBadges, {
+        table.insert(activeBadgesList, {
             textGrad = tGrad,
-            speed = badgeProfile.Speed
+            stroke = bStroke,
+            mode = badgeProfile.Mode or "RAINBOW",
+            speed = badgeProfile.Speed or 1.0,
+            accent = badgeProfile.Accent
         })
     end
 
@@ -1643,6 +1691,15 @@ local mfStroke = Instance.new("UIStroke", memeFrame)
 mfStroke.Color = Colors.Purple
 mfStroke.Thickness = 1.4
 
+local mfTitle = Instance.new("TextLabel", memeFrame)
+mfTitle.Size = UDim2.new(1, 0, 0, 24)
+mfTitle.BackgroundTransparency = 1
+mfTitle.Text = "🎭 BRAINROT & MEME STICKERS"
+mfTitle.TextColor3 = Colors.Purple
+mfTitle.Font = Enum.Font.GothamBlack
+mfTitle.TextSize = 10
+mfTitle.ZIndex = 31
+
 local memeScroll = Instance.new("ScrollingFrame", memeFrame)
 memeScroll.Size = UDim2.new(1, -8, 1, -28)
 memeScroll.Position = UDim2.fromOffset(4, 24)
@@ -1865,7 +1922,7 @@ UserInputService.InputBegan:Connect(function(input, gp)
 end)
 
 -- =========================================================
--- ⚡ REAL-TIME CHROMA WAVE RENDER ENGINE
+-- ⚡ REACTOR RENDERING & DYNAMIC CHROMA SWEEP ENGINE
 -- =========================================================
 task.spawn(function()
     local t = 0
@@ -1877,15 +1934,38 @@ task.spawn(function()
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
         t = t + dt
 
-        if #activeChromaBadges > 0 then
-            local sweep = math.sin(t * 3.2) * 0.95
-            for i = #activeChromaBadges, 1, -1 do
-                local item = activeChromaBadges[i]
+        -- ⚡ 60 FPS REAL-TIME LIVE COLOUR CHANGE ENGINE (ANTI-STRAIN)
+        if #activeBadgesList > 0 then
+            for i = #activeBadgesList, 1, -1 do
+                local item = activeBadgesList[i]
                 if item.textGrad and item.textGrad.Parent then
-                    local sSpeed = item.speed or 3.0
-                    item.textGrad.Offset = Vector2.new(math.sin(t * sSpeed) * 0.95, 0)
+                    local sSpeed = item.speed or 1.0
+
+                    local cycle = (t * sSpeed * 0.4) % 1
+                    item.textGrad.Offset = Vector2.new(-cycle, 0)
+
+                    if item.stroke and item.stroke.Parent then
+                        if item.mode == "RAINBOW" then
+                            local hue = (t * 0.15 * sSpeed) % 1
+                            item.stroke.Color = Color3.fromHSV(hue, 0.45, 0.25)
+                        elseif item.mode == "AMBER" then
+                            local pulse = (math.sin(t * 2.5 * sSpeed) + 1) / 2
+                            item.stroke.Color = Color3.fromRGB(
+                                math.floor(35 + pulse * 25),
+                                math.floor(15 + pulse * 15),
+                                10
+                            )
+                        else
+                            local pulse = (math.sin(t * 2 * sSpeed) + 1) / 2
+                            item.stroke.Color = Color3.fromRGB(
+                                10,
+                                math.floor(20 + pulse * 20),
+                                math.floor(35 + pulse * 25)
+                            )
+                        end
+                    end
                 else
-                    table.remove(activeChromaBadges, i)
+                    table.remove(activeBadgesList, i)
                 end
             end
         end
