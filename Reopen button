@@ -1,0 +1,442 @@
+-- =========================================================
+-- 🛸 TXR HUB V18.26: STANDALONE QUANTUM GIMBAL REACTOR ORB
+-- =========================================================
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+local lp = Players.LocalPlayer
+
+-- GUI Parent Setup
+local targetGuiParent
+pcall(function() targetGuiParent = (gethui and gethui()) or game:GetService("CoreGui") or lp:WaitForChild("PlayerGui") end)
+if not targetGuiParent then targetGuiParent = lp:WaitForChild("PlayerGui") end
+
+-- Purana Orb Clean
+for _, v in pairs(targetGuiParent:GetChildren()) do
+    if v.Name == "TXR_StandaloneOrb" then 
+        v:Destroy() 
+    end
+end
+
+local gui = Instance.new("ScreenGui", targetGuiParent)
+gui.Name = "TXR_StandaloneOrb"
+gui.ResetOnSpawn = false
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+local Colors = {
+    Background = Color3.fromRGB(10, 12, 18),
+    Surface = Color3.fromRGB(20, 24, 34),
+    Primary = Color3.fromRGB(0, 255, 200),
+    Purple = Color3.fromRGB(160, 50, 255)
+}
+
+-- 🛸 MAIN ORB CONTAINER (86x86)
+local openBtnContainer = Instance.new("Frame", gui)
+openBtnContainer.Size = UDim2.fromOffset(86, 86)
+openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+openBtnContainer.Position = UDim2.fromScale(0.1, 0.5)
+openBtnContainer.BackgroundTransparency = 1
+openBtnContainer.Visible = true -- Test karne ke liye seedha visible
+openBtnContainer.Active = true
+openBtnContainer.ZIndex = 100
+
+local coreGlow = Instance.new("ImageLabel", openBtnContainer)
+coreGlow.Size = UDim2.fromScale(1.8, 1.8)
+coreGlow.Position = UDim2.fromScale(0.5, 0.5)
+coreGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+coreGlow.BackgroundTransparency = 1
+coreGlow.Image = "rbxassetid://10470601783"
+coreGlow.ImageColor3 = Colors.Primary
+coreGlow.ImageTransparency = 0.6
+coreGlow.ZIndex = 98
+Instance.new("UICorner", coreGlow).CornerRadius = UDim.new(1, 0)
+
+local eventGlow = Instance.new("ImageLabel", openBtnContainer)
+eventGlow.Size = UDim2.fromScale(1.2, 1.2)
+eventGlow.Position = UDim2.fromScale(0.5, 0.5)
+eventGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+eventGlow.BackgroundTransparency = 1
+eventGlow.Image = "rbxassetid://10470601783"
+eventGlow.ImageColor3 = Colors.Purple
+eventGlow.ImageTransparency = 0.4
+eventGlow.ZIndex = 98
+Instance.new("UICorner", eventGlow).CornerRadius = UDim.new(1, 0)
+
+local openBtn = Instance.new("TextButton", openBtnContainer)
+openBtn.Size = UDim2.fromScale(0.85, 0.85)
+openBtn.Position = UDim2.fromScale(0.5, 0.5)
+openBtn.AnchorPoint = Vector2.new(0.5, 0.5)
+openBtn.BackgroundColor3 = Colors.Surface
+openBtn.BackgroundTransparency = 0.15
+openBtn.Text = ""
+openBtn.AutoButtonColor = false
+openBtn.ClipsDescendants = false
+openBtn.ZIndex = 101
+Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0)
+
+local gimbalOuter = Instance.new("Frame", openBtnContainer)
+gimbalOuter.Size = UDim2.fromScale(1.05, 1.05)
+gimbalOuter.Position = UDim2.fromScale(0.5, 0.5)
+gimbalOuter.AnchorPoint = Vector2.new(0.5, 0.5)
+gimbalOuter.BackgroundTransparency = 1
+gimbalOuter.ZIndex = 99
+Instance.new("UICorner", gimbalOuter).CornerRadius = UDim.new(1, 0)
+
+local goStroke = Instance.new("UIStroke", gimbalOuter)
+goStroke.Thickness = 3
+goStroke.Color = Color3.new(1, 1, 1)
+
+local goGrad = Instance.new("UIGradient", goStroke)
+goGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Colors.Primary),
+    ColorSequenceKeypoint.new(0.25, Colors.Background),
+    ColorSequenceKeypoint.new(0.5, Colors.Purple),
+    ColorSequenceKeypoint.new(0.75, Colors.Background),
+    ColorSequenceKeypoint.new(1, Colors.Primary)
+})
+
+local openStroke = Instance.new("UIStroke", openBtn)
+openStroke.Thickness = 1.5
+openStroke.Color = Colors.Primary
+
+local gimbals = {}
+for i = 1, 4 do
+    local g = Instance.new("Frame", openBtn)
+    g.AnchorPoint = Vector2.new(0.5, 0.5)
+    g.Position = UDim2.fromScale(0.5, 0.5)
+    g.BackgroundTransparency = 1
+    g.ZIndex = 102
+    Instance.new("UICorner", g).CornerRadius = UDim.new(1, 0)
+    
+    local gs = Instance.new("UIStroke", g)
+    gs.Color = (i % 2 == 0) and Colors.Primary or Colors.Purple
+    gs.Thickness = 1.2
+    table.insert(gimbals, {frame = g, stroke = gs})
+end
+
+local diamonds = {}
+for i = 1, 4 do
+    local d = Instance.new("Frame", openBtn)
+    d.Size = UDim2.fromOffset(26, 26)
+    d.Position = UDim2.fromScale(0.5, 0.5)
+    d.AnchorPoint = Vector2.new(0.5, 0.5)
+    d.BackgroundColor3 = Colors.Background
+    d.BackgroundTransparency = 0.5
+    d.ZIndex = 103
+    
+    local ds = Instance.new("UIStroke", d)
+    ds.Color = (i % 2 == 0) and Colors.Primary or Colors.Purple
+    ds.Thickness = 1.5
+    table.insert(diamonds, {frame = d, stroke = ds})
+end
+
+local crosshair = Instance.new("ImageLabel", openBtn)
+crosshair.Size = UDim2.fromScale(0.65, 0.65)
+crosshair.Position = UDim2.fromScale(0.5, 0.5)
+crosshair.AnchorPoint = Vector2.new(0.5, 0.5)
+crosshair.BackgroundTransparency = 1
+crosshair.Image = "rbxassetid://13110903323"
+crosshair.ImageColor3 = Colors.Primary
+crosshair.ImageTransparency = 0.2
+crosshair.ZIndex = 104
+
+local centerCore = Instance.new("Frame", openBtn)
+centerCore.Size = UDim2.fromOffset(10, 10)
+centerCore.Position = UDim2.fromScale(0.5, 0.5)
+centerCore.AnchorPoint = Vector2.new(0.5, 0.5)
+centerCore.BackgroundColor3 = Colors.Primary
+centerCore.BackgroundTransparency = 0.1
+centerCore.ZIndex = 106
+Instance.new("UICorner", centerCore).CornerRadius = UDim.new(1, 0)
+
+local coreStroke = Instance.new("UIStroke", centerCore)
+coreStroke.Thickness = 2
+coreStroke.Color = Color3.new(1, 1, 1)
+
+local orbs = {}
+for i = 1, 12 do
+    local orb = Instance.new("Frame", openBtn)
+    orb.Size = UDim2.fromOffset(5, 5)
+    orb.BackgroundColor3 = Colors.Primary
+    orb.ZIndex = 105
+    Instance.new("UICorner", orb).CornerRadius = UDim.new(1, 0)
+    table.insert(orbs, orb)
+end
+
+local orbHovered = false
+local baseOrbScale = UDim2.fromScale(0.85, 0.85)
+local baseCenterPos = UDim2.fromScale(0.5, 0.5)
+local isDraggingOrb = false
+local dragThresholdMet = false
+
+openBtn.MouseEnter:Connect(function() orbHovered = true end)
+openBtn.MouseLeave:Connect(function() orbHovered = false end)
+
+local function spawnSonar(pulseColor)
+    if not openBtnContainer.Visible then return end
+    
+    local ring = Instance.new("Frame", openBtn)
+    ring.Size = UDim2.fromOffset(12, 12)
+    ring.Position = UDim2.fromScale(0.5, 0.5)
+    ring.AnchorPoint = Vector2.new(0.5, 0.5)
+    ring.BackgroundTransparency = 1
+    ring.ZIndex = 101
+    Instance.new("UICorner", ring).CornerRadius = UDim.new(1, 0)
+    
+    local rs = Instance.new("UIStroke", ring)
+    rs.Color = pulseColor
+    rs.Thickness = 2
+    rs.Transparency = 0
+    
+    local pulseSpeed = 1.0
+    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(105, 105)}):Play()
+    TweenService:Create(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
+    
+    task.delay(pulseSpeed, function()
+        pcall(function() ring:Destroy() end)
+    end)
+end
+
+local openBtnScale = Instance.new("UIScale", openBtn)
+openBtnScale.Scale = 1
+local openPulseTweenInfo = TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+local openPulseScale = TweenService:Create(openBtnScale, openPulseTweenInfo, {Scale = 1.05})
+openPulseScale:Play()
+
+-- 🚀 DRAGGING WITH INERTIA & CLAMP
+local dragging = false
+local dragStart = nil
+local startPos = nil
+local targetPos = openBtnContainer.Position
+local velocity = Vector2.new(0, 0)
+local lastInputPos = Vector2.new(0, 0)
+local dragLoop = nil
+
+local function getClampedTarget(newXScale, newXOffset, newYScale, newYOffset)
+    local parentSize = gui.AbsoluteSize
+    local frameSize = openBtnContainer.AbsoluteSize
+    local anchor = openBtnContainer.AnchorPoint
+
+    if parentSize.X <= 0 or parentSize.Y <= 0 then
+        return UDim2.new(newXScale, newXOffset, newYScale, newYOffset)
+    end
+
+    local absX = (newXScale * parentSize.X) + newXOffset
+    local absY = (newYScale * parentSize.Y) + newYOffset
+
+    local minX = frameSize.X * anchor.X
+    local maxX = parentSize.X - (frameSize.X * (1 - anchor.X))
+    local minY = frameSize.Y * anchor.Y
+    local maxY = parentSize.Y - (frameSize.Y * (1 - anchor.Y))
+
+    if minX > maxX then minX, maxX = maxX, minX end
+    if minY > maxY then minY, maxY = maxY, minY end
+
+    local clampedX = math.clamp(absX, minX, maxX)
+    local clampedY = math.clamp(absY, minY, maxY)
+
+    return UDim2.new(newXScale, clampedX - (newXScale * parentSize.X), newYScale, clampedY - (newYScale * parentSize.Y))
+end
+
+openBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = openBtnContainer.Position
+        targetPos = startPos
+        lastInputPos = Vector2.new(input.Position.X, input.Position.Y)
+        velocity = Vector2.new(0, 0)
+        isDraggingOrb = true
+        dragThresholdMet = false
+        
+        if dragLoop then dragLoop:Disconnect() end
+        
+        dragLoop = RunService.RenderStepped:Connect(function(dt)
+            if not gui.Parent then 
+                if dragLoop then dragLoop:Disconnect() end
+                return 
+            end
+            
+            if dragging then
+                openBtnContainer.Position = openBtnContainer.Position:Lerp(targetPos, math.clamp(dt * 25, 0, 1))
+            else
+                if velocity.Magnitude > 0.5 then
+                    velocity = velocity * 0.90
+                    targetPos = getClampedTarget(targetPos.X.Scale, targetPos.X.Offset + velocity.X, targetPos.Y.Scale, targetPos.Y.Offset + velocity.Y)
+                    openBtnContainer.Position = openBtnContainer.Position:Lerp(targetPos, math.clamp(dt * 15, 0, 1))
+                else
+                    dragLoop:Disconnect()
+                    dragLoop = nil
+                end
+            end
+        end)
+    end
+end)
+
+openBtn.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+        isDraggingOrb = false
+        orbHovered = false
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        if delta.Magnitude > 8 then 
+            dragThresholdMet = true 
+        end
+        targetPos = getClampedTarget(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        local currentMousePos = Vector2.new(input.Position.X, input.Position.Y)
+        velocity = currentMousePos - lastInputPos
+        lastInputPos = currentMousePos
+    end
+end)
+
+openBtn.MouseButton1Down:Connect(function()
+    TweenService:Create(openBtnScale, TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Scale = 0.85}):Play()
+end)
+
+openBtn.MouseButton1Up:Connect(function()
+    TweenService:Create(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05}):Play()
+end)
+
+-- 🎯 REOPEN CLICK EVENT (Yahan apna UI Restore code attach kar sakte ho)
+openBtn.MouseButton1Click:Connect(function()
+    if dragThresholdMet then 
+        dragThresholdMet = false 
+        return 
+    end
+    print("[TXR ORB]: Reopen Triggered!")
+end)
+
+-- 🌀 ANIMATION & REACTOR PHYSICS
+task.spawn(function()
+    local t = 0
+    local sonarTimer = 0
+    local currentSpeedMod = 1
+    local currentRadiusMod = 1
+    
+    RunService.RenderStepped:Connect(function(dt)
+        if not gui.Parent then return end
+        t = t + dt
+
+        if openBtnContainer.Visible then
+            local targetSpeed = 1
+            if orbHovered then targetSpeed = targetSpeed * 1.5 end
+            
+            currentSpeedMod = currentSpeedMod + (targetSpeed - currentSpeedMod) * dt * 5
+            local targetRadius = orbHovered and 0.6 or 1
+            currentRadiusMod = currentRadiusMod + (targetRadius - currentRadiusMod) * dt * 8
+            local activeT = t * 3 * currentSpeedMod
+            
+            local baseColor1 = Colors.Primary
+            local baseColor2 = Colors.Purple
+            local lerpAlpha = (math.sin(activeT * 0.8) + 1) / 2
+            
+            coreGlow.ImageColor3 = baseColor1:Lerp(baseColor2, lerpAlpha)
+            coreGlow.ImageTransparency = 0.4 + (math.sin(activeT) * 0.25)
+            eventGlow.ImageColor3 = baseColor2:Lerp(Color3.new(1,1,1), lerpAlpha)
+            
+            openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
+            goGrad.Rotation = (activeT * 50) % 360
+            goStroke.Transparency = orbHovered and 0.1 or 0.5
+            
+            local gPulse = 40 + (math.sin(activeT * 2) * 3)
+            gimbals[1].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 0.8)), gPulse)
+            gimbals[1].frame.Rotation = (activeT * 20) % 360
+            gimbals[1].stroke.Color = baseColor1
+            
+            gimbals[2].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 0.9)))
+            gimbals[2].frame.Rotation = -(activeT * 25) % 360
+            gimbals[2].stroke.Color = baseColor2
+            
+            gimbals[3].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 1.1)), gPulse)
+            gimbals[3].frame.Rotation = 45 + (activeT * 15) % 360
+            gimbals[3].stroke.Color = baseColor1:Lerp(Color3.new(1,1,1), 0.5)
+            
+            gimbals[4].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 1.2)))
+            gimbals[4].frame.Rotation = -45 - (activeT * 15) % 360
+            gimbals[4].stroke.Color = baseColor2:Lerp(Color3.new(1,1,1), 0.5)
+            
+            for i, d in ipairs(diamonds) do
+                local breath = math.sin(activeT * 2 + (i * math.pi/2)) * 4
+                d.frame.Size = UDim2.fromOffset(24 + breath, 24 - breath)
+                d.frame.Rotation = (activeT * 40) * (i % 2 == 0 and 1 or -1) + (i * 22.5)
+                d.stroke.Color = (i % 2 == 0) and baseColor1 or baseColor2
+            end
+            
+            crosshair.Rotation = -(activeT * 60) % 360
+            crosshair.ImageColor3 = baseColor1
+            
+            centerCore.BackgroundColor3 = baseColor1:Lerp(Color3.new(1,1,1), lerpAlpha * 0.5)
+            coreStroke.Color = baseColor2
+
+            local rBase = 32 * currentRadiusMod
+            for i = 1, 12 do
+                local offset = (i - 1) * (math.pi * 2 / 4)
+                local orb = orbs[i]
+                if i <= 4 then
+                    local a = activeT * 1.5 + offset
+                    local depth = math.sin(a)
+                    orb.Position = UDim2.new(0.5, math.cos(a) * rBase, 0.5, depth * (rBase * 0.2))
+                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
+                    orb.ZIndex = depth > 0 and 106 or 102
+                    orb.BackgroundColor3 = baseColor1
+                elseif i <= 8 then
+                    local a = -activeT * 1.8 + offset
+                    local depth = math.cos(a)
+                    orb.Position = UDim2.new(0.5, math.cos(a) * (rBase * 0.2), 0.5, math.sin(a) * rBase)
+                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
+                    orb.ZIndex = depth > 0 and 106 or 102
+                    orb.BackgroundColor3 = baseColor2
+                else
+                    local a = activeT * 2.5 + offset
+                    local depth = math.sin(a + math.pi/4)
+                    orb.Position = UDim2.new(0.5, math.sin(a) * rBase, 0.5, math.sin(a * 2) * (rBase * 0.5))
+                    orb.Size = UDim2.fromOffset(4 + (depth * 2), 4 + (depth * 2))
+                    orb.ZIndex = 107
+                    orb.BackgroundColor3 = Color3.new(1,1,1)
+                end
+            end
+
+            local mouseLoc = UserInputService:GetMouseLocation()
+            local btnAbsCenter = openBtnContainer.AbsolutePosition + (openBtnContainer.AbsoluteSize / 2)
+            local mPos = Vector2.new(mouseLoc.X, mouseLoc.Y)
+            local mDist = (mPos - btnAbsCenter).Magnitude
+            local magneticRadius = 150
+
+            if orbHovered and mDist < magneticRadius and not isDraggingOrb then
+                local pullStr = 1 - (mDist / magneticRadius)
+                local offsetX = (mPos.X - btnAbsCenter.X) * 0.25 * pullStr
+                local offsetY = (mPos.Y - btnAbsCenter.Y) * 0.25 * pullStr
+                local stretchX = 0.85 + (math.abs(offsetX) / 200)
+                local stretchY = 0.85 + (math.abs(offsetY) / 200)
+
+                openBtn.Size = openBtn.Size:Lerp(UDim2.fromScale(stretchX, stretchY), dt * 12)
+                openBtn.Position = openBtn.Position:Lerp(UDim2.new(0.5, offsetX, 0.5, offsetY), dt * 10)
+                eventGlow.Position = eventGlow.Position:Lerp(UDim2.new(0.5, offsetX * 0.4, 0.5, offsetY * 0.4), dt * 10)
+                crosshair.Position = crosshair.Position:Lerp(UDim2.new(0.5, offsetX * 0.7, 0.5, offsetY * 0.7), dt * 12)
+                centerCore.Position = centerCore.Position:Lerp(UDim2.new(0.5, offsetX * 1.2, 0.5, offsetY * 1.2), dt * 15)
+                eventGlow.ImageTransparency = 0.1 + (math.sin(activeT * 10) * 0.05)
+            else
+                openBtn.Size = openBtn.Size:Lerp(baseOrbScale, dt * 12)
+                openBtn.Position = openBtn.Position:Lerp(baseCenterPos, dt * 12)
+                eventGlow.Position = eventGlow.Position:Lerp(baseCenterPos, dt * 12)
+                crosshair.Position = crosshair.Position:Lerp(baseCenterPos, dt * 12)
+                centerCore.Position = centerCore.Position:Lerp(baseCenterPos, dt * 12)
+                eventGlow.ImageTransparency = 0.3 + (math.cos(activeT * 2) * 0.3)
+            end
+
+            sonarTimer = sonarTimer + dt
+            if sonarTimer >= 1.0 then
+                sonarTimer = 0
+                spawnSonar(baseColor1)
+            end
+        end
+    end)
+end)
