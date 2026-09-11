@@ -66,52 +66,52 @@ local function sanitizeXml(str)
 end
 
 -- =========================================================
--- 🎨 MULTI-CHROMA PALETTE & THEMES (UPGRADED LUXURY COLORS)
+-- 🎨 MULTI-CHROMA PALETTE & THEMES (ULTRA OLED PREMIUM)
 -- =========================================================
 local Themes = {
     [1] = {
-        Primary = Color3.fromRGB(0, 255, 215), -- Brighter Neon Cyan
-        PrimaryDark = Color3.fromRGB(0, 180, 160),
-        Accent = Color3.fromRGB(180, 70, 255), -- Richer Purple
-        ActiveTint = Color3.fromRGB(18, 42, 52)
+        Primary = Color3.fromRGB(0, 255, 220), -- Hyper-Cyan
+        PrimaryDark = Color3.fromRGB(0, 190, 170),
+        Accent = Color3.fromRGB(190, 80, 255), -- Electric Purple
+        ActiveTint = Color3.fromRGB(15, 30, 40)
     },
     [2] = {
-        Primary = Color3.fromRGB(255, 55, 95), -- Vibrant Rose Red
-        PrimaryDark = Color3.fromRGB(190, 25, 60),
-        Accent = Color3.fromRGB(255, 155, 15),
-        ActiveTint = Color3.fromRGB(52, 18, 30)
+        Primary = Color3.fromRGB(255, 60, 105), -- Crimson Pink
+        PrimaryDark = Color3.fromRGB(200, 30, 70),
+        Accent = Color3.fromRGB(255, 170, 20),
+        ActiveTint = Color3.fromRGB(40, 15, 25)
     },
     [3] = {
-        Primary = Color3.fromRGB(195, 95, 255),
-        PrimaryDark = Color3.fromRGB(140, 50, 200),
-        Accent = Color3.fromRGB(15, 215, 255),
-        ActiveTint = Color3.fromRGB(42, 18, 58)
+        Primary = Color3.fromRGB(205, 105, 255),
+        PrimaryDark = Color3.fromRGB(150, 60, 210),
+        Accent = Color3.fromRGB(20, 225, 255),
+        ActiveTint = Color3.fromRGB(35, 15, 50)
     },
     [4] = {
-        Primary = Color3.fromRGB(255, 215, 65),
-        PrimaryDark = Color3.fromRGB(200, 150, 30),
-        Accent = Color3.fromRGB(255, 95, 95),
-        ActiveTint = Color3.fromRGB(52, 42, 18)
+        Primary = Color3.fromRGB(255, 225, 75),
+        PrimaryDark = Color3.fromRGB(210, 160, 40),
+        Accent = Color3.fromRGB(255, 105, 105),
+        ActiveTint = Color3.fromRGB(45, 35, 15)
     }
 }
 local currentThemeIdx = 1
 
 local Colors = {
-    Background    = Color3.fromRGB(10, 13, 20),       -- Deep Premium Dark
-    Surface       = Color3.fromRGB(22, 28, 42),       -- Smooth Elevated Surface
-    SurfaceHover  = Color3.fromRGB(34, 42, 60),     
+    Background    = Color3.fromRGB(5, 7, 10),       -- OLED True Black Matrix
+    Surface       = Color3.fromRGB(15, 18, 26),     -- Frosted Floating Panel
+    SurfaceHover  = Color3.fromRGB(25, 30, 45),     
     ActiveTint    = Themes[1].ActiveTint,       
     Primary       = Themes[1].Primary,         
     PrimaryDark   = Themes[1].PrimaryDark,     
-    Danger        = Color3.fromRGB(255, 75, 105),          
-    Warning       = Color3.fromRGB(255, 190, 40),         
+    Danger        = Color3.fromRGB(255, 65, 90),          
+    Warning       = Color3.fromRGB(255, 200, 45),         
     Purple        = Themes[1].Accent,         
-    Text          = Color3.fromRGB(250, 252, 255),          
-    SubText       = Color3.fromRGB(150, 165, 190),       
-    TextDark      = Color3.fromRGB(8, 10, 15),
-    MentionGold   = Color3.fromRGB(255, 215, 80),
-    MentionBg     = Color3.fromRGB(50, 40, 22),
-    MacroBg       = Color3.fromRGB(28, 34, 52)
+    Text          = Color3.fromRGB(255, 255, 255),          
+    SubText       = Color3.fromRGB(160, 175, 200),       
+    TextDark      = Color3.fromRGB(5, 7, 10),
+    MentionGold   = Color3.fromRGB(255, 225, 90),
+    MentionBg     = Color3.fromRGB(40, 32, 15),
+    MacroBg       = Color3.fromRGB(22, 26, 40)
 }
 
 -- =========================================================
@@ -305,24 +305,33 @@ end
 local function crispText(element, overrideTransparency)
     local stroke = element:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", element)
     stroke.Color = Color3.new(0, 0, 0)
-    stroke.Transparency = overrideTransparency or 0.35 -- Made slightly darker for better contrast 
-    stroke.Thickness = 1.0
+    stroke.Transparency = overrideTransparency or 0.25 -- Deepest contrast for OLED look
+    stroke.Thickness = 1.2 -- Bolded crisp stroke
 end
 
--- ⚡ UPGRADED SNAPPY SPRING HOVER
+-- ⚡ CINETMATIC APPLE-STYLE SPRING HOVER (ADDED COLOR TINT)
 local function applySpringHover(btn)
     local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
+    local originalColor = btn.BackgroundColor3
+    local originalTransparency = btn.BackgroundTransparency
+    
     btn.MouseEnter:Connect(function()
-        TweenService:Create(btnScale, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 1.2), {Scale = 1.03}):Play()
+        TweenService:Create(btnScale, TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1.04}):Play()
+        if btn.BackgroundTransparency < 1 then
+            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Colors.SurfaceHover, BackgroundTransparency = originalTransparency - 0.1}):Play()
+        end
     end)
     btn.MouseLeave:Connect(function()
-        TweenService:Create(btnScale, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {Scale = 1}):Play()
+        TweenService:Create(btnScale, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = 1}):Play()
+        if btn.BackgroundTransparency < 1 then
+            TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = originalColor, BackgroundTransparency = originalTransparency}):Play()
+        end
     end)
     btn.MouseButton1Down:Connect(function()
-        TweenService:Create(btnScale, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Scale = 0.95}):Play()
+        TweenService:Create(btnScale, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Scale = 0.94}):Play()
     end)
     btn.MouseButton1Up:Connect(function()
-        TweenService:Create(btnScale, TweenInfo.new(0.3, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1.03}):Play()
+        TweenService:Create(btnScale, TweenInfo.new(0.4, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1.04}):Play()
     end)
 end
 
@@ -400,7 +409,7 @@ local function displayBubble(userName, msg)
 end
 
 -- =========================================================
--- 🏗️ ROOT GUI, MAIN ACRYLIC FRAME & AMBIENT AURA (UPGRADED SHADOWS)
+-- 🏗️ ROOT GUI, MAIN ACRYLIC FRAME & AMBIENT AURA (CINEMATIC LIGHTING)
 -- =========================================================
 local gui = Instance.new("ScreenGui", targetGuiParent)
 gui.Name = "TXR_OnyxChat_" .. tostring(math.random(100000, 999999))
@@ -410,21 +419,21 @@ gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 local shadow = Instance.new("ImageLabel", gui)
 shadow.AnchorPoint = Vector2.new(0.5, 0.5)
 shadow.Position = UDim2.fromScale(0.4, 0.5)
-shadow.Size = UDim2.new(0, 500, 0, 410) -- Increased shadow size for more depth
+shadow.Size = UDim2.new(0, 520, 0, 430) -- Massive blurred shadow
 shadow.BackgroundTransparency = 1
 shadow.Image = "rbxassetid://1316045217"
 shadow.ImageColor3 = Color3.new(0, 0, 0)
-shadow.ImageTransparency = 0.25 -- Richer shadow
+shadow.ImageTransparency = 0.15 -- Intense deep drop shadow
 shadow.ZIndex = 1
 
 local aura = Instance.new("ImageLabel", gui)
 aura.AnchorPoint = Vector2.new(0.5, 0.5)
 aura.Position = UDim2.fromScale(0.4, 0.5)
-aura.Size = UDim2.new(0, 480, 0, 390)
+aura.Size = UDim2.new(0, 490, 0, 400)
 aura.BackgroundTransparency = 1
 aura.Image = "rbxassetid://1316045217"
 aura.ImageColor3 = Colors.Primary
-aura.ImageTransparency = 0.55 -- Vibrant aura
+aura.ImageTransparency = 0.45 -- Brighter glowing monitor aura
 aura.ZIndex = 2
 
 local auraScale = Instance.new("UIScale", aura)
@@ -437,17 +446,17 @@ mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.Position = UDim2.fromScale(0.4, 0.5)
 mainFrame.Size = UDim2.new(0, 440, 0, 350)
 mainFrame.BackgroundColor3 = Colors.Background
-mainFrame.BackgroundTransparency = 0.08 -- More solid luxury feel
+mainFrame.BackgroundTransparency = 0.05 -- Almost solid OLED
 mainFrame.ClipsDescendants = true
 mainFrame.Active = true
 mainFrame.ZIndex = 5
 
 local mainCorner = Instance.new("UICorner", mainFrame)
-mainCorner.CornerRadius = UDim.new(0, 16) -- Modern smoother corner
+mainCorner.CornerRadius = UDim.new(0, 20) -- Ultra-round Apple style
 
 local mainStroke = Instance.new("UIStroke", mainFrame)
-mainStroke.Thickness = 1.6
-mainStroke.Transparency = 0.25
+mainStroke.Thickness = 1.8
+mainStroke.Transparency = 0.15
 mainStroke.Color = Colors.Primary
 
 local strokeGrad = Instance.new("UIGradient", mainStroke)
@@ -467,14 +476,14 @@ end)
 
 local mainBgGrad = Instance.new("UIGradient", mainFrame)
 mainBgGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 19, 28)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 10, 15))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(12, 15, 22)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(4, 5, 8))
 })
 mainBgGrad.Rotation = 45
 
 local glassSheen = Instance.new("Frame", mainFrame)
-glassSheen.Size = UDim2.new(1, 0, 0, 90)
-glassSheen.BackgroundTransparency = 0.92
+glassSheen.Size = UDim2.new(1, 0, 0, 120)
+glassSheen.BackgroundTransparency = 0.90
 glassSheen.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 glassSheen.BorderSizePixel = 0
 glassSheen.ZIndex = 6
@@ -484,14 +493,14 @@ gsGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
 })
 gsGrad.Transparency = NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 0.25),
-    NumberSequenceKeypoint.new(0.6, 0.9),
+    NumberSequenceKeypoint.new(0, 0.15),
+    NumberSequenceKeypoint.new(0.5, 0.8),
     NumberSequenceKeypoint.new(1, 1)
 })
 gsGrad.Rotation = 90
 
 -- =========================================================
--- 🌧️ MATRIX CODE RAIN
+-- 🌧️ MATRIX CODE RAIN (SUBTLE ELEGANCE)
 -- =========================================================
 local matrixBox = Instance.new("Frame", mainFrame)
 matrixBox.Size = UDim2.fromScale(1, 1)
@@ -507,9 +516,9 @@ for i = 1, 16 do
     col.Position = UDim2.new((i - 1) / 16, 4, 0, 0)
     col.BackgroundTransparency = 1
     col.Font = Enum.Font.Code
-    col.TextSize = 10
+    col.TextSize = 9 -- Smaller, less intrusive
     col.TextColor3 = Colors.PrimaryDark
-    col.TextTransparency = 0.94 -- Subtler matrix effect
+    col.TextTransparency = 0.96 -- Very subtle watermark effect
     col.TextWrapped = true
     col.TextYAlignment = Enum.TextYAlignment.Top
     col.ZIndex = 6
@@ -742,11 +751,11 @@ rosterFrame.BackgroundColor3 = Colors.Surface
 rosterFrame.BackgroundTransparency = 0.1
 rosterFrame.Visible = false
 rosterFrame.ZIndex = 40
-Instance.new("UICorner", rosterFrame).CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", rosterFrame).CornerRadius = UDim.new(0, 14)
 local rfStroke = Instance.new("UIStroke", rosterFrame)
 rfStroke.Color = Colors.PrimaryDark
 rfStroke.Thickness = 1.2
-rfStroke.Transparency = 0.3
+rfStroke.Transparency = 0.25
 
 local rfTitle = Instance.new("TextLabel", rosterFrame)
 rfTitle.Size = UDim2.new(1, 0, 0, 26)
@@ -781,11 +790,11 @@ local function refreshRosterUI()
         uBtn.BackgroundTransparency = 0.5
         uBtn.Text = "  @" .. u
         uBtn.TextColor3 = Colors.Text
-        uBtn.Font = Enum.Font.GothamBold
+        uBtn.Font = Enum.Font.GothamSemibold -- Softer Apple UI look
         uBtn.TextSize = 9.5
         uBtn.TextXAlignment = Enum.TextXAlignment.Left
         uBtn.ZIndex = 42
-        Instance.new("UICorner", uBtn).CornerRadius = UDim.new(0, 6)
+        Instance.new("UICorner", uBtn).CornerRadius = UDim.new(0, 8)
         
         local ubStr = Instance.new("UIStroke", uBtn)
         ubStr.Color = Colors.SurfaceHover
@@ -811,7 +820,7 @@ header.ZIndex = 10
 
 local headerLeftCluster = Instance.new("Frame", header)
 headerLeftCluster.Size = UDim2.new(0, 220, 1, 0)
-headerLeftCluster.Position = UDim2.fromOffset(14, 0)
+headerLeftCluster.Position = UDim2.fromOffset(16, 0)
 headerLeftCluster.BackgroundTransparency = 1
 headerLeftCluster.ZIndex = 11
 
@@ -830,12 +839,12 @@ headerTitle.Font = Enum.Font.GothamBlack
 headerTitle.TextSize = 13.5
 headerTitle.TextXAlignment = Enum.TextXAlignment.Left
 headerTitle.ZIndex = 12
-crispText(headerTitle, 0.25)
+crispText(headerTitle, 0.2)
 
 local liveBadge = Instance.new("TextButton", headerLeftCluster)
 liveBadge.Size = UDim2.fromOffset(80, 22)
 liveBadge.BackgroundColor3 = Colors.Surface
-liveBadge.BackgroundTransparency = 0.3
+liveBadge.BackgroundTransparency = 0.2
 liveBadge.Text = ""
 liveBadge.AutoButtonColor = false
 liveBadge.ZIndex = 12
@@ -844,7 +853,7 @@ Instance.new("UICorner", liveBadge).CornerRadius = UDim.new(1, 0)
 local lbStroke = Instance.new("UIStroke", liveBadge)
 lbStroke.Color = Colors.PrimaryDark
 lbStroke.Thickness = 1
-lbStroke.Transparency = 0.4
+lbStroke.Transparency = 0.3
 
 local ledDot = Instance.new("Frame", liveBadge)
 ledDot.Size = UDim2.fromOffset(6, 6)
@@ -870,14 +879,14 @@ liveBadge.MouseButton1Click:Connect(function()
     rosterFrame.Visible = not rosterFrame.Visible
     if rosterFrame.Visible then
         rosterFrame.Position = UDim2.new(1, 10, 0, 42)
-        TweenService:Create(rosterFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(1, -145, 0, 42)}):Play()
+        TweenService:Create(rosterFrame, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(1, -145, 0, 42)}):Play()
     end
 end)
 
 -- Header Action Buttons
 local headerRightCluster = Instance.new("Frame", header)
 headerRightCluster.AnchorPoint = Vector2.new(1, 0.5)
-headerRightCluster.Position = UDim2.new(1, -12, 0.5, 0)
+headerRightCluster.Position = UDim2.new(1, -16, 0.5, 0)
 headerRightCluster.Size = UDim2.new(0, 170, 0, 24)
 headerRightCluster.BackgroundTransparency = 1
 headerRightCluster.ZIndex = 12
@@ -892,19 +901,19 @@ local function createHeaderBtn(text, onClick)
     local b = Instance.new("TextButton", headerRightCluster)
     b.Size = UDim2.fromOffset(28, 24)
     b.BackgroundColor3 = Colors.Surface
-    b.BackgroundTransparency = 0.3 -- Richer background
+    b.BackgroundTransparency = 0.2 -- Premium bold buttons
     b.Text = text
     b.TextColor3 = Colors.Text
     b.Font = Enum.Font.GothamBold
     b.TextSize = 9.5
     b.AutoButtonColor = false
     b.ZIndex = 15
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8) -- Softer corners
 
     local btnStr = Instance.new("UIStroke", b)
     btnStr.Thickness = 1
     btnStr.Color = Colors.PrimaryDark
-    btnStr.Transparency = 0.5
+    btnStr.Transparency = 0.4
 
     applySpringHover(b)
     b.MouseButton1Click:Connect(function()
@@ -922,7 +931,7 @@ if Admin[lp.Name:lower()] then
         local bsScale = badgeSelectorModal:FindFirstChildOfClass("UIScale")
         if isBadgeModalOpen then
             badgeSelectorModal.Visible = true
-            TweenService:Create(bsScale, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+            TweenService:Create(bsScale, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1}):Play()
         else
             TweenService:Create(bsScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0}):Play()
             task.delay(0.2, function()
@@ -962,35 +971,35 @@ ghostBtn = createHeaderBtn("GST", function()
 
     isGhostMode = not isGhostMode
     if isGhostMode then
-        TweenService:Create(mainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.55}):Play()
-        TweenService:Create(glassSheen, TweenInfo.new(0.35), {BackgroundTransparency = 0.85}):Play()
-        TweenService:Create(aura, TweenInfo.new(0.35), {ImageTransparency = 0.85}):Play()
-        TweenService:Create(shadow, TweenInfo.new(0.35), {ImageTransparency = 0.5}):Play()
+        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.50}):Play()
+        TweenService:Create(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.85}):Play()
+        TweenService:Create(aura, TweenInfo.new(0.4), {ImageTransparency = 0.75}):Play()
+        TweenService:Create(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.4}):Play()
         ghostBtn.BackgroundColor3 = Colors.ActiveTint
         ghostBtn.TextColor3 = Colors.Primary
-        mainStroke.Transparency = 0.15
-        mainStroke.Thickness = 1.8
-        badgeSelectorModal.BackgroundTransparency = 0.55
+        mainStroke.Transparency = 0.1
+        mainStroke.Thickness = 2.0
+        badgeSelectorModal.BackgroundTransparency = 0.50
 
         for _, card in ipairs(messageFeed:GetChildren()) do
             if card:IsA("TextButton") then
-                card.BackgroundTransparency = 0.55
+                card.BackgroundTransparency = 0.45
             end
         end
     else
-        TweenService:Create(mainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.08}):Play()
-        TweenService:Create(glassSheen, TweenInfo.new(0.35), {BackgroundTransparency = 0.92}):Play()
-        TweenService:Create(aura, TweenInfo.new(0.35), {ImageTransparency = 0.55}):Play()
-        TweenService:Create(shadow, TweenInfo.new(0.35), {ImageTransparency = 0.25}):Play()
+        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.05}):Play()
+        TweenService:Create(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.90}):Play()
+        TweenService:Create(aura, TweenInfo.new(0.4), {ImageTransparency = 0.45}):Play()
+        TweenService:Create(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.15}):Play()
         ghostBtn.BackgroundColor3 = Colors.Surface
         ghostBtn.TextColor3 = Colors.Text
-        mainStroke.Transparency = 0.25
-        mainStroke.Thickness = 1.6
+        mainStroke.Transparency = 0.15
+        mainStroke.Thickness = 1.8
         badgeSelectorModal.BackgroundTransparency = 0.05
 
         for _, card in ipairs(messageFeed:GetChildren()) do
             if card:IsA("TextButton") then
-                card.BackgroundTransparency = 0.25
+                card.BackgroundTransparency = 0.15
             end
         end
     end
@@ -1037,13 +1046,23 @@ local closeBtn = createHeaderBtn("X", function()
 end)
 closeBtn.TextColor3 = Colors.Danger
 
+-- Sexy Glowing Underline for Header
 local headerDivider = Instance.new("Frame", header)
-headerDivider.Size = UDim2.new(1, 0, 0, 1)
+headerDivider.Size = UDim2.new(1, 0, 0, 2)
 headerDivider.Position = UDim2.new(0, 0, 1, 0)
 headerDivider.BorderSizePixel = 0
-headerDivider.BackgroundColor3 = Color3.fromRGB(28, 36, 52)
-headerDivider.BackgroundTransparency = 0.4
+headerDivider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+headerDivider.BackgroundTransparency = 0.2
 headerDivider.ZIndex = 12
+
+local divGrad = Instance.new("UIGradient", headerDivider)
+divGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Colors.Background),
+    ColorSequenceKeypoint.new(0.1, Colors.PrimaryDark),
+    ColorSequenceKeypoint.new(0.5, Colors.Primary),
+    ColorSequenceKeypoint.new(0.9, Colors.PrimaryDark),
+    ColorSequenceKeypoint.new(1, Colors.Background)
+})
 
 -- =========================================================
 -- 🔀 CHANNEL TABS (SERVER FIRST, THEN GLOBAL)
@@ -1057,13 +1076,13 @@ channelFrame.ZIndex = 8
 local tabShell = Instance.new("Frame", channelFrame)
 tabShell.Size = UDim2.new(1, 0, 1, 0)
 tabShell.BackgroundColor3 = Colors.Surface
-tabShell.BackgroundTransparency = 0.25
+tabShell.BackgroundTransparency = 0.15
 tabShell.ZIndex = 9
-Instance.new("UICorner", tabShell).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", tabShell).CornerRadius = UDim.new(0, 10)
 local tsStroke = Instance.new("UIStroke", tabShell)
-tsStroke.Thickness = 1
+tsStroke.Thickness = 1.2
 tsStroke.Color = Colors.SurfaceHover
-tsStroke.Transparency = 0.4
+tsStroke.Transparency = 0.2
 
 -- 1. SERVER TAB (First Position)
 local serverBtn = Instance.new("TextButton", tabShell)
@@ -1076,7 +1095,7 @@ serverBtn.Font = Enum.Font.GothamBlack
 serverBtn.TextSize = 11
 serverBtn.AutoButtonColor = false
 serverBtn.ZIndex = 10
-Instance.new("UICorner", serverBtn).CornerRadius = UDim.new(0, 6)
+Instance.new("UICorner", serverBtn).CornerRadius = UDim.new(0, 8)
 
 -- 2. GLOBAL TAB (Second Position)
 local globalBtn = Instance.new("TextButton", tabShell)
@@ -1089,7 +1108,7 @@ globalBtn.Font = Enum.Font.GothamBold
 globalBtn.TextSize = 11
 globalBtn.AutoButtonColor = false
 globalBtn.ZIndex = 10
-Instance.new("UICorner", globalBtn).CornerRadius = UDim.new(0, 6)
+Instance.new("UICorner", globalBtn).CornerRadius = UDim.new(0, 8)
 
 local function filterFeedMode()
     for _, card in ipairs(messageFeed:GetChildren()) do
@@ -1146,7 +1165,7 @@ badgeSelectorModal.BackgroundColor3 = Color3.fromRGB(12, 16, 24)
 badgeSelectorModal.BackgroundTransparency = 0.05
 badgeSelectorModal.Visible = false
 badgeSelectorModal.ZIndex = 70
-Instance.new("UICorner", badgeSelectorModal).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", badgeSelectorModal).CornerRadius = UDim.new(0, 14)
 
 local bsmScale = Instance.new("UIScale", badgeSelectorModal)
 bsmScale.Scale = 0
@@ -1154,7 +1173,7 @@ bsmScale.Scale = 0
 local bsStroke = Instance.new("UIStroke", badgeSelectorModal)
 bsStroke.Color = Colors.PrimaryDark
 bsStroke.Thickness = 1.2
-bsStroke.Transparency = 0.4
+bsStroke.Transparency = 0.2
 
 local bsTitle = Instance.new("TextLabel", badgeSelectorModal)
 bsTitle.Size = UDim2.new(1, 0, 0, 28)
@@ -1191,16 +1210,16 @@ for _, bKey in ipairs(badgeKeysOrder) do
     local bBtn = Instance.new("TextButton", bsScroll)
     bBtn.Size = UDim2.new(0.95, 0, 0, 30) -- Taller card for visual preview
     bBtn.BackgroundColor3 = Colors.Surface
-    bBtn.BackgroundTransparency = 0.5
+    bBtn.BackgroundTransparency = 0.3
     bBtn.Text = "" -- Text removed, using Live UI
     bBtn.AutoButtonColor = false
     bBtn.ZIndex = 72
-    Instance.new("UICorner", bBtn).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", bBtn).CornerRadius = UDim.new(0, 8)
     
     local btnStroke = Instance.new("UIStroke", bBtn)
     btnStroke.Color = Colors.PrimaryDark
     btnStroke.Thickness = 0.8
-    btnStroke.Transparency = 0.7
+    btnStroke.Transparency = 0.5
     
     -- LIVE BADGE GENERATION IN MENU
     local tagWidth = TextService:GetTextSize(bData.Title, 11, Enum.Font.GothamBlack, Vector2.new(1000, 20)).X + 4
@@ -1325,21 +1344,21 @@ messageFeed = Instance.new("ScrollingFrame", mainFrame)
 messageFeed.Size = UDim2.new(1, -24, 1, -142)
 messageFeed.Position = UDim2.new(0, 12, 0, 84)
 messageFeed.BackgroundTransparency = 1
-messageFeed.ScrollBarThickness = 2 -- Thinner elegant scrollbar
+messageFeed.ScrollBarThickness = 1 -- Ultra sleek scrollbar
 messageFeed.ScrollBarImageColor3 = Colors.PrimaryDark
 messageFeed.CanvasSize = UDim2.new(0, 0, 0, 0)
 messageFeed.AutomaticCanvasSize = Enum.AutomaticSize.Y
 messageFeed.ZIndex = 8
 
 local feedLayout = Instance.new("UIListLayout", messageFeed)
-feedLayout.Padding = UDim.new(0, 8)
+feedLayout.Padding = UDim.new(0, 10) -- Increased padding for airy feel
 feedLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 local feedPadding = Instance.new("UIPadding", messageFeed)
-feedPadding.PaddingLeft = UDim.new(0, 2)
-feedPadding.PaddingRight = UDim.new(0, 6)
-feedPadding.PaddingBottom = UDim.new(0, 6)
-feedPadding.PaddingTop = UDim.new(0, 4)
+feedPadding.PaddingLeft = UDim.new(0, 4)
+feedPadding.PaddingRight = UDim.new(0, 8)
+feedPadding.PaddingBottom = UDim.new(0, 8)
+feedPadding.PaddingTop = UDim.new(0, 6)
 
 local jumpBottomBtn = Instance.new("TextButton", mainFrame)
 jumpBottomBtn.Size = UDim2.fromOffset(120, 26)
@@ -1484,7 +1503,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     card.Size = memeIdMatch and UDim2.new(1, 0, 0, 130) or UDim2.new(1, 0, 0, 0)
     card.AutomaticSize = memeIdMatch and Enum.AutomaticSize.None or Enum.AutomaticSize.Y
     card.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White base for gradient multiply
-    card.BackgroundTransparency = isGhostMode and 0.55 or 0.25
+    card.BackgroundTransparency = isGhostMode and 0.45 or 0.15
     card.Text = ""
     card.AutoButtonColor = false
     card.ClipsDescendants = false
@@ -1492,15 +1511,15 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     
     card:SetAttribute("ChatScope", scopeType or "global")
     card:SetAttribute("JobId", msgJobId or game.JobId)
-    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 12)
+    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 14) -- Rounder Cards
 
-    -- ⚡ LUXURY CARD GRADIENT EFFECT
+    -- ⚡ LUXURY CARD GRADIENT EFFECT (More Pronounced)
     local cardGrad = Instance.new("UIGradient", card)
     cardGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, isMentioned and Colors.MentionBg or Colors.Surface),
-        ColorSequenceKeypoint.new(1, isMentioned and Colors.MentionBg or Color3.fromRGB(15, 20, 30))
+        ColorSequenceKeypoint.new(0, isMentioned and Colors.MentionBg or Colors.SurfaceHover),
+        ColorSequenceKeypoint.new(1, isMentioned and Colors.MentionBg or Colors.Background)
     })
-    cardGrad.Rotation = 45
+    cardGrad.Rotation = -45
 
     if chatMode == "server" then
         if scopeType == "global" or (msgJobId and msgJobId ~= "" and msgJobId ~= game.JobId) then
@@ -1516,37 +1535,47 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         end
     end
 
+    -- ⚡ SLIDE IN ANIMATION FOR NEW MESSAGES
     local cardScale = Instance.new("UIScale", card)
-    cardScale.Scale = 0.94
-    TweenService:Create(cardScale, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    cardScale.Scale = 0.85
+    card.Position = UDim2.new(0, -20, 0, 0)
+    TweenService:Create(cardScale, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(card, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
 
     local accentStrip = Instance.new("Frame", card)
-    accentStrip.Size = UDim2.new(0, 3, 1, -12)
+    accentStrip.Size = UDim2.new(0, 4, 1, -12)
     accentStrip.Position = UDim2.new(0, 6, 0, 6)
     accentStrip.BorderSizePixel = 0
-    accentStrip.BackgroundColor3 = isMentioned and Colors.MentionGold or (privateUserTarget and Colors.Purple or Colors.Primary)
+    accentStrip.BackgroundColor3 = Color3.new(1,1,1)
     accentStrip.ZIndex = 10
     Instance.new("UICorner", accentStrip).CornerRadius = UDim.new(1, 0)
+    
+    -- Strip Gradient
+    local stripGrad = Instance.new("UIGradient", accentStrip)
+    stripGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, isMentioned and Colors.MentionGold or (privateUserTarget and Colors.Purple or Colors.Primary)),
+        ColorSequenceKeypoint.new(1, isMentioned and Color3.fromRGB(255,180,0) or (privateUserTarget and Colors.PrimaryDark or Colors.PrimaryDark))
+    })
+    stripGrad.Rotation = 90
 
     local cardStroke = Instance.new("UIStroke", card)
-    cardStroke.Thickness = isMentioned and 1.6 or 1.2
-    cardStroke.Transparency = isMentioned and 0.2 or 0.7
+    cardStroke.Thickness = isMentioned and 1.8 or 1.4
+    cardStroke.Transparency = isMentioned and 0.15 or 0.6
     cardStroke.Color = isMentioned and Colors.MentionGold or Colors.SurfaceHover
 
     local avatarImg = Instance.new("ImageLabel", card)
-    avatarImg.Size = UDim2.fromOffset(30, 30)
-    avatarImg.Position = UDim2.fromOffset(16, 10)
+    avatarImg.Size = UDim2.fromOffset(32, 32)
+    avatarImg.Position = UDim2.fromOffset(18, 10)
     avatarImg.BackgroundColor3 = Colors.Background
     avatarImg.BackgroundTransparency = 0.5
     avatarImg.ZIndex = 11
     Instance.new("UICorner", avatarImg).CornerRadius = UDim.new(1, 0)
     
     local avStroke = Instance.new("UIStroke", avatarImg)
-    avStroke.Thickness = 1.4
-    avStroke.Transparency = 0.3
+    avStroke.Thickness = 1.6
+    avStroke.Transparency = 0.2
     avStroke.Color = isAdminUser and Colors.Primary or Colors.SurfaceHover
     
-    -- Subtly gradient the avatar stroke for admins
     if isAdminUser then
         local avGrad = Instance.new("UIGradient", avStroke)
         avGrad.Color = ColorSequence.new({
@@ -1571,8 +1600,8 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     end)
 
     local cardContent = Instance.new("Frame", card)
-    cardContent.Size = UDim2.new(1, -56, 0, 0)
-    cardContent.Position = UDim2.fromOffset(56, 10)
+    cardContent.Size = UDim2.new(1, -60, 0, 0)
+    cardContent.Position = UDim2.fromOffset(60, 10)
     cardContent.AutomaticSize = Enum.AutomaticSize.Y
     cardContent.BackgroundTransparency = 1
     cardContent.ZIndex = 11
@@ -1620,7 +1649,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         crispText(dmLbl, 0.5)
     end
 
-    -- ⚡ BUTTERY 60 FPS CHROMATIC IRIDESCENT BADGE (FIXED)
+    -- ⚡ BUTTERY 60 FPS CHROMATIC IRIDESCENT BADGE
     if isAdminUser then
         local tagWidth = TextService:GetTextSize(badgeProfile.Title, 11, Enum.Font.GothamBlack, Vector2.new(1000, 20)).X + 4
         
@@ -1670,7 +1699,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         badgeShine.TextColor3 = Color3.fromRGB(255, 255, 255)
         badgeShine.Font = Enum.Font.GothamBlack
         badgeShine.TextSize = 11
-        badgeShine.ZIndex = 15
+        badgeShine.ZIndex = 75
 
         local shineGrad = Instance.new("UIGradient", badgeShine)
         shineGrad.Color = ColorSequence.new({
@@ -1764,7 +1793,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         bodyTxt.AutomaticSize = Enum.AutomaticSize.Y
         bodyTxt.BackgroundTransparency = 1
         bodyTxt.TextColor3 = Colors.Text
-        bodyTxt.Font = Enum.Font.GothamMedium
+        bodyTxt.Font = Enum.Font.GothamSemibold -- Softer Apple UI style
         bodyTxt.TextSize = 11.5
         bodyTxt.TextWrapped = true
         bodyTxt.TextXAlignment = Enum.TextXAlignment.Left
@@ -1776,7 +1805,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     end
 
     local padFix = Instance.new("UIPadding", card)
-    padFix.PaddingBottom = UDim.new(0, 12) -- More breathing room
+    padFix.PaddingBottom = UDim.new(0, 14) -- Perfect spacing
 
     if isMentioned and actualUsername ~= lp.Name then
         playSFX("mention")
@@ -1836,37 +1865,43 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
 end
 
 -- =========================================================
--- ⌨️ PILL-SHAPED INPUT CONTAINER & SEAMLESS CONTROLS (UPGRADED)
+-- ⌨️ PILL-SHAPED FLOATING ISLAND INPUT CONTAINER
 -- =========================================================
 local inputContainer = Instance.new("Frame", mainFrame)
 inputContainer.Size = UDim2.new(1, -24, 0, 44)
 inputContainer.Position = UDim2.new(0, 12, 1, -52)
 inputContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-inputContainer.BackgroundTransparency = 0.20
+inputContainer.BackgroundTransparency = 0.15
 inputContainer.ZIndex = 12
 Instance.new("UICorner", inputContainer).CornerRadius = UDim.new(1, 0)
 
--- Luxury Input Gradient
 local inputGrad = Instance.new("UIGradient", inputContainer)
 inputGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Colors.Surface),
-    ColorSequenceKeypoint.new(1, Colors.SurfaceHover)
+    ColorSequenceKeypoint.new(1, Colors.Background)
 })
 inputGrad.Rotation = 90
 
 local inputStroke = Instance.new("UIStroke", inputContainer)
 inputStroke.Thickness = 1.4
 inputStroke.Color = Colors.PrimaryDark
-inputStroke.Transparency = 0.45
+inputStroke.Transparency = 0.35
 
+-- GLOWING TYPING INDICATOR LINE
 local typingIndicator = Instance.new("Frame", inputContainer)
 typingIndicator.Size = UDim2.new(1, -24, 0, 2)
-typingIndicator.Position = UDim2.new(0, 12, 0, 0)
-typingIndicator.BackgroundColor3 = Colors.Primary
+typingIndicator.Position = UDim2.new(0, 12, 0, -1)
+typingIndicator.BackgroundColor3 = Color3.new(1,1,1)
 typingIndicator.BorderSizePixel = 0
 typingIndicator.BackgroundTransparency = 1
 typingIndicator.ZIndex = 16
 Instance.new("UICorner", typingIndicator).CornerRadius = UDim.new(1, 0)
+local typeGrad = Instance.new("UIGradient", typingIndicator)
+typeGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Colors.PrimaryDark),
+    ColorSequenceKeypoint.new(0.5, Colors.Primary),
+    ColorSequenceKeypoint.new(1, Colors.PrimaryDark)
+})
 
 local dmBadge = Instance.new("TextButton", inputContainer)
 dmBadge.Size = UDim2.new(0, 0, 1, -12)
@@ -1888,8 +1923,8 @@ chatInput.BackgroundTransparency = 1
 chatInput.PlaceholderText = "Type message... (!p user to DM)"
 chatInput.PlaceholderColor3 = Colors.SubText
 chatInput.TextColor3 = Colors.Text
-chatInput.Font = Enum.Font.GothamMedium
-chatInput.TextSize = 11.5
+chatInput.Font = Enum.Font.GothamSemibold
+chatInput.TextSize = 12
 chatInput.ClearTextOnFocus = false
 chatInput.TextXAlignment = Enum.TextXAlignment.Left
 chatInput.ZIndex = 13
@@ -1912,11 +1947,11 @@ task.defer(sanitizeChatInput)
 
 chatInput.Focused:Connect(function()
     sanitizeChatInput()
-    TweenService:Create(inputStroke, TweenInfo.new(0.25), {Color = Colors.Primary, Transparency = 0.1, Thickness = 1.8}):Play()
+    TweenService:Create(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Color = Colors.Primary, Transparency = 0.0, Thickness = 2.0}):Play()
 end)
 chatInput.FocusLost:Connect(function()
     typingIndicator.BackgroundTransparency = 1
-    TweenService:Create(inputStroke, TweenInfo.new(0.25), {Color = Colors.PrimaryDark, Transparency = 0.45, Thickness = 1.4}):Play()
+    TweenService:Create(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Color = Colors.PrimaryDark, Transparency = 0.35, Thickness = 1.4}):Play()
 end)
 
 updateInputBar = function()
@@ -1987,7 +2022,7 @@ emojiFrame.BackgroundColor3 = Colors.Surface
 emojiFrame.BackgroundTransparency = 0.08
 emojiFrame.Visible = false
 emojiFrame.ZIndex = 30
-Instance.new("UICorner", emojiFrame).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", emojiFrame).CornerRadius = UDim.new(0, 14)
 local efStroke = Instance.new("UIStroke", emojiFrame)
 efStroke.Color = Colors.Primary
 efStroke.Thickness = 1.2
@@ -2041,7 +2076,7 @@ memeFrame.BackgroundColor3 = Colors.Surface
 memeFrame.BackgroundTransparency = 0.08
 memeFrame.Visible = false
 memeFrame.ZIndex = 30
-Instance.new("UICorner", memeFrame).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", memeFrame).CornerRadius = UDim.new(0, 14)
 local mfStroke = Instance.new("UIStroke", memeFrame)
 mfStroke.Color = Colors.Purple
 mfStroke.Thickness = 1.2
@@ -2258,15 +2293,15 @@ openBtn.MouseButton1Click:Connect(function()
     unreadCount = 0
     unreadBadge.Visible = false
     
-    local tInfo2 = TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    local tInfo2 = TweenInfo.new(0.7, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
     local tInfo3 = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
     
     TweenService:Create(mainScale, tInfo2, {Scale = 1}):Play()
     TweenService:Create(auraScale, tInfo2, {Scale = 1}):Play()
     TweenService:Create(shadowScale, tInfo2, {Scale = 1}):Play()
-    TweenService:Create(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.55 or 0.08}):Play()
-    TweenService:Create(aura, tInfo3, {ImageTransparency = isGhostMode and 0.85 or 0.55}):Play()
-    TweenService:Create(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.5 or 0.25}):Play()
+    TweenService:Create(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.50 or 0.05}):Play()
+    TweenService:Create(aura, tInfo3, {ImageTransparency = isGhostMode and 0.75 or 0.45}):Play()
+    TweenService:Create(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.4 or 0.15}):Play()
 end)
 
 -- Keyboard Shortcuts
@@ -2287,9 +2322,9 @@ UserInputService.InputBegan:Connect(function(input, gp)
             mainScale.Scale = 1
             auraScale.Scale = 1
             shadowScale.Scale = 1
-            mainFrame.BackgroundTransparency = isGhostMode and 0.55 or 0.08
-            aura.ImageTransparency = isGhostMode and 0.85 or 0.55
-            shadow.ImageTransparency = isGhostMode and 0.5 or 0.25
+            mainFrame.BackgroundTransparency = isGhostMode and 0.50 or 0.05
+            aura.ImageTransparency = isGhostMode and 0.75 or 0.45
+            shadow.ImageTransparency = isGhostMode and 0.4 or 0.15
         end
     elseif input.KeyCode == Enum.KeyCode.Semicolon or input.KeyCode == Enum.KeyCode.Slash then
         task.delay(0.05, function() chatInput:CaptureFocus() end)
@@ -2353,7 +2388,7 @@ task.spawn(function()
         if mainFrame.Visible then
             strokeGrad.Rotation = (t * 35) % 360
             local breath = (math.sin(t * 2.5) + 1) / 2
-            aura.ImageTransparency = isGhostMode and 0.85 or (0.55 + (breath * 0.08))
+            aura.ImageTransparency = isGhostMode and 0.75 or (0.45 + (breath * 0.08))
 
             local ledAlpha = (math.sin(t * 4) + 1) / 2
             ledDot.BackgroundTransparency = 0.1 + (ledAlpha * 0.5)
