@@ -12,7 +12,7 @@ pcall(function()
 end)
 
 -- =========================================================
--- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V13.0 OWNER SUITE) 👑
+-- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V14.0 ELITE SUITE) 👑
 -- =========================================================
 
 local currentExecutionID = tick()
@@ -115,108 +115,216 @@ local Colors = {
 }
 
 -- =========================================================
--- 👑 5 ELITE OWNER BADGE PROFILES (DYNAMIC ON-CHAT SWITCHING)
+-- 👑 16 LUXURY CUSTOM TYPOGRAPHY BADGES (ZERO BOXES / NO CARTOON)
 -- =========================================================
 local BadgePresets = {
     ["OWNER"] = {
         Title = "OWNER",
-        PlateBg = Color3.fromRGB(28, 20, 6),
-        AccentColor = Color3.fromRGB(255, 205, 45),
-        StrokeColors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(140, 95, 0)),
-            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 215, 50)),
+        Accent = Color3.fromRGB(255, 200, 40),
+        Stroke = Color3.fromRGB(130, 90, 0),
+        Speed = 3.0,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(170, 120, 0)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 215, 60)),
             ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(255, 215, 50)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(140, 95, 0))
-        },
-        TextColors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 190, 30)),
-            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 240, 170)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 240, 170)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 190, 30))
-        },
-        Speed = 3.2
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 215, 60)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(170, 120, 0))
+        }
     },
     ["DADDY"] = {
         Title = "DADDY",
-        PlateBg = Color3.fromRGB(24, 8, 16),
-        AccentColor = Color3.fromRGB(255, 40, 80),
-        StrokeColors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(130, 0, 25)),
-            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 40, 80)),
+        Accent = Color3.fromRGB(255, 30, 70),
+        Stroke = Color3.fromRGB(120, 0, 20),
+        Speed = 3.2,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(160, 0, 30)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 40, 80)),
             ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(255, 40, 80)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(130, 0, 25))
-        },
-        TextColors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 30, 70)),
-            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 130, 150)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 130, 150)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 30, 70))
-        },
-        Speed = 3.0
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 40, 80)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(160, 0, 30))
+        }
     },
     ["TITAN"] = {
         Title = "TITAN",
-        PlateBg = Color3.fromRGB(6, 20, 26),
-        AccentColor = Color3.fromRGB(0, 225, 255),
-        StrokeColors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 110, 140)),
-            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(0, 235, 255)),
+        Accent = Color3.fromRGB(0, 230, 255),
+        Stroke = Color3.fromRGB(0, 100, 130),
+        Speed = 3.4,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 110, 150)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(0, 230, 255)),
             ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(0, 235, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 110, 140))
-        },
-        TextColors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 200, 255)),
-            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(160, 240, 255)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(160, 240, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 200, 255))
-        },
-        Speed = 3.4
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(0, 230, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 110, 150))
+        }
     },
     ["OVERLORD"] = {
         Title = "OVERLORD",
-        PlateBg = Color3.fromRGB(20, 7, 28),
-        AccentColor = Color3.fromRGB(190, 70, 255),
-        StrokeColors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(100, 0, 145)),
-            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(205, 80, 255)),
+        Accent = Color3.fromRGB(190, 70, 255),
+        Stroke = Color3.fromRGB(90, 0, 130),
+        Speed = 2.8,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(110, 0, 160)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(200, 80, 255)),
             ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(205, 80, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(100, 0, 145))
-        },
-        TextColors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(195, 60, 255)),
-            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(235, 170, 255)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(235, 170, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(195, 60, 255))
-        },
-        Speed = 2.9
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(200, 80, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(110, 0, 160))
+        }
     },
     ["PHANTOM"] = {
         Title = "PHANTOM",
-        PlateBg = Color3.fromRGB(6, 24, 14),
-        AccentColor = Color3.fromRGB(0, 255, 130),
-        StrokeColors = {
+        Accent = Color3.fromRGB(0, 255, 140),
+        Stroke = Color3.fromRGB(0, 120, 50),
+        Speed = 3.5,
+        Colors = {
             ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 130, 60)),
-            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(30, 255, 140)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(0, 255, 140)),
             ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(30, 255, 140)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(0, 255, 140)),
             ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 130, 60))
-        },
-        TextColors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(20, 255, 120)),
-            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(160, 255, 200)),
+        }
+    },
+    ["DEV"] = {
+        Title = "DEV",
+        Accent = Color3.fromRGB(70, 160, 255),
+        Stroke = Color3.fromRGB(10, 60, 130),
+        Speed = 3.1,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(20, 80, 180)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(90, 180, 255)),
             ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(160, 255, 200)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(20, 255, 120))
-        },
-        Speed = 3.6
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(90, 180, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(20, 80, 180))
+        }
+    },
+    ["VIP"] = {
+        Title = "VIP",
+        Accent = Color3.fromRGB(255, 150, 40),
+        Stroke = Color3.fromRGB(140, 60, 0),
+        Speed = 3.2,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(160, 70, 0)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 160, 50)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 160, 50)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(160, 70, 0))
+        }
+    },
+    ["GOD"] = {
+        Title = "GOD",
+        Accent = Color3.fromRGB(255, 255, 255),
+        Stroke = Color3.fromRGB(80, 80, 100),
+        Speed = 4.0,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(120, 120, 140)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(210, 210, 230)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(210, 210, 230)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(120, 120, 140))
+        }
+    },
+    ["CYBER"] = {
+        Title = "CYBER",
+        Accent = Color3.fromRGB(255, 0, 210),
+        Stroke = Color3.fromRGB(130, 0, 100),
+        Speed = 3.6,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(140, 0, 110)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 40, 220)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 40, 220)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(140, 0, 110))
+        }
+    },
+    ["VOID"] = {
+        Title = "VOID",
+        Accent = Color3.fromRGB(140, 140, 180),
+        Stroke = Color3.fromRGB(35, 35, 50),
+        Speed = 2.4,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(50, 50, 70)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(130, 130, 170)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(130, 130, 170)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(50, 50, 70))
+        }
+    },
+    ["ZENITH"] = {
+        Title = "ZENITH",
+        Accent = Color3.fromRGB(0, 255, 210),
+        Stroke = Color3.fromRGB(0, 120, 100),
+        Speed = 3.3,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 130, 110)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(20, 255, 220)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(20, 255, 220)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 130, 110))
+        }
+    },
+    ["APEX"] = {
+        Title = "APEX",
+        Accent = Color3.fromRGB(255, 75, 40),
+        Stroke = Color3.fromRGB(140, 30, 10),
+        Speed = 3.2,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(150, 30, 10)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 90, 50)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 90, 50)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(150, 30, 10))
+        }
+    },
+    ["LUCIFER"] = {
+        Title = "LUCIFER",
+        Accent = Color3.fromRGB(255, 10, 30),
+        Stroke = Color3.fromRGB(80, 0, 0),
+        Speed = 3.8,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(130, 0, 10)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 20, 40)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 20, 40)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(130, 0, 10))
+        }
+    },
+    ["SUPREME"] = {
+        Title = "SUPREME",
+        Accent = Color3.fromRGB(255, 220, 120),
+        Stroke = Color3.fromRGB(130, 100, 30),
+        Speed = 3.0,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(160, 120, 30)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 225, 130)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 225, 130)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(160, 120, 30))
+        }
+    },
+    ["ROYAL"] = {
+        Title = "ROYAL",
+        Accent = Color3.fromRGB(130, 120, 255),
+        Stroke = Color3.fromRGB(50, 40, 130),
+        Speed = 2.9,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(60, 50, 160)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(140, 130, 255)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(140, 130, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(60, 50, 160))
+        }
+    },
+    ["DEMON"] = {
+        Title = "DEMON",
+        Accent = Color3.fromRGB(255, 0, 90),
+        Stroke = Color3.fromRGB(110, 0, 35),
+        Speed = 3.5,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(130, 0, 40)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 20, 105)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 20, 105)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(130, 0, 40))
+        }
     }
 }
 local currentOwnerBadge = "OWNER"
@@ -312,7 +420,7 @@ local ghostDebounce = false
 local userIdCache = {}
 local searchQuery = ""
 local recentSentCache = {}
-local activeDaddyBadges = {}
+local activeBadgesList = {}
 
 local MY_VIP_ID = 9685785248 
 local Admin = { 
@@ -866,7 +974,7 @@ createHeaderBtn("🗑️", -82, function()
             c:Destroy()
         end
     end
-    table.clear(activeDaddyBadges)
+    table.clear(activeBadgesList)
 end)
 
 local actionMenu
@@ -980,12 +1088,13 @@ serverBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🏷️ OWNER BADGE SELECTION MODAL
+-- 🏷️ 16 ELITE BADGE PRESET SELECTOR (SCROLLABLE)
 -- =========================================================
 badgeSelectorModal = Instance.new("Frame", mainFrame)
-badgeSelectorModal.Size = UDim2.fromOffset(210, 195)
-badgeSelectorModal.Position = UDim2.new(1, -220, 0, 42)
-badgeSelectorModal.BackgroundColor3 = Color3.fromRGB(15, 18, 26)
+badgeSelectorModal.Size = UDim2.fromOffset(230, 240)
+badgeSelectorModal.Position = UDim2.new(1, -240, 0, 42)
+badgeSelectorModal.BackgroundColor3 = Color3.fromRGB(14, 16, 24)
+badgeSelectorModal.BackgroundTransparency = 0.05
 badgeSelectorModal.Visible = false
 badgeSelectorModal.ZIndex = 70
 Instance.new("UICorner", badgeSelectorModal).CornerRadius = UDim.new(0, 8)
@@ -995,37 +1104,54 @@ bsStroke.Color = Colors.Primary
 bsStroke.Thickness = 1.2
 
 local bsTitle = Instance.new("TextLabel", badgeSelectorModal)
-bsTitle.Size = UDim2.new(1, 0, 0, 26)
+bsTitle.Size = UDim2.new(1, 0, 0, 28)
 bsTitle.BackgroundTransparency = 1
-bsTitle.Text = "⚡ SELECT ACTIVE BADGE"
+bsTitle.Text = "⚡ SELECT BADGE (16 PRESETS)"
 bsTitle.TextColor3 = Colors.Primary
 bsTitle.Font = Enum.Font.GothamBlack
 bsTitle.TextSize = 10
 bsTitle.ZIndex = 71
 
-local bsLayout = Instance.new("UIListLayout", badgeSelectorModal)
-bsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-bsLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-bsLayout.Padding = UDim.new(0, 5)
+local bsScroll = Instance.new("ScrollingFrame", badgeSelectorModal)
+bsScroll.Size = UDim2.new(1, -10, 1, -34)
+bsScroll.Position = UDim2.fromOffset(5, 28)
+bsScroll.BackgroundTransparency = 1
+bsScroll.ScrollBarThickness = 2
+bsScroll.ScrollBarImageColor3 = Colors.Primary
+bsScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+bsScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+bsScroll.ZIndex = 71
 
-local badgeKeysOrder = {"OWNER", "DADDY", "TITAN", "OVERLORD", "PHANTOM"}
+local bsLayout = Instance.new("UIListLayout", bsScroll)
+bsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+bsLayout.Padding = UDim.new(0, 4)
+
+local badgeKeysOrder = {
+    "OWNER", "DADDY", "TITAN", "OVERLORD",
+    "PHANTOM", "DEV", "VIP", "GOD",
+    "CYBER", "VOID", "ZENITH", "APEX",
+    "LUCIFER", "SUPREME", "ROYAL", "DEMON"
+}
+
 for _, bKey in ipairs(badgeKeysOrder) do
     local bData = BadgePresets[bKey]
-    local bBtn = Instance.new("TextButton", badgeSelectorModal)
-    bBtn.Size = UDim2.new(0.9, 0, 0, 26)
-    bBtn.BackgroundColor3 = bData.PlateBg
-    bBtn.Text = "●  " .. bData.Title
-    bBtn.TextColor3 = bData.AccentColor
+    local bBtn = Instance.new("TextButton", bsScroll)
+    bBtn.Size = UDim2.new(0.95, 0, 0, 24)
+    bBtn.BackgroundColor3 = Colors.Surface
+    bBtn.BackgroundTransparency = 0.5
+    bBtn.Text = "  [ " .. bData.Title .. " ]"
+    bBtn.TextColor3 = bData.Accent
     bBtn.Font = Enum.Font.GothamBlack
     bBtn.TextSize = 10.5
+    bBtn.TextXAlignment = Enum.TextXAlignment.Left
     bBtn.AutoButtonColor = false
     bBtn.ZIndex = 72
-    Instance.new("UICorner", bBtn).CornerRadius = UDim.new(0, 5)
+    Instance.new("UICorner", bBtn).CornerRadius = UDim.new(0, 4)
     
     local btnStroke = Instance.new("UIStroke", bBtn)
-    btnStroke.Color = bData.AccentColor
-    btnStroke.Thickness = 1
-    btnStroke.Transparency = 0.4
+    btnStroke.Color = bData.Accent
+    btnStroke.Thickness = 0.8
+    btnStroke.Transparency = 0.7
     
     applySpringHover(bBtn)
     bBtn.MouseButton1Click:Connect(function()
@@ -1109,7 +1235,7 @@ local function createActionBtn(text, color, onClick)
 end
 
 -- =========================================================
--- 💬 MESSAGE PIPELINE (CUSTOM CHROMATIC BADGE DISPATCHER)
+-- 💬 MESSAGE PIPELINE (CLEAN PURE-TEXT LASER BADGES)
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -1187,7 +1313,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     accentStrip.Size = UDim2.new(0, 3, 1, 0)
     accentStrip.Position = UDim2.new(0, 0, 0, 0)
     accentStrip.BorderSizePixel = 0
-    accentStrip.BackgroundColor3 = isMentioned and Colors.MentionGold or (privateUserTarget and Colors.Purple or (isAdminUser and badgeProfile.AccentColor or Colors.Primary))
+    accentStrip.BackgroundColor3 = isMentioned and Colors.MentionGold or (privateUserTarget and Colors.Purple or (isAdminUser and badgeProfile.Accent or Colors.Primary))
     accentStrip.ZIndex = 10
     Instance.new("UICorner", accentStrip).CornerRadius = UDim.new(0, 4)
 
@@ -1227,7 +1353,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     local hLayout = Instance.new("UIListLayout", headerRow)
     hLayout.FillDirection = Enum.FillDirection.Horizontal
     hLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-    hLayout.Padding = UDim.new(0, 6)
+    hLayout.Padding = UDim.new(0, 5)
     hLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
     local timeLbl = Instance.new("TextLabel", headerRow)
@@ -1254,78 +1380,33 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         dmLbl.ZIndex = 12
     end
 
-    -- ⚡ CYBER-PRISM DYNAMIC BADGE CONTAINER
+    -- ⚡ PURE TEXT LASER BADGE (NO BOX, NO DHABBA)
     if isAdminUser then
-        local daddyBadge = Instance.new("Frame", headerRow)
-        daddyBadge.AutomaticSize = Enum.AutomaticSize.XY
-        daddyBadge.Size = UDim2.new(0, 0, 0, 18)
-        daddyBadge.BackgroundColor3 = badgeProfile.PlateBg
-        daddyBadge.BackgroundTransparency = 0.1
-        daddyBadge.ClipsDescendants = true
-        daddyBadge.LayoutOrder = 3
-        daddyBadge.ZIndex = 13
-        Instance.new("UICorner", daddyBadge).CornerRadius = UDim.new(0, 4)
+        local badgeLabel = Instance.new("TextLabel", headerRow)
+        badgeLabel.AutomaticSize = Enum.AutomaticSize.XY
+        badgeLabel.Size = UDim2.new(0, 0, 1, 0)
+        badgeLabel.BackgroundTransparency = 1
+        badgeLabel.Text = "[ " .. badgeProfile.Title .. " ]"
+        badgeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        badgeLabel.Font = Enum.Font.GothamBlack
+        badgeLabel.TextSize = 11
+        badgeLabel.LayoutOrder = 3
+        badgeLabel.ZIndex = 13
 
-        local topGloss = Instance.new("Frame", daddyBadge)
-        topGloss.Size = UDim2.new(1, 0, 0, 1)
-        topGloss.Position = UDim2.new(0, 0, 0, 0)
-        topGloss.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        topGloss.BackgroundTransparency = 0.72
-        topGloss.BorderSizePixel = 0
-        topGloss.ZIndex = 14
-
-        local bPad = Instance.new("UIPadding", daddyBadge)
-        bPad.PaddingLeft = UDim.new(0, 6)
-        bPad.PaddingRight = UDim.new(0, 7)
-        bPad.PaddingTop = UDim.new(0, 1)
-        bPad.PaddingBottom = UDim.new(0, 1)
-
-        local bStroke = Instance.new("UIStroke", daddyBadge)
+        -- 1px Razor Clean Dark Stroke
+        local bStroke = Instance.new("UIStroke", badgeLabel)
         bStroke.Thickness = 1
-        bStroke.Color = badgeProfile.AccentColor
-        bStroke.Transparency = 0.25
+        bStroke.Color = Color3.fromRGB(0, 0, 0)
+        bStroke.Transparency = 0.3
 
-        local sGrad = Instance.new("UIGradient", bStroke)
-        sGrad.Color = ColorSequence.new(badgeProfile.StrokeColors)
+        -- High-Sheen Specular Glint Gradient
+        local tGrad = Instance.new("UIGradient", badgeLabel)
+        tGrad.Rotation = 15
+        tGrad.Color = ColorSequence.new(badgeProfile.Colors)
 
-        local innerRow = Instance.new("Frame", daddyBadge)
-        innerRow.AutomaticSize = Enum.AutomaticSize.XY
-        innerRow.Size = UDim2.new(0, 0, 1, 0)
-        innerRow.BackgroundTransparency = 1
-        innerRow.ZIndex = 15
-
-        local irLayout = Instance.new("UIListLayout", innerRow)
-        irLayout.FillDirection = Enum.FillDirection.Horizontal
-        irLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-        irLayout.Padding = UDim.new(0, 5)
-
-        local rubyNode = Instance.new("Frame", innerRow)
-        rubyNode.Size = UDim2.fromOffset(4.5, 4.5)
-        rubyNode.Rotation = 45
-        rubyNode.BackgroundColor3 = badgeProfile.AccentColor
-        rubyNode.BorderSizePixel = 0
-        rubyNode.ZIndex = 16
-
-        local daddyText = Instance.new("TextLabel", innerRow)
-        daddyText.AutomaticSize = Enum.AutomaticSize.XY
-        daddyText.Size = UDim2.new(0, 0, 1, 0)
-        daddyText.BackgroundTransparency = 1
-        daddyText.Text = badgeProfile.Title
-        daddyText.TextColor3 = Color3.fromRGB(255, 255, 255)
-        daddyText.Font = Enum.Font.GothamBlack
-        daddyText.TextSize = 10
-        daddyText.ZIndex = 16
-
-        local tGrad = Instance.new("UIGradient", daddyText)
-        tGrad.Rotation = 18
-        tGrad.Color = ColorSequence.new(badgeProfile.TextColors)
-
-        table.insert(activeDaddyBadges, {
-            strokeGrad = sGrad,
+        table.insert(activeBadgesList, {
             textGrad = tGrad,
-            ruby = rubyNode,
-            speed = badgeProfile.Speed,
-            accent = badgeProfile.AccentColor
+            speed = badgeProfile.Speed
         })
     end
 
@@ -1839,7 +1920,7 @@ UserInputService.InputBegan:Connect(function(input, gp)
 end)
 
 -- =========================================================
--- ⚡ REACTOR RENDERING & DYNAMIC BADGE CHROMA SWEEP
+-- ⚡ REACTOR RENDERING & DYNAMIC CHROMA SWEEP ENGINE
 -- =========================================================
 task.spawn(function()
     local t = 0
@@ -1851,21 +1932,16 @@ task.spawn(function()
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
         t = t + dt
 
-        -- ⚡ 60 FPS CHROMATIC SPECULAR SHEEN ANIMATION
-        if #activeDaddyBadges > 0 then
-            local rot = (t * 110) % 360
-            local nodePulse = (math.sin(t * 6) + 1) / 2
-
-            for i = #activeDaddyBadges, 1, -1 do
-                local item = activeDaddyBadges[i]
+        -- ⚡ 60 FPS PURE TYPOGRAPHY SPECULAR SWEEP (ZERO BOXES)
+        if #activeBadgesList > 0 then
+            for i = #activeBadgesList, 1, -1 do
+                local item = activeBadgesList[i]
                 if item.textGrad and item.textGrad.Parent then
-                    local sweepSpeed = item.speed or 3.0
-                    local sweep = math.sin(t * sweepSpeed) * 0.95
+                    local sSpeed = item.speed or 3.0
+                    local sweep = math.sin(t * sSpeed) * 0.95
                     item.textGrad.Offset = Vector2.new(sweep, 0)
-                    item.strokeGrad.Rotation = rot
-                    item.ruby.BackgroundTransparency = 0.05 + (nodePulse * 0.45)
                 else
-                    table.remove(activeDaddyBadges, i)
+                    table.remove(activeBadgesList, i)
                 end
             end
         end
