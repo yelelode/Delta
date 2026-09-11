@@ -934,7 +934,7 @@ local function createActionBtn(text, color, onClick)
 end
 
 -- =========================================================
--- 💬 MESSAGE PIPELINE (CLEAN METALLIC CHROMA [ DADDY ] TAG)
+-- 💬 MESSAGE PIPELINE (DUAL-LAYER NEON LASER [ DADDY ] TAG)
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -1078,43 +1078,64 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         dmLbl.ZIndex = 12
     end
 
-    -- ⚡ PREMIUM HIGH-TIER [ DADDY ] METALLIC LASER TEXT (EMOJI-FREE)
+    -- ⚡ DUAL-LAYER KINETIC NEON GLOW [ DADDY ] ENGINE
     if isAdminUser then
-        local daddyTag = Instance.new("TextLabel", headerRow)
-        daddyTag.AutomaticSize = Enum.AutomaticSize.X
-        daddyTag.Size = UDim2.new(0, 0, 1, 0)
+        local tagContainer = Instance.new("Frame", headerRow)
+        tagContainer.AutomaticSize = Enum.AutomaticSize.XY
+        tagContainer.BackgroundTransparency = 1
+        tagContainer.LayoutOrder = 3
+        tagContainer.ZIndex = 12
+
+        -- Background Breathing Neon Aura Text (Creates the actual volumetric glow)
+        local glowTag = Instance.new("TextLabel", tagContainer)
+        glowTag.AutomaticSize = Enum.AutomaticSize.XY
+        glowTag.BackgroundTransparency = 1
+        glowTag.Text = "[ DADDY ]"
+        glowTag.TextColor3 = Color3.fromRGB(255, 0, 50)
+        glowTag.Font = Enum.Font.GothamBlack
+        glowTag.TextSize = 11.5
+        glowTag.ZIndex = 12
+
+        local glowStroke = Instance.new("UIStroke", glowTag)
+        glowStroke.Thickness = 3
+        glowStroke.Color = Color3.fromRGB(255, 0, 40)
+        glowStroke.Transparency = 0.45
+
+        -- Foreground Crisp Metallic Text with Specular Laser Sweep
+        local daddyTag = Instance.new("TextLabel", tagContainer)
+        daddyTag.AutomaticSize = Enum.AutomaticSize.XY
         daddyTag.BackgroundTransparency = 1
         daddyTag.Text = "[ DADDY ]"
         daddyTag.TextColor3 = Color3.fromRGB(255, 255, 255)
         daddyTag.Font = Enum.Font.GothamBlack
-        daddyTag.TextSize = 11
-        daddyTag.LayoutOrder = 3
-        daddyTag.ZIndex = 13
+        daddyTag.TextSize = 11.5
+        daddyTag.ZIndex = 14
 
         local dStroke = Instance.new("UIStroke", daddyTag)
         dStroke.Thickness = 1.1
-        dStroke.Color = Color3.fromRGB(255, 0, 60)
-        dStroke.Transparency = 0.2
+        dStroke.Color = Color3.fromRGB(180, 0, 30)
 
         local dGrad = Instance.new("UIGradient", daddyTag)
         dGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(190, 0, 35)),
-            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 30, 75)),
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(160, 0, 30)),
+            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 20, 60)),
             ColorSequenceKeypoint.new(0.48, Color3.fromRGB(255, 255, 255)),
             ColorSequenceKeypoint.new(0.52, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(255, 30, 75)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(190, 0, 35))
+            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(255, 20, 60)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 0, 30))
         })
 
         local sGrad = Instance.new("UIGradient", dStroke)
         sGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 60)),
-            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 170, 190)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 60))
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 50)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 200, 210)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 50))
         })
 
         table.insert(activeDaddyTags, {
             tag = daddyTag,
+            glowTag = glowTag,
+            glowStroke = glowStroke,
             textGrad = dGrad,
             strokeGrad = sGrad,
             stroke = dStroke
@@ -1639,19 +1660,30 @@ task.spawn(function()
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
         t = t + dt
 
-        -- ⚡ 60 FPS DUAL-LAYER METALLIC LASER SWEEP
+        -- ⚡ 60 FPS ULTRA INTENSE RED RGB NEON GLOW ANIMATION
         if #activeDaddyTags > 0 then
-            local sweep = ((t * 1.8) % 2.6) - 1.3
-            local rot = (t * 120) % 360
-            local pulse = (math.sin(t * 6.5) + 1) / 2
+            local laserSweep = ((t * 2.2) % 2.4) - 1.2
+            local strokeRot = (t * 140) % 360
+            local pulse = (math.sin(t * 6) + 1) / 2
+            local redHuePulse = (math.sin(t * 3.5) + 1) / 2
 
             for i = #activeDaddyTags, 1, -1 do
                 local item = activeDaddyTags[i]
-                if item.textGrad and item.textGrad.Parent then
-                    item.textGrad.Offset = Vector2.new(sweep, 0)
-                    item.strokeGrad.Rotation = rot
-                    item.stroke.Transparency = 0.1 + (pulse * 0.3)
-                    item.stroke.Thickness = 1.0 + (pulse * 0.4)
+                if item.tag and item.tag.Parent then
+                    item.textGrad.Offset = Vector2.new(laserSweep, 0)
+                    item.strokeGrad.Rotation = strokeRot
+                    
+                    item.glowStroke.Transparency = 0.25 + (pulse * 0.45)
+                    item.glowStroke.Thickness = 2.5 + (pulse * 1.8)
+                    item.glowTag.TextTransparency = 0.3 + (pulse * 0.4)
+                    
+                    local glowColor = Color3.fromRGB(
+                        255,
+                        math.floor(pulse * 30),
+                        math.floor(20 + redHuePulse * 45)
+                    )
+                    item.glowStroke.Color = glowColor
+                    item.glowTag.TextColor3 = glowColor
                 else
                     table.remove(activeDaddyTags, i)
                 end
