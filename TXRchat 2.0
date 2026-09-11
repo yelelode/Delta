@@ -12,7 +12,7 @@ pcall(function()
 end)
 
 -- =========================================================
--- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V18.0 FLAWLESS EDITION) 👑
+-- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V19.0 GLASS LUXURY) 👑
 -- =========================================================
 
 local currentExecutionID = tick()
@@ -73,202 +73,202 @@ local Themes = {
         Primary = Color3.fromRGB(0, 255, 205),
         PrimaryDark = Color3.fromRGB(0, 160, 140),
         Accent = Color3.fromRGB(160, 50, 255),
-        ActiveTint = Color3.fromRGB(15, 35, 45)
+        ActiveTint = Color3.fromRGB(15, 38, 48)
     },
     [2] = {
         Primary = Color3.fromRGB(255, 45, 85),
         PrimaryDark = Color3.fromRGB(170, 20, 50),
         Accent = Color3.fromRGB(255, 140, 0),
-        ActiveTint = Color3.fromRGB(45, 15, 25)
+        ActiveTint = Color3.fromRGB(48, 15, 25)
     },
     [3] = {
         Primary = Color3.fromRGB(180, 75, 255),
         PrimaryDark = Color3.fromRGB(120, 40, 180),
         Accent = Color3.fromRGB(0, 200, 255),
-        ActiveTint = Color3.fromRGB(35, 15, 50)
+        ActiveTint = Color3.fromRGB(38, 15, 52)
     },
     [4] = {
         Primary = Color3.fromRGB(255, 200, 50),
         PrimaryDark = Color3.fromRGB(180, 130, 20),
         Accent = Color3.fromRGB(255, 80, 80),
-        ActiveTint = Color3.fromRGB(45, 35, 15)
+        ActiveTint = Color3.fromRGB(48, 38, 15)
     }
 }
 local currentThemeIdx = 1
 
 local Colors = {
-    Background    = Color3.fromRGB(9, 11, 16),       
-    Surface       = Color3.fromRGB(16, 20, 28),          
-    SurfaceHover  = Color3.fromRGB(24, 29, 42),     
+    Background    = Color3.fromRGB(10, 13, 20),       
+    Surface       = Color3.fromRGB(17, 22, 32),          
+    SurfaceHover  = Color3.fromRGB(26, 33, 48),     
     ActiveTint    = Themes[1].ActiveTint,       
     Primary       = Themes[1].Primary,         
     PrimaryDark   = Themes[1].PrimaryDark,     
     Danger        = Color3.fromRGB(255, 60, 90),          
     Warning       = Color3.fromRGB(255, 175, 20),         
     Purple        = Themes[1].Accent,         
-    Text          = Color3.fromRGB(242, 246, 255),          
-    SubText       = Color3.fromRGB(115, 130, 155),       
+    Text          = Color3.fromRGB(244, 248, 255),          
+    SubText       = Color3.fromRGB(125, 140, 168),       
     TextDark      = Color3.fromRGB(8, 10, 15),
     MentionGold   = Color3.fromRGB(255, 205, 65),
-    MentionBg     = Color3.fromRGB(38, 30, 14),
-    MacroBg       = Color3.fromRGB(20, 24, 36)
+    MentionBg     = Color3.fromRGB(40, 32, 14),
+    MacroBg       = Color3.fromRGB(22, 28, 42)
 }
 
 -- =========================================================
--- 👑 16 HIGH-VELOCITY 60 FPS CHROMATIC BADGE PRESETS
+-- 👑 16 SILK-SMOOTH BALANCED BADGE PRESETS
 -- =========================================================
 local BadgePresets = {
     ["OWNER"] = {
         Title = "OWNER",
-        Speed = 3.4,
+        Speed = 1.15,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 35, 85)),
-            ColorSequenceKeypoint.new(0.20, Color3.fromRGB(255, 165, 30)),
-            ColorSequenceKeypoint.new(0.40, Color3.fromRGB(0, 255, 190)),
-            ColorSequenceKeypoint.new(0.60, Color3.fromRGB(40, 150, 255)),
-            ColorSequenceKeypoint.new(0.80, Color3.fromRGB(185, 60, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 35, 85))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 45, 95)),
+            ColorSequenceKeypoint.new(0.20, Color3.fromRGB(255, 165, 35)),
+            ColorSequenceKeypoint.new(0.40, Color3.fromRGB(0, 245, 195)),
+            ColorSequenceKeypoint.new(0.60, Color3.fromRGB(50, 155, 255)),
+            ColorSequenceKeypoint.new(0.80, Color3.fromRGB(180, 65, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 45, 95))
         }
     },
     ["DADDY"] = {
         Title = "DADDY",
-        Speed = 3.6,
+        Speed = 1.1,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 20, 75)),
-            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 120, 40)),
-            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(255, 225, 45)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 20, 75))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 30, 80)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 115, 45)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(255, 220, 50)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 30, 80))
         }
     },
     ["TITAN"] = {
         Title = "TITAN",
-        Speed = 3.4,
+        Speed = 1.15,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 255)),
-            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(65, 160, 255)),
-            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(165, 50, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 255))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 240, 255)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(70, 165, 255)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(160, 60, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 240, 255))
         }
     },
     ["OVERLORD"] = {
         Title = "OVERLORD",
-        Speed = 3.2,
+        Speed = 1.05,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(185, 55, 255)),
-            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 50, 185)),
-            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(90, 110, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(185, 55, 255))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(180, 60, 255)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 60, 180)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(95, 110, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(180, 60, 255))
         }
     },
     ["DEV"] = {
         Title = "DEV",
-        Speed = 3.8,
+        Speed = 1.25,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 200)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(60, 145, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 200))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 195)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(65, 150, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 195))
         }
     },
     ["VIP"] = {
         Title = "VIP",
-        Speed = 3.4,
+        Speed = 1.1,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 135, 20)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 235, 60)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 135, 20))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 140, 25)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 230, 65)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 140, 25))
         }
     },
     ["GOD"] = {
         Title = "GOD",
-        Speed = 3.8,
+        Speed = 1.2,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 100, 170)),
-            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 230, 95)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(90, 255, 195)),
-            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(95, 190, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 100, 170))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 110, 175)),
+            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 230, 100)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(95, 255, 190)),
+            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(100, 190, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 110, 175))
         }
     },
     ["CYBER"] = {
         Title = "CYBER",
-        Speed = 3.6,
+        Speed = 1.2,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 220)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0, 250, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 220))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 10, 220)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(10, 245, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 10, 220))
         }
     },
     ["VOID"] = {
         Title = "VOID",
-        Speed = 3.0,
+        Speed = 0.95,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(80, 85, 140)),
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(85, 90, 145)),
             ColorSequenceKeypoint.new(0.50, Color3.fromRGB(180, 185, 240)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(80, 85, 140))
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(85, 90, 145))
         }
     },
     ["ZENITH"] = {
         Title = "ZENITH",
-        Speed = 3.5,
+        Speed = 1.15,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 220)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(40, 180, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 220))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 215)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(45, 180, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 215))
         }
     },
     ["APEX"] = {
         Title = "APEX",
-        Speed = 3.6,
+        Speed = 1.2,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 30, 75)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 160, 30)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 30, 75))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 40, 80)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 160, 35)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 40, 80))
         }
     },
     ["LUCIFER"] = {
         Title = "LUCIFER",
-        Speed = 3.6,
+        Speed = 1.2,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 10, 30)),
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 15, 35)),
             ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 95, 25)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 10, 30))
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 15, 35))
         }
     },
     ["SUPREME"] = {
         Title = "SUPREME",
-        Speed = 3.4,
+        Speed = 1.1,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 215, 60)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 250, 160)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 215, 60))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 215, 65)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 245, 165)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 215, 65))
         }
     },
     ["ROYAL"] = {
         Title = "ROYAL",
-        Speed = 3.2,
+        Speed = 1.0,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(225, 165, 25)),
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(225, 165, 30)),
             ColorSequenceKeypoint.new(0.40, Color3.fromRGB(255, 230, 110)),
-            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(255, 145, 30)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(225, 165, 25))
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(255, 145, 35)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(225, 165, 30))
         }
     },
     ["DEMON"] = {
         Title = "DEMON",
-        Speed = 3.6,
+        Speed = 1.2,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 80)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 75, 35)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 80))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 10, 85)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 75, 40)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 10, 85))
         }
     },
     ["PHANTOM"] = {
         Title = "PHANTOM",
-        Speed = 3.5,
+        Speed = 1.15,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 160)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0, 210, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 160))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(5, 255, 160)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(5, 210, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(5, 255, 160))
         }
     }
 }
@@ -352,7 +352,7 @@ end
 local SERVER_URL = "https://my-roblox-private-chat.onrender.com"
 local lastSyncTime = 0
 local isInitialSync = true
-local chatMode = "server" -- Server Tab active by default
+local chatMode = "server" -- Server Tab default active
 local privateTarget = nil
 local knownUsers = {}
 local activeUsersTable = {}
@@ -362,7 +362,7 @@ local ghostDebounce = false
 local userIdCache = {}
 local activeBadgesList = {}
 
--- ⚡ BULLETPROOF DEDUPLICATION ENGINE CACHE
+-- ⚡ DEDUPLICATION ENGINE CACHE
 local processedServerMessageMap = {}
 local recentLocalSentMap = {}
 
@@ -398,7 +398,7 @@ local function displayBubble(userName, msg)
 end
 
 -- =========================================================
--- 🏗️ ROOT GUI, MAIN FRAME & AMBIENT AURA
+-- 🏗️ ROOT GUI, MAIN GLASS FRAME & AMBIENT AURA
 -- =========================================================
 local gui = Instance.new("ScreenGui", targetGuiParent)
 gui.Name = "TXR_OnyxChat_" .. tostring(math.random(100000, 999999))
@@ -418,12 +418,13 @@ aura.ZIndex = 1
 local auraScale = Instance.new("UIScale", aura)
 auraScale.Scale = 1
 
+-- Glassmorphic Main Acrylic Shell
 local mainFrame = Instance.new("Frame", gui)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.Position = UDim2.fromScale(0.4, 0.5)
 mainFrame.Size = UDim2.new(0, 440, 0, 350)
 mainFrame.BackgroundColor3 = Colors.Background
-mainFrame.BackgroundTransparency = 0.08
+mainFrame.BackgroundTransparency = 0.12
 mainFrame.ClipsDescendants = true
 mainFrame.Active = true
 mainFrame.ZIndex = 5
@@ -452,10 +453,28 @@ end)
 
 local mainBgGrad = Instance.new("UIGradient", mainFrame)
 mainBgGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 18, 26)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 10, 15))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(16, 20, 30)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 10, 16))
 })
 mainBgGrad.Rotation = 45
+
+-- Glass Frost Reflection Overlay
+local glassSheen = Instance.new("Frame", mainFrame)
+glassSheen.Size = UDim2.new(1, 0, 0, 80)
+glassSheen.BackgroundTransparency = 0.94
+glassSheen.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+glassSheen.BorderSizePixel = 0
+glassSheen.ZIndex = 6
+local gsGrad = Instance.new("UIGradient", glassSheen)
+gsGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
+})
+gsGrad.Transparency = NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 0.4),
+    NumberSequenceKeypoint.new(1, 1)
+})
+gsGrad.Rotation = 90
 
 -- =========================================================
 -- 🌧️ MATRIX CODE RAIN
@@ -841,11 +860,11 @@ liveBadge.MouseButton1Click:Connect(function()
     end
 end)
 
--- Header Action Buttons
+-- Header Action Buttons (Spacious & Clean - No Clutter)
 local headerRightCluster = Instance.new("Frame", header)
 headerRightCluster.AnchorPoint = Vector2.new(1, 0.5)
 headerRightCluster.Position = UDim2.new(1, -12, 0.5, 0)
-headerRightCluster.Size = UDim2.new(0, 160, 0, 24)
+headerRightCluster.Size = UDim2.new(0, 170, 0, 24)
 headerRightCluster.BackgroundTransparency = 1
 headerRightCluster.ZIndex = 12
 
@@ -908,6 +927,9 @@ createHeaderBtn("CLR", function()
     eventGlow.ImageColor3 = th.Accent
 end)
 
+local messageFeed
+
+-- ⚡ ULTRA FROSTED GLASS HUD TOGGLE (GST MODE)
 local ghostBtn
 ghostBtn = createHeaderBtn("GST", function()
     if ghostDebounce then return end
@@ -916,17 +938,35 @@ ghostBtn = createHeaderBtn("GST", function()
 
     isGhostMode = not isGhostMode
     if isGhostMode then
-        TweenService:Create(mainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.85}):Play()
-        TweenService:Create(aura, TweenInfo.new(0.35), {ImageTransparency = 0.94}):Play()
+        -- Ultra-sleek translucent Cyber-Glass mode
+        TweenService:Create(mainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.82}):Play()
+        TweenService:Create(glassSheen, TweenInfo.new(0.35), {BackgroundTransparency = 0.86}):Play()
+        TweenService:Create(aura, TweenInfo.new(0.35), {ImageTransparency = 0.92}):Play()
         ghostBtn.BackgroundColor3 = Colors.ActiveTint
         ghostBtn.TextColor3 = Colors.Primary
-        mainStroke.Transparency = 0.55
+        mainStroke.Transparency = 0.2
+        mainStroke.Thickness = 1.6
+
+        for _, card in ipairs(messageFeed:GetChildren()) do
+            if card:IsA("TextButton") then
+                card.BackgroundTransparency = 0.78
+            end
+        end
     else
-        TweenService:Create(mainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.08}):Play()
+        -- Premium Obsidian Solid Glass mode
+        TweenService:Create(mainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.12}):Play()
+        TweenService:Create(glassSheen, TweenInfo.new(0.35), {BackgroundTransparency = 0.94}):Play()
         TweenService:Create(aura, TweenInfo.new(0.35), {ImageTransparency = 0.72}):Play()
         ghostBtn.BackgroundColor3 = Colors.Surface
         ghostBtn.TextColor3 = Colors.Text
         mainStroke.Transparency = 0.35
+        mainStroke.Thickness = 1.4
+
+        for _, card in ipairs(messageFeed:GetChildren()) do
+            if card:IsA("TextButton") then
+                card.BackgroundTransparency = 0.35
+            end
+        end
     end
 end)
 
@@ -968,12 +1008,12 @@ local headerDivider = Instance.new("Frame", header)
 headerDivider.Size = UDim2.new(1, 0, 0, 1)
 headerDivider.Position = UDim2.new(0, 0, 1, 0)
 headerDivider.BorderSizePixel = 0
-headerDivider.BackgroundColor3 = Color3.fromRGB(25, 32, 46)
+headerDivider.BackgroundColor3 = Color3.fromRGB(28, 36, 52)
 headerDivider.BackgroundTransparency = 0.5
 headerDivider.ZIndex = 12
 
 -- =========================================================
--- 🔀 CHANNEL TABS (SERVER FIRST, THEN GLOBAL - FULL WIDTH)
+-- 🔀 CHANNEL TABS (SERVER FIRST, THEN GLOBAL)
 -- =========================================================
 local channelFrame = Instance.new("Frame", mainFrame)
 channelFrame.Size = UDim2.new(1, -24, 0, 30)
@@ -984,7 +1024,7 @@ channelFrame.ZIndex = 8
 local tabShell = Instance.new("Frame", channelFrame)
 tabShell.Size = UDim2.new(1, 0, 1, 0)
 tabShell.BackgroundColor3 = Colors.Surface
-tabShell.BackgroundTransparency = 0.4
+tabShell.BackgroundTransparency = 0.35
 tabShell.ZIndex = 9
 Instance.new("UICorner", tabShell).CornerRadius = UDim.new(0, 8)
 local tsStroke = Instance.new("UIStroke", tabShell)
@@ -1018,20 +1058,28 @@ globalBtn.AutoButtonColor = false
 globalBtn.ZIndex = 10
 Instance.new("UICorner", globalBtn).CornerRadius = UDim.new(0, 6)
 
-local messageFeed
-
 local function filterFeedMode()
     for _, card in ipairs(messageFeed:GetChildren()) do
         if card:IsA("GuiObject") and card.Name ~= "UIListLayout" and card.Name ~= "UIPadding" then
+            local cardScope = card:GetAttribute("ChatScope")
             local cardJob = card:GetAttribute("JobId")
+
             if chatMode == "server" then
-                if cardJob and cardJob ~= "" and cardJob ~= game.JobId then
+                -- In Server mode: show only server messages matching this JobId or local DMs/System
+                if cardScope == "global" then
+                    card.Visible = false
+                elseif cardJob and cardJob ~= "" and cardJob ~= game.JobId then
                     card.Visible = false
                 else
                     card.Visible = true
                 end
             else
-                card.Visible = true
+                -- In Global mode: hide private server chats of other or current servers, show pure global & DMs
+                if cardScope == "server" then
+                    card.Visible = false
+                else
+                    card.Visible = true
+                end
             end
         end
     end
@@ -1063,7 +1111,7 @@ end)
 badgeSelectorModal = Instance.new("Frame", mainFrame)
 badgeSelectorModal.Size = UDim2.fromOffset(230, 240)
 badgeSelectorModal.Position = UDim2.new(1, -240, 0, 48)
-badgeSelectorModal.BackgroundColor3 = Color3.fromRGB(13, 16, 23)
+badgeSelectorModal.BackgroundColor3 = Color3.fromRGB(14, 18, 26)
 badgeSelectorModal.BackgroundTransparency = 0.05
 badgeSelectorModal.Visible = false
 badgeSelectorModal.ZIndex = 70
@@ -1223,7 +1271,7 @@ local function createActionBtn(text, color, onClick)
 end
 
 -- =========================================================
--- 💬 MESSAGE PIPELINE (CLEAN COMPACT NO-COLLAPSE ARCHITECTURE)
+-- 💬 MESSAGE PIPELINE (MAIN NAME + USERNAME DISPLAY)
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -1265,10 +1313,19 @@ local function addJoinNotice(username)
 end
 
 local MAX_MESSAGES = 60
-local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSender, msgJobId)
+local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSender, msgJobId, scopeType)
     local memeIdMatch = msg:match("%[MEME:(%d+)%]")
-    local isMentioned = string.find(string.lower(msg), string.lower(lp.Name), 1, true) or string.find(string.lower(msg), "@" .. string.lower(lp.Name), 1, true)
-    local isAdminUser = Admin[userName:lower()] == true
+
+    -- ⚡ PARSE ROBLOX MAIN NAME (DISPLAYNAME) & USERNAME
+    local dispName, actualUsername = rawUserName:match("^(.-)%s*%[@([%w_]+)%]$")
+    if not dispName or not actualUsername then
+        actualUsername = rawUserName
+        local targetPlr = Players:FindFirstChild(rawUserName)
+        dispName = targetPlr and targetPlr.DisplayName or rawUserName
+    end
+
+    local isMentioned = string.find(string.lower(msg), string.lower(lp.Name), 1, true) or string.find(string.lower(msg), string.lower(lp.DisplayName), 1, true)
+    local isAdminUser = Admin[actualUsername:lower()] == true
     local badgeProfile = BadgePresets[currentOwnerBadge] or BadgePresets["OWNER"]
 
     local count = 0
@@ -1287,18 +1344,29 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     card.Size = memeIdMatch and UDim2.new(1, 0, 0, 130) or UDim2.new(1, 0, 0, 0)
     card.AutomaticSize = memeIdMatch and Enum.AutomaticSize.None or Enum.AutomaticSize.Y
     card.BackgroundColor3 = isMentioned and Colors.MentionBg or Colors.Surface
-    card.BackgroundTransparency = isGhostMode and 0.70 or 0.35
+    card.BackgroundTransparency = isGhostMode and 0.78 or 0.35
     card.Text = ""
     card.AutoButtonColor = false
     card.ClipsDescendants = false
     card.ZIndex = 9
+    
+    card:SetAttribute("ChatScope", scopeType or "global")
     card:SetAttribute("JobId", msgJobId or game.JobId)
     Instance.new("UICorner", card).CornerRadius = UDim.new(0, 8)
 
-    if chatMode == "server" and msgJobId and msgJobId ~= "" and msgJobId ~= game.JobId then
-        card.Visible = false
+    -- Dynamic Tab Visibility Filter
+    if chatMode == "server" then
+        if scopeType == "global" or (msgJobId and msgJobId ~= "" and msgJobId ~= game.JobId) then
+            card.Visible = false
+        else
+            card.Visible = true
+        end
     else
-        card.Visible = true
+        if scopeType == "server" then
+            card.Visible = false
+        else
+            card.Visible = true
+        end
     end
 
     local cardScale = Instance.new("UIScale", card)
@@ -1327,12 +1395,12 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     Instance.new("UICorner", avatarImg).CornerRadius = UDim.new(1, 0)
 
     task.spawn(function()
-        local targetPlr = Players:FindFirstChild(userName)
-        local uId = targetPlr and targetPlr.UserId or userIdCache[userName:lower()]
+        local targetPlr = Players:FindFirstChild(actualUsername)
+        local uId = targetPlr and targetPlr.UserId or userIdCache[actualUsername:lower()]
         if not uId then
             pcall(function()
-                uId = Players:GetUserIdFromNameAsync(userName)
-                userIdCache[userName:lower()] = uId
+                uId = Players:GetUserIdFromNameAsync(actualUsername)
+                userIdCache[actualUsername:lower()] = uId
             end)
         end
         if uId and avatarImg and avatarImg.Parent then
@@ -1340,7 +1408,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         end
     end)
 
-    -- Internal Vertical Flow Container (Fixes Name Disappearing and Layout Collisions)
+    -- Internal Vertical Flow Container (Clean layout, no overlapping)
     local cardContent = Instance.new("Frame", card)
     cardContent.Size = UDim2.new(1, -48, 0, 0)
     cardContent.Position = UDim2.fromOffset(44, 6)
@@ -1389,7 +1457,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         dmLbl.ZIndex = 12
     end
 
-    -- ⚡ ULTRA HIGH-VELOCITY 60 FPS TAG (EXACT PIXEL BOUNDED - NO OVERLAP)
+    -- ⚡ BUTTERY 60 FPS CHROMATIC IRIDESCENT BADGE
     if isAdminUser then
         local tagWidth = TextService:GetTextSize(badgeProfile.Title, 11, Enum.Font.GothamBlack, Vector2.new(1000, 20)).X + 4
         
@@ -1412,7 +1480,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         badgeGlow.ZIndex = 13
 
         local glowStroke = Instance.new("UIStroke", badgeGlow)
-        glowStroke.Thickness = 1.3
+        glowStroke.Thickness = 1.2
         glowStroke.Transparency = 0.55
         glowStroke.Color = Color3.fromRGB(255, 255, 255)
 
@@ -1463,7 +1531,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         local glowGrad = Instance.new("UIGradient", badgeGlow)
         glowGrad.Color = ColorSequence.new(badgeProfile.Colors)
 
-        local strokeGradGlow = Instance.new("UIGradient", glowStroke)
+        local strokeGradGlow = Instance.new("UIStroke", glowStroke)
         strokeGradGlow.Color = ColorSequence.new(badgeProfile.Colors)
 
         table.insert(activeBadgesList, {
@@ -1473,22 +1541,35 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
             shineGrad = shineGrad,
             badgeGlow = badgeGlow,
             glowStroke = glowStroke,
-            speed = badgeProfile.Speed or 3.4
+            speed = badgeProfile.Speed or 1.15
         })
     end
 
+    -- Main Roblox Display Name
     local nameLbl = Instance.new("TextLabel", headerRow)
     nameLbl.AutomaticSize = Enum.AutomaticSize.X
     nameLbl.Size = UDim2.new(0, 0, 1, 0)
     nameLbl.BackgroundTransparency = 1
     nameLbl.RichText = true
-    nameLbl.Text = sanitizeXml(userName) .. ":"
+    nameLbl.Text = sanitizeXml(dispName)
     nameLbl.TextColor3 = (currentThemeIdx == 2 and Color3.fromRGB(255, 45, 85) or Colors.Primary)
     nameLbl.Font = Enum.Font.GothamBlack
-    nameLbl.TextSize = 11.5
+    nameLbl.TextSize = 12
     nameLbl.LayoutOrder = 4
     nameLbl.ZIndex = 12
     crispText(nameLbl)
+
+    -- Subtle @Username Tag
+    local handleLbl = Instance.new("TextLabel", headerRow)
+    handleLbl.AutomaticSize = Enum.AutomaticSize.X
+    handleLbl.Size = UDim2.new(0, 0, 1, 0)
+    handleLbl.BackgroundTransparency = 1
+    handleLbl.Text = "@" .. sanitizeXml(actualUsername) .. ":"
+    handleLbl.TextColor3 = Colors.SubText
+    handleLbl.Font = Enum.Font.GothamMedium
+    handleLbl.TextSize = 10
+    handleLbl.LayoutOrder = 5
+    handleLbl.ZIndex = 12
 
     if memeIdMatch then
         local memeHolder = Instance.new("Frame", cardContent)
@@ -1531,26 +1612,26 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     local padFix = Instance.new("UIPadding", card)
     padFix.PaddingBottom = UDim.new(0, 8)
 
-    if isMentioned and userName ~= lp.Name then
+    if isMentioned and actualUsername ~= lp.Name then
         playSFX("mention")
-    elseif memeIdMatch and userName ~= lp.Name then
+    elseif memeIdMatch and actualUsername ~= lp.Name then
         playSFX("meme")
     end
 
     card.MouseButton1Click:Connect(function()
-        if userName == lp.Name or userName == "System" then return end
+        if actualUsername == lp.Name or actualUsername == "System" then return end
         
         for _, c in ipairs(actionMenu:GetChildren()) do
             if c:IsA("TextButton") then c:Destroy() end
         end
 
         createActionBtn("REPLY", Colors.Primary, function()
-            chatInput.Text = "@" .. userName .. " "
+            chatInput.Text = "@" .. actualUsername .. " "
             chatInput:CaptureFocus()
         end)
 
         createActionBtn("DM", Colors.Purple, function()
-            privateTarget = userName
+            privateTarget = actualUsername
             updateInputBar()
             playSFX("dm")
         end)
@@ -1560,14 +1641,14 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         end)
 
         createActionBtn("TP", Colors.MentionGold, function()
-            local targetPlr = Players:FindFirstChild(userName)
+            local targetPlr = Players:FindFirstChild(actualUsername)
             if targetPlr and targetPlr.Character and targetPlr.Character:FindFirstChild("HumanoidRootPart") and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
                 lp.Character.HumanoidRootPart.CFrame = targetPlr.Character.HumanoidRootPart.CFrame
             end
         end)
 
         createActionBtn("VIEW", Colors.PrimaryDark, function()
-            local targetPlr = Players:FindFirstChild(userName)
+            local targetPlr = Players:FindFirstChild(actualUsername)
             if targetPlr and targetPlr.Character and targetPlr.Character:FindFirstChild("Humanoid") then
                 Camera.CameraSubject = targetPlr.Character.Humanoid
             end
@@ -1589,7 +1670,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
 end
 
 -- =========================================================
--- ⌨️ INPUT CONTAINER, CONTROLS & TYPING PULSE
+-- ⌨️ INPUT CONTAINER & CONTROLS
 -- =========================================================
 local inputContainer = Instance.new("Frame", mainFrame)
 inputContainer.Size = UDim2.new(1, -24, 0, 42)
@@ -1838,7 +1919,7 @@ memeBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🚀 BULLETPROOF SAFE CLAMP DRAG ENGINE & ORB RESTORE
+-- 🚀 DRAG ENGINE & POSITION CLAMP
 -- =========================================================
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
@@ -1996,8 +2077,8 @@ openBtn.MouseButton1Click:Connect(function()
     
     TweenService:Create(mainScale, tInfo2, {Scale = 1}):Play()
     TweenService:Create(auraScale, tInfo2, {Scale = 1}):Play()
-    TweenService:Create(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.85 or 0.08}):Play()
-    TweenService:Create(aura, tInfo3, {ImageTransparency = isGhostMode and 0.94 or 0.72}):Play()
+    TweenService:Create(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.82 or 0.12}):Play()
+    TweenService:Create(aura, tInfo3, {ImageTransparency = isGhostMode and 0.92 or 0.72}):Play()
 end)
 
 -- Keyboard Shortcuts
@@ -2015,8 +2096,8 @@ UserInputService.InputBegan:Connect(function(input, gp)
             aura.Visible = true
             mainScale.Scale = 1
             auraScale.Scale = 1
-            mainFrame.BackgroundTransparency = isGhostMode and 0.85 or 0.08
-            aura.ImageTransparency = isGhostMode and 0.94 or 0.72
+            mainFrame.BackgroundTransparency = isGhostMode and 0.82 or 0.12
+            aura.ImageTransparency = isGhostMode and 0.92 or 0.72
         end
     elseif input.KeyCode == Enum.KeyCode.Semicolon or input.KeyCode == Enum.KeyCode.Slash then
         task.delay(0.05, function() chatInput:CaptureFocus() end)
@@ -2024,7 +2105,7 @@ UserInputService.InputBegan:Connect(function(input, gp)
 end)
 
 -- =========================================================
--- ⚡ 60 FPS ULTRA-PREMIUM FLUID GLOW & TAG SHINE ENGINE
+-- ⚡ 60 FPS ULTRA-SMOOTH TAG GLOW & SHINE ENGINE
 -- =========================================================
 task.spawn(function()
     local t = 0
@@ -2036,16 +2117,16 @@ task.spawn(function()
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
         t = t + dt
 
-        -- ⚡ 60 FPS CHROMATIC TAG ROTATION, DYNAMIC OFFSET & SPECULAR PASS
+        -- ⚡ 60 FPS CALIBRATED SILK-SMOOTH IRIDESCENT GRADIENT & SHINE
         if #activeBadgesList > 0 then
             for i = #activeBadgesList, 1, -1 do
                 local item = activeBadgesList[i]
                 if item.textGrad and item.textGrad.Parent and item.glowGrad and item.glowGrad.Parent then
-                    local sSpeed = item.speed or 3.4
+                    local sSpeed = item.speed or 1.15
 
-                    -- High-velocity continuous cycle
-                    local continuousRotation = (t * 240 * sSpeed) % 360
-                    local waveOffset = math.sin(t * 4.0 * sSpeed) * 0.7
+                    -- Buttery continuous rotation (gradual, not fast, not frozen)
+                    local continuousRotation = (t * 55 * sSpeed) % 360
+                    local waveOffset = math.sin(t * 1.5 * sSpeed) * 0.35
                     
                     item.textGrad.Rotation = continuousRotation
                     item.textGrad.Offset = Vector2.new(waveOffset, 0)
@@ -2057,19 +2138,19 @@ task.spawn(function()
                         item.strokeGradGlow.Rotation = (continuousRotation + 180) % 360
                     end
 
-                    -- Specular Diamond Shine sweep
+                    -- Elegant Specular Glare pass every 3.5 seconds
                     if item.shineGrad and item.shineGrad.Parent then
-                        local sweep = ((t * 2.2 * (sSpeed / 2)) % 3.0) - 1.5
+                        local sweep = ((t * 0.75 * sSpeed) % 3.5) - 1.75
                         item.shineGrad.Offset = Vector2.new(sweep, 0)
                     end
 
-                    local breathPulse = (math.sin(t * 6.5 * sSpeed) + 1) / 2
+                    local breathPulse = (math.sin(t * 2.2 * sSpeed) + 1) / 2
                     if item.glowStroke and item.glowStroke.Parent then
-                        item.glowStroke.Thickness = 1.0 + (breathPulse * 0.8)
-                        item.glowStroke.Transparency = 0.45 + (breathPulse * 0.25)
+                        item.glowStroke.Thickness = 1.0 + (breathPulse * 0.4)
+                        item.glowStroke.Transparency = 0.50 + (breathPulse * 0.20)
                     end
                     if item.badgeGlow and item.badgeGlow.Parent then
-                        item.badgeGlow.TextTransparency = 0.40 + (breathPulse * 0.25)
+                        item.badgeGlow.TextTransparency = 0.45 + (breathPulse * 0.20)
                     end
                 else
                     table.remove(activeBadgesList, i)
@@ -2078,9 +2159,9 @@ task.spawn(function()
         end
 
         if mainFrame.Visible then
-            strokeGrad.Rotation = (t * 60) % 360
+            strokeGrad.Rotation = (t * 35) % 360
             local breath = (math.sin(t * 2.5) + 1) / 2
-            aura.ImageTransparency = isGhostMode and 0.94 or (0.70 + (breath * 0.08))
+            aura.ImageTransparency = isGhostMode and 0.92 or (0.70 + (breath * 0.08))
 
             local ledAlpha = (math.sin(t * 4) + 1) / 2
             ledDot.BackgroundTransparency = 0.1 + (ledAlpha * 0.5)
@@ -2209,7 +2290,7 @@ task.spawn(function()
 end)
 
 -- =========================================================
--- 📡 SEND MESSAGE (100% INSTANT 0MS ZERO-WAIT ENGINE)
+-- 📡 SEND MESSAGE (SCOPE-LOCKED ZERO-LEAK ENGINE)
 -- =========================================================
 local lastSendTick = 0
 sendMessageFunc = function(overrideText)
@@ -2228,21 +2309,34 @@ sendMessageFunc = function(overrideText)
         chatInput.Text = ""
         privateTarget = pMatch
         updateInputBar()
-        addMessageToFeed("System", "DM mode locked with @" .. pMatch, nil, false, game.JobId)
+        addMessageToFeed("System", "DM mode locked with @" .. pMatch, nil, false, game.JobId, "global")
         return
     end
 
     local finalMsg = text
+    local currentScope = chatMode
+
+    -- Private target handling
     if privateTarget then
         finalMsg = "( 🔐 " .. lp.Name .. " Private " .. privateTarget .. ") " .. text
+    else
+        -- ⚡ SCOPE PREFIXING: Server chat stays locked, Global stays open
+        if currentScope == "server" then
+            finalMsg = "[SRV:" .. tostring(game.JobId) .. "] " .. text
+        else
+            finalMsg = "[GLB] " .. text
+        end
     end
 
     if not overrideText then chatInput.Text = "" end
 
+    local encodedUserTag = lp.DisplayName .. " [@" .. lp.Name .. "]"
+
+    -- Instant 0ms Local Feed Render
     if privateTarget then
-        addMessageToFeed(lp.Name, text, privateTarget, true, game.JobId)
+        addMessageToFeed(encodedUserTag, text, privateTarget, true, game.JobId, currentScope)
     else
-        addMessageToFeed(lp.Name, text, nil, false, game.JobId)
+        addMessageToFeed(encodedUserTag, text, nil, false, game.JobId, currentScope)
     end
     displayBubble(lp.Name, text)
 
@@ -2253,7 +2347,7 @@ sendMessageFunc = function(overrideText)
     task.spawn(function()
         if req then
             local payload = HttpService:JSONEncode({
-                user = lp.Name,
+                user = encodedUserTag,
                 msg = finalMsg,
                 jobId = game.JobId
             })
@@ -2276,7 +2370,7 @@ chatInput.FocusLost:Connect(function(enterPressed)
 end)
 
 -- =========================================================
--- 📥 HIGH-FREQUENCY POLLING ENGINE (DOUBLE-MSG IMMUNE)
+-- 📥 HIGH-FREQUENCY POLLING ENGINE
 -- =========================================================
 task.spawn(function()
     while _G.TXR_IsPolling and (_G.TXR_ChatInstanceID == currentExecutionID) and task.wait(0.4) do
@@ -2304,8 +2398,25 @@ task.spawn(function()
                                 if not m.hidden and m.msg ~= "Joined" then
                                     local initKey = (m.id and tostring(m.id)) or (m.user .. "_" .. tostring(m.time) .. "_" .. m.msg)
                                     processedServerMessageMap[initKey] = true
-                                    addMessageToFeed(m.user, m.msg, nil, false, m.jobId)
-                                    updateLiveCounter(m.user)
+                                    
+                                    local srvJob, cleanSrvMsg = m.msg:match("^%[SRV:(.-)%]%s*(.*)$")
+                                    local cleanGlbMsg = m.msg:match("^%[GLB%]%s*(.*)$")
+                                    local scope = "global"
+                                    local parsedMsg = m.msg
+
+                                    if srvJob then
+                                        scope = "server"
+                                        parsedMsg = cleanSrvMsg
+                                        if srvJob ~= game.JobId then
+                                            continue
+                                        end
+                                    elseif cleanGlbMsg then
+                                        scope = "global"
+                                        parsedMsg = cleanGlbMsg
+                                    end
+
+                                    addMessageToFeed(m.user, parsedMsg, nil, false, m.jobId, scope)
+                                    updateLiveCounter(m.user:match("%[@([%w_]+)%]") or m.user)
                                 end
                             end
                             lastSyncTime = data[#data].time
@@ -2321,13 +2432,14 @@ task.spawn(function()
 
                         if m.time >= lastSyncTime then
                             lastSyncTime = m.time
-                            knownUsers[m.user:lower()] = m.user
-                            updateLiveCounter(m.user)
+                            local rawUsernameOnly = m.user:match("%[@([%w_]+)%]") or m.user
+                            knownUsers[rawUsernameOnly:lower()] = rawUsernameOnly
+                            updateLiveCounter(rawUsernameOnly)
 
                             if m.msg == "Joined" then
                                 processedServerMessageMap[uniqueMsgKey] = true
-                                if m.user ~= lp.Name then
-                                    addJoinNotice(m.user)
+                                if rawUsernameOnly ~= lp.Name then
+                                    addJoinNotice(rawUsernameOnly)
                                     playSFX("default")
                                 end
                                 continue
@@ -2338,8 +2450,8 @@ task.spawn(function()
                                 continue 
                             end
 
-                            -- Local Echo Deduplication Check
-                            if m.user:lower() == lp.Name:lower() then
+                            -- Local Echo Deduplication
+                            if rawUsernameOnly:lower() == lp.Name:lower() then
                                 local lowMsg = string.lower(m.msg)
                                 local isEcho = false
 
@@ -2359,13 +2471,31 @@ task.spawn(function()
 
                             processedServerMessageMap[uniqueMsgKey] = true
 
-                            local pSender, pTarget, pMsg = string.match(m.msg, "^%( 🔐 ([%w_]+) Private ([%w_]+)%) (.*)$")
+                            -- Parse Scope Tags
+                            local srvJob, cleanSrvMsg = m.msg:match("^%[SRV:(.-)%]%s*(.*)$")
+                            local cleanGlbMsg = m.msg:match("^%[GLB%]%s*(.*)$")
+                            local scope = "global"
+                            local effectiveMsg = m.msg
+
+                            if srvJob then
+                                scope = "server"
+                                effectiveMsg = cleanSrvMsg
+                                if srvJob ~= game.JobId then
+                                    continue
+                                end
+                            elseif cleanGlbMsg then
+                                scope = "global"
+                                effectiveMsg = cleanGlbMsg
+                            end
+
+                            -- DM Parsing
+                            local pSender, pTarget, pMsg = string.match(effectiveMsg, "^%( 🔐 ([%w_]+) Private ([%w_]+)%) (.*)$")
                             if pSender and pTarget then
                                 if lp.Name == pSender then
-                                    addMessageToFeed(m.user, pMsg, pTarget, true, m.jobId)
+                                    addMessageToFeed(m.user, pMsg, pTarget, true, m.jobId, scope)
                                 elseif lp.Name == pTarget then
-                                    addMessageToFeed(m.user, pMsg, pSender, false, m.jobId)
-                                    displayBubble(m.user, pMsg)
+                                    addMessageToFeed(m.user, pMsg, pSender, false, m.jobId, scope)
+                                    displayBubble(rawUsernameOnly, pMsg)
                                     playSFX("dm")
 
                                     if not mainFrame.Visible then
@@ -2377,10 +2507,10 @@ task.spawn(function()
                                 continue
                             end
 
-                            addMessageToFeed(m.user, m.msg, nil, false, m.jobId)
+                            addMessageToFeed(m.user, effectiveMsg, nil, false, m.jobId, scope)
 
-                            if m.user ~= lp.Name then
-                                displayBubble(m.user, m.msg)
+                            if rawUsernameOnly ~= lp.Name then
+                                displayBubble(rawUsernameOnly, effectiveMsg)
                                 playSFX("default")
 
                                 if not mainFrame.Visible then
@@ -2404,9 +2534,14 @@ task.spawn(function()
             req({
                 Url = SERVER_URL .. "/send", Method = "POST",
                 Headers = { ["Content-Type"] = "application/json", ["User-Agent"] = "Roblox/WinInet" },
-                Body = HttpService:JSONEncode({ user = lp.Name, msg = "Joined", jobId = game.JobId, hidden = false })
+                Body = HttpService:JSONEncode({ 
+                    user = lp.DisplayName .. " [@" .. lp.Name .. "]", 
+                    msg = "Joined", 
+                    jobId = game.JobId, 
+                    hidden = false 
+                })
             })
         end)
     end
-    addMessageToFeed("System", "TXR Cyber-Titan Online! Tap TAG to switch custom badges.", nil, false, game.JobId)
+    addMessageToFeed("System", "TXR Cyber-Titan Online! Tap TAG to switch custom badges.", nil, false, game.JobId, "global")
 end)
