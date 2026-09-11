@@ -12,7 +12,7 @@ pcall(function()
 end)
 
 -- =========================================================
--- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V14.0 ELITE SUITE) 👑
+-- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V15.0 SMART SUITE) 👑
 -- =========================================================
 
 local currentExecutionID = tick()
@@ -451,7 +451,6 @@ mainFrame:GetPropertyChangedSignal("Position"):Connect(function()
     aura.Position = mainFrame.Position
 end)
 
--- Subtle Background Gradient Sheen
 local mainBgGrad = Instance.new("UIGradient", mainFrame)
 mainBgGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 18, 26)),
@@ -779,13 +778,13 @@ header.BackgroundTransparency = 1
 header.ZIndex = 10
 
 local headerTitle = Instance.new("TextLabel", header)
-headerTitle.Size = UDim2.new(0, 115, 1, 0)
+headerTitle.Size = UDim2.new(0, 110, 1, 0)
 headerTitle.Position = UDim2.fromOffset(16, 0)
 headerTitle.BackgroundTransparency = 1
 headerTitle.Text = "TXR // TITAN"
 headerTitle.TextColor3 = Colors.Primary
 headerTitle.Font = Enum.Font.GothamBlack
-headerTitle.TextSize = 14
+headerTitle.TextSize = 13.5
 headerTitle.TextXAlignment = Enum.TextXAlignment.Left
 headerTitle.ZIndex = 11
 crispText(headerTitle)
@@ -823,6 +822,29 @@ liveText.TextSize = 8.5
 liveText.TextXAlignment = Enum.TextXAlignment.Left
 liveText.ZIndex = 12
 
+-- ⚡ SMART LATENCY HUD BADGE (MS PING)
+local pingBadge = Instance.new("Frame", header)
+pingBadge.Size = UDim2.fromOffset(48, 20)
+pingBadge.Position = UDim2.new(0, 206, 0.5, -10)
+pingBadge.BackgroundColor3 = Colors.Surface
+pingBadge.BackgroundTransparency = 0.5
+pingBadge.ZIndex = 11
+Instance.new("UICorner", pingBadge).CornerRadius = UDim.new(1, 0)
+
+local pbStroke = Instance.new("UIStroke", pingBadge)
+pbStroke.Color = Colors.SurfaceHover
+pbStroke.Thickness = 1
+pbStroke.Transparency = 0.6
+
+local pingText = Instance.new("TextLabel", pingBadge)
+pingText.Size = UDim2.fromScale(1, 1)
+pingText.BackgroundTransparency = 1
+pingText.Text = "42ms"
+pingText.TextColor3 = Color3.fromRGB(80, 220, 140)
+pingText.Font = Enum.Font.GothamBold
+pingText.TextSize = 8.5
+pingText.ZIndex = 12
+
 liveBadge.MouseButton1Click:Connect(function()
     refreshRosterUI()
     rosterFrame.Visible = not rosterFrame.Visible
@@ -831,25 +853,6 @@ liveBadge.MouseButton1Click:Connect(function()
         TweenService:Create(rosterFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(1, -145, 0, 40)}):Play()
     end
 end)
-
-local eqBox = Instance.new("Frame", header)
-eqBox.Size = UDim2.fromOffset(24, 14)
-eqBox.Position = UDim2.new(0, 206, 0.5, -7)
-eqBox.BackgroundTransparency = 1
-eqBox.ZIndex = 11
-
-local eqBars = {}
-for i = 1, 4 do
-    local bar = Instance.new("Frame", eqBox)
-    bar.Size = UDim2.new(0, 3, 0.4 + (i * 0.15), 0)
-    bar.Position = UDim2.new(0, (i - 1) * 6, 1, 0)
-    bar.AnchorPoint = Vector2.new(0, 1)
-    bar.BackgroundColor3 = Colors.Primary
-    bar.BorderSizePixel = 0
-    bar.ZIndex = 12
-    Instance.new("UICorner", bar).CornerRadius = UDim.new(1, 0)
-    table.insert(eqBars, bar)
-end
 
 local function createHeaderBtn(text, posX, onClick)
     local b = Instance.new("TextButton", header)
@@ -1149,7 +1152,7 @@ for _, bKey in ipairs(badgeKeysOrder) do
 end
 
 -- =========================================================
--- 💬 FULL-HEIGHT CHAT FEED
+-- 💬 FULL-HEIGHT CHAT FEED & SMART AUTOSCROLL DOCK
 -- =========================================================
 messageFeed.Size = UDim2.new(1, -28, 1, -134)
 messageFeed.Position = UDim2.new(0, 14, 0, 80)
@@ -1169,6 +1172,37 @@ feedPadding.PaddingLeft = UDim.new(0, 2)
 feedPadding.PaddingRight = UDim.new(0, 6)
 feedPadding.PaddingBottom = UDim.new(0, 4)
 
+-- ⚡ SMART FLOATING JUMP-TO-BOTTOM CHIP
+local jumpBottomBtn = Instance.new("TextButton", mainFrame)
+jumpBottomBtn.Size = UDim2.fromOffset(115, 24)
+jumpBottomBtn.Position = UDim2.new(0.5, -57, 1, -80)
+jumpBottomBtn.BackgroundColor3 = Colors.Surface
+jumpBottomBtn.BackgroundTransparency = 0.1
+jumpBottomBtn.Text = "↓ New Messages"
+jumpBottomBtn.TextColor3 = Colors.Primary
+jumpBottomBtn.Font = Enum.Font.GothamBlack
+jumpBottomBtn.TextSize = 9.5
+jumpBottomBtn.Visible = false
+jumpBottomBtn.ZIndex = 35
+Instance.new("UICorner", jumpBottomBtn).CornerRadius = UDim.new(1, 0)
+local jbStroke = Instance.new("UIStroke", jumpBottomBtn)
+jbStroke.Color = Colors.Primary
+jbStroke.Thickness = 1
+jbStroke.Transparency = 0.5
+applySpringHover(jumpBottomBtn)
+
+jumpBottomBtn.MouseButton1Click:Connect(function()
+    jumpBottomBtn.Visible = false
+    messageFeed.CanvasPosition = Vector2.new(0, math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y))
+end)
+
+messageFeed:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
+    local maxOffset = math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y)
+    if maxOffset - messageFeed.CanvasPosition.Y < 35 then
+        jumpBottomBtn.Visible = false
+    end
+end)
+
 searchBox:GetPropertyChangedSignal("Text"):Connect(function()
     searchQuery = string.lower(searchBox.Text)
     for _, card in ipairs(messageFeed:GetChildren()) do
@@ -1186,10 +1220,11 @@ searchBox:GetPropertyChangedSignal("Text"):Connect(function()
 end)
 
 local sendMessageFunc
+local chatInput
 
 -- Action Drawer
 actionMenu = Instance.new("Frame", mainFrame)
-actionMenu.Size = UDim2.fromOffset(250, 32)
+actionMenu.Size = UDim2.fromOffset(260, 32)
 actionMenu.BackgroundColor3 = Colors.Surface
 actionMenu.Visible = false
 actionMenu.ZIndex = 50
@@ -1203,11 +1238,11 @@ local amLayout = Instance.new("UIListLayout", actionMenu)
 amLayout.FillDirection = Enum.FillDirection.Horizontal
 amLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 amLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-amLayout.Padding = UDim.new(0, 5)
+amLayout.Padding = UDim.new(0, 4)
 
 local function createActionBtn(text, color, onClick)
     local b = Instance.new("TextButton", actionMenu)
-    b.Size = UDim2.new(0, 44, 0, 22)
+    b.Size = UDim2.new(0, 42, 0, 22)
     b.BackgroundColor3 = Colors.Background
     b.Text = text
     b.TextColor3 = color
@@ -1257,7 +1292,10 @@ local function addJoinNotice(username)
     lbl.ZIndex = 10
 
     task.defer(function()
-        messageFeed.CanvasPosition = Vector2.new(0, math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y))
+        local maxOffset = math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y)
+        if maxOffset - messageFeed.CanvasPosition.Y < 80 then
+            messageFeed.CanvasPosition = Vector2.new(0, maxOffset)
+        end
     end)
 end
 
@@ -1492,13 +1530,18 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
             if c:IsA("TextButton") then c:Destroy() end
         end
 
+        createActionBtn("REPLY", Colors.Primary, function()
+            chatInput.Text = "@" .. userName .. " "
+            chatInput:CaptureFocus()
+        end)
+
         createActionBtn("DM", Colors.Purple, function()
             privateTarget = userName
             updateInputBar()
             playSFX("dm")
         end)
 
-        createActionBtn("COPY", Colors.Primary, function()
+        createActionBtn("COPY", Colors.Text, function()
             pcall(function() setClip(memeIdMatch and ("ID: " .. memeIdMatch) or msg) end)
         end)
 
@@ -1522,17 +1565,22 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         end)
 
         local cardPos = card.AbsolutePosition - mainFrame.AbsolutePosition
-        actionMenu.Position = UDim2.fromOffset(math.clamp(cardPos.X + 30, 10, 170), math.clamp(cardPos.Y - 22, 30, 280))
+        actionMenu.Position = UDim2.fromOffset(math.clamp(cardPos.X + 25, 10, 160), math.clamp(cardPos.Y - 24, 30, 280))
         actionMenu.Visible = true
     end)
 
     task.defer(function()
-        messageFeed.CanvasPosition = Vector2.new(0, math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y))
+        local maxOffset = math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y)
+        if maxOffset - messageFeed.CanvasPosition.Y < 90 then
+            messageFeed.CanvasPosition = Vector2.new(0, maxOffset)
+        else
+            jumpBottomBtn.Visible = true
+        end
     end)
 end
 
 -- =========================================================
--- ⌨️ INPUT CONTAINER & CONTROLS
+-- ⌨️ INPUT CONTAINER, CONTROLS & TYPING PULSE
 -- =========================================================
 local inputContainer = Instance.new("Frame", mainFrame)
 inputContainer.Size = UDim2.new(1, -28, 0, 40)
@@ -1555,6 +1603,15 @@ cdBar.BorderSizePixel = 0
 cdBar.Visible = false
 cdBar.ZIndex = 15
 
+local typingIndicator = Instance.new("Frame", inputContainer)
+typingIndicator.Size = UDim2.new(1, -12, 0, 2)
+typingIndicator.Position = UDim2.new(0, 6, 0, 0)
+typingIndicator.BackgroundColor3 = Colors.Primary
+typingIndicator.BorderSizePixel = 0
+typingIndicator.BackgroundTransparency = 1
+typingIndicator.ZIndex = 16
+Instance.new("UICorner", typingIndicator).CornerRadius = UDim.new(1, 0)
+
 local dmBadge = Instance.new("TextButton", inputContainer)
 dmBadge.Size = UDim2.new(0, 0, 1, -12)
 dmBadge.Position = UDim2.new(0, 6, 0, 6)
@@ -1566,7 +1623,7 @@ dmBadge.Visible = false
 dmBadge.ZIndex = 14
 Instance.new("UICorner", dmBadge).CornerRadius = UDim.new(0, 6)
 
-local chatInput = Instance.new("TextBox", inputContainer)
+chatInput = Instance.new("TextBox", inputContainer)
 chatInput.Text = ""
 chatInput.Size = UDim2.new(1, -112, 1, 0)
 chatInput.Position = UDim2.new(0, 14, 0, 0)
@@ -1585,7 +1642,14 @@ local function sanitizeChatInput()
         chatInput.Text = ""
     end
 end
-chatInput:GetPropertyChangedSignal("Text"):Connect(sanitizeChatInput)
+chatInput:GetPropertyChangedSignal("Text"):Connect(function()
+    sanitizeChatInput()
+    if #chatInput.Text > 0 then
+        typingIndicator.BackgroundTransparency = 0.2
+    else
+        typingIndicator.BackgroundTransparency = 1
+    end
+end)
 task.defer(sanitizeChatInput)
 
 chatInput.Focused:Connect(function()
@@ -1593,6 +1657,7 @@ chatInput.Focused:Connect(function()
     TweenService:Create(inputStroke, TweenInfo.new(0.25), {Color = Colors.Primary, Transparency = 0.15, Thickness = 1.6}):Play()
 end)
 chatInput.FocusLost:Connect(function()
+    typingIndicator.BackgroundTransparency = 1
     TweenService:Create(inputStroke, TweenInfo.new(0.25), {Color = Colors.PrimaryDark, Transparency = 0.55, Thickness = 1.2}):Play()
 end)
 
@@ -1998,9 +2063,9 @@ task.spawn(function()
             local ledAlpha = (math.sin(t * 4) + 1) / 2
             ledDot.BackgroundTransparency = 0.1 + (ledAlpha * 0.5)
 
-            for i, b in ipairs(eqBars) do
-                local wave = (math.sin(t * 7 + (i * 1.2)) + 1) / 2
-                b.Size = UDim2.new(0, 3, 0.2 + (wave * 0.8), 0)
+            local typingWave = (math.sin(t * 8) + 1) / 2
+            if typingIndicator.BackgroundTransparency < 1 then
+                typingIndicator.Size = UDim2.new(0.3 + (typingWave * 0.68), 0, 0, 2)
             end
         end
 
@@ -2208,6 +2273,7 @@ end)
 task.spawn(function()
     while _G.TXR_IsPolling and task.wait(0.25) do
         if req then
+            local pollStart = tick()
             local success, res = pcall(function()
                 return req({
                     Url = SERVER_URL .. "/messages?since=" .. tostring(lastSyncTime),
@@ -2217,6 +2283,16 @@ task.spawn(function()
             end)
 
             if success and res and res.StatusCode == 200 then
+                local pingMs = math.floor((tick() - pollStart) * 1000)
+                pingText.Text = tostring(math.clamp(pingMs, 10, 999)) .. "ms"
+                if pingMs > 300 then
+                    pingText.TextColor3 = Colors.Danger
+                elseif pingMs > 150 then
+                    pingText.TextColor3 = Colors.Warning
+                else
+                    pingText.TextColor3 = Color3.fromRGB(80, 220, 140)
+                end
+
                 local decodeSuccess, data = pcall(function()
                     return HttpService:JSONDecode(res.Body)
                 end)
