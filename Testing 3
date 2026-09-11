@@ -1,5 +1,5 @@
 -- =========================================================
--- 🕳️ TXR ANTI-ROBOT (ANTI-ZERO PREDICTION ENGINE - V5)
+-- 🕳️ TXR ANTI-ROBOT (NUCLEAR V6 - CONSTRAINT & PROXIMITY OBLITERATOR)
 -- =========================================================
 
 local Players = game:GetService("Players")
@@ -40,6 +40,7 @@ local function stopVoidEngine()
     if _G.TXR_Void_Heartbeat then pcall(function() _G.TXR_Void_Heartbeat:Disconnect() end) _G.TXR_Void_Heartbeat = nil end
     if _G.TXR_Void_JumpConn then pcall(function() _G.TXR_Void_JumpConn:Disconnect() end) _G.TXR_Void_JumpConn = nil end
     if _G.TXR_Void_StateConn then pcall(function() _G.TXR_Void_StateConn:Disconnect() end) _G.TXR_Void_StateConn = nil end
+    if _G.TXR_CharDescendantAdded then pcall(function() _G.TXR_CharDescendantAdded:Disconnect() end) _G.TXR_CharDescendantAdded = nil end
 
     _G.TXR_Void_IsAirborne = false
     _G.TXR_Void_AirVelY = 0
@@ -93,7 +94,18 @@ local function startVoidEngine()
         end
     end)
 
-    -- Loop 1: Physics Lock, Joint Cleaner & Prop Stripper
+    -- Guard: Character me aane wale kisi bhi hostile constraint ko aate hi delete karega
+    _G.TXR_CharDescendantAdded = char.DescendantAdded:Connect(function(child)
+        if child:IsA("AlignPosition") or child:IsA("AlignOrientation") or child:IsA("VectorForce") or 
+           child:IsA("BodyPosition") or child:IsA("BodyVelocity") or child:IsA("BodyGyro") or 
+           child:IsA("Weld") or child:IsA("WeldConstraint") or child:IsA("TouchTransmitter") then
+            if child.Name == "SeatWeld" or not child:IsDescendantOf(char:FindFirstChild("HumanoidRootPart") or char) then
+                pcall(function() child:Destroy() end)
+            end
+        end
+    end)
+
+    -- Loop 1: Physics Engine, Seat Annihilation & Hostile Prop Nullification
     _G.TXR_Void_Stepped = RunService.Stepped:Connect(function(_, dt)
         if not _G.TXR_VoidLock_Active then return end
         local c = lp.Character
@@ -127,7 +139,7 @@ local function startVoidEngine()
         if h.Sit then h.Sit = false end
         h:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
 
-        -- Stripping Touches so 0-Prediction hits fail
+        -- Clean all touches & unwanted internal welds
         for _, p in ipairs(c:GetChildren()) do
             if p:IsA("BasePart") then
                 p.CanCollide = false
@@ -136,35 +148,33 @@ local function startVoidEngine()
             end
         end
 
-        -- Destroy Seats & External Weld Constraints
         for _, v in ipairs(c:GetDescendants()) do
-            if v:IsA("Weld") or v:IsA("WeldConstraint") or v:IsA("RigidConstraint") then
-                if v.Name == "SeatWeld" or string.find(v.Name:lower(), "seat") then
-                    pcall(function() v:Destroy() end)
-                end
+            if v:IsA("Seat") or v:IsA("VehicleSeat") then
+                v:Destroy()
+            elseif (v:IsA("Weld") or v:IsA("WeldConstraint") or v:IsA("RigidConstraint")) and (v.Name == "SeatWeld" or string.find(v.Name:lower(), "seat")) then
+                v:Destroy()
             end
         end
 
-        -- Invalidate WorkspaceCom Target Collision
-        local com = workspace:FindFirstChild("WorkspaceCom")
-        if com then
-            for _, folder in ipairs(com:GetChildren()) do
-                for _, prop in ipairs(folder:GetChildren()) do
-                    if string.sub(prop.Name, 1, 4) == "Prop" and string.sub(prop.Name, 5) ~= lp.Name then
-                        for _, part in ipairs(prop:GetDescendants()) do
-                            if part:IsA("BasePart") then
-                                part.CanCollide = false
-                                part.CanTouch = false
-                                part.CanQuery = false
-                            end
-                        end
+        -- Hostile Robot Visual & Physics Disabler (Pushes Prop Bots away in Local Memory)
+        local targets = {workspace:FindFirstChild("WorkspaceCom"), workspace:FindFirstChild("Robots"), workspace:FindFirstChild("Props")}
+        for _, rootObj in ipairs(targets) do
+            if rootObj then
+                for _, obj in ipairs(rootObj:GetDescendants()) do
+                    if obj:IsA("BasePart") and not obj:IsDescendantOf(c) then
+                        obj.CanCollide = false
+                        obj.CanTouch = false
+                        obj.CanQuery = false
+                        -- Move bot meshes away locally so zero-prediction snap misses hitbox
+                        obj.CFrame = CFrame.new(0, -5000, 0)
+                        obj.AssemblyLinearVelocity = Vector3.zero
                     end
                 end
             end
         end
     end)
 
-    -- Loop 2: Anti Zero-Prediction Heartbeat (Coordinate Desync)
+    -- Loop 2: Network Desync & Heartbeat Stabilizer
     _G.TXR_Void_Heartbeat = RunService.Heartbeat:Connect(function()
         if not _G.TXR_VoidLock_Active then return end
         local c = lp.Character
@@ -175,7 +185,6 @@ local function startVoidEngine()
         local currentVel = r.AssemblyLinearVelocity
         local hSpeedSq = (currentVel.X * currentVel.X) + (currentVel.Z * currentVel.Z)
 
-        -- Velocity Desync Fallback
         local targetY = -SAFE_CLAMP
         if hSpeedSq > 0 then
             local remainSq = (SAFE_CLAMP * SAFE_CLAMP) - hSpeedSq
@@ -187,17 +196,9 @@ local function startVoidEngine()
         end
         r.AssemblyLinearVelocity = Vector3.new(currentVel.X, targetY, currentVel.Z)
 
-        -- ⚡ Anti Zero-Prediction Phase Shift
-        -- Since prediction is 0, the bot tracks literal CFrame.
-        -- This shifts the replicated CFrame coordinate back and forth by millimeters 
-        -- so the server never gives the bot a static lock point.
+        -- Micro Positional Shift to confuse snap-lock
         if not _G.TXR_Void_IsAirborne and h.FloorMaterial ~= Enum.Material.Air then
-            local tickMod = math.floor(os.clock() * 120) % 2
-            if tickMod == 0 then
-                r.CFrame = r.CFrame * CFrame.new(0, -0.09, 0)
-            else
-                r.CFrame = r.CFrame * CFrame.new(0, 0.09, 0)
-            end
+            r.CFrame = r.CFrame * CFrame.new(0, -0.05, 0)
         end
     end)
 end
@@ -205,9 +206,9 @@ end
 if _G.TXR_VoidLock_Active then
     _G.TXR_VoidLock_Active = false
     stopVoidEngine()
-    sendNotify("🛡️ ANTI ROBOTS", "Deactivated", 2)
+    sendNotify("🛡️ ANTI ROBOTS", "Engine Disabled", 2)
 else
     _G.TXR_VoidLock_Active = true
     startVoidEngine()
-    sendNotify("🛡️ ANTI ROBOTS", "V5 Anti-Zero Prediction Active", 2.5)
+    sendNotify("🛡️ ANTI ROBOTS", "V6 Nuclear Mode Active", 2.5)
 end
