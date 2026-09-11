@@ -345,6 +345,9 @@ local function playSFX(soundType)
             elseif soundType == "meme" then
                 s.SoundId = "rbxassetid://9069609268"
                 s.Volume = 0.6
+            elseif soundType == "swipe" then
+                s.SoundId = "rbxassetid://6553245465"
+                s.Volume = 0.3
             else
                 s.SoundId = "rbxassetid://6518811702"
                 s.Volume = 0.4
@@ -357,7 +360,7 @@ local function playSFX(soundType)
 end
 
 -- =========================================================
--- 👑 SERVER, STATE & ROLES
+-- 👑 SERVER, STATE, ROLES & TYPING TRACKER
 -- =========================================================
 local SERVER_URL = "https://my-roblox-private-chat.onrender.com"
 local lastSyncTime = 0
@@ -372,6 +375,9 @@ local ghostDebounce = false
 local userIdCache = {}
 local activeBadgesList = {}
 local modalSelectionIndicators = {}
+
+-- ⚡ NEW: LIVE TYPING STATE
+local globalTypers = {}
 
 -- ⚡ DEDUPLICATION ENGINE CACHE
 local processedServerMessageMap = {}
@@ -982,7 +988,7 @@ ghostBtn = createHeaderBtn("GST", function()
         badgeSelectorModal.BackgroundTransparency = 0.50
 
         for _, card in ipairs(messageFeed:GetChildren()) do
-            if card:IsA("TextButton") then
+            if card:IsA("Frame") and card:FindFirstChild("SwipeWrapper") then
                 card.BackgroundTransparency = 0.45
             end
         end
@@ -998,7 +1004,7 @@ ghostBtn = createHeaderBtn("GST", function()
         badgeSelectorModal.BackgroundTransparency = 0.05
 
         for _, card in ipairs(messageFeed:GetChildren()) do
-            if card:IsA("TextButton") then
+            if card:IsA("Frame") and card:FindFirstChild("SwipeWrapper") then
                 card.BackgroundTransparency = 0.15
             end
         end
@@ -1208,10 +1214,10 @@ local badgeKeysOrder = {
 for _, bKey in ipairs(badgeKeysOrder) do
     local bData = BadgePresets[bKey]
     local bBtn = Instance.new("TextButton", bsScroll)
-    bBtn.Size = UDim2.new(0.95, 0, 0, 30) -- Taller card for visual preview
+    bBtn.Size = UDim2.new(0.95, 0, 0, 30)
     bBtn.BackgroundColor3 = Colors.Surface
     bBtn.BackgroundTransparency = 0.3
-    bBtn.Text = "" -- Text removed, using Live UI
+    bBtn.Text = "" 
     bBtn.AutoButtonColor = false
     bBtn.ZIndex = 72
     Instance.new("UICorner", bBtn).CornerRadius = UDim.new(0, 8)
@@ -1221,7 +1227,6 @@ for _, bKey in ipairs(badgeKeysOrder) do
     btnStroke.Thickness = 0.8
     btnStroke.Transparency = 0.5
     
-    -- LIVE BADGE GENERATION IN MENU
     local tagWidth = TextService:GetTextSize(bData.Title, 11, Enum.Font.GothamBlack, Vector2.new(1000, 20)).X + 4
     
     local badgeHost = Instance.new("Frame", bBtn)
@@ -1304,7 +1309,6 @@ for _, bKey in ipairs(badgeKeysOrder) do
         speed = bData.Speed or 1.15
     })
 
-    -- Selection Active Dot Tracker
     local dotIndicator = Instance.new("Frame", bBtn)
     dotIndicator.Size = UDim2.fromOffset(8, 8)
     dotIndicator.AnchorPoint = Vector2.new(1, 0.5)
@@ -1391,6 +1395,49 @@ messageFeed:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
     end
 end)
 
+-- ⚡ NEW: GLOBAL TYPING UI INDICATOR BAR
+local globalTypingBar = Instance.new("Frame", mainFrame)
+globalTypingBar.Size = UDim2.new(1, -24, 0, 20)
+globalTypingBar.Position = UDim2.new(0, 12, 1, -74) -- Just above input box
+globalTypingBar.BackgroundTransparency = 1
+globalTypingBar.Visible = false
+globalTypingBar.ZIndex = 11
+
+local globalTypingText = Instance.new("TextLabel", globalTypingBar)
+globalTypingText.Size = UDim2.new(1, 0, 1, 0)
+globalTypingText.BackgroundTransparency = 1
+globalTypingText.Text = ""
+globalTypingText.TextColor3 = Colors.Primary
+globalTypingText.Font = Enum.Font.GothamMedium
+globalTypingText.TextSize = 10.5
+globalTypingText.TextXAlignment = Enum.TextXAlignment.Left
+globalTypingText.TextTransparency = 0.1
+globalTypingText.ZIndex = 11
+crispText(globalTypingText, 0.5)
+
+-- ⚡ NEW: UI PARTICLE SPAWNER (CLICK/SWIPE EFFECTS)
+local function spawnUIParticles(parentFrame, positionUDim2, color, count)
+    for i = 1, (count or 5) do
+        local p = Instance.new("Frame", parentFrame)
+        p.Size = UDim2.fromOffset(4, 4)
+        p.Position = positionUDim2
+        p.AnchorPoint = Vector2.new(0.5, 0.5)
+        p.BackgroundColor3 = color
+        p.ZIndex = 100
+        Instance.new("UICorner", p).CornerRadius = UDim.new(1, 0)
+        
+        local rx = (math.random() - 0.5) * 60
+        local ry = (math.random() - 0.5) * 60
+        
+        TweenService:Create(p, TweenInfo.new(0.5 + math.random()*0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
+            Position = UDim2.new(positionUDim2.X.Scale, positionUDim2.X.Offset + rx, positionUDim2.Y.Scale, positionUDim2.Y.Offset + ry),
+            Size = UDim2.fromOffset(0, 0),
+            BackgroundTransparency = 1
+        }):Play()
+        task.delay(0.9, function() pcall(function() p:Destroy() end) end)
+    end
+end
+
 local sendMessageFunc
 local chatInput
 
@@ -1445,23 +1492,42 @@ local function updateLiveCounter(username)
     liveText.Text = string.format("%d Active", math.max(1, count))
 end
 
+-- ⚡ NEW: VIP ANIMATED WELCOME SYSTEM
 local function addJoinNotice(username)
     local pill = Instance.new("Frame", messageFeed)
-    pill.Size = UDim2.new(1, 0, 0, 20)
-    pill.BackgroundTransparency = 1
+    pill.Size = UDim2.new(1, 0, 0, 28)
+    pill.BackgroundColor3 = Colors.Surface
+    pill.BackgroundTransparency = 0.15
     pill.ZIndex = 9
+    Instance.new("UICorner", pill).CornerRadius = UDim.new(0, 8)
+    
+    local grad = Instance.new("UIGradient", pill)
+    grad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 35, 25)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 25, 35))
+    })
+    
+    local s = Instance.new("UIStroke", pill)
+    s.Color = Color3.fromRGB(50, 255, 140)
+    s.Thickness = 1.2
+    s.Transparency = 0.4
 
     local lbl = Instance.new("TextLabel", pill)
     lbl.Size = UDim2.fromScale(1, 1)
     lbl.BackgroundTransparency = 1
-    lbl.Font = Enum.Font.GothamMedium
-    lbl.TextSize = 10
-    lbl.TextColor3 = Colors.SubText
+    lbl.Font = Enum.Font.GothamBold
+    lbl.TextSize = 11
+    lbl.TextColor3 = Color3.new(1,1,1)
     lbl.RichText = true
-    lbl.Text = string.format("<font color='#50D282'>*</font> <i>@%s connected to network</i>", sanitizeXml(username))
+    lbl.Text = string.format("🎉 <font color='#32FF8C'>@%s</font> <i>dropped into the Titan Network</i>", sanitizeXml(username))
     lbl.TextXAlignment = Enum.TextXAlignment.Center
     lbl.ZIndex = 10
-    crispText(lbl, 0.6)
+    crispText(lbl, 0.4)
+
+    -- Pop-in animation
+    local scale = Instance.new("UIScale", pill)
+    scale.Scale = 0.5
+    TweenService:Create(scale, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
 
     task.defer(function()
         local maxOffset = math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y)
@@ -1475,7 +1541,6 @@ local MAX_MESSAGES = 60
 local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSender, msgJobId, scopeType)
     local memeIdMatch = msg:match("%[MEME:(%d+)%]")
 
-    -- ⚡ PARSE ROBLOX MAIN NAME & USERNAME (Zero-Leak Split)
     local actualUsername, dispName = rawUserName:match("^(.-)::(.*)$")
     if not actualUsername then
         actualUsername = rawUserName
@@ -1499,21 +1564,42 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         end
     end
 
-    local card = Instance.new("TextButton", messageFeed)
-    card.Size = memeIdMatch and UDim2.new(1, 0, 0, 130) or UDim2.new(1, 0, 0, 0)
-    card.AutomaticSize = memeIdMatch and Enum.AutomaticSize.None or Enum.AutomaticSize.Y
-    card.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White base for gradient multiply
+    -- ⚡ V4 SWIPE-TO-DM REWRITE: Instead of Card being TextButton, Root is Frame, swipeWrapper inside
+    local cardRoot = Instance.new("Frame", messageFeed)
+    cardRoot.Size = memeIdMatch and UDim2.new(1, 0, 0, 130) or UDim2.new(1, 0, 0, 0)
+    cardRoot.AutomaticSize = memeIdMatch and Enum.AutomaticSize.None or Enum.AutomaticSize.Y
+    cardRoot.BackgroundTransparency = 1
+    cardRoot.ZIndex = 9
+    cardRoot:SetAttribute("ChatScope", scopeType or "global")
+    cardRoot:SetAttribute("JobId", msgJobId or game.JobId)
+
+    -- SWIPE ACTION ICONS (Hidden behind card)
+    local replyIcon = Instance.new("TextLabel", cardRoot)
+    replyIcon.Size = UDim2.fromOffset(40, 40)
+    replyIcon.Position = UDim2.new(1, -45, 0.5, -20)
+    replyIcon.BackgroundTransparency = 1
+    replyIcon.Text = "↩️"
+    replyIcon.TextSize = 18
+    replyIcon.ZIndex = 8
+    
+    local dmIcon = Instance.new("TextLabel", cardRoot)
+    dmIcon.Size = UDim2.fromOffset(40, 40)
+    dmIcon.Position = UDim2.new(0, 5, 0.5, -20)
+    dmIcon.BackgroundTransparency = 1
+    dmIcon.Text = "🔐"
+    dmIcon.TextSize = 18
+    dmIcon.ZIndex = 8
+
+    -- THE ACTUAL SWIPEABLE CARD
+    local card = Instance.new("Frame", cardRoot)
+    card.Name = "SwipeWrapper"
+    card.Size = UDim2.fromScale(1, 1)
+    card.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     card.BackgroundTransparency = isGhostMode and 0.45 or 0.15
-    card.Text = ""
-    card.AutoButtonColor = false
     card.ClipsDescendants = false
     card.ZIndex = 9
-    
-    card:SetAttribute("ChatScope", scopeType or "global")
-    card:SetAttribute("JobId", msgJobId or game.JobId)
-    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 14) -- Rounder Cards
+    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 14)
 
-    -- ⚡ LUXURY CARD GRADIENT EFFECT (More Pronounced)
     local cardGrad = Instance.new("UIGradient", card)
     cardGrad.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, isMentioned and Colors.MentionBg or Colors.SurfaceHover),
@@ -1523,24 +1609,19 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
 
     if chatMode == "server" then
         if scopeType == "global" or (msgJobId and msgJobId ~= "" and msgJobId ~= game.JobId) then
-            card.Visible = false
-        else
-            card.Visible = true
+            cardRoot.Visible = false
         end
     else
         if scopeType == "server" then
-            card.Visible = false
-        else
-            card.Visible = true
+            cardRoot.Visible = false
         end
     end
 
-    -- ⚡ SLIDE IN ANIMATION FOR NEW MESSAGES
-    local cardScale = Instance.new("UIScale", card)
+    local cardScale = Instance.new("UIScale", cardRoot)
     cardScale.Scale = 0.85
-    card.Position = UDim2.new(0, -20, 0, 0)
+    cardRoot.Position = UDim2.new(0, -20, 0, 0)
     TweenService:Create(cardScale, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1}):Play()
-    TweenService:Create(card, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
+    TweenService:Create(cardRoot, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
 
     local accentStrip = Instance.new("Frame", card)
     accentStrip.Size = UDim2.new(0, 4, 1, -12)
@@ -1550,7 +1631,6 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     accentStrip.ZIndex = 10
     Instance.new("UICorner", accentStrip).CornerRadius = UDim.new(1, 0)
     
-    -- Strip Gradient
     local stripGrad = Instance.new("UIGradient", accentStrip)
     stripGrad.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, isMentioned and Colors.MentionGold or (privateUserTarget and Colors.Purple or Colors.Primary)),
@@ -1649,7 +1729,6 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         crispText(dmLbl, 0.5)
     end
 
-    -- ⚡ BUTTERY 60 FPS CHROMATIC IRIDESCENT BADGE
     if isAdminUser then
         local tagWidth = TextService:GetTextSize(badgeProfile.Title, 11, Enum.Font.GothamBlack, Vector2.new(1000, 20)).X + 4
         
@@ -1719,20 +1798,14 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
 
         local textGrad = Instance.new("UIGradient", badgeLabel)
         textGrad.Color = ColorSequence.new(badgeProfile.Colors)
-
         local glowGrad = Instance.new("UIGradient", badgeGlow)
         glowGrad.Color = ColorSequence.new(badgeProfile.Colors)
-
         local strokeGradGlow = Instance.new("UIGradient", glowStroke)
         strokeGradGlow.Color = ColorSequence.new(badgeProfile.Colors)
 
         table.insert(activeBadgesList, {
-            textGrad = textGrad,
-            glowGrad = glowGrad,
-            strokeGradGlow = strokeGradGlow,
-            shineGrad = shineGrad,
-            badgeGlow = badgeGlow,
-            glowStroke = glowStroke,
+            textGrad = textGrad, glowGrad = glowGrad, strokeGradGlow = strokeGradGlow,
+            shineGrad = shineGrad, badgeGlow = badgeGlow, glowStroke = glowStroke,
             speed = badgeProfile.Speed or 1.15
         })
     end
@@ -1782,7 +1855,6 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         memeImg.ScaleType = Enum.ScaleType.Fit
         memeImg.ZIndex = 12
         Instance.new("UICorner", memeImg).CornerRadius = UDim.new(0, 8)
-        
         local mStroke = Instance.new("UIStroke", memeImg)
         mStroke.Color = Colors.PrimaryDark
         mStroke.Thickness = 1.2
@@ -1793,7 +1865,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         bodyTxt.AutomaticSize = Enum.AutomaticSize.Y
         bodyTxt.BackgroundTransparency = 1
         bodyTxt.TextColor3 = Colors.Text
-        bodyTxt.Font = Enum.Font.GothamSemibold -- Softer Apple UI style
+        bodyTxt.Font = Enum.Font.GothamSemibold
         bodyTxt.TextSize = 11.5
         bodyTxt.TextWrapped = true
         bodyTxt.TextXAlignment = Enum.TextXAlignment.Left
@@ -1804,8 +1876,8 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         crispText(bodyTxt)
     end
 
-    local padFix = Instance.new("UIPadding", card)
-    padFix.PaddingBottom = UDim.new(0, 14) -- Perfect spacing
+    local padFix = Instance.new("UIPadding", cardRoot)
+    padFix.PaddingBottom = UDim.new(0, 14)
 
     if isMentioned and actualUsername ~= lp.Name then
         playSFX("mention")
@@ -1813,45 +1885,83 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         playSFX("meme")
     end
 
-    card.MouseButton1Click:Connect(function()
+    -- ⚡ V4 FEATURE: SWIPE-TO-DM / SWIPE-TO-REPLY ENGINE
+    local dragStart = nil
+    local isDragging = false
+    local hasTriggeredSwipe = false
+
+    card.InputBegan:Connect(function(input)
         if actualUsername == lp.Name or actualUsername == "System" then return end
-        
-        for _, c in ipairs(actionMenu:GetChildren()) do
-            if c:IsA("TextButton") then c:Destroy() end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragStart = input.Position.X
+            isDragging = true
+            hasTriggeredSwipe = false
+            TweenService:Create(cardScale, TweenInfo.new(0.1), {Scale = 0.98}):Play()
         end
+    end)
 
-        createActionBtn("REPLY", Colors.Primary, function()
-            chatInput.Text = "@" .. actualUsername .. " "
-            chatInput:CaptureFocus()
-        end)
-
-        createActionBtn("DM", Colors.Purple, function()
-            privateTarget = actualUsername
-            updateInputBar()
-            playSFX("dm")
-        end)
-
-        createActionBtn("COPY", Colors.Text, function()
-            pcall(function() setClip(memeIdMatch and ("ID: " .. memeIdMatch) or msg) end)
-        end)
-
-        createActionBtn("TP", Colors.MentionGold, function()
-            local targetPlr = Players:FindFirstChild(actualUsername)
-            if targetPlr and targetPlr.Character and targetPlr.Character:FindFirstChild("HumanoidRootPart") and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
-                lp.Character.HumanoidRootPart.CFrame = targetPlr.Character.HumanoidRootPart.CFrame
+    card.InputChanged:Connect(function(input)
+        if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position.X - dragStart
+            -- Clamp drag between -70 (Left) and 70 (Right)
+            local clampedX = math.clamp(delta, -80, 80)
+            card.Position = UDim2.new(0, clampedX, 0, 0)
+            
+            if clampedX > 50 and not hasTriggeredSwipe then
+                hasTriggeredSwipe = true
+                playSFX("swipe")
+                spawnUIParticles(cardRoot, UDim2.new(0, 20, 0.5, 0), Colors.Purple, 6)
+            elseif clampedX < -50 and not hasTriggeredSwipe then
+                hasTriggeredSwipe = true
+                playSFX("swipe")
+                spawnUIParticles(cardRoot, UDim2.new(1, -20, 0.5, 0), Colors.Primary, 6)
             end
-        end)
+        end
+    end)
 
-        createActionBtn("VIEW", Colors.PrimaryDark, function()
-            local targetPlr = Players:FindFirstChild(actualUsername)
-            if targetPlr and targetPlr.Character and targetPlr.Character:FindFirstChild("Humanoid") then
-                Camera.CameraSubject = targetPlr.Character.Humanoid
+    card.InputEnded:Connect(function(input)
+        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and isDragging then
+            isDragging = false
+            TweenService:Create(cardScale, TweenInfo.new(0.3, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
+            
+            local finalDelta = card.Position.X.Offset
+            TweenService:Create(card, TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
+
+            if finalDelta > 50 then
+                -- RIGHT SWIPE = DM
+                privateTarget = actualUsername
+                updateInputBar()
+                playSFX("dm")
+            elseif finalDelta < -50 then
+                -- LEFT SWIPE = REPLY
+                chatInput.Text = "@" .. actualUsername .. " "
+                chatInput:CaptureFocus()
+            elseif math.abs(finalDelta) < 5 then
+                -- NORMAL CLICK = OLD MENU (Fallback)
+                for _, c in ipairs(actionMenu:GetChildren()) do
+                    if c:IsA("TextButton") then c:Destroy() end
+                end
+                createActionBtn("COPY", Colors.Text, function()
+                    pcall(function() setClip(memeIdMatch and ("ID: " .. memeIdMatch) or msg) end)
+                    spawnUIParticles(cardRoot, UDim2.new(0.5, 0, 0.5, 0), Colors.Primary, 10)
+                end)
+                createActionBtn("TP", Colors.MentionGold, function()
+                    local targetPlr = Players:FindFirstChild(actualUsername)
+                    if targetPlr and targetPlr.Character and targetPlr.Character:FindFirstChild("HumanoidRootPart") and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                        lp.Character.HumanoidRootPart.CFrame = targetPlr.Character.HumanoidRootPart.CFrame
+                    end
+                end)
+                createActionBtn("VIEW", Colors.PrimaryDark, function()
+                    local targetPlr = Players:FindFirstChild(actualUsername)
+                    if targetPlr and targetPlr.Character and targetPlr.Character:FindFirstChild("Humanoid") then
+                        Camera.CameraSubject = targetPlr.Character.Humanoid
+                    end
+                end)
+                local cardPos = card.AbsolutePosition - mainFrame.AbsolutePosition
+                actionMenu.Position = UDim2.fromOffset(math.clamp(cardPos.X + 25, 10, 180), math.clamp(cardPos.Y - 24, 30, 280))
+                actionMenu.Visible = true
             end
-        end)
-
-        local cardPos = card.AbsolutePosition - mainFrame.AbsolutePosition
-        actionMenu.Position = UDim2.fromOffset(math.clamp(cardPos.X + 25, 10, 180), math.clamp(cardPos.Y - 24, 30, 280))
-        actionMenu.Visible = true
+        end
     end)
 
     task.defer(function()
@@ -1887,7 +1997,6 @@ inputStroke.Thickness = 1.4
 inputStroke.Color = Colors.PrimaryDark
 inputStroke.Transparency = 0.35
 
--- GLOWING TYPING INDICATOR LINE
 local typingIndicator = Instance.new("Frame", inputContainer)
 typingIndicator.Size = UDim2.new(1, -24, 0, 2)
 typingIndicator.Position = UDim2.new(0, 12, 0, -1)
@@ -1920,7 +2029,7 @@ chatInput.Text = ""
 chatInput.Size = UDim2.new(1, -125, 1, 0)
 chatInput.Position = UDim2.new(0, 16, 0, 0)
 chatInput.BackgroundTransparency = 1
-chatInput.PlaceholderText = "Type message... (!p user to DM)"
+chatInput.PlaceholderText = "Type message... (Swipe card -> to DM)"
 chatInput.PlaceholderColor3 = Colors.SubText
 chatInput.TextColor3 = Colors.Text
 chatInput.Font = Enum.Font.GothamSemibold
@@ -1929,6 +2038,9 @@ chatInput.ClearTextOnFocus = false
 chatInput.TextXAlignment = Enum.TextXAlignment.Left
 chatInput.ZIndex = 13
 crispText(chatInput)
+
+-- ⚡ NEW: TYPING BROADCAST THROTTLE
+local lastTypingBroadcast = 0
 
 local function sanitizeChatInput()
     if chatInput.Text == "TextBox" then
@@ -1939,6 +2051,26 @@ chatInput:GetPropertyChangedSignal("Text"):Connect(function()
     sanitizeChatInput()
     if #chatInput.Text > 0 then
         typingIndicator.BackgroundTransparency = 0.2
+        -- Broadcast Typing Packet securely
+        if tick() - lastTypingBroadcast > 4 then
+            lastTypingBroadcast = tick()
+            task.spawn(function()
+                if req then
+                    pcall(function()
+                        req({
+                            Url = SERVER_URL .. "/send", Method = "POST",
+                            Headers = { ["Content-Type"] = "application/json" },
+                            Body = HttpService:JSONEncode({ 
+                                user = lp.Name .. "::" .. lp.DisplayName, 
+                                msg = "[TYPING]", 
+                                jobId = game.JobId, 
+                                hidden = true 
+                            })
+                        })
+                    end)
+                end
+            end)
+        end
     else
         typingIndicator.BackgroundTransparency = 1
     end
@@ -2332,7 +2464,7 @@ UserInputService.InputBegan:Connect(function(input, gp)
 end)
 
 -- =========================================================
--- ⚡ 60 FPS ULTRA-SMOOTH TAG GLOW & SHINE ENGINE
+-- ⚡ 60 FPS ULTRA-SMOOTH TAG GLOW & TYPING RENDERER
 -- =========================================================
 task.spawn(function()
     local t = 0
@@ -2343,6 +2475,25 @@ task.spawn(function()
     RunService.RenderStepped:Connect(function(dt)
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
         t = t + dt
+
+        -- UPDATE GLOBAL TYPING UI
+        local typingList = {}
+        for user, typtime in pairs(globalTypers) do
+            if tick() - typtime < 4 then
+                table.insert(typingList, "@" .. user)
+            else
+                globalTypers[user] = nil
+            end
+        end
+        if #typingList > 0 then
+            globalTypingBar.Visible = true
+            local tText = table.concat(typingList, ", ")
+            if #typingList > 2 then tText = "Several people" end
+            globalTypingText.Text = tText .. " is typing..."
+            globalTypingText.TextTransparency = 0.2 + (math.sin(t * 6) * 0.2)
+        else
+            globalTypingBar.Visible = false
+        end
 
         -- ⚡ 60 FPS CALIBRATED SILK-SMOOTH IRIDESCENT GRADIENT & SHINE (Fixes Tag Freeze)
         if #activeBadgesList > 0 then
@@ -2563,6 +2714,9 @@ sendMessageFunc = function(overrideText)
         addMessageToFeed(encodedUserTag, text, nil, false, game.JobId, currentScope)
     end
     displayBubble(lp.Name, text)
+    
+    -- Send Particles
+    spawnUIParticles(sendBtn, UDim2.new(0.5, 0, 0.5, 0), Colors.Primary, 8)
 
     local cleanKey = string.lower(finalMsg)
     recentLocalSentMap[cleanKey] = tick()
@@ -2670,8 +2824,12 @@ task.spawn(function()
                                 continue
                             end
 
+                            -- ⚡ HANDLE TYPING BROADCASTS
                             if m.hidden then 
                                 processedServerMessageMap[uniqueMsgKey] = true
+                                if m.msg == "[TYPING]" and rawUsernameOnly ~= lp.Name then
+                                    globalTypers[rawUsernameOnly] = tick()
+                                end
                                 continue 
                             end
 
@@ -2735,6 +2893,8 @@ task.spawn(function()
                             if rawUsernameOnly ~= lp.Name then
                                 displayBubble(rawUsernameOnly, effectiveMsg)
                                 playSFX("default")
+                                -- Remove from typers once they send message
+                                globalTypers[rawUsernameOnly] = nil
 
                                 if not mainFrame.Visible then
                                     unreadCount = unreadCount + 1
