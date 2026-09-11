@@ -205,7 +205,7 @@ local ghostDebounce = false
 local userIdCache = {}
 local searchQuery = ""
 local recentSentCache = {}
-local activeDaddyGradients = {}
+local activeDaddyBadges = {}
 
 local MY_VIP_ID = 9685785248 
 local Admin = { 
@@ -750,7 +750,7 @@ createHeaderBtn("🗑️", -82, function()
             c:Destroy()
         end
     end
-    table.clear(activeDaddyGradients)
+    table.clear(activeDaddyBadges)
 end)
 
 local actionMenu
@@ -936,7 +936,7 @@ local function createActionBtn(text, color, onClick)
 end
 
 -- =========================================================
--- 💬 MESSAGE PIPELINE (CLEAN RAZOR-SHARP [ DADDY ] CHROMA)
+-- 💬 MESSAGE PIPELINE (LUXURY OBSIDIAN PILL DADDY BADGE)
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -1053,7 +1053,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     local hLayout = Instance.new("UIListLayout", headerRow)
     hLayout.FillDirection = Enum.FillDirection.Horizontal
     hLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-    hLayout.Padding = UDim.new(0, 5)
+    hLayout.Padding = UDim.new(0, 6)
     hLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
     local timeLbl = Instance.new("TextLabel", headerRow)
@@ -1080,38 +1080,63 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         dmLbl.ZIndex = 12
     end
 
-    -- ⚡ SKEET / GAMESENSE RED CHROMA LASER TAG (NO RED DHABBA, NO EMOJI)
+    -- ⚡ HIGH-TIER OBSIDIAN GLASS DADDY BADGE (ZERO SMUDGE, ZERO DHABBA)
     if isAdminUser then
-        local daddyTag = Instance.new("TextLabel", headerRow)
-        daddyTag.AutomaticSize = Enum.AutomaticSize.XY
-        daddyTag.BackgroundTransparency = 1
-        daddyTag.Text = "[ DADDY ]"
-        daddyTag.TextColor3 = Color3.fromRGB(255, 255, 255)
-        daddyTag.Font = Enum.Font.GothamBlack
-        daddyTag.TextSize = 11
-        daddyTag.LayoutOrder = 3
-        daddyTag.ZIndex = 13
+        local daddyBadge = Instance.new("Frame", headerRow)
+        daddyBadge.AutomaticSize = Enum.AutomaticSize.XY
+        daddyBadge.Size = UDim2.new(0, 0, 0, 16)
+        daddyBadge.BackgroundColor3 = Color3.fromRGB(24, 8, 14)
+        daddyBadge.BackgroundTransparency = 0.25
+        daddyBadge.LayoutOrder = 3
+        daddyBadge.ZIndex = 13
+        Instance.new("UICorner", daddyBadge).CornerRadius = UDim.new(0, 4)
 
-        -- 1px Ultra-Crisp Dark Outline (Letters strictly separated, zero smudge)
-        local dStroke = Instance.new("UIStroke", daddyTag)
-        dStroke.Thickness = 1
-        dStroke.Color = Color3.fromRGB(15, 0, 5)
-        dStroke.Transparency = 0.2
+        local bPad = Instance.new("UIPadding", daddyBadge)
+        bPad.PaddingLeft = UDim.new(0, 6)
+        bPad.PaddingRight = UDim.new(0, 6)
+        bPad.PaddingTop = UDim.new(0, 1)
+        bPad.PaddingBottom = UDim.new(0, 1)
 
-        -- High-Gloss Crimson Diamond Reflection Gradient
-        local dGrad = Instance.new("UIGradient", daddyTag)
-        dGrad.Rotation = 15
-        dGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(150, 0, 25)),
-            ColorSequenceKeypoint.new(0.20, Color3.fromRGB(255, 30, 65)),
-            ColorSequenceKeypoint.new(0.47, Color3.fromRGB(255, 120, 140)),
+        -- 1px Ultra-Fine Rotating Crimson Laser Stroke
+        local bStroke = Instance.new("UIStroke", daddyBadge)
+        bStroke.Thickness = 1
+        bStroke.Color = Color3.fromRGB(255, 30, 70)
+        bStroke.Transparency = 0.25
+
+        local sGrad = Instance.new("UIGradient", bStroke)
+        sGrad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(160, 0, 30)),
+            ColorSequenceKeypoint.new(0.30, Color3.fromRGB(255, 40, 80)),
             ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.53, Color3.fromRGB(255, 120, 140)),
-            ColorSequenceKeypoint.new(0.80, Color3.fromRGB(255, 30, 65)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(150, 0, 25))
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(255, 40, 80)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(160, 0, 30))
         })
 
-        table.insert(activeDaddyGradients, dGrad)
+        -- Metallic Diamond Sheen Text (Emoji Free)
+        local daddyText = Instance.new("TextLabel", daddyBadge)
+        daddyText.AutomaticSize = Enum.AutomaticSize.XY
+        daddyText.Size = UDim2.new(0, 0, 1, 0)
+        daddyText.BackgroundTransparency = 1
+        daddyText.Text = "DADDY"
+        daddyText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        daddyText.Font = Enum.Font.GothamBlack
+        daddyText.TextSize = 10
+        daddyText.ZIndex = 14
+
+        local tGrad = Instance.new("UIGradient", daddyText)
+        tGrad.Rotation = 15
+        tGrad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 40, 75)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 130, 150)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 130, 150)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 40, 75))
+        })
+
+        table.insert(activeDaddyBadges, {
+            strokeGrad = sGrad,
+            textGrad = tGrad
+        })
     end
 
     local nameLbl = Instance.new("TextLabel", headerRow)
@@ -1634,17 +1659,17 @@ task.spawn(function()
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
         t = t + dt
 
-        -- ⚡ 60 FPS METALLIC DIAMOND-CRIMSON LASER SWEEP (NO SMUDGE)
-        if #activeDaddyGradients > 0 then
-            local sweep = math.sin(t * 2.8) * 0.95
-            local dynamicAngle = 15 + math.sin(t * 1.5) * 8
-            for i = #activeDaddyGradients, 1, -1 do
-                local grad = activeDaddyGradients[i]
-                if grad and grad.Parent then
-                    grad.Offset = Vector2.new(sweep, 0)
-                    grad.Rotation = dynamicAngle
+        -- ⚡ 60 FPS DADDY LASER BORDER & SPECULAR SHEEN ANIMATION
+        if #activeDaddyBadges > 0 then
+            local sweep = math.sin(t * 2.6) * 0.95
+            local rot = (t * 100) % 360
+            for i = #activeDaddyBadges, 1, -1 do
+                local item = activeDaddyBadges[i]
+                if item.textGrad and item.textGrad.Parent then
+                    item.textGrad.Offset = Vector2.new(sweep, 0)
+                    item.strokeGrad.Rotation = rot
                 else
-                    table.remove(activeDaddyGradients, i)
+                    table.remove(activeDaddyBadges, i)
                 end
             end
         end
