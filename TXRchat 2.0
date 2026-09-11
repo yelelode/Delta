@@ -12,9 +12,10 @@ pcall(function()
 end)
 
 -- =========================================================
--- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V11.0) 👑
+-- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V12.0 MEME EDITION) 👑
 -- * ONLINE ROSTER DRAWER + LIVE SEARCH FILTER + COOLDOWN BAR *
 -- * EXACT TXR HUB V18.26 GIMBAL REACTOR REOPEN ORB *
+-- * INTEGRATED ROBLOX MEME & STICKER VAULT ENGINE *
 -- =========================================================
 
 local currentExecutionID = tick()
@@ -103,6 +104,36 @@ local Colors = {
     MacroBg       = Color3.fromRGB(22, 27, 40)
 }
 
+-- =========================================================
+-- 🖼️ VERIFIED ROBLOX MEME / STICKER DATABASE
+-- =========================================================
+local MemeLibrary = {
+    { name = "Doge", id = 135898858 },
+    { name = "Trollface", id = 277259367 },
+    { name = "Pepe Cry", id = 363198030 },
+    { name = "GigaChad", id = 7192664724 },
+    { name = "Pop Cat", id = 6046187513 },
+    { name = "Stare Cat", id = 247294471 },
+    { name = "Surprised Pikachu", id = 2589578641 },
+    { name = "Buff Doge", id = 5334791530 },
+    { name = "Cheems", id = 5304675586 },
+    { name = "Roblox Man Face", id = 864877007 },
+    { name = "Rock Eyebrow", id = 8011210815 },
+    { name = "Spoderman", id = 179836979 },
+    { name = "Pepe Smug", id = 278385202 },
+    { name = "Sponge Mock", id = 839352723 },
+    { name = "Crying Cat", id = 2275465934 },
+    { name = "Cozy Pepe", id = 478684725 },
+    { name = "Thinking", id = 1118671603 },
+    { name = "Sanic", id = 142851493 },
+    { name = "Derp", id = 134442650 },
+    { name = "Pepe Laugh", id = 1475148419 },
+    { name = "Heavy Breathing", id = 171457199 },
+    { name = "Angry Wojak", id = 6088820054 },
+    { name = "Chad Thad", id = 7083049182 },
+    { name = "Skull Skeleton", id = 9188849503 }
+}
+
 local function crispText(element)
     local stroke = Instance.new("UIStroke", element)
     stroke.Color = Color3.new(0, 0, 0)
@@ -136,6 +167,9 @@ local function playSFX(soundType)
             if soundType == "mention" or soundType == "dm" then
                 s.SoundId = "rbxassetid://9114223177"
                 s.Volume = 0.8
+            elseif soundType == "meme" then
+                s.SoundId = "rbxassetid://9069609268"
+                s.Volume = 0.6
             else
                 s.SoundId = "rbxassetid://6518811702"
                 s.Volume = 0.4
@@ -179,13 +213,18 @@ local function displayBubble(userName, msg)
     local speaker = Players:FindFirstChild(userName)
     if not speaker or not speaker.Character then return end
 
+    local cleanMsg = msg
+    if cleanMsg:find("%[MEME:") then
+        cleanMsg = "🖼️ [Sent a Meme]"
+    end
+
     pcall(function()
         if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-            TextChatService:DisplayBubble(speaker.Character, msg)
+            TextChatService:DisplayBubble(speaker.Character, cleanMsg)
         else
             local head = speaker.Character:FindFirstChild("Head")
             if head then
-                ChatService:Chat(head, msg, Enum.ChatColor.White)
+                ChatService:Chat(head, cleanMsg, Enum.ChatColor.White)
             end
         end
     end)
@@ -284,141 +323,140 @@ task.spawn(function()
 end)
 
 -- =========================================================
--- 🛸 EXACT DICTO COPY: TXR HUB V18.26 GIMBAL REACTOR REOPEN ORB
+-- 🛸 REOPEN ORB ENGINE
 -- =========================================================
-local openBtnContainer = Instance.new("Frame", gui)[span_1](start_span)[span_1](end_span)
-openBtnContainer.Size = UDim2.fromOffset(86, 86)[span_2](start_span)[span_2](end_span)
-openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)[span_3](start_span)[span_3](end_span)
-openBtnContainer.Position = UDim2.fromScale(0.08, 0.5)[span_4](start_span)[span_4](end_span)
-openBtnContainer.BackgroundTransparency = 1[span_5](start_span)[span_5](end_span)
-openBtnContainer.Visible = false[span_6](start_span)[span_6](end_span)
-openBtnContainer.Active = true[span_7](start_span)[span_7](end_span)
-openBtnContainer.ZIndex = 100[span_8](start_span)[span_8](end_span)
+local openBtnContainer = Instance.new("Frame", gui)
+openBtnContainer.Size = UDim2.fromOffset(86, 86)
+openBtnContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+openBtnContainer.Position = UDim2.fromScale(0.08, 0.5)
+openBtnContainer.BackgroundTransparency = 1
+openBtnContainer.Visible = false
+openBtnContainer.Active = true
+openBtnContainer.ZIndex = 100
 
-local coreGlow = Instance.new("ImageLabel", openBtnContainer)[span_9](start_span)[span_9](end_span)
-coreGlow.Size = UDim2.fromScale(1.8, 1.8)[span_10](start_span)[span_10](end_span)
-coreGlow.Position = UDim2.fromScale(0.5, 0.5)[span_11](start_span)[span_11](end_span)
-coreGlow.AnchorPoint = Vector2.new(0.5, 0.5)[span_12](start_span)[span_12](end_span)
-coreGlow.BackgroundTransparency = 1[span_13](start_span)[span_13](end_span)
-coreGlow.Image = "rbxassetid://10470601783[span_14](start_span)"[span_14](end_span)
-coreGlow.ImageColor3 = Colors.Primary[span_15](start_span)[span_15](end_span)
-coreGlow.ImageTransparency = 0.6[span_16](start_span)[span_16](end_span)
-coreGlow.ZIndex = 98[span_17](start_span)[span_17](end_span)
-Instance.new("UICorner", coreGlow).CornerRadius = UDim.new(1, 0)[span_18](start_span)[span_18](end_span)
+local coreGlow = Instance.new("ImageLabel", openBtnContainer)
+coreGlow.Size = UDim2.fromScale(1.8, 1.8)
+coreGlow.Position = UDim2.fromScale(0.5, 0.5)
+coreGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+coreGlow.BackgroundTransparency = 1
+coreGlow.Image = "rbxassetid://10470601783"
+coreGlow.ImageColor3 = Colors.Primary
+coreGlow.ImageTransparency = 0.6
+coreGlow.ZIndex = 98
+Instance.new("UICorner", coreGlow).CornerRadius = UDim.new(1, 0)
 
-local eventGlow = Instance.new("ImageLabel", openBtnContainer)[span_19](start_span)[span_19](end_span)
-eventGlow.Size = UDim2.fromScale(1.2, 1.2)[span_20](start_span)[span_20](end_span)
-eventGlow.Position = UDim2.fromScale(0.5, 0.5)[span_21](start_span)[span_21](end_span)
-eventGlow.AnchorPoint = Vector2.new(0.5, 0.5)[span_22](start_span)[span_22](end_span)
-eventGlow.BackgroundTransparency = 1[span_23](start_span)[span_23](end_span)
-eventGlow.Image = "rbxassetid://10470601783[span_24](start_span)"[span_24](end_span)
-eventGlow.ImageColor3 = Colors.Purple[span_25](start_span)[span_25](end_span)
-eventGlow.ImageTransparency = 0.4[span_26](start_span)[span_26](end_span)
-eventGlow.ZIndex = 98[span_27](start_span)[span_27](end_span)
-Instance.new("UICorner", eventGlow).CornerRadius = UDim.new(1, 0)[span_28](start_span)[span_28](end_span)
+local eventGlow = Instance.new("ImageLabel", openBtnContainer)
+eventGlow.Size = UDim2.fromScale(1.2, 1.2)
+eventGlow.Position = UDim2.fromScale(0.5, 0.5)
+eventGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+eventGlow.BackgroundTransparency = 1
+eventGlow.Image = "rbxassetid://10470601783"
+eventGlow.ImageColor3 = Colors.Purple
+eventGlow.ImageTransparency = 0.4
+eventGlow.ZIndex = 98
+Instance.new("UICorner", eventGlow).CornerRadius = UDim.new(1, 0)
 
-local openBtn = Instance.new("TextButton", openBtnContainer)[span_29](start_span)[span_29](end_span)
-openBtn.Size = UDim2.fromScale(0.85, 0.85)[span_30](start_span)[span_30](end_span)
-openBtn.Position = UDim2.fromScale(0.5, 0.5)[span_31](start_span)[span_31](end_span)
-openBtn.AnchorPoint = Vector2.new(0.5, 0.5)[span_32](start_span)[span_32](end_span)
-openBtn.BackgroundColor3 = Colors.Surface[span_33](start_span)[span_33](end_span)
-openBtn.BackgroundTransparency = 0.15[span_34](start_span)[span_34](end_span)
-openBtn.Text = "[span_35](start_span)"[span_35](end_span)
-openBtn.AutoButtonColor = false[span_36](start_span)[span_36](end_span)
-openBtn.ClipsDescendants = false[span_37](start_span)[span_37](end_span)
-openBtn.ZIndex = 101[span_38](start_span)[span_38](end_span)
-Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0)[span_39](start_span)[span_39](end_span)
+local openBtn = Instance.new("TextButton", openBtnContainer)
+openBtn.Size = UDim2.fromScale(0.85, 0.85)
+openBtn.Position = UDim2.fromScale(0.5, 0.5)
+openBtn.AnchorPoint = Vector2.new(0.5, 0.5)
+openBtn.BackgroundColor3 = Colors.Surface
+openBtn.BackgroundTransparency = 0.15
+openBtn.Text = ""
+openBtn.AutoButtonColor = false
+openBtn.ClipsDescendants = false
+openBtn.ZIndex = 101
+Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0)
 
-local gimbalOuter = Instance.new("Frame", openBtnContainer)[span_40](start_span)[span_40](end_span)
-gimbalOuter.Size = UDim2.fromScale(1.05, 1.05)[span_41](start_span)[span_41](end_span)
-gimbalOuter.Position = UDim2.fromScale(0.5, 0.5)[span_42](start_span)[span_42](end_span)
-gimbalOuter.AnchorPoint = Vector2.new(0.5, 0.5)[span_43](start_span)[span_43](end_span)
-gimbalOuter.BackgroundTransparency = 1[span_44](start_span)[span_44](end_span)
-gimbalOuter.ZIndex = 99[span_45](start_span)[span_45](end_span)
-Instance.new("UICorner", gimbalOuter).CornerRadius = UDim.new(1, 0)[span_46](start_span)[span_46](end_span)
+local gimbalOuter = Instance.new("Frame", openBtnContainer)
+gimbalOuter.Size = UDim2.fromScale(1.05, 1.05)
+gimbalOuter.Position = UDim2.fromScale(0.5, 0.5)
+gimbalOuter.AnchorPoint = Vector2.new(0.5, 0.5)
+gimbalOuter.BackgroundTransparency = 1
+gimbalOuter.ZIndex = 99
+Instance.new("UICorner", gimbalOuter).CornerRadius = UDim.new(1, 0)
 
-local goStroke = Instance.new("UIStroke", gimbalOuter)[span_47](start_span)[span_47](end_span)
-goStroke.Thickness = 3[span_48](start_span)[span_48](end_span)
-goStroke.Color = Color3.new(1,1,1)[span_49](start_span)[span_49](end_span)
+local goStroke = Instance.new("UIStroke", gimbalOuter)
+goStroke.Thickness = 3
+goStroke.Color = Color3.new(1,1,1)
 
-local goGrad = Instance.new("UIGradient", goStroke)[span_50](start_span)[span_50](end_span)
-goGrad.Color = ColorSequence.new({[span_51](start_span)[span_51](end_span)
-    ColorSequenceKeypoint.new(0, Colors.Primary),[span_52](start_span)[span_52](end_span)
-    ColorSequenceKeypoint.new(0.25, Colors.Background),[span_53](start_span)[span_53](end_span)
-    ColorSequenceKeypoint.new(0.5, Colors.Purple),[span_54](start_span)[span_54](end_span)
-    ColorSequenceKeypoint.new(0.75, Colors.Background),[span_55](start_span)[span_55](end_span)
-    ColorSequenceKeypoint.new(1, Colors.Primary)[span_56](start_span)[span_56](end_span)
-})[span_57](start_span)[span_57](end_span)
+local goGrad = Instance.new("UIGradient", goStroke)
+goGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Colors.Primary),
+    ColorSequenceKeypoint.new(0.25, Colors.Background),
+    ColorSequenceKeypoint.new(0.5, Colors.Purple),
+    ColorSequenceKeypoint.new(0.75, Colors.Background),
+    ColorSequenceKeypoint.new(1, Colors.Primary)
+})
 
-local openStroke = Instance.new("UIStroke", openBtn)[span_58](start_span)[span_58](end_span)
-openStroke.Thickness = 1.5[span_59](start_span)[span_59](end_span)
-openStroke.Color = Colors.Primary[span_60](start_span)[span_60](end_span)
+local openStroke = Instance.new("UIStroke", openBtn)
+openStroke.Thickness = 1.5
+openStroke.Color = Colors.Primary
 
-local gimbals = {}[span_61](start_span)[span_61](end_span)
-for i = 1, 4 do[span_62](start_span)[span_62](end_span)
-    local g = Instance.new("Frame", openBtn)[span_63](start_span)[span_63](end_span)
-    g.AnchorPoint = Vector2.new(0.5, 0.5)[span_64](start_span)[span_64](end_span)
-    g.Position = UDim2.fromScale(0.5, 0.5)[span_65](start_span)[span_65](end_span)
-    g.BackgroundTransparency = 1[span_66](start_span)[span_66](end_span)
-    g.ZIndex = 102[span_67](start_span)[span_67](end_span)
-    Instance.new("UICorner", g).CornerRadius = UDim.new(1, 0)[span_68](start_span)[span_68](end_span)
+local gimbals = {}
+for i = 1, 4 do
+    local g = Instance.new("Frame", openBtn)
+    g.AnchorPoint = Vector2.new(0.5, 0.5)
+    g.Position = UDim2.fromScale(0.5, 0.5)
+    g.BackgroundTransparency = 1
+    g.ZIndex = 102
+    Instance.new("UICorner", g).CornerRadius = UDim.new(1, 0)
     
-    local gs = Instance.new("UIStroke", g)[span_69](start_span)[span_69](end_span)
-    gs.Color = (i%2==0) and Colors.Primary or Colors.Purple[span_70](start_span)[span_70](end_span)
-    gs.Thickness = 1.2[span_71](start_span)[span_71](end_span)
-    table.insert(gimbals, {frame = g, stroke = gs})[span_72](start_span)[span_72](end_span)
-end[span_73](start_span)[span_73](end_span)
+    local gs = Instance.new("UIStroke", g)
+    gs.Color = (i%2==0) and Colors.Primary or Colors.Purple
+    gs.Thickness = 1.2
+    table.insert(gimbals, {frame = g, stroke = gs})
+end
 
-local diamonds = {}[span_74](start_span)[span_74](end_span)
-for i = 1, 4 do[span_75](start_span)[span_75](end_span)
-    local d = Instance.new("Frame", openBtn)[span_76](start_span)[span_76](end_span)
-    d.Size = UDim2.fromOffset(26, 26)[span_77](start_span)[span_77](end_span)
-    d.Position = UDim2.fromScale(0.5, 0.5)[span_78](start_span)[span_78](end_span)
-    d.AnchorPoint = Vector2.new(0.5, 0.5)[span_79](start_span)[span_79](end_span)
-    d.BackgroundColor3 = Colors.Background[span_80](start_span)[span_80](end_span)
-    d.BackgroundTransparency = 0.5[span_81](start_span)[span_81](end_span)
-    d.ZIndex = 103[span_82](start_span)[span_82](end_span)
+local diamonds = {}
+for i = 1, 4 do
+    local d = Instance.new("Frame", openBtn)
+    d.Size = UDim2.fromOffset(26, 26)
+    d.Position = UDim2.fromScale(0.5, 0.5)
+    d.AnchorPoint = Vector2.new(0.5, 0.5)
+    d.BackgroundColor3 = Colors.Background
+    d.BackgroundTransparency = 0.5
+    d.ZIndex = 103
     
-    local ds = Instance.new("UIStroke", d)[span_83](start_span)[span_83](end_span)
-    ds.Color = (i%2==0) and Colors.Primary or Colors.Purple[span_84](start_span)[span_84](end_span)
-    ds.Thickness = 1.5[span_85](start_span)[span_85](end_span)
-    table.insert(diamonds, {frame = d, stroke = ds})[span_86](start_span)[span_86](end_span)
-end[span_87](start_span)[span_87](end_span)
+    local ds = Instance.new("UIStroke", d)
+    ds.Color = (i%2==0) and Colors.Primary or Colors.Purple
+    ds.Thickness = 1.5
+    table.insert(diamonds, {frame = d, stroke = ds})
+end
 
-local crosshair = Instance.new("ImageLabel", openBtn)[span_88](start_span)[span_88](end_span)
-crosshair.Size = UDim2.fromScale(0.65, 0.65)[span_89](start_span)[span_89](end_span)
-crosshair.Position = UDim2.fromScale(0.5, 0.5)[span_90](start_span)[span_90](end_span)
-crosshair.AnchorPoint = Vector2.new(0.5, 0.5)[span_91](start_span)[span_91](end_span)
-crosshair.BackgroundTransparency = 1[span_92](start_span)[span_92](end_span)
-crosshair.Image = "rbxassetid://13110903323[span_93](start_span)"[span_93](end_span)
-crosshair.ImageColor3 = Colors.Primary[span_94](start_span)[span_94](end_span)
-crosshair.ImageTransparency = 0.2[span_95](start_span)[span_95](end_span)
-crosshair.ZIndex = 104[span_96](start_span)[span_96](end_span)
+local crosshair = Instance.new("ImageLabel", openBtn)
+crosshair.Size = UDim2.fromScale(0.65, 0.65)
+crosshair.Position = UDim2.fromScale(0.5, 0.5)
+crosshair.AnchorPoint = Vector2.new(0.5, 0.5)
+crosshair.BackgroundTransparency = 1
+crosshair.Image = "rbxassetid://13110903323"
+crosshair.ImageColor3 = Colors.Primary
+crosshair.ImageTransparency = 0.2
+crosshair.ZIndex = 104
 
-local centerCore = Instance.new("Frame", openBtn)[span_97](start_span)[span_97](end_span)
-centerCore.Size = UDim2.fromOffset(10, 10)[span_98](start_span)[span_98](end_span)
-centerCore.Position = UDim2.fromScale(0.5, 0.5)[span_99](start_span)[span_99](end_span)
-centerCore.AnchorPoint = Vector2.new(0.5, 0.5)[span_100](start_span)[span_100](end_span)
-centerCore.BackgroundColor3 = Colors.Primary[span_101](start_span)[span_101](end_span)
-centerCore.BackgroundTransparency = 0.1[span_102](start_span)[span_102](end_span)
-centerCore.ZIndex = 106[span_103](start_span)[span_103](end_span)
-Instance.new("UICorner", centerCore).CornerRadius = UDim.new(1, 0)[span_104](start_span)[span_104](end_span)
+local centerCore = Instance.new("Frame", openBtn)
+centerCore.Size = UDim2.fromOffset(10, 10)
+centerCore.Position = UDim2.fromScale(0.5, 0.5)
+centerCore.AnchorPoint = Vector2.new(0.5, 0.5)
+centerCore.BackgroundColor3 = Colors.Primary
+centerCore.BackgroundTransparency = 0.1
+centerCore.ZIndex = 106
+Instance.new("UICorner", centerCore).CornerRadius = UDim.new(1, 0)
 
-local coreStroke = Instance.new("UIStroke", centerCore)[span_105](start_span)[span_105](end_span)
-coreStroke.Thickness = 2[span_106](start_span)[span_106](end_span)
-coreStroke.Color = Color3.new(1,1,1)[span_107](start_span)[span_107](end_span)
+local coreStroke = Instance.new("UIStroke", centerCore)
+coreStroke.Thickness = 2
+coreStroke.Color = Color3.new(1,1,1)
 
-local orbs = {}[span_108](start_span)[span_108](end_span)
-for i = 1, 12 do[span_109](start_span)[span_109](end_span)
-    local orb = Instance.new("Frame", openBtn)[span_110](start_span)[span_110](end_span)
-    orb.Size = UDim2.fromOffset(5, 5)[span_111](start_span)[span_111](end_span)
-    orb.BackgroundColor3 = Colors.Primary[span_112](start_span)[span_112](end_span)
-    orb.ZIndex = 105[span_113](start_span)[span_113](end_span)
-    Instance.new("UICorner", orb).CornerRadius = UDim.new(1, 0)[span_114](start_span)[span_114](end_span)
-    table.insert(orbs, orb)[span_115](start_span)[span_115](end_span)
-end[span_116](start_span)[span_116](end_span)
+local orbs = {}
+for i = 1, 12 do
+    local orb = Instance.new("Frame", openBtn)
+    orb.Size = UDim2.fromOffset(5, 5)
+    orb.BackgroundColor3 = Colors.Primary
+    orb.ZIndex = 105
+    Instance.new("UICorner", orb).CornerRadius = UDim.new(1, 0)
+    table.insert(orbs, orb)
+end
 
--- Unread Chat Badge on Orb
 local unreadBadge = Instance.new("Frame", openBtnContainer)
 unreadBadge.Size = UDim2.fromOffset(22, 22)
 unreadBadge.Position = UDim2.new(1, -6, 0, -6)
@@ -439,54 +477,53 @@ unreadTxt.TextSize = 10
 unreadTxt.Text = "0"
 unreadTxt.ZIndex = 116
 
-local orbHovered = false[span_117](start_span)[span_117](end_span)
-local baseOrbScale = UDim2.fromScale(0.85, 0.85)[span_118](start_span)[span_118](end_span)
-local baseCenterPos = UDim2.fromScale(0.5, 0.5)[span_119](start_span)[span_119](end_span)
-local isDraggingOrb = false[span_120](start_span)[span_120](end_span)
-local dragThresholdMet = false[span_121](start_span)[span_121](end_span)
+local orbHovered = false
+local baseOrbScale = UDim2.fromScale(0.85, 0.85)
+local baseCenterPos = UDim2.fromScale(0.5, 0.5)
+local isDraggingOrb = false
+local dragThresholdMet = false
 
-openBtn.MouseEnter:Connect(function() orbHovered = true end)[span_122](start_span)[span_122](end_span)
-openBtn.MouseLeave:Connect(function() orbHovered = false end)[span_123](start_span)[span_123](end_span)
+openBtn.MouseEnter:Connect(function() orbHovered = true end)
+openBtn.MouseLeave:Connect(function() orbHovered = false end)
 
-local function spawnSonar(pulseColor)[span_124](start_span)[span_124](end_span)
-    if not openBtnContainer.Visible then return end[span_125](start_span)[span_125](end_span)
+local function spawnSonar(pulseColor)
+    if not openBtnContainer.Visible then return end
+    local ring = Instance.new("Frame", openBtn)
+    ring.Size = UDim2.fromOffset(12, 12)
+    ring.Position = UDim2.fromScale(0.5, 0.5)
+    ring.AnchorPoint = Vector2.new(0.5, 0.5)
+    ring.BackgroundTransparency = 1
+    ring.ZIndex = 101
+    Instance.new("UICorner", ring).CornerRadius = UDim.new(1, 0)
     
-    local ring = Instance.new("Frame", openBtn)[span_126](start_span)[span_126](end_span)
-    ring.Size = UDim2.fromOffset(12, 12)[span_127](start_span)[span_127](end_span)
-    ring.Position = UDim2.fromScale(0.5, 0.5)[span_128](start_span)[span_128](end_span)
-    ring.AnchorPoint = Vector2.new(0.5, 0.5)[span_129](start_span)[span_129](end_span)
-    ring.BackgroundTransparency = 1[span_130](start_span)[span_130](end_span)
-    ring.ZIndex = 101[span_131](start_span)[span_131](end_span)
-    Instance.new("UICorner", ring).CornerRadius = UDim.new(1, 0)[span_132](start_span)[span_132](end_span)
+    local rs = Instance.new("UIStroke", ring)
+    rs.Color = pulseColor
+    rs.Thickness = 2
+    rs.Transparency = 0
     
-    local rs = Instance.new("UIStroke", ring)[span_133](start_span)[span_133](end_span)
-    rs.Color = pulseColor[span_134](start_span)[span_134](end_span)
-    rs.Thickness = 2[span_135](start_span)[span_135](end_span)
-    rs.Transparency = 0[span_136](start_span)[span_136](end_span)
+    local pulseSpeed = 1.0
+    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(105, 105)}):Play()
+    TweenService:Create(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
     
-    local pulseSpeed = 1.0[span_137](start_span)[span_137](end_span)
-    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(105, 105)}):Play()[span_138](start_span)[span_138](end_span)
-    TweenService:Create(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()[span_139](start_span)[span_139](end_span)
-    
-    task.delay(pulseSpeed, function()[span_140](start_span)[span_140](end_span)
-        pcall(function() ring:Destroy() end)[span_141](start_span)[span_141](end_span)
-    end)[span_142](start_span)[span_142](end_span)
-end[span_143](start_span)[span_143](end_span)
+    task.delay(pulseSpeed, function()
+        pcall(function() ring:Destroy() end)
+    end)
+end
 
-local openBtnScale = Instance.new("UIScale", openBtn)[span_144](start_span)[span_144](end_span)
-openBtnScale.Scale = 1[span_145](start_span)[span_145](end_span)
+local openBtnScale = Instance.new("UIScale", openBtn)
+openBtnScale.Scale = 1
 
-local openPulseTweenInfo = TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)[span_146](start_span)[span_146](end_span)
-local openPulseScale = TweenService:Create(openBtnScale, openPulseTweenInfo, {Scale = 1.05})[span_147](start_span)[span_147](end_span)
+local openPulseTweenInfo = TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+local openPulseScale = TweenService:Create(openBtnScale, openPulseTweenInfo, {Scale = 1.05})
 
-openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function()[span_148](start_span)[span_148](end_span)
-    if openBtnContainer.Visible then[span_149](start_span)[span_149](end_span)
-        openPulseScale:Play()[span_150](start_span)[span_150](end_span)
-    else[span_151](start_span)[span_151](end_span)
-        openPulseScale:Cancel()[span_152](start_span)[span_152](end_span)
-        openBtnScale.Scale = 1[span_153](start_span)[span_153](end_span)
-    end[span_154](start_span)[span_154](end_span)
-end)[span_155](start_span)[span_155](end_span)
+openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function()
+    if openBtnContainer.Visible then
+        openPulseScale:Play()
+    else
+        openPulseScale:Cancel()
+        openBtnScale.Scale = 1
+    end
+end)
 
 -- =========================================================
 -- 👥 ONLINE ACTIVE ROSTER (SLIDE-IN DRAWER)
@@ -522,6 +559,8 @@ rosterScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 rosterScroll.ZIndex = 41
 local rsLay = Instance.new("UIListLayout", rosterScroll)
 rsLay.Padding = UDim.new(0, 4)
+
+local updateInputBar
 
 local function refreshRosterUI()
     for _, c in ipairs(rosterScroll:GetChildren()) do
@@ -569,7 +608,6 @@ headerTitle.TextXAlignment = Enum.TextXAlignment.Left
 headerTitle.ZIndex = 11
 crispText(headerTitle)
 
--- Interactive Roster Button Badge
 local liveBadge = Instance.new("TextButton", header)
 liveBadge.Size = UDim2.fromOffset(72, 20)
 liveBadge.Position = UDim2.new(0, 120, 0.5, -10)
@@ -609,7 +647,6 @@ liveBadge.MouseButton1Click:Connect(function()
     end
 end)
 
--- Equalizer
 local eqBox = Instance.new("Frame", header)
 eqBox.Size = UDim2.fromOffset(24, 14)
 eqBox.Position = UDim2.new(0, 198, 0.5, -7)
@@ -708,27 +745,29 @@ createHeaderBtn("🗑️", -82, function()
 end)
 
 local actionMenu
+local memeFrame
 
 createHeaderBtn("–", -54, function()
     if actionMenu then actionMenu.Visible = false end
     if rosterFrame then rosterFrame.Visible = false end
+    if memeFrame then memeFrame.Visible = false end
     
-    local tInfo1 = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In)[span_156](start_span)[span_156](end_span)
-    local tInfo2 = TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In)[span_157](start_span)[span_157](end_span)
+    local tInfo1 = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+    local tInfo2 = TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
     
-    TweenService:Create(mainScale, tInfo1, {Scale = 0}):Play()[span_158](start_span)[span_158](end_span)
-    TweenService:Create(auraScale, tInfo1, {Scale = 0}):Play()[span_159](start_span)[span_159](end_span)
-    TweenService:Create(mainFrame, tInfo2, {BackgroundTransparency = 1}):Play()[span_160](start_span)[span_160](end_span)
-    TweenService:Create(aura, tInfo2, {ImageTransparency = 1}):Play()[span_161](start_span)[span_161](end_span)
+    TweenService:Create(mainScale, tInfo1, {Scale = 0}):Play()
+    TweenService:Create(auraScale, tInfo1, {Scale = 0}):Play()
+    TweenService:Create(mainFrame, tInfo2, {BackgroundTransparency = 1}):Play()
+    TweenService:Create(aura, tInfo2, {ImageTransparency = 1}):Play()
     
-    task.wait(0.35)[span_162](start_span)[span_162](end_span)
-    mainFrame.Visible = false[span_163](start_span)[span_163](end_span)
-    aura.Visible = false[span_164](start_span)[span_164](end_span)
-    openBtnContainer.Visible = true[span_165](start_span)[span_165](end_span)
-    openBtnScale.Scale = 0[span_166](start_span)[span_166](end_span)
+    task.wait(0.35)
+    mainFrame.Visible = false
+    aura.Visible = false
+    openBtnContainer.Visible = true
+    openBtnScale.Scale = 0
     
-    local tInfo3 = TweenInfo.new(0.6, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)[span_167](start_span)[span_167](end_span)
-    TweenService:Create(openBtnScale, tInfo3, {Scale = 1}):Play()[span_168](start_span)[span_168](end_span)
+    local tInfo3 = TweenInfo.new(0.6, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
+    TweenService:Create(openBtnScale, tInfo3, {Scale = 1}):Play()
 end)
 
 createHeaderBtn("×", -26, function()
@@ -776,7 +815,6 @@ serverBtn.ZIndex = 9
 Instance.new("UICorner", serverBtn).CornerRadius = UDim.new(0, 6)
 applySpringHover(serverBtn)
 
--- 🔍 Quick Search Box
 local searchBox = Instance.new("TextBox", channelFrame)
 searchBox.Size = UDim2.new(0.24, 0, 1, 0)
 searchBox.Position = UDim2.fromScale(0.76, 0)
@@ -841,7 +879,6 @@ searchBox:GetPropertyChangedSignal("Text"):Connect(function()
     end
 end)
 
-local updateInputBar
 local sendMessageFunc
 
 -- Action Drawer
@@ -916,7 +953,7 @@ for _, slang in ipairs(quickSlangs) do
 end
 
 -- =========================================================
--- 💬 MESSAGE PIPELINE
+-- 💬 MESSAGE PIPELINE (TEXT & MEMES/STICKERS SUPPORT)
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -957,6 +994,9 @@ end
 local MAX_MESSAGES = 60
 local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSender)
     if blockedUsers[userName:lower()] then return end
+
+    -- Check if message contains a meme asset tag
+    local memeIdMatch = msg:match("%[MEME:(%d+)%]")
 
     local isMentioned = string.find(string.lower(msg), string.lower(lp.Name)) or string.find(string.lower(msg), "@" .. string.lower(lp.Name))
 
@@ -1059,22 +1099,48 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         prefix = "<font color='#FF4545'><b>[👑 DADDY]</b></font> "
     end
 
+    local headerLine = ""
     if privateUserTarget then
         cardStroke.Color = Colors.Purple
         cardStroke.Transparency = 0.4
         local dmTag = isPrivateSender and ("<font color='#A032FF'>[🔐 To @" .. privateUserTarget .. "]</font> ") or ("<font color='#A032FF'>[🔐 From @" .. privateUserTarget .. "]</font> ")
-        txt.Text = timeTag .. dmTag .. prefix .. string.format("<font color='%s'><b>%s:</b></font> %s", (currentThemeIdx == 2 and "#FF2D55" or "#00FFC8"), userName, msg)
+        headerLine = timeTag .. dmTag .. prefix .. string.format("<font color='%s'><b>%s:</b></font> ", (currentThemeIdx == 2 and "#FF2D55" or "#00FFC8"), userName)
     else
-        txt.Text = timeTag .. prefix .. string.format("<font color='%s'><b>%s:</b></font> %s", (currentThemeIdx == 2 and "#FF2D55" or "#00FFC8"), userName, msg)
+        headerLine = timeTag .. prefix .. string.format("<font color='%s'><b>%s:</b></font> ", (currentThemeIdx == 2 and "#FF2D55" or "#00FFC8"), userName)
+    end
+
+    if memeIdMatch then
+        txt.Text = headerLine .. "<font color='#FFD700'><i>[Sent a Meme Sticker]</i></font>"
+        
+        -- Meme Image Display
+        local memeImg = Instance.new("ImageLabel", card)
+        memeImg.Size = UDim2.fromOffset(100, 100)
+        memeImg.Position = UDim2.new(0, 42, 0, 24)
+        memeImg.BackgroundColor3 = Colors.Background
+        memeImg.BackgroundTransparency = 0.2
+        memeImg.Image = "rbxassetid://" .. memeIdMatch
+        memeImg.ScaleType = Enum.ScaleType.Fit
+        memeImg.ZIndex = 12
+        Instance.new("UICorner", memeImg).CornerRadius = UDim.new(0, 8)
+        
+        local mStroke = Instance.new("UIStroke", memeImg)
+        mStroke.Color = Colors.PrimaryDark
+        mStroke.Thickness = 1.2
+        
+        local pad = Instance.new("UIPadding", card)
+        pad.PaddingBottom = UDim.new(0, 108)
+    else
+        txt.Text = headerLine .. msg
+        local padFix = Instance.new("UIPadding", card)
+        padFix.PaddingBottom = UDim.new(0, 6)
     end
 
     crispText(txt)
 
-    local padFix = Instance.new("UIPadding", card)
-    padFix.PaddingBottom = UDim.new(0, 6)
-
     if isMentioned and userName ~= lp.Name then
         playSFX("mention")
+    elseif memeIdMatch and userName ~= lp.Name then
+        playSFX("meme")
     end
 
     card.MouseButton1Click:Connect(function()
@@ -1091,7 +1157,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         end)
 
         createActionBtn("📋 COPY", Colors.Primary, function()
-            pcall(function() setClip(msg) end)
+            pcall(function() setClip(memeIdMatch and ("rbxassetid://" .. memeIdMatch) or msg) end)
         end)
 
         createActionBtn("🚀 TP", Colors.MentionGold, function()
@@ -1139,7 +1205,6 @@ inputStroke.Thickness = 1.2
 inputStroke.Color = Colors.PrimaryDark
 inputStroke.Transparency = 0.5
 
--- ⏳ Dynamic Laser Cooldown Bar
 local cdBar = Instance.new("Frame", inputContainer)
 cdBar.Size = UDim2.new(1, 0, 0, 2)
 cdBar.Position = UDim2.new(0, 0, 1, -2)
@@ -1160,10 +1225,10 @@ dmBadge.ZIndex = 14
 Instance.new("UICorner", dmBadge).CornerRadius = UDim.new(0, 5)
 
 local chatInput = Instance.new("TextBox", inputContainer)
-chatInput.Size = UDim2.new(1, -75, 1, 0)
+chatInput.Size = UDim2.new(1, -104, 1, 0)
 chatInput.Position = UDim2.new(0, 12, 0, 0)
 chatInput.BackgroundTransparency = 1
-chatInput.PlaceholderText = "Type message... (!p username to DM)"
+chatInput.PlaceholderText = "Type message... (!p user to DM)"
 chatInput.PlaceholderColor3 = Colors.SubText
 chatInput.TextColor3 = Colors.Text
 chatInput.Font = Enum.Font.GothamMedium
@@ -1186,11 +1251,11 @@ updateInputBar = function()
         dmBadge.Size = UDim2.new(0, w, 1, -10)
         dmBadge.Visible = true
         chatInput.Position = UDim2.new(0, w + 10, 0, 0)
-        chatInput.Size = UDim2.new(1, -(w + 80), 1, 0)
+        chatInput.Size = UDim2.new(1, -(w + 110), 1, 0)
     else
         dmBadge.Visible = false
         chatInput.Position = UDim2.new(0, 12, 0, 0)
-        chatInput.Size = UDim2.new(1, -75, 1, 0)
+        chatInput.Size = UDim2.new(1, -104, 1, 0)
     end
 end
 
@@ -1199,12 +1264,22 @@ dmBadge.MouseButton1Click:Connect(function()
     updateInputBar()
 end)
 
+-- 🖼️ MEME & EMOJI LAUNCH BUTTONS
+local memeBtn = Instance.new("TextButton", inputContainer)
+memeBtn.Size = UDim2.fromOffset(26, 26)
+memeBtn.Position = UDim2.new(1, -94, 0.5, -13)
+memeBtn.BackgroundTransparency = 1
+memeBtn.Text = "🖼️"
+memeBtn.TextSize = 15
+memeBtn.ZIndex = 14
+applySpringHover(memeBtn)
+
 local emojiBtn = Instance.new("TextButton", inputContainer)
 emojiBtn.Size = UDim2.fromOffset(26, 26)
 emojiBtn.Position = UDim2.new(1, -64, 0.5, -13)
 emojiBtn.BackgroundTransparency = 1
 emojiBtn.Text = "😀"
-emojiBtn.TextSize = 17
+emojiBtn.TextSize = 16
 emojiBtn.ZIndex = 14
 applySpringHover(emojiBtn)
 
@@ -1221,7 +1296,9 @@ sendBtn.ZIndex = 14
 Instance.new("UICorner", sendBtn).CornerRadius = UDim.new(0, 6)
 applySpringHover(sendBtn)
 
--- Emoji Frame
+-- =========================================================
+-- 😀 EMOJI MODAL DRAWER
+-- =========================================================
 local emojiFrame = Instance.new("Frame", mainFrame)
 emojiFrame.Size = UDim2.new(0, 240, 0, 160)
 emojiFrame.Position = UDim2.new(0.5, -120, 0.5, -80)
@@ -1263,172 +1340,235 @@ end
 
 emojiBtn.MouseButton1Click:Connect(function()
     emojiFrame.Visible = not emojiFrame.Visible
+    if memeFrame then memeFrame.Visible = false end
+end)
+
+-- =========================================================
+-- 🖼️ MEME / STICKER MODAL DRAWER
+-- =========================================================
+memeFrame = Instance.new("Frame", mainFrame)
+memeFrame.Size = UDim2.new(0, 280, 0, 180)
+memeFrame.Position = UDim2.new(0.5, -140, 0.5, -90)
+memeFrame.BackgroundColor3 = Colors.Surface
+memeFrame.Visible = false
+memeFrame.ZIndex = 30
+Instance.new("UICorner", memeFrame).CornerRadius = UDim.new(0, 8)
+local mfStroke = Instance.new("UIStroke", memeFrame)
+mfStroke.Color = Colors.Purple
+mfStroke.Thickness = 1.4
+
+local mfTitle = Instance.new("TextLabel", memeFrame)
+mfTitle.Size = UDim2.new(1, 0, 0, 24)
+mfTitle.BackgroundTransparency = 1
+mfTitle.Text = "🎭 ROBLOX MEMES & STICKERS"
+mfTitle.TextColor3 = Colors.Purple
+mfTitle.Font = Enum.Font.GothamBlack
+mfTitle.TextSize = 10
+mfTitle.ZIndex = 31
+
+local memeScroll = Instance.new("ScrollingFrame", memeFrame)
+memeScroll.Size = UDim2.new(1, -8, 1, -28)
+memeScroll.Position = UDim2.fromOffset(4, 24)
+memeScroll.BackgroundTransparency = 1
+memeScroll.ScrollBarThickness = 2
+memeScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+memeScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+memeScroll.ZIndex = 31
+
+local memeGrid = Instance.new("UIGridLayout", memeScroll)
+memeGrid.CellSize = UDim2.new(0, 60, 0, 60)
+memeGrid.CellPadding = UDim2.new(0, 6, 0, 6)
+
+for _, mData in ipairs(MemeLibrary) do
+    local mItem = Instance.new("ImageButton", memeScroll)
+    mItem.BackgroundColor3 = Colors.Background
+    mItem.Image = "rbxassetid://" .. tostring(mData.id)
+    mItem.ScaleType = Enum.ScaleType.Fit
+    mItem.ZIndex = 32
+    Instance.new("UICorner", mItem).CornerRadius = UDim.new(0, 6)
+    
+    local is = Instance.new("UIStroke", mItem)
+    is.Color = Colors.PrimaryDark
+    is.Thickness = 1
+    
+    applySpringHover(mItem)
+    mItem.MouseButton1Click:Connect(function()
+        memeFrame.Visible = false
+        if sendMessageFunc then
+            sendMessageFunc(string.format("[MEME:%d]", mData.id))
+        end
+    end)
+end
+
+memeBtn.MouseButton1Click:Connect(function()
+    memeFrame.Visible = not memeFrame.Visible
+    if emojiFrame then emojiFrame.Visible = false end
 end)
 
 -- =========================================================
 -- 🚀 BULLETPROOF SAFE CLAMP DRAG ENGINE & ORB RESTORE
 -- =========================================================
-local function makeDraggable(frame, handle, ghostAura, isOrb)[span_169](start_span)[span_169](end_span)
-    local dragging = false[span_170](start_span)[span_170](end_span)
-    local dragStart = nil[span_171](start_span)[span_171](end_span)
-    local startPos = nil[span_172](start_span)[span_172](end_span)
-    local targetPos = frame.Position[span_173](start_span)[span_173](end_span)
-    local velocity = Vector2.new(0, 0)[span_174](start_span)[span_174](end_span)
-    local lastInputPos = Vector2.new(0, 0)[span_175](start_span)[span_175](end_span)
-    local dragLoop = nil[span_176](start_span)[span_176](end_span)
+local function makeDraggable(frame, handle, ghostAura, isOrb)
+    local dragging = false
+    local dragStart = nil
+    local startPos = nil
+    local targetPos = frame.Position
+    local velocity = Vector2.new(0, 0)
+    local lastInputPos = Vector2.new(0, 0)
+    local dragLoop = nil
 
-    local function getClampedTarget(newXScale, newXOffset, newYScale, newYOffset)[span_177](start_span)[span_177](end_span)
-        local parentSize = gui.AbsoluteSize[span_178](start_span)[span_178](end_span)
-        local frameSize = frame.AbsoluteSize[span_179](start_span)[span_179](end_span)
-        local anchor = frame.AnchorPoint[span_180](start_span)[span_180](end_span)
+    local function getClampedTarget(newXScale, newXOffset, newYScale, newYOffset)
+        local parentSize = gui.AbsoluteSize
+        local frameSize = frame.AbsoluteSize
+        local anchor = frame.AnchorPoint
 
         if parentSize.X <= 0 or parentSize.Y <= 0 then
             return UDim2.new(newXScale, newXOffset, newYScale, newYOffset)
         end
 
-        local absX = (newXScale * parentSize.X) + newXOffset[span_181](start_span)[span_181](end_span)
-        local absY = (newYScale * parentSize.Y) + newYOffset[span_182](start_span)[span_182](end_span)
+        local absX = (newXScale * parentSize.X) + newXOffset
+        local absY = (newYScale * parentSize.Y) + newYOffset
 
-        local minX, maxX, minY, maxY[span_183](start_span)[span_183](end_span)
+        local minX, maxX, minY, maxY
 
-        if isOrb then[span_184](start_span)[span_184](end_span)
-            minX = frameSize.X * anchor.X[span_185](start_span)[span_185](end_span)
-            maxX = parentSize.X - (frameSize.X * (1 - anchor.X))[span_186](start_span)[span_186](end_span)
-            minY = frameSize.Y * anchor.Y[span_187](start_span)[span_187](end_span)
-            maxY = parentSize.Y - (frameSize.Y * (1 - anchor.Y))[span_188](start_span)[span_188](end_span)
-        else[span_189](start_span)[span_189](end_span)
-            local visibleWidth = frameSize.X * 0.20[span_190](start_span)[span_190](end_span)
-            local visibleHeight = frameSize.Y * 0.20[span_191](start_span)[span_191](end_span)
+        if isOrb then
+            minX = frameSize.X * anchor.X
+            maxX = parentSize.X - (frameSize.X * (1 - anchor.X))
+            minY = frameSize.Y * anchor.Y
+            maxY = parentSize.Y - (frameSize.Y * (1 - anchor.Y))
+        else
+            local visibleWidth = frameSize.X * 0.20
+            local visibleHeight = frameSize.Y * 0.20
 
-            minX = (frameSize.X * anchor.X) - (frameSize.X - visibleWidth)[span_192](start_span)[span_192](end_span)
-            maxX = parentSize.X - (frameSize.X * (1 - anchor.X)) + (frameSize.X - visibleWidth)[span_193](start_span)[span_193](end_span)
-            minY = (frameSize.Y * anchor.Y) - (frameSize.Y - visibleHeight)[span_194](start_span)[span_194](end_span)
-            maxY = parentSize.Y - (frameSize.Y * (1 - anchor.Y)) + (frameSize.Y - visibleHeight)[span_195](start_span)[span_195](end_span)
-        end[span_196](start_span)[span_196](end_span)
+            minX = (frameSize.X * anchor.X) - (frameSize.X - visibleWidth)
+            maxX = parentSize.X - (frameSize.X * (1 - anchor.X)) + (frameSize.X - visibleWidth)
+            minY = (frameSize.Y * anchor.Y) - (frameSize.Y - visibleHeight)
+            maxY = parentSize.Y - (frameSize.Y * (1 - anchor.Y)) + (frameSize.Y - visibleHeight)
+        end
 
         if minX > maxX then minX, maxX = maxX, minX end
         if minY > maxY then minY, maxY = maxY, minY end
 
-        local clampedX = math.clamp(absX, minX, maxX)[span_197](start_span)[span_197](end_span)
-        local clampedY = math.clamp(absY, minY, maxY)[span_198](start_span)[span_198](end_span)
+        local clampedX = math.clamp(absX, minX, maxX)
+        local clampedY = math.clamp(absY, minY, maxY)
 
-        return UDim2.new(newXScale, clampedX - (newXScale * parentSize.X), newYScale, clampedY - (newYScale * parentSize.Y))[span_199](start_span)[span_199](end_span)
-    end[span_200](start_span)[span_200](end_span)
+        return UDim2.new(newXScale, clampedX - (newXScale * parentSize.X), newYScale, clampedY - (newYScale * parentSize.Y))
+    end
 
-    handle.InputBegan:Connect(function(input)[span_201](start_span)[span_201](end_span)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then[span_202](start_span)[span_202](end_span)
-            dragging = true[span_203](start_span)[span_203](end_span)
-            dragStart = input.Position[span_204](start_span)[span_204](end_span)
-            startPos = frame.Position[span_205](start_span)[span_205](end_span)
-            targetPos = startPos[span_206](start_span)[span_206](end_span)
-            lastInputPos = Vector2.new(input.Position.X, input.Position.Y)[span_207](start_span)[span_207](end_span)
-            velocity = Vector2.new(0,0)[span_208](start_span)[span_208](end_span)
+    handle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            targetPos = startPos
+            lastInputPos = Vector2.new(input.Position.X, input.Position.Y)
+            velocity = Vector2.new(0,0)
             
-            if isOrb then[span_209](start_span)[span_209](end_span)
-                isDraggingOrb = true[span_210](start_span)[span_210](end_span)
-                dragThresholdMet = false[span_211](start_span)[span_211](end_span)
-            end[span_212](start_span)[span_212](end_span)
+            if isOrb then
+                isDraggingOrb = true
+                dragThresholdMet = false
+            end
             
-            if dragLoop then dragLoop:Disconnect() end[span_213](start_span)[span_213](end_span)
+            if dragLoop then dragLoop:Disconnect() end
             
-            dragLoop = RunService.RenderStepped:Connect(function(dt)[span_214](start_span)[span_214](end_span)
-                if _G.TXR_ChatInstanceID ~= currentExecutionID then[span_215](start_span)[span_215](end_span)
-                    dragLoop:Disconnect()[span_216](start_span)[span_216](end_span)
-                    return[span_217](start_span)[span_217](end_span)
-                end[span_218](start_span)[span_218](end_span)
+            dragLoop = RunService.RenderStepped:Connect(function(dt)
+                if _G.TXR_ChatInstanceID ~= currentExecutionID then
+                    dragLoop:Disconnect()
+                    return
+                end
                 
-                if dragging then[span_219](start_span)[span_219](end_span)
-                    frame.Position = frame.Position:Lerp(targetPos, math.clamp(dt * 25, 0, 1))[span_220](start_span)[span_220](end_span)
-                else[span_221](start_span)[span_221](end_span)
-                    if velocity.Magnitude > 0.5 then[span_222](start_span)[span_222](end_span)
-                        velocity = velocity * 0.90[span_223](start_span)[span_223](end_span)
-                        targetPos = getClampedTarget(targetPos.X.Scale, targetPos.X.Offset + velocity.X, targetPos.Y.Scale, targetPos.Y.Offset + velocity.Y)[span_224](start_span)[span_224](end_span)
-                        frame.Position = frame.Position:Lerp(targetPos, math.clamp(dt * 15, 0, 1))[span_225](start_span)[span_225](end_span)
-                    else[span_226](start_span)[span_226](end_span)
-                        dragLoop:Disconnect()[span_227](start_span)[span_227](end_span)
-                        dragLoop = nil[span_228](start_span)[span_228](end_span)
-                    end[span_229](start_span)[span_229](end_span)
-                end[span_230](start_span)[span_230](end_span)
+                if dragging then
+                    frame.Position = frame.Position:Lerp(targetPos, math.clamp(dt * 25, 0, 1))
+                else
+                    if velocity.Magnitude > 0.5 then
+                        velocity = velocity * 0.90
+                        targetPos = getClampedTarget(targetPos.X.Scale, targetPos.X.Offset + velocity.X, targetPos.Y.Scale, targetPos.Y.Offset + velocity.Y)
+                        frame.Position = frame.Position:Lerp(targetPos, math.clamp(dt * 15, 0, 1))
+                    else
+                        dragLoop:Disconnect()
+                        dragLoop = nil
+                    end
+                end
                 
-                if ghostAura then[span_231](start_span)[span_231](end_span)
-                    ghostAura.Position = frame.Position[span_232](start_span)[span_232](end_span)
-                end[span_233](start_span)[span_233](end_span)
-            end)[span_234](start_span)[span_234](end_span)
-        end[span_235](start_span)[span_235](end_span)
-    end)[span_236](start_span)[span_236](end_span)
+                if ghostAura then
+                    ghostAura.Position = frame.Position
+                end
+            end)
+        end
+    end)
 
-    handle.InputEnded:Connect(function(input)[span_237](start_span)[span_237](end_span)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then[span_238](start_span)[span_238](end_span)
-            dragging = false[span_239](start_span)[span_239](end_span)
-            if isOrb then[span_240](start_span)[span_240](end_span)
-                isDraggingOrb = false[span_241](start_span)[span_241](end_span)
-                orbHovered = false[span_242](start_span)[span_242](end_span)
-            end[span_243](start_span)[span_243](end_span)
-        end[span_244](start_span)[span_244](end_span)
-    end)[span_245](start_span)[span_245](end_span)
+    handle.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+            if isOrb then
+                isDraggingOrb = false
+                orbHovered = false
+            end
+        end
+    end)
 
-    UserInputService.InputChanged:Connect(function(input)[span_246](start_span)[span_246](end_span)
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then[span_247](start_span)[span_247](end_span)
-            local delta = input.Position - dragStart[span_248](start_span)[span_248](end_span)
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
             if isOrb and delta.Magnitude > 8 then 
-                dragThresholdMet = true[span_249](start_span)[span_249](end_span)
-            end[span_250](start_span)[span_250](end_span)
+                dragThresholdMet = true
+            end
             
-            targetPos = getClampedTarget(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)[span_251](start_span)[span_251](end_span)
-            local currentMousePos = Vector2.new(input.Position.X, input.Position.Y)[span_252](start_span)[span_252](end_span)
-            velocity = currentMousePos - lastInputPos[span_253](start_span)[span_253](end_span)
-            lastInputPos = currentMousePos[span_254](start_span)[span_254](end_span)
-        end[span_255](start_span)[span_255](end_span)
-    end)[span_256](start_span)[span_256](end_span)
-end[span_257](start_span)[span_257](end_span)
+            targetPos = getClampedTarget(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            local currentMousePos = Vector2.new(input.Position.X, input.Position.Y)
+            velocity = currentMousePos - lastInputPos
+            lastInputPos = currentMousePos
+        end
+    end)
+end
 
-makeDraggable(mainFrame, header, aura, false)[span_258](start_span)[span_258](end_span)
-makeDraggable(openBtnContainer, openBtn, nil, true)[span_259](start_span)[span_259](end_span)
+makeDraggable(mainFrame, header, aura, false)
+makeDraggable(openBtnContainer, openBtn, nil, true)
 
-openBtn.MouseButton1Down:Connect(function()[span_260](start_span)[span_260](end_span)
-    local tInfo = TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)[span_261](start_span)[span_261](end_span)
-    TweenService:Create(openBtnScale, tInfo, {Scale = 0.85}):Play()[span_262](start_span)[span_262](end_span)
-end)[span_263](start_span)[span_263](end_span)
+openBtn.MouseButton1Down:Connect(function()
+    local tInfo = TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+    TweenService:Create(openBtnScale, tInfo, {Scale = 0.85}):Play()
+end)
 
-openBtn.MouseButton1Up:Connect(function()[span_264](start_span)[span_264](end_span)
-    local tInfo = TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2)[span_265](start_span)[span_265](end_span)
-    TweenService:Create(openBtnScale, tInfo, {Scale = 1.05}):Play()[span_266](start_span)[span_266](end_span)
-end)[span_267](start_span)[span_267](end_span)
+openBtn.MouseButton1Up:Connect(function()
+    local tInfo = TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2)
+    TweenService:Create(openBtnScale, tInfo, {Scale = 1.05}):Play()
+end)
 
 -- Reopen Handler
-openBtn.MouseButton1Click:Connect(function()[span_268](start_span)[span_268](end_span)
+openBtn.MouseButton1Click:Connect(function()
     if dragThresholdMet then 
         dragThresholdMet = false 
         return 
-    end[span_269](start_span)[span_269](end_span)
+    end
 
     ghostDebounce = true
     task.delay(0.5, function() ghostDebounce = false end)
     
-    local tInfo1 = TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In)[span_270](start_span)[span_270](end_span)
-    TweenService:Create(openBtnScale, tInfo1, {Scale = 0}):Play()[span_271](start_span)[span_271](end_span)
+    local tInfo1 = TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+    TweenService:Create(openBtnScale, tInfo1, {Scale = 0}):Play()
     
-    task.wait(0.25)[span_272](start_span)[span_272](end_span)
+    task.wait(0.25)
     
-    openBtnContainer.Visible = false[span_273](start_span)[span_273](end_span)
-    mainFrame.Visible = true[span_274](start_span)[span_274](end_span)
-    aura.Visible = true[span_275](start_span)[span_275](end_span)
-    mainScale.Scale = 0.8[span_276](start_span)[span_276](end_span)
-    auraScale.Scale = 0.8[span_277](start_span)[span_277](end_span)
+    openBtnContainer.Visible = false
+    mainFrame.Visible = true
+    aura.Visible = true
+    mainScale.Scale = 0.8
+    auraScale.Scale = 0.8
     
     unreadCount = 0
     unreadBadge.Visible = false
     
-    local tInfo2 = TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out)[span_278](start_span)[span_278](end_span)
-    local tInfo3 = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)[span_279](start_span)[span_279](end_span)
+    local tInfo2 = TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    local tInfo3 = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
     
-    TweenService:Create(mainScale, tInfo2, {Scale = 1}):Play()[span_280](start_span)[span_280](end_span)
-    TweenService:Create(auraScale, tInfo2, {Scale = 1}):Play()[span_281](start_span)[span_281](end_span)
-    TweenService:Create(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.82 or 0.1}):Play()[span_282](start_span)[span_282](end_span)
-    TweenService:Create(aura, tInfo3, {ImageTransparency = isGhostMode and 0.92 or 0.55}):Play()[span_283](start_span)[span_283](end_span)
-end)[span_284](start_span)[span_284](end_span)
+    TweenService:Create(mainScale, tInfo2, {Scale = 1}):Play()
+    TweenService:Create(auraScale, tInfo2, {Scale = 1}):Play()
+    TweenService:Create(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.82 or 0.1}):Play()
+    TweenService:Create(aura, tInfo3, {ImageTransparency = isGhostMode and 0.92 or 0.55}):Play()
+end)
 
--- Keyboard Shortcuts (PC + Mobile Keyboard Support)
+-- Keyboard Shortcuts
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
     if input.KeyCode == Enum.KeyCode.RightShift then
@@ -1450,14 +1590,14 @@ end)
 -- ⚡ REACTOR RENDERING ANIMATION LOOP
 -- =========================================================
 task.spawn(function()
-    local t = 0[span_285](start_span)[span_285](end_span)
-    local sonarTimer = 0[span_286](start_span)[span_286](end_span)
-    local currentSpeedMod = 1[span_287](start_span)[span_287](end_span)
-    local currentRadiusMod = 1[span_288](start_span)[span_288](end_span)
+    local t = 0
+    local sonarTimer = 0
+    local currentSpeedMod = 1
+    local currentRadiusMod = 1
     
     RunService.RenderStepped:Connect(function(dt)
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
-        t = t + dt[span_289](start_span)[span_289](end_span)
+        t = t + dt
 
         if mainFrame.Visible then
             strokeGrad.Rotation = (t * 40) % 360
@@ -1473,120 +1613,120 @@ task.spawn(function()
             end
         end
 
-        if openBtnContainer.Visible then[span_290](start_span)[span_290](end_span)
-            local targetSpeed = 1[span_291](start_span)[span_291](end_span)
-            if orbHovered then targetSpeed = targetSpeed * 1.5 end[span_292](start_span)[span_292](end_span)
+        if openBtnContainer.Visible then
+            local targetSpeed = 1
+            if orbHovered then targetSpeed = targetSpeed * 1.5 end
             
-            currentSpeedMod = currentSpeedMod + (targetSpeed - currentSpeedMod) * dt * 5[span_293](start_span)[span_293](end_span)
-            local targetRadius = orbHovered and 0.6 or 1[span_294](start_span)[span_294](end_span)
-            currentRadiusMod = currentRadiusMod + (targetRadius - currentRadiusMod) * dt * 8[span_295](start_span)[span_295](end_span)
-            local activeT = t * 3 * currentSpeedMod[span_296](start_span)[span_296](end_span)
+            currentSpeedMod = currentSpeedMod + (targetSpeed - currentSpeedMod) * dt * 5
+            local targetRadius = orbHovered and 0.6 or 1
+            currentRadiusMod = currentRadiusMod + (targetRadius - currentRadiusMod) * dt * 8
+            local activeT = t * 3 * currentSpeedMod
             
-            local baseColor1 = Colors.Primary[span_297](start_span)[span_297](end_span)
-            local baseColor2 = Colors.Purple[span_298](start_span)[span_298](end_span)
-            local lerpAlpha = (math.sin(activeT * 0.8) + 1) / 2[span_299](start_span)[span_299](end_span)
+            local baseColor1 = Colors.Primary
+            local baseColor2 = Colors.Purple
+            local lerpAlpha = (math.sin(activeT * 0.8) + 1) / 2
             
-            coreGlow.ImageColor3 = baseColor1:Lerp(baseColor2, lerpAlpha)[span_300](start_span)[span_300](end_span)
-            coreGlow.ImageTransparency = 0.4 + (math.sin(activeT) * 0.25)[span_301](start_span)[span_301](end_span)
-            eventGlow.ImageColor3 = baseColor2:Lerp(Color3.new(1,1,1), lerpAlpha)[span_302](start_span)[span_302](end_span)
+            coreGlow.ImageColor3 = baseColor1:Lerp(baseColor2, lerpAlpha)
+            coreGlow.ImageTransparency = 0.4 + (math.sin(activeT) * 0.25)
+            eventGlow.ImageColor3 = baseColor2:Lerp(Color3.new(1,1,1), lerpAlpha)
             
-            openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)[span_303](start_span)[span_303](end_span)
-            goGrad.Rotation = (activeT * 50) % 360[span_304](start_span)[span_304](end_span)
-            goStroke.Transparency = orbHovered and 0.1 or 0.5[span_305](start_span)[span_305](end_span)
+            openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
+            goGrad.Rotation = (activeT * 50) % 360
+            goStroke.Transparency = orbHovered and 0.1 or 0.5
             
-            local gPulse = 40 + (math.sin(activeT * 2) * 3)[span_306](start_span)[span_306](end_span)
-            gimbals[1].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 0.8)), gPulse)[span_307](start_span)[span_307](end_span)
-            gimbals[1].frame.Rotation = (activeT * 20) % 360[span_308](start_span)[span_308](end_span)
-            gimbals[1].stroke.Color = baseColor1[span_309](start_span)[span_309](end_span)
+            local gPulse = 40 + (math.sin(activeT * 2) * 3)
+            gimbals[1].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 0.8)), gPulse)
+            gimbals[1].frame.Rotation = (activeT * 20) % 360
+            gimbals[1].stroke.Color = baseColor1
             
-            gimbals[2].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 0.9)))[span_310](start_span)[span_310](end_span)
-            gimbals[2].frame.Rotation = -(activeT * 25) % 360[span_311](start_span)[span_311](end_span)
-            gimbals[2].stroke.Color = baseColor2[span_312](start_span)[span_312](end_span)
+            gimbals[2].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 0.9)))
+            gimbals[2].frame.Rotation = -(activeT * 25) % 360
+            gimbals[2].stroke.Color = baseColor2
             
-            gimbals[3].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 1.1)), gPulse)[span_313](start_span)[span_313](end_span)
-            gimbals[3].frame.Rotation = 45 + (activeT * 15) % 360[span_314](start_span)[span_314](end_span)
-            gimbals[3].stroke.Color = baseColor1:Lerp(Color3.new(1,1,1), 0.5)[span_315](start_span)[span_315](end_span)
+            gimbals[3].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 1.1)), gPulse)
+            gimbals[3].frame.Rotation = 45 + (activeT * 15) % 360
+            gimbals[3].stroke.Color = baseColor1:Lerp(Color3.new(1,1,1), 0.5)
             
-            gimbals[4].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 1.2)))[span_316](start_span)[span_316](end_span)
-            gimbals[4].frame.Rotation = -45 - (activeT * 15) % 360[span_317](start_span)[span_317](end_span)
-            gimbals[4].stroke.Color = baseColor2:Lerp(Color3.new(1,1,1), 0.5)[span_318](start_span)[span_318](end_span)
+            gimbals[4].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 1.2)))
+            gimbals[4].frame.Rotation = -45 - (activeT * 15) % 360
+            gimbals[4].stroke.Color = baseColor2:Lerp(Color3.new(1,1,1), 0.5)
             
-            for i, d in ipairs(diamonds) do[span_319](start_span)[span_319](end_span)
-                local breath = math.sin(activeT * 2 + (i * math.pi/2)) * 4[span_320](start_span)[span_320](end_span)
-                d.frame.Size = UDim2.fromOffset(24 + breath, 24 - breath)[span_321](start_span)[span_321](end_span)
-                d.frame.Rotation = (activeT * 40) * (i%2==0 and 1 or -1) + (i * 22.5)[span_322](start_span)[span_322](end_span)
-                d.stroke.Color = (i%2==0) and baseColor1 or baseColor2[span_323](start_span)[span_323](end_span)
-            end[span_324](start_span)[span_324](end_span)
+            for i, d in ipairs(diamonds) do
+                local breath = math.sin(activeT * 2 + (i * math.pi/2)) * 4
+                d.frame.Size = UDim2.fromOffset(24 + breath, 24 - breath)
+                d.frame.Rotation = (activeT * 40) * (i%2==0 and 1 or -1) + (i * 22.5)
+                d.stroke.Color = (i%2==0) and baseColor1 or baseColor2
+            end
             
-            crosshair.Rotation = -(activeT * 60) % 360[span_325](start_span)[span_325](end_span)
-            crosshair.ImageColor3 = baseColor1[span_326](start_span)[span_326](end_span)
+            crosshair.Rotation = -(activeT * 60) % 360
+            crosshair.ImageColor3 = baseColor1
             
-            centerCore.BackgroundColor3 = baseColor1:Lerp(Color3.new(1,1,1), lerpAlpha * 0.5)[span_327](start_span)[span_327](end_span)
-            coreStroke.Color = baseColor2[span_328](start_span)[span_328](end_span)
+            centerCore.BackgroundColor3 = baseColor1:Lerp(Color3.new(1,1,1), lerpAlpha * 0.5)
+            coreStroke.Color = baseColor2
 
-            local rBase = 32 * currentRadiusMod[span_329](start_span)[span_329](end_span)
-            for i = 1, 12 do[span_330](start_span)[span_330](end_span)
-                local offset = (i - 1) * (math.pi * 2 / 4)[span_331](start_span)[span_331](end_span)
-                local orb = orbs[i][span_332](start_span)[span_332](end_span)
-                if i <= 4 then[span_333](start_span)[span_333](end_span)
-                    local a = activeT * 1.5 + offset[span_334](start_span)[span_334](end_span)
-                    local depth = math.sin(a)[span_335](start_span)[span_335](end_span)
-                    orb.Position = UDim2.new(0.5, math.cos(a) * rBase, 0.5, depth * (rBase * 0.2))[span_336](start_span)[span_336](end_span)
-                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))[span_337](start_span)[span_337](end_span)
-                    orb.ZIndex = depth > 0 and 106 or 102[span_338](start_span)[span_338](end_span)
-                    orb.BackgroundColor3 = baseColor1[span_339](start_span)[span_339](end_span)
-                elseif i <= 8 then[span_340](start_span)[span_340](end_span)
-                    local a = -activeT * 1.8 + offset[span_341](start_span)[span_341](end_span)
-                    local depth = math.cos(a)[span_342](start_span)[span_342](end_span)
-                    orb.Position = UDim2.new(0.5, math.cos(a) * (rBase * 0.2), 0.5, math.sin(a) * rBase)[span_343](start_span)[span_343](end_span)
-                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))[span_344](start_span)[span_344](end_span)
-                    orb.ZIndex = depth > 0 and 106 or 102[span_345](start_span)[span_345](end_span)
-                    orb.BackgroundColor3 = baseColor2[span_346](start_span)[span_346](end_span)
-                else[span_347](start_span)[span_347](end_span)
-                    local a = activeT * 2.5 + offset[span_348](start_span)[span_348](end_span)
-                    local depth = math.sin(a + math.pi/4)[span_349](start_span)[span_349](end_span)
-                    orb.Position = UDim2.new(0.5, math.sin(a) * rBase, 0.5, math.sin(a * 2) * (rBase * 0.5))[span_350](start_span)[span_350](end_span)
-                    orb.Size = UDim2.fromOffset(4 + (depth * 2), 4 + (depth * 2))[span_351](start_span)[span_351](end_span)
-                    orb.ZIndex = 107[span_352](start_span)[span_352](end_span)
-                    orb.BackgroundColor3 = Color3.new(1,1,1)[span_353](start_span)[span_353](end_span)
-                end[span_354](start_span)[span_354](end_span)
-            end[span_355](start_span)[span_355](end_span)
+            local rBase = 32 * currentRadiusMod
+            for i = 1, 12 do
+                local offset = (i - 1) * (math.pi * 2 / 4)
+                local orb = orbs[i]
+                if i <= 4 then
+                    local a = activeT * 1.5 + offset
+                    local depth = math.sin(a)
+                    orb.Position = UDim2.new(0.5, math.cos(a) * rBase, 0.5, depth * (rBase * 0.2))
+                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
+                    orb.ZIndex = depth > 0 and 106 or 102
+                    orb.BackgroundColor3 = baseColor1
+                elseif i <= 8 then
+                    local a = -activeT * 1.8 + offset
+                    local depth = math.cos(a)
+                    orb.Position = UDim2.new(0.5, math.cos(a) * (rBase * 0.2), 0.5, math.sin(a) * rBase)
+                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
+                    orb.ZIndex = depth > 0 and 106 or 102
+                    orb.BackgroundColor3 = baseColor2
+                else
+                    local a = activeT * 2.5 + offset
+                    local depth = math.sin(a + math.pi/4)
+                    orb.Position = UDim2.new(0.5, math.sin(a) * rBase, 0.5, math.sin(a * 2) * (rBase * 0.5))
+                    orb.Size = UDim2.fromOffset(4 + (depth * 2), 4 + (depth * 2))
+                    orb.ZIndex = 107
+                    orb.BackgroundColor3 = Color3.new(1,1,1)
+                end
+            end
 
-            local mouseLoc = UserInputService:GetMouseLocation()[span_356](start_span)[span_356](end_span)
-            local btnAbsCenter = openBtnContainer.AbsolutePosition + (openBtnContainer.AbsoluteSize / 2)[span_357](start_span)[span_357](end_span)
-            local mPos = Vector2.new(mouseLoc.X, mouseLoc.Y)[span_358](start_span)[span_358](end_span)
-            local mDist = (mPos - btnAbsCenter).Magnitude[span_359](start_span)[span_359](end_span)
-            local magneticRadius = 150[span_360](start_span)[span_360](end_span)
+            local mouseLoc = UserInputService:GetMouseLocation()
+            local btnAbsCenter = openBtnContainer.AbsolutePosition + (openBtnContainer.AbsoluteSize / 2)
+            local mPos = Vector2.new(mouseLoc.X, mouseLoc.Y)
+            local mDist = (mPos - btnAbsCenter).Magnitude
+            local magneticRadius = 150
 
-            if orbHovered and mDist < magneticRadius and not isDraggingOrb then[span_361](start_span)[span_361](end_span)
-                local pullStr = 1 - (mDist / magneticRadius)[span_362](start_span)[span_362](end_span)
-                local offsetX = (mPos.X - btnAbsCenter.X) * 0.25 * pullStr[span_363](start_span)[span_363](end_span)
-                local offsetY = (mPos.Y - btnAbsCenter.Y) * 0.25 * pullStr[span_364](start_span)[span_364](end_span)
-                local stretchX = 0.85 + (math.abs(offsetX) / 200)[span_365](start_span)[span_365](end_span)
-                local stretchY = 0.85 + (math.abs(offsetY) / 200)[span_366](start_span)[span_366](end_span)
+            if orbHovered and mDist < magneticRadius and not isDraggingOrb then
+                local pullStr = 1 - (mDist / magneticRadius)
+                local offsetX = (mPos.X - btnAbsCenter.X) * 0.25 * pullStr
+                local offsetY = (mPos.Y - btnAbsCenter.Y) * 0.25 * pullStr
+                local stretchX = 0.85 + (math.abs(offsetX) / 200)
+                local stretchY = 0.85 + (math.abs(offsetY) / 200)
 
-                openBtn.Size = openBtn.Size:Lerp(UDim2.fromScale(stretchX, stretchY), dt * 12)[span_367](start_span)[span_367](end_span)
-                openBtn.Position = openBtn.Position:Lerp(UDim2.new(0.5, offsetX, 0.5, offsetY), dt * 10)[span_368](start_span)[span_368](end_span)
-                eventGlow.Position = eventGlow.Position:Lerp(UDim2.new(0.5, offsetX * 0.4, 0.5, offsetY * 0.4), dt * 10)[span_369](start_span)[span_369](end_span)
-                crosshair.Position = crosshair.Position:Lerp(UDim2.new(0.5, offsetX * 0.7, 0.5, offsetY * 0.7), dt * 12)[span_370](start_span)[span_370](end_span)
-                centerCore.Position = centerCore.Position:Lerp(UDim2.new(0.5, offsetX * 1.2, 0.5, offsetY * 1.2), dt * 15)[span_371](start_span)[span_371](end_span)
+                openBtn.Size = openBtn.Size:Lerp(UDim2.fromScale(stretchX, stretchY), dt * 12)
+                openBtn.Position = openBtn.Position:Lerp(UDim2.new(0.5, offsetX, 0.5, offsetY), dt * 10)
+                eventGlow.Position = eventGlow.Position:Lerp(UDim2.new(0.5, offsetX * 0.4, 0.5, offsetY * 0.4), dt * 10)
+                crosshair.Position = crosshair.Position:Lerp(UDim2.new(0.5, offsetX * 0.7, 0.5, offsetY * 0.7), dt * 12)
+                centerCore.Position = centerCore.Position:Lerp(UDim2.new(0.5, offsetX * 1.2, 0.5, offsetY * 1.2), dt * 15)
                 
-                eventGlow.ImageTransparency = 0.1 + (math.sin(activeT * 10) * 0.05)[span_372](start_span)[span_372](end_span)
-            else[span_373](start_span)[span_373](end_span)
-                openBtn.Size = openBtn.Size:Lerp(baseOrbScale, dt * 12)[span_374](start_span)[span_374](end_span)
-                openBtn.Position = openBtn.Position:Lerp(baseCenterPos, dt * 12)[span_375](start_span)[span_375](end_span)
-                eventGlow.Position = eventGlow.Position:Lerp(baseCenterPos, dt * 12)[span_376](start_span)[span_376](end_span)
-                crosshair.Position = crosshair.Position:Lerp(baseCenterPos, dt * 12)[span_377](start_span)[span_377](end_span)
-                centerCore.Position = centerCore.Position:Lerp(baseCenterPos, dt * 12)[span_378](start_span)[span_378](end_span)
-                eventGlow.ImageTransparency = 0.3 + (math.cos(activeT * 2) * 0.3)[span_379](start_span)[span_379](end_span)
-            end[span_380](start_span)[span_380](end_span)
+                eventGlow.ImageTransparency = 0.1 + (math.sin(activeT * 10) * 0.05)
+            else
+                openBtn.Size = openBtn.Size:Lerp(baseOrbScale, dt * 12)
+                openBtn.Position = openBtn.Position:Lerp(baseCenterPos, dt * 12)
+                eventGlow.Position = eventGlow.Position:Lerp(baseCenterPos, dt * 12)
+                crosshair.Position = crosshair.Position:Lerp(baseCenterPos, dt * 12)
+                centerCore.Position = centerCore.Position:Lerp(baseCenterPos, dt * 12)
+                eventGlow.ImageTransparency = 0.3 + (math.cos(activeT * 2) * 0.3)
+            end
 
-            sonarTimer = sonarTimer + dt[span_381](start_span)[span_381](end_span)
-            if sonarTimer >= 1.0 then[span_382](start_span)[span_382](end_span)
-                sonarTimer = 0[span_383](start_span)[span_383](end_span)
-                spawnSonar(baseColor1)[span_384](start_span)[span_384](end_span)
-            end[span_385](start_span)[span_385](end_span)
-        end[span_386](start_span)[span_386](end_span)
+            sonarTimer = sonarTimer + dt
+            if sonarTimer >= 1.0 then
+                sonarTimer = 0
+                spawnSonar(baseColor1)
+            end
+        end
     end)
 end)
 
@@ -1756,5 +1896,5 @@ task.spawn(function()
             })
         end)
     end
-    addMessageToFeed("System", "TXR Cyber-Titan V11.0 Online! Tap Active badge to view Online Roster.")
+    addMessageToFeed("System", "TXR Cyber-Titan V12.0 Online! Tap 🖼️ to send memes.")
 end)
