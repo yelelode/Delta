@@ -205,7 +205,7 @@ local ghostDebounce = false
 local userIdCache = {}
 local searchQuery = ""
 local recentSentCache = {}
-local activeDaddyTags = {}
+local activeDaddyGradients = {}
 
 local MY_VIP_ID = 9685785248 
 local Admin = { 
@@ -750,7 +750,7 @@ createHeaderBtn("🗑️", -82, function()
             c:Destroy()
         end
     end
-    table.clear(activeDaddyTags)
+    table.clear(activeDaddyGradients)
 end)
 
 local actionMenu
@@ -838,11 +838,13 @@ searchBox.ClearTextOnFocus = false
 searchBox.ZIndex = 9
 Instance.new("UICorner", searchBox).CornerRadius = UDim.new(0, 6)
 
-searchBox:GetPropertyChangedSignal("Text"):Connect(function()
+local function sanitizeSearchBox()
     if searchBox.Text == "TextBox" then
         searchBox.Text = ""
     end
-end)
+end
+searchBox:GetPropertyChangedSignal("Text"):Connect(sanitizeSearchBox)
+task.defer(sanitizeSearchBox)
 
 globalBtn.MouseButton1Click:Connect(function()
     chatMode = "global"
@@ -934,7 +936,7 @@ local function createActionBtn(text, color, onClick)
 end
 
 -- =========================================================
--- 💬 MESSAGE PIPELINE (DUAL-LAYER NEON LASER [ DADDY ] TAG)
+-- 💬 MESSAGE PIPELINE (LUXURY METALLIC CHROMA [ DADDY ] TAG)
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -1078,68 +1080,35 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         dmLbl.ZIndex = 12
     end
 
-    -- ⚡ DUAL-LAYER KINETIC NEON GLOW [ DADDY ] ENGINE
+    -- ⚡ SKEET / GAMESENSE RED CHROMA LASER TAG (CLEAN & SHARP)
     if isAdminUser then
-        local tagContainer = Instance.new("Frame", headerRow)
-        tagContainer.AutomaticSize = Enum.AutomaticSize.XY
-        tagContainer.BackgroundTransparency = 1
-        tagContainer.LayoutOrder = 3
-        tagContainer.ZIndex = 12
-
-        -- Background Breathing Neon Aura Text (Creates the actual volumetric glow)
-        local glowTag = Instance.new("TextLabel", tagContainer)
-        glowTag.AutomaticSize = Enum.AutomaticSize.XY
-        glowTag.BackgroundTransparency = 1
-        glowTag.Text = "[ DADDY ]"
-        glowTag.TextColor3 = Color3.fromRGB(255, 0, 50)
-        glowTag.Font = Enum.Font.GothamBlack
-        glowTag.TextSize = 11.5
-        glowTag.ZIndex = 12
-
-        local glowStroke = Instance.new("UIStroke", glowTag)
-        glowStroke.Thickness = 3
-        glowStroke.Color = Color3.fromRGB(255, 0, 40)
-        glowStroke.Transparency = 0.45
-
-        -- Foreground Crisp Metallic Text with Specular Laser Sweep
-        local daddyTag = Instance.new("TextLabel", tagContainer)
+        local daddyTag = Instance.new("TextLabel", headerRow)
         daddyTag.AutomaticSize = Enum.AutomaticSize.XY
         daddyTag.BackgroundTransparency = 1
         daddyTag.Text = "[ DADDY ]"
         daddyTag.TextColor3 = Color3.fromRGB(255, 255, 255)
         daddyTag.Font = Enum.Font.GothamBlack
         daddyTag.TextSize = 11.5
-        daddyTag.ZIndex = 14
+        daddyTag.LayoutOrder = 3
+        daddyTag.ZIndex = 13
 
         local dStroke = Instance.new("UIStroke", daddyTag)
         dStroke.Thickness = 1.1
-        dStroke.Color = Color3.fromRGB(180, 0, 30)
+        dStroke.Color = Color3.fromRGB(0, 0, 0)
+        dStroke.Transparency = 0.25
 
         local dGrad = Instance.new("UIGradient", daddyTag)
         dGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(160, 0, 30)),
-            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 20, 60)),
-            ColorSequenceKeypoint.new(0.48, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.52, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(255, 20, 60)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 0, 30))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(180, 0, 30)),
+            ColorSequenceKeypoint.new(0.20, Color3.fromRGB(255, 20, 60)),
+            ColorSequenceKeypoint.new(0.46, Color3.fromRGB(255, 90, 120)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.54, Color3.fromRGB(255, 90, 120)),
+            ColorSequenceKeypoint.new(0.80, Color3.fromRGB(255, 20, 60)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(180, 0, 30))
         })
 
-        local sGrad = Instance.new("UIGradient", dStroke)
-        sGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 50)),
-            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 200, 210)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 50))
-        })
-
-        table.insert(activeDaddyTags, {
-            tag = daddyTag,
-            glowTag = glowTag,
-            glowStroke = glowStroke,
-            textGrad = dGrad,
-            strokeGrad = sGrad,
-            stroke = dStroke
-        })
+        table.insert(activeDaddyGradients, dGrad)
     end
 
     local nameLbl = Instance.new("TextLabel", headerRow)
@@ -1292,14 +1261,16 @@ chatInput.ClearTextOnFocus = false
 chatInput.TextXAlignment = Enum.TextXAlignment.Left
 chatInput.ZIndex = 13
 
-local function wipeDefaultText()
+local function sanitizeChatInput()
     if chatInput.Text == "TextBox" then
         chatInput.Text = ""
     end
 end
-chatInput:GetPropertyChangedSignal("Text"):Connect(wipeDefaultText)
+chatInput:GetPropertyChangedSignal("Text"):Connect(sanitizeChatInput)
+task.defer(sanitizeChatInput)
+
 chatInput.Focused:Connect(function()
-    wipeDefaultText()
+    sanitizeChatInput()
     TweenService:Create(inputStroke, TweenInfo.new(0.25), {Color = Colors.Primary, Transparency = 0.1, Thickness = 1.8}):Play()
 end)
 chatInput.FocusLost:Connect(function()
@@ -1648,7 +1619,7 @@ UserInputService.InputBegan:Connect(function(input, gp)
 end)
 
 -- =========================================================
--- ⚡ REACTOR RENDERING & DADDY CHROMA ENGINE LOOP
+-- ⚡ REACTOR RENDERING & DADDY CHROMA LASER SWEEP
 -- =========================================================
 task.spawn(function()
     local t = 0
@@ -1660,32 +1631,15 @@ task.spawn(function()
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
         t = t + dt
 
-        -- ⚡ 60 FPS ULTRA INTENSE RED RGB NEON GLOW ANIMATION
-        if #activeDaddyTags > 0 then
-            local laserSweep = ((t * 2.2) % 2.4) - 1.2
-            local strokeRot = (t * 140) % 360
-            local pulse = (math.sin(t * 6) + 1) / 2
-            local redHuePulse = (math.sin(t * 3.5) + 1) / 2
-
-            for i = #activeDaddyTags, 1, -1 do
-                local item = activeDaddyTags[i]
-                if item.tag and item.tag.Parent then
-                    item.textGrad.Offset = Vector2.new(laserSweep, 0)
-                    item.strokeGrad.Rotation = strokeRot
-                    
-                    item.glowStroke.Transparency = 0.25 + (pulse * 0.45)
-                    item.glowStroke.Thickness = 2.5 + (pulse * 1.8)
-                    item.glowTag.TextTransparency = 0.3 + (pulse * 0.4)
-                    
-                    local glowColor = Color3.fromRGB(
-                        255,
-                        math.floor(pulse * 30),
-                        math.floor(20 + redHuePulse * 45)
-                    )
-                    item.glowStroke.Color = glowColor
-                    item.glowTag.TextColor3 = glowColor
+        -- ⚡ 60 FPS METALLIC RED-WHITE REFLECTION SWEEP (ZERO SMUDGE)
+        if #activeDaddyGradients > 0 then
+            local laserOffset = ((t * 1.5) % 2.4) - 1.2
+            for i = #activeDaddyGradients, 1, -1 do
+                local grad = activeDaddyGradients[i]
+                if grad and grad.Parent then
+                    grad.Offset = Vector2.new(laserOffset, 0)
                 else
-                    table.remove(activeDaddyTags, i)
+                    table.remove(activeDaddyGradients, i)
                 end
             end
         end
@@ -1830,7 +1784,9 @@ sendMessageFunc = function(overrideText)
     if not text then return end
 
     text = string.gsub(text, "^TextBox", "")
-    if text == "" or string.match(text, "^%s*$") or isSendingCooldown then return end
+    text = string.gsub(text, "^%s+", "")
+    text = string.gsub(text, "%s+$", "")
+    if text == "" or isSendingCooldown then return end
 
     local pMatch = text:match("^!p%s+(%w+)")
     if pMatch then
