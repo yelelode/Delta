@@ -493,7 +493,7 @@ task.spawn(function()
             end
             col.Text = str
         end
-        task.wait(0.25)
+        task.wait(0.3)
     end
 end)
 
@@ -976,8 +976,9 @@ createHeaderBtn("-", -54, function()
 end)
 
 createHeaderBtn("X", -26, function()
-    gui:Destroy()
     _G.TXR_IsPolling = false
+    _G.TXR_ChatInstanceID = nil
+    gui:Destroy()
 end).TextColor3 = Colors.Danger
 
 local headerDivider = Instance.new("Frame", header)
@@ -1398,6 +1399,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         dmLbl.AutomaticSize = Enum.AutomaticSize.X
         dmLbl.Size = UDim2.new(0, 0, 1, 0)
         dmLbl.BackgroundTransparency = 1
+        dmLbl.RichText = true
         dmLbl.Text = isPrivateSender and ("[To @" .. sanitizeXml(privateUserTarget) .. "]") or ("[From @" .. sanitizeXml(privateUserTarget) .. "]")
         dmLbl.TextColor3 = Colors.Purple
         dmLbl.Font = Enum.Font.GothamBold
@@ -1472,6 +1474,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     nameLbl.AutomaticSize = Enum.AutomaticSize.X
     nameLbl.Size = UDim2.new(0, 0, 1, 0)
     nameLbl.BackgroundTransparency = 1
+    nameLbl.RichText = true
     nameLbl.Text = sanitizeXml(userName) .. ":"
     nameLbl.TextColor3 = (currentThemeIdx == 2 and Color3.fromRGB(255, 45, 85) or Colors.Primary)
     nameLbl.Font = Enum.Font.GothamBlack
@@ -1924,7 +1927,8 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
         end
     end)
 
-    handle.InputEnded:Connect(function(input)
+    -- Fixed: UserInputService listener prevents sticky drag cursor bug
+    UserInputService.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = false
             if isOrb then
@@ -1995,7 +1999,7 @@ openBtn.MouseButton1Click:Connect(function()
     TweenService:Create(aura, tInfo3, {ImageTransparency = isGhostMode and 0.94 or 0.72}):Play()
 end)
 
--- Keyboard Shortcuts
+-- Keyboard Shortcuts (With Scale Restoration Fix)
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
     if input.KeyCode == Enum.KeyCode.RightShift then
@@ -2003,10 +2007,15 @@ UserInputService.InputBegan:Connect(function(input, gp)
             mainFrame.Visible = false
             aura.Visible = false
             openBtnContainer.Visible = true
+            openBtnScale.Scale = 1
         else
             openBtnContainer.Visible = false
             mainFrame.Visible = true
             aura.Visible = true
+            mainScale.Scale = 1
+            auraScale.Scale = 1
+            mainFrame.BackgroundTransparency = isGhostMode and 0.85 or 0.08
+            aura.ImageTransparency = isGhostMode and 0.94 or 0.72
         end
     elseif input.KeyCode == Enum.KeyCode.Semicolon or input.KeyCode == Enum.KeyCode.Slash then
         task.delay(0.05, function() chatInput:CaptureFocus() end)
@@ -2187,14 +2196,14 @@ task.spawn(function()
 end)
 
 -- =========================================================
--- 📡 SEND MESSAGE (INSTANT 0MS ZERO DELAY ENGINE)
+-- 📡 SEND MESSAGE (100% INSTANT 0MS ZERO-WAIT ENGINE)
 -- =========================================================
 local isSendingCooldown = false
 sendMessageFunc = function(overrideText)
     local text = overrideText or chatInput.Text
     if not text then return end
 
-    text = string.gsub(text, "^TextBox", "")
+    if text == "TextBox" then text = "" end
     text = string.gsub(text, "^%s+", "")
     text = string.gsub(text, "%s+$", "")
     if text == "" or isSendingCooldown then return end
@@ -2213,7 +2222,10 @@ sendMessageFunc = function(overrideText)
         finalMsg = "( 🔐 " .. lp.Name .. " Private " .. privateTarget .. ") " .. text
     end
 
-    -- ⚡ 0MS Instant Local Feed Echo
+    -- ⚡ Instant UI Clearing (No delay, no freeze)
+    if not overrideText then chatInput.Text = "" end
+
+    -- ⚡ Instant Local Feed Echo
     if privateTarget then
         addMessageToFeed(lp.Name, text, privateTarget, true)
     else
@@ -2221,21 +2233,18 @@ sendMessageFunc = function(overrideText)
     end
     displayBubble(lp.Name, text)
 
-    table.insert(recentSentCache, { msg = finalMsg, time = os.time() })
-    if #recentSentCache > 25 then
+    -- ⚡ Accurate Local Queue for Bulletproof Deduplication
+    table.insert(recentSentCache, { 
+        msg = finalMsg, 
+        rawText = text, 
+        time = tick() 
+    })
+    if #recentSentCache > 30 then
         table.remove(recentSentCache, 1)
     end
 
-    if not overrideText then chatInput.Text = "" end
-
+    -- Non-blocking background network send (No loading screen / no '..' indicator)
     isSendingCooldown = true
-    sendBtn.BackgroundColor3 = Colors.SurfaceHover
-    sendBtn.Text = ".."
-
-    cdBar.Visible = true
-    cdBar.Size = UDim2.new(0, 0, 0, 2)
-    TweenService:Create(cdBar, TweenInfo.new(0.6, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 0, 2)}):Play()
-
     task.spawn(function()
         if req then
             local payload = HttpService:JSONEncode({
@@ -2254,11 +2263,8 @@ sendMessageFunc = function(overrideText)
             end)
         end
 
-        task.wait(0.6)
+        task.wait(0.2)
         isSendingCooldown = false
-        cdBar.Visible = false
-        sendBtn.BackgroundColor3 = Colors.Primary
-        sendBtn.Text = ">"
     end)
 end
 
@@ -2268,10 +2274,10 @@ chatInput.FocusLost:Connect(function(enterPressed)
 end)
 
 -- =========================================================
--- 📥 HIGH-FREQUENCY POLLING ENGINE (FAST REALTIME SYNC)
+-- 📥 HIGH-FREQUENCY POLLING ENGINE (DUPLICATE-FREE SYNC)
 -- =========================================================
 task.spawn(function()
-    while _G.TXR_IsPolling and task.wait(0.25) do
+    while _G.TXR_IsPolling and (_G.TXR_ChatInstanceID == currentExecutionID) and task.wait(0.4) do
         if req then
             local pollStart = tick()
             local success, res = pcall(function()
@@ -2310,8 +2316,6 @@ task.spawn(function()
                                 end
                             end
                             lastSyncTime = data[#data].time
-                        else
-                            lastSyncTime = os.time()
                         end
                         continue
                     end
@@ -2333,10 +2337,11 @@ task.spawn(function()
                             if m.hidden then continue end
                             if chatMode == "server" and m.jobId ~= game.JobId then continue end
 
+                            -- ⚡ Absolute Local Echo Anti-Duplicate Check (No time-drift failure)
                             local isLocalEcho = false
                             if m.user:lower() == lp.Name:lower() then
                                 for idx, sent in ipairs(recentSentCache) do
-                                    if sent.msg == m.msg and math.abs(m.time - sent.time) <= 20 then
+                                    if (sent.msg == m.msg or sent.rawText == m.msg) and (tick() - sent.time <= 45) then
                                         isLocalEcho = true
                                         table.remove(recentSentCache, idx)
                                         break
