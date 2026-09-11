@@ -936,7 +936,7 @@ local function createActionBtn(text, color, onClick)
 end
 
 -- =========================================================
--- 💬 MESSAGE PIPELINE (LUXURY METALLIC CHROMA [ DADDY ] TAG)
+-- 💬 MESSAGE PIPELINE (CLEAN RAZOR-SHARP [ DADDY ] CHROMA)
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -1080,7 +1080,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         dmLbl.ZIndex = 12
     end
 
-    -- ⚡ SKEET / GAMESENSE RED CHROMA LASER TAG (CLEAN & SHARP)
+    -- ⚡ SKEET / GAMESENSE RED CHROMA LASER TAG (NO RED DHABBA, NO EMOJI)
     if isAdminUser then
         local daddyTag = Instance.new("TextLabel", headerRow)
         daddyTag.AutomaticSize = Enum.AutomaticSize.XY
@@ -1088,24 +1088,27 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         daddyTag.Text = "[ DADDY ]"
         daddyTag.TextColor3 = Color3.fromRGB(255, 255, 255)
         daddyTag.Font = Enum.Font.GothamBlack
-        daddyTag.TextSize = 11.5
+        daddyTag.TextSize = 11
         daddyTag.LayoutOrder = 3
         daddyTag.ZIndex = 13
 
+        -- 1px Ultra-Crisp Dark Outline (Letters strictly separated, zero smudge)
         local dStroke = Instance.new("UIStroke", daddyTag)
-        dStroke.Thickness = 1.1
-        dStroke.Color = Color3.fromRGB(0, 0, 0)
-        dStroke.Transparency = 0.25
+        dStroke.Thickness = 1
+        dStroke.Color = Color3.fromRGB(15, 0, 5)
+        dStroke.Transparency = 0.2
 
+        -- High-Gloss Crimson Diamond Reflection Gradient
         local dGrad = Instance.new("UIGradient", daddyTag)
+        dGrad.Rotation = 15
         dGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(180, 0, 30)),
-            ColorSequenceKeypoint.new(0.20, Color3.fromRGB(255, 20, 60)),
-            ColorSequenceKeypoint.new(0.46, Color3.fromRGB(255, 90, 120)),
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(150, 0, 25)),
+            ColorSequenceKeypoint.new(0.20, Color3.fromRGB(255, 30, 65)),
+            ColorSequenceKeypoint.new(0.47, Color3.fromRGB(255, 120, 140)),
             ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.54, Color3.fromRGB(255, 90, 120)),
-            ColorSequenceKeypoint.new(0.80, Color3.fromRGB(255, 20, 60)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(180, 0, 30))
+            ColorSequenceKeypoint.new(0.53, Color3.fromRGB(255, 120, 140)),
+            ColorSequenceKeypoint.new(0.80, Color3.fromRGB(255, 30, 65)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(150, 0, 25))
         })
 
         table.insert(activeDaddyGradients, dGrad)
@@ -1631,13 +1634,15 @@ task.spawn(function()
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
         t = t + dt
 
-        -- ⚡ 60 FPS METALLIC RED-WHITE REFLECTION SWEEP (ZERO SMUDGE)
+        -- ⚡ 60 FPS METALLIC DIAMOND-CRIMSON LASER SWEEP (NO SMUDGE)
         if #activeDaddyGradients > 0 then
-            local laserOffset = ((t * 1.5) % 2.4) - 1.2
+            local sweep = math.sin(t * 2.8) * 0.95
+            local dynamicAngle = 15 + math.sin(t * 1.5) * 8
             for i = #activeDaddyGradients, 1, -1 do
                 local grad = activeDaddyGradients[i]
                 if grad and grad.Parent then
-                    grad.Offset = Vector2.new(laserOffset, 0)
+                    grad.Offset = Vector2.new(sweep, 0)
+                    grad.Rotation = dynamicAngle
                 else
                     table.remove(activeDaddyGradients, i)
                 end
