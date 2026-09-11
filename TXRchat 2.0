@@ -1325,7 +1325,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         dmLbl.ZIndex = 12
     end
 
-    -- ⚡ TRUE ZERO-BOX LUXURY TYPOGRAPHY (PURE NEON GLOW)
+    -- ⚡ TRUE ZERO-BOX LUXURY TYPOGRAPHY (SUBTLE AMBIENT BLOOM)
     if isAdminUser then
         local badgeHost = Instance.new("Frame", headerRow)
         badgeHost.AutomaticSize = Enum.AutomaticSize.XY
@@ -1342,13 +1342,14 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         badgeGlow.BorderSizePixel = 0
         badgeGlow.Text = badgeProfile.Title
         badgeGlow.TextColor3 = Color3.fromRGB(255, 255, 255)
+        badgeGlow.TextTransparency = 0.78
         badgeGlow.Font = Enum.Font.GothamBlack
         badgeGlow.TextSize = 11.5
         badgeGlow.ZIndex = 13
 
         local glowStroke = Instance.new("UIStroke", badgeGlow)
-        glowStroke.Thickness = 2.0
-        glowStroke.Transparency = 0.4
+        glowStroke.Thickness = 1.0
+        glowStroke.Transparency = 0.82
         glowStroke.Color = Color3.fromRGB(255, 255, 255)
 
         local badgeLabel = Instance.new("TextLabel", badgeHost)
@@ -1363,9 +1364,9 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         badgeLabel.ZIndex = 14
 
         local bStroke = Instance.new("UIStroke", badgeLabel)
-        bStroke.Thickness = 0.9
+        bStroke.Thickness = 0.8
         bStroke.Color = Color3.fromRGB(0, 0, 0)
-        bStroke.Transparency = 0.2
+        bStroke.Transparency = 0.35
 
         local textGrad = Instance.new("UIGradient", badgeLabel)
         textGrad.Color = ColorSequence.new(badgeProfile.Colors)
@@ -1912,14 +1913,14 @@ task.spawn(function()
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
         t = t + dt
 
-        -- ⚡ BUTTERY 60 FPS CONTINUOUS MULTI-LAYER ROTATION (ZERO STUTTER)
+        -- ⚡ BUTTERY 60 FPS SUBTLE AMBIENT BLOOM (LIGHT & CLEAN)
         if #activeBadgesList > 0 then
             for i = #activeBadgesList, 1, -1 do
                 local item = activeBadgesList[i]
                 if item.textGrad and item.textGrad.Parent and item.glowGrad and item.glowGrad.Parent then
                     local sSpeed = item.speed or 1.0
 
-                    local continuousRotation = (t * 60 * sSpeed) % 360
+                    local continuousRotation = (t * 55 * sSpeed) % 360
                     item.textGrad.Rotation = continuousRotation
                     item.glowGrad.Rotation = continuousRotation
                     
@@ -1927,13 +1928,13 @@ task.spawn(function()
                         item.strokeGradGlow.Rotation = (continuousRotation + 180) % 360
                     end
 
-                    local breathPulse = (math.sin(t * 3.0 * sSpeed) + 1) / 2
+                    local breathPulse = (math.sin(t * 2.5 * sSpeed) + 1) / 2
                     if item.glowStroke and item.glowStroke.Parent then
-                        item.glowStroke.Thickness = 1.4 + (breathPulse * 1.6)
-                        item.glowStroke.Transparency = 0.25 + (breathPulse * 0.35)
+                        item.glowStroke.Thickness = 0.8 + (breathPulse * 0.4)
+                        item.glowStroke.Transparency = 0.78 + (breathPulse * 0.12)
                     end
                     if item.badgeGlow and item.badgeGlow.Parent then
-                        item.badgeGlow.TextTransparency = 0.3 + (breathPulse * 0.3)
+                        item.badgeGlow.TextTransparency = 0.75 + (breathPulse * 0.15)
                     end
                 else
                     table.remove(activeBadgesList, i)
