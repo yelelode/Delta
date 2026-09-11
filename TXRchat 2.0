@@ -205,7 +205,7 @@ local ghostDebounce = false
 local userIdCache = {}
 local searchQuery = ""
 local recentSentCache = {}
-local activeDaddyBadges = {}
+local activeDaddyTags = {}
 
 local MY_VIP_ID = 9685785248 
 local Admin = { 
@@ -750,7 +750,7 @@ createHeaderBtn("🗑️", -82, function()
             c:Destroy()
         end
     end
-    table.clear(activeDaddyBadges)
+    table.clear(activeDaddyTags)
 end)
 
 local actionMenu
@@ -838,6 +838,12 @@ searchBox.ClearTextOnFocus = false
 searchBox.ZIndex = 9
 Instance.new("UICorner", searchBox).CornerRadius = UDim.new(0, 6)
 
+searchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    if searchBox.Text == "TextBox" then
+        searchBox.Text = ""
+    end
+end)
+
 globalBtn.MouseButton1Click:Connect(function()
     chatMode = "global"
     globalBtn.BackgroundColor3 = Colors.ActiveTint
@@ -855,7 +861,7 @@ serverBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 💬 FULL-HEIGHT CHAT FEED (BOXES REMOVED)
+-- 💬 FULL-HEIGHT CHAT FEED
 -- =========================================================
 messageFeed.Size = UDim2.new(1, -24, 1, -126)
 messageFeed.Position = UDim2.new(0, 12, 0, 72)
@@ -879,7 +885,7 @@ searchBox:GetPropertyChangedSignal("Text"):Connect(function()
     searchQuery = string.lower(searchBox.Text)
     for _, card in ipairs(messageFeed:GetChildren()) do
         if card:IsA("GuiObject") and card.Name ~= "UIListLayout" and card.Name ~= "UIPadding" then
-            local lbl = card:FindFirstChildOfClass("TextLabel") or card:FindFirstChild("MsgContent", true)
+            local lbl = card:FindFirstChild("MsgContent", true) or card:FindFirstChildOfClass("TextLabel")
             if lbl then
                 if searchQuery == "" or string.find(string.lower(lbl.Text), searchQuery, 1, true) then
                     card.Visible = true
@@ -928,7 +934,7 @@ local function createActionBtn(text, color, onClick)
 end
 
 -- =========================================================
--- 💬 MESSAGE PIPELINE (AUTHENTIC RED RGB DADDY NEON BADGE)
+-- 💬 MESSAGE PIPELINE (CLEAN LIQUID RED CHROMA DADDY TAG)
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -987,9 +993,9 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     end
 
     local card = Instance.new("TextButton", messageFeed)
-    card.Size = memeIdMatch and UDim2.new(1, 0, 0, 134) or UDim2.new(1, 0, 0, 0)
+    card.Size = memeIdMatch and UDim2.new(1, 0, 0, 130) or UDim2.new(1, 0, 0, 0)
     card.AutomaticSize = memeIdMatch and Enum.AutomaticSize.None or Enum.AutomaticSize.Y
-    card.BackgroundColor3 = isMentioned and Colors.MentionBg or (isAdminUser and Color3.fromRGB(24, 12, 18) or Colors.Surface)
+    card.BackgroundColor3 = isMentioned and Colors.MentionBg or (isAdminUser and Color3.fromRGB(22, 14, 20) or Colors.Surface)
     card.BackgroundTransparency = isGhostMode and 0.65 or 0.35
     card.Text = ""
     card.AutoButtonColor = false
@@ -1010,15 +1016,15 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     Instance.new("UICorner", accentStrip).CornerRadius = UDim.new(0, 4)
 
     local cardStroke = Instance.new("UIStroke", card)
-    cardStroke.Thickness = isMentioned and 1.5 or (isAdminUser and 1.4 or 1)
-    cardStroke.Transparency = isMentioned and 0.2 or (isAdminUser and 0.15 or 0.85)
+    cardStroke.Thickness = isMentioned and 1.5 or (isAdminUser and 1.3 or 1)
+    cardStroke.Transparency = isMentioned and 0.2 or (isAdminUser and 0.25 or 0.85)
     cardStroke.Color = isMentioned and Colors.MentionGold or (isAdminUser and Color3.fromRGB(255, 0, 50) or Colors.PrimaryDark)
 
     if isAdminUser then
         local cardGrad = Instance.new("UIGradient", cardStroke)
         cardGrad.Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 60)),
-            ColorSequenceKeypoint.new(0.3, Color3.fromRGB(255, 120, 140)),
+            ColorSequenceKeypoint.new(0.3, Color3.fromRGB(255, 90, 110)),
             ColorSequenceKeypoint.new(0.6, Color3.fromRGB(180, 0, 30)),
             ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 60))
         })
@@ -1054,9 +1060,9 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         end
     end)
 
-    -- Header Layout Row (Timestamp + Glowing Daddy Badge + Name)
+    -- Header Row (Seamless Inline Aesthetic)
     local headerRow = Instance.new("Frame", card)
-    headerRow.Size = UDim2.new(1, -48, 0, 20)
+    headerRow.Size = UDim2.new(1, -48, 0, 18)
     headerRow.Position = UDim2.fromOffset(42, 6)
     headerRow.BackgroundTransparency = 1
     headerRow.ZIndex = 11
@@ -1064,7 +1070,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     local hLayout = Instance.new("UIListLayout", headerRow)
     hLayout.FillDirection = Enum.FillDirection.Horizontal
     hLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-    hLayout.Padding = UDim.new(0, 6)
+    hLayout.Padding = UDim.new(0, 5)
     hLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
     local timeLbl = Instance.new("TextLabel", headerRow)
@@ -1074,7 +1080,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     timeLbl.Text = string.format("[%s]", os.date("%H:%M"))
     timeLbl.TextColor3 = Color3.fromRGB(110, 125, 145)
     timeLbl.Font = Enum.Font.GothamBold
-    timeLbl.TextSize = 10
+    timeLbl.TextSize = 10.5
     timeLbl.LayoutOrder = 1
     timeLbl.ZIndex = 12
 
@@ -1086,68 +1092,49 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         dmLbl.Text = isPrivateSender and ("[🔐 To @" .. sanitizeXml(privateUserTarget) .. "]") or ("[🔐 From @" .. sanitizeXml(privateUserTarget) .. "]")
         dmLbl.TextColor3 = Colors.Purple
         dmLbl.Font = Enum.Font.GothamBold
-        dmLbl.TextSize = 10
+        dmLbl.TextSize = 10.5
         dmLbl.LayoutOrder = 2
         dmLbl.ZIndex = 12
     end
 
-    -- ⚡ AUTHENTIC ANIMATED RED RGB DADDY BADGE
+    -- ⚡ PURE TEXT LIQUID RED RGB DADDY TAG (NO CLUNKY BOX!)
     if isAdminUser then
-        local daddyBadge = Instance.new("Frame", headerRow)
-        daddyBadge.Size = UDim2.new(0, 76, 0, 18)
-        daddyBadge.BackgroundColor3 = Color3.fromRGB(30, 4, 10)
-        daddyBadge.BackgroundTransparency = 0.1
-        daddyBadge.ClipsDescendants = false
-        daddyBadge.LayoutOrder = 3
-        daddyBadge.ZIndex = 12
-        Instance.new("UICorner", daddyBadge).CornerRadius = UDim.new(0, 5)
+        local daddyTag = Instance.new("TextLabel", headerRow)
+        daddyTag.AutomaticSize = Enum.AutomaticSize.X
+        daddyTag.Size = UDim2.new(0, 0, 1, 0)
+        daddyTag.BackgroundTransparency = 1
+        daddyTag.Text = "[👑 DADDY]"
+        daddyTag.TextColor3 = Color3.fromRGB(255, 255, 255)
+        daddyTag.Font = Enum.Font.GothamBlack
+        daddyTag.TextSize = 11
+        daddyTag.LayoutOrder = 3
+        daddyTag.ZIndex = 13
 
-        local badgeAura = Instance.new("ImageLabel", daddyBadge)
-        badgeAura.AnchorPoint = Vector2.new(0.5, 0.5)
-        badgeAura.Position = UDim2.fromScale(0.5, 0.5)
-        badgeAura.Size = UDim2.new(1, 16, 1, 14)
-        badgeAura.BackgroundTransparency = 1
-        badgeAura.Image = "rbxassetid://1316045217"
-        badgeAura.ImageColor3 = Color3.fromRGB(255, 0, 60)
-        badgeAura.ImageTransparency = 0.45
-        badgeAura.ZIndex = 11
+        local dStroke = Instance.new("UIStroke", daddyTag)
+        dStroke.Thickness = 1.3
+        dStroke.Color = Color3.fromRGB(255, 0, 50)
+        dStroke.Transparency = 0.25
 
-        local badgeStroke = Instance.new("UIStroke", daddyBadge)
-        badgeStroke.Thickness = 1.4
-        badgeStroke.Color = Color3.new(1, 1, 1)
-
-        local strokeGrad = Instance.new("UIGradient", badgeStroke)
-        strokeGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 60)),
-            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 140, 160)),
-            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(150, 0, 25)),
-            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(255, 40, 80)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 60))
+        local dGrad = Instance.new("UIGradient", daddyTag)
+        dGrad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 50)),
+            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 70, 90)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(255, 70, 90)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 50))
         })
 
-        local badgeText = Instance.new("TextLabel", daddyBadge)
-        badgeText.Size = UDim2.fromScale(1, 1)
-        badgeText.BackgroundTransparency = 1
-        badgeText.Text = "👑 DADDY"
-        badgeText.TextColor3 = Color3.new(1, 1, 1)
-        badgeText.Font = Enum.Font.GothamBlack
-        badgeText.TextSize = 9.5
-        badgeText.ZIndex = 13
-        crispText(badgeText)
-
-        local textGrad = Instance.new("UIGradient", badgeText)
-        textGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 40, 70)),
-            ColorSequenceKeypoint.new(0.45, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.55, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 20, 50))
+        local sGrad = Instance.new("UIGradient", dStroke)
+        sGrad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 50)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 120, 140)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 50))
         })
 
-        table.insert(activeDaddyBadges, {
-            frame = daddyBadge,
-            aura = badgeAura,
-            strokeGrad = strokeGrad,
-            textGrad = textGrad
+        table.insert(activeDaddyTags, {
+            textGrad = dGrad,
+            strokeGrad = sGrad,
+            stroke = dStroke
         })
     end
 
@@ -1167,7 +1154,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     local bodyTxt = Instance.new("TextLabel", card)
     bodyTxt.Name = "MsgContent"
     bodyTxt.Size = UDim2.new(1, -48, 0, 0)
-    bodyTxt.Position = UDim2.fromOffset(42, 27)
+    bodyTxt.Position = UDim2.fromOffset(42, 25)
     bodyTxt.AutomaticSize = Enum.AutomaticSize.Y
     bodyTxt.BackgroundTransparency = 1
     bodyTxt.TextColor3 = Colors.Text
@@ -1182,7 +1169,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         bodyTxt.Text = "<font color='#FFD700'><i>[Sticker]</i></font>"
         local memeImg = Instance.new("ImageLabel", card)
         memeImg.Size = UDim2.fromOffset(90, 90)
-        memeImg.Position = UDim2.fromOffset(42, 42)
+        memeImg.Position = UDim2.fromOffset(42, 40)
         memeImg.BackgroundColor3 = Colors.Background
         memeImg.BackgroundTransparency = 0.3
         memeImg.Image = getAssetThumb(memeIdMatch)
@@ -1196,7 +1183,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     else
         bodyTxt.Text = sanitizeXml(msg)
         local padFix = Instance.new("UIPadding", card)
-        padFix.PaddingBottom = UDim.new(0, 8)
+        padFix.PaddingBottom = UDim.new(0, 7)
     end
 
     crispText(bodyTxt)
@@ -1301,6 +1288,12 @@ chatInput.TextSize = 12
 chatInput.ClearTextOnFocus = false
 chatInput.TextXAlignment = Enum.TextXAlignment.Left
 chatInput.ZIndex = 13
+
+chatInput:GetPropertyChangedSignal("Text"):Connect(function()
+    if chatInput.Text == "TextBox" then
+        chatInput.Text = ""
+    end
+end)
 
 chatInput.Focused:Connect(function()
     if chatInput.Text == "TextBox" then chatInput.Text = "" end
@@ -1652,7 +1645,7 @@ UserInputService.InputBegan:Connect(function(input, gp)
 end)
 
 -- =========================================================
--- ⚡ REACTOR RENDERING & DADDY RGB CHROMA ENGINE LOOP
+-- ⚡ REACTOR RENDERING & DADDY TEXT CHROMA ENGINE LOOP
 -- =========================================================
 task.spawn(function()
     local t = 0
@@ -1664,21 +1657,20 @@ task.spawn(function()
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
         t = t + dt
 
-        -- ⚡ 60 FPS REAL-TIME DADDY NEON BADGE CHROMA ANIMATION
-        if #activeDaddyBadges > 0 then
-            local strokeRot = (t * 110) % 360
-            local auraBreath = (math.sin(t * 4.5) + 1) / 2
-            local textShift = math.sin(t * 3.5) * 0.85
+        -- ⚡ 60 FPS PURE TEXT RED RGB LIQUID CHROMA
+        if #activeDaddyTags > 0 then
+            local offsetVal = (math.sin(t * 3.4)) * 0.75
+            local rotVal = (t * 90) % 360
+            local strokePulse = (math.sin(t * 5.0) + 1) / 2
 
-            for i = #activeDaddyBadges, 1, -1 do
-                local item = activeDaddyBadges[i]
-                if item.frame and item.frame.Parent then
-                    item.strokeGrad.Rotation = strokeRot
-                    item.textGrad.Offset = Vector2.new(textShift, 0)
-                    item.aura.ImageTransparency = 0.35 + (auraBreath * 0.35)
-                    item.aura.Size = UDim2.new(1, 14 + (auraBreath * 6), 1, 12 + (auraBreath * 6))
+            for i = #activeDaddyTags, 1, -1 do
+                local item = activeDaddyTags[i]
+                if item.textGrad and item.textGrad.Parent then
+                    item.textGrad.Offset = Vector2.new(offsetVal, 0)
+                    item.strokeGrad.Rotation = rotVal
+                    item.stroke.Transparency = 0.15 + (strokePulse * 0.35)
                 else
-                    table.remove(activeDaddyBadges, i)
+                    table.remove(activeDaddyTags, i)
                 end
             end
         end
@@ -1820,12 +1812,10 @@ end)
 local isSendingCooldown = false
 sendMessageFunc = function(overrideText)
     local text = overrideText or chatInput.Text
-    if not text or text == "" or isSendingCooldown then return end
+    if not text then return end
 
-    if string.sub(text, 1, 7) == "TextBox" then
-        text = string.sub(text, 8)
-    end
-    if text == "" then return end
+    text = string.gsub(text, "^TextBox", "")
+    if text == "" or string.match(text, "^%s*$") or isSendingCooldown then return end
 
     local pMatch = text:match("^!p%s+(%w+)")
     if pMatch then
@@ -1841,7 +1831,7 @@ sendMessageFunc = function(overrideText)
         finalMsg = "( 🔐 " .. lp.Name .. " Private " .. privateTarget .. ") " .. text
     end
 
-    -- ⚡ 0MS ZERO DELAY: Instant Local Feed Render
+    -- ⚡ 0MS Instant Local Feed Echo
     if privateTarget then
         addMessageToFeed(lp.Name, text, privateTarget, true)
     else
