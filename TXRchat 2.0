@@ -12,7 +12,7 @@ pcall(function()
 end)
 
 -- =========================================================
--- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V12.1 ULTRA SPEED) 👑
+-- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V13.0 OWNER SUITE) 👑
 -- =========================================================
 
 local currentExecutionID = tick()
@@ -113,6 +113,113 @@ local Colors = {
     MentionBg     = Color3.fromRGB(42, 34, 14),
     MacroBg       = Color3.fromRGB(22, 27, 40)
 }
+
+-- =========================================================
+-- 👑 5 ELITE OWNER BADGE PROFILES (DYNAMIC ON-CHAT SWITCHING)
+-- =========================================================
+local BadgePresets = {
+    ["OWNER"] = {
+        Title = "OWNER",
+        PlateBg = Color3.fromRGB(28, 20, 6),
+        AccentColor = Color3.fromRGB(255, 205, 45),
+        StrokeColors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(140, 95, 0)),
+            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 215, 50)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(255, 215, 50)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(140, 95, 0))
+        },
+        TextColors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 190, 30)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 240, 170)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 240, 170)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 190, 30))
+        },
+        Speed = 3.2
+    },
+    ["DADDY"] = {
+        Title = "DADDY",
+        PlateBg = Color3.fromRGB(24, 8, 16),
+        AccentColor = Color3.fromRGB(255, 40, 80),
+        StrokeColors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(130, 0, 25)),
+            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 40, 80)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(255, 40, 80)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(130, 0, 25))
+        },
+        TextColors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 30, 70)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 130, 150)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 130, 150)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 30, 70))
+        },
+        Speed = 3.0
+    },
+    ["TITAN"] = {
+        Title = "TITAN",
+        PlateBg = Color3.fromRGB(6, 20, 26),
+        AccentColor = Color3.fromRGB(0, 225, 255),
+        StrokeColors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 110, 140)),
+            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(0, 235, 255)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(0, 235, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 110, 140))
+        },
+        TextColors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 200, 255)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(160, 240, 255)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(160, 240, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 200, 255))
+        },
+        Speed = 3.4
+    },
+    ["OVERLORD"] = {
+        Title = "OVERLORD",
+        PlateBg = Color3.fromRGB(20, 7, 28),
+        AccentColor = Color3.fromRGB(190, 70, 255),
+        StrokeColors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(100, 0, 145)),
+            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(205, 80, 255)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(205, 80, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(100, 0, 145))
+        },
+        TextColors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(195, 60, 255)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(235, 170, 255)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(235, 170, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(195, 60, 255))
+        },
+        Speed = 2.9
+    },
+    ["PHANTOM"] = {
+        Title = "PHANTOM",
+        PlateBg = Color3.fromRGB(6, 24, 14),
+        AccentColor = Color3.fromRGB(0, 255, 130),
+        StrokeColors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 130, 60)),
+            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(30, 255, 140)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(30, 255, 140)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 130, 60))
+        },
+        TextColors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(20, 255, 120)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(160, 255, 200)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(160, 255, 200)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(20, 255, 120))
+        },
+        Speed = 3.6
+    }
+}
+local currentOwnerBadge = "OWNER"
 
 -- =========================================================
 -- 🎭 MEME PACK
@@ -694,6 +801,15 @@ local function createHeaderBtn(icon, posX, onClick)
     return b
 end
 
+local badgeSelectorModal
+if Admin[lp.Name:lower()] then
+    createHeaderBtn("🏷️", -194, function()
+        if badgeSelectorModal then
+            badgeSelectorModal.Visible = not badgeSelectorModal.Visible
+        end
+    end)
+end
+
 createHeaderBtn("🎨", -166, function()
     currentThemeIdx = (currentThemeIdx % #Themes) + 1
     local th = Themes[currentThemeIdx]
@@ -760,6 +876,7 @@ createHeaderBtn("–", -54, function()
     if actionMenu then actionMenu.Visible = false end
     if rosterFrame then rosterFrame.Visible = false end
     if memeFrame then memeFrame.Visible = false end
+    if badgeSelectorModal then badgeSelectorModal.Visible = false end
     
     local tInfo1 = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In)
     local tInfo2 = TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
@@ -863,6 +980,62 @@ serverBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
+-- 🏷️ OWNER BADGE SELECTION MODAL
+-- =========================================================
+badgeSelectorModal = Instance.new("Frame", mainFrame)
+badgeSelectorModal.Size = UDim2.fromOffset(210, 195)
+badgeSelectorModal.Position = UDim2.new(1, -220, 0, 42)
+badgeSelectorModal.BackgroundColor3 = Color3.fromRGB(15, 18, 26)
+badgeSelectorModal.Visible = false
+badgeSelectorModal.ZIndex = 70
+Instance.new("UICorner", badgeSelectorModal).CornerRadius = UDim.new(0, 8)
+
+local bsStroke = Instance.new("UIStroke", badgeSelectorModal)
+bsStroke.Color = Colors.Primary
+bsStroke.Thickness = 1.2
+
+local bsTitle = Instance.new("TextLabel", badgeSelectorModal)
+bsTitle.Size = UDim2.new(1, 0, 0, 26)
+bsTitle.BackgroundTransparency = 1
+bsTitle.Text = "⚡ SELECT ACTIVE BADGE"
+bsTitle.TextColor3 = Colors.Primary
+bsTitle.Font = Enum.Font.GothamBlack
+bsTitle.TextSize = 10
+bsTitle.ZIndex = 71
+
+local bsLayout = Instance.new("UIListLayout", badgeSelectorModal)
+bsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+bsLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+bsLayout.Padding = UDim.new(0, 5)
+
+local badgeKeysOrder = {"OWNER", "DADDY", "TITAN", "OVERLORD", "PHANTOM"}
+for _, bKey in ipairs(badgeKeysOrder) do
+    local bData = BadgePresets[bKey]
+    local bBtn = Instance.new("TextButton", badgeSelectorModal)
+    bBtn.Size = UDim2.new(0.9, 0, 0, 26)
+    bBtn.BackgroundColor3 = bData.PlateBg
+    bBtn.Text = "●  " .. bData.Title
+    bBtn.TextColor3 = bData.AccentColor
+    bBtn.Font = Enum.Font.GothamBlack
+    bBtn.TextSize = 10.5
+    bBtn.AutoButtonColor = false
+    bBtn.ZIndex = 72
+    Instance.new("UICorner", bBtn).CornerRadius = UDim.new(0, 5)
+    
+    local btnStroke = Instance.new("UIStroke", bBtn)
+    btnStroke.Color = bData.AccentColor
+    btnStroke.Thickness = 1
+    btnStroke.Transparency = 0.4
+    
+    applySpringHover(bBtn)
+    bBtn.MouseButton1Click:Connect(function()
+        currentOwnerBadge = bKey
+        badgeSelectorModal.Visible = false
+        playSFX("default")
+    end)
+end
+
+-- =========================================================
 -- 💬 FULL-HEIGHT CHAT FEED
 -- =========================================================
 messageFeed.Size = UDim2.new(1, -24, 1, -126)
@@ -936,7 +1109,7 @@ local function createActionBtn(text, color, onClick)
 end
 
 -- =========================================================
--- 💬 MESSAGE PIPELINE (LUXURY OBSIDIAN PRISM DADDY BADGE)
+-- 💬 MESSAGE PIPELINE (CUSTOM CHROMATIC BADGE DISPATCHER)
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -981,6 +1154,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     local memeIdMatch = msg:match("%[MEME:(%d+)%]")
     local isMentioned = string.find(string.lower(msg), string.lower(lp.Name), 1, true) or string.find(string.lower(msg), "@" .. string.lower(lp.Name), 1, true)
     local isAdminUser = Admin[userName:lower()] == true
+    local badgeProfile = BadgePresets[currentOwnerBadge] or BadgePresets["OWNER"]
 
     local count = 0
     for _, child in ipairs(messageFeed:GetChildren()) do
@@ -1013,7 +1187,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     accentStrip.Size = UDim2.new(0, 3, 1, 0)
     accentStrip.Position = UDim2.new(0, 0, 0, 0)
     accentStrip.BorderSizePixel = 0
-    accentStrip.BackgroundColor3 = isMentioned and Colors.MentionGold or (privateUserTarget and Colors.Purple or (isAdminUser and Color3.fromRGB(255, 30, 70) or Colors.Primary))
+    accentStrip.BackgroundColor3 = isMentioned and Colors.MentionGold or (privateUserTarget and Colors.Purple or (isAdminUser and badgeProfile.AccentColor or Colors.Primary))
     accentStrip.ZIndex = 10
     Instance.new("UICorner", accentStrip).CornerRadius = UDim.new(0, 4)
 
@@ -1080,32 +1254,23 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         dmLbl.ZIndex = 12
     end
 
-    -- ⚡ PRISM OBSIDIAN [ DADDY ] BADGE
+    -- ⚡ CYBER-PRISM DYNAMIC BADGE CONTAINER
     if isAdminUser then
         local daddyBadge = Instance.new("Frame", headerRow)
         daddyBadge.AutomaticSize = Enum.AutomaticSize.XY
         daddyBadge.Size = UDim2.new(0, 0, 0, 18)
-        daddyBadge.BackgroundColor3 = Color3.fromRGB(24, 8, 16)
+        daddyBadge.BackgroundColor3 = badgeProfile.PlateBg
         daddyBadge.BackgroundTransparency = 0.1
         daddyBadge.ClipsDescendants = true
         daddyBadge.LayoutOrder = 3
         daddyBadge.ZIndex = 13
         Instance.new("UICorner", daddyBadge).CornerRadius = UDim.new(0, 4)
 
-        -- Background Subtle Depth Gradient
-        local plateGrad = Instance.new("UIGradient", daddyBadge)
-        plateGrad.Rotation = 90
-        plateGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(34, 10, 20)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(13, 3, 7))
-        })
-
-        -- Prism Refraction Edge (Top Highlight)
         local topGloss = Instance.new("Frame", daddyBadge)
         topGloss.Size = UDim2.new(1, 0, 0, 1)
         topGloss.Position = UDim2.new(0, 0, 0, 0)
         topGloss.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        topGloss.BackgroundTransparency = 0.7
+        topGloss.BackgroundTransparency = 0.72
         topGloss.BorderSizePixel = 0
         topGloss.ZIndex = 14
 
@@ -1115,20 +1280,13 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         bPad.PaddingTop = UDim.new(0, 1)
         bPad.PaddingBottom = UDim.new(0, 1)
 
-        -- 1px Razor-Sharp Dynamic Laser Stroke
         local bStroke = Instance.new("UIStroke", daddyBadge)
         bStroke.Thickness = 1
-        bStroke.Color = Color3.fromRGB(255, 30, 70)
-        bStroke.Transparency = 0.2
+        bStroke.Color = badgeProfile.AccentColor
+        bStroke.Transparency = 0.25
 
         local sGrad = Instance.new("UIGradient", bStroke)
-        sGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(130, 0, 25)),
-            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 40, 80)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(255, 40, 80)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(130, 0, 25))
-        })
+        sGrad.Color = ColorSequence.new(badgeProfile.StrokeColors)
 
         local innerRow = Instance.new("Frame", daddyBadge)
         innerRow.AutomaticSize = Enum.AutomaticSize.XY
@@ -1141,11 +1299,10 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         irLayout.VerticalAlignment = Enum.VerticalAlignment.Center
         irLayout.Padding = UDim.new(0, 5)
 
-        -- Micro Ruby Diamond Core
         local rubyNode = Instance.new("Frame", innerRow)
         rubyNode.Size = UDim2.fromOffset(4.5, 4.5)
         rubyNode.Rotation = 45
-        rubyNode.BackgroundColor3 = Color3.fromRGB(255, 40, 80)
+        rubyNode.BackgroundColor3 = badgeProfile.AccentColor
         rubyNode.BorderSizePixel = 0
         rubyNode.ZIndex = 16
 
@@ -1153,7 +1310,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         daddyText.AutomaticSize = Enum.AutomaticSize.XY
         daddyText.Size = UDim2.new(0, 0, 1, 0)
         daddyText.BackgroundTransparency = 1
-        daddyText.Text = "DADDY"
+        daddyText.Text = badgeProfile.Title
         daddyText.TextColor3 = Color3.fromRGB(255, 255, 255)
         daddyText.Font = Enum.Font.GothamBlack
         daddyText.TextSize = 10
@@ -1161,18 +1318,14 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
 
         local tGrad = Instance.new("UIGradient", daddyText)
         tGrad.Rotation = 18
-        tGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 30, 70)),
-            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 130, 150)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 130, 150)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 30, 70))
-        })
+        tGrad.Color = ColorSequence.new(badgeProfile.TextColors)
 
         table.insert(activeDaddyBadges, {
             strokeGrad = sGrad,
             textGrad = tGrad,
-            ruby = rubyNode
+            ruby = rubyNode,
+            speed = badgeProfile.Speed,
+            accent = badgeProfile.AccentColor
         })
     end
 
@@ -1438,6 +1591,7 @@ end
 emojiBtn.MouseButton1Click:Connect(function()
     emojiFrame.Visible = not emojiFrame.Visible
     if memeFrame then memeFrame.Visible = false end
+    if badgeSelectorModal then badgeSelectorModal.Visible = false end
 end)
 
 -- =========================================================
@@ -1500,6 +1654,7 @@ end
 memeBtn.MouseButton1Click:Connect(function()
     memeFrame.Visible = not memeFrame.Visible
     if emojiFrame then emojiFrame.Visible = false end
+    if badgeSelectorModal then badgeSelectorModal.Visible = false end
 end)
 
 -- =========================================================
@@ -1684,7 +1839,7 @@ UserInputService.InputBegan:Connect(function(input, gp)
 end)
 
 -- =========================================================
--- ⚡ REACTOR RENDERING & DADDY CHROMA LASER SWEEP
+-- ⚡ REACTOR RENDERING & DYNAMIC BADGE CHROMA SWEEP
 -- =========================================================
 task.spawn(function()
     local t = 0
@@ -1696,18 +1851,19 @@ task.spawn(function()
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
         t = t + dt
 
-        -- ⚡ 60 FPS LUXURY PRISM LASER BORDER & RUBY DIAMOND GLINT
+        -- ⚡ 60 FPS CHROMATIC SPECULAR SHEEN ANIMATION
         if #activeDaddyBadges > 0 then
-            local sweep = math.sin(t * 3.0) * 0.95
             local rot = (t * 110) % 360
-            local rubyGlint = (math.sin(t * 6.5) + 1) / 2
+            local nodePulse = (math.sin(t * 6) + 1) / 2
 
             for i = #activeDaddyBadges, 1, -1 do
                 local item = activeDaddyBadges[i]
                 if item.textGrad and item.textGrad.Parent then
+                    local sweepSpeed = item.speed or 3.0
+                    local sweep = math.sin(t * sweepSpeed) * 0.95
                     item.textGrad.Offset = Vector2.new(sweep, 0)
                     item.strokeGrad.Rotation = rot
-                    item.ruby.BackgroundColor3 = Color3.fromRGB(255, math.floor(35 + rubyGlint * 80), math.floor(70 + rubyGlint * 100))
+                    item.ruby.BackgroundTransparency = 0.05 + (nodePulse * 0.45)
                 else
                     table.remove(activeDaddyBadges, i)
                 end
@@ -2045,5 +2201,5 @@ task.spawn(function()
             })
         end)
     end
-    addMessageToFeed("System", "TXR Cyber-Titan Online! Tap 🎭 for Meme Stickers.")
+    addMessageToFeed("System", "TXR Cyber-Titan Online! Tap 🏷️ to switch custom Owner badges.")
 end)
