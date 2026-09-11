@@ -936,7 +936,7 @@ local function createActionBtn(text, color, onClick)
 end
 
 -- =========================================================
--- 💬 MESSAGE PIPELINE (CYBER-GLASS OBSIDIAN [ DADDY ] BADGE)
+-- 💬 MESSAGE PIPELINE (LUXURY OBSIDIAN PRISM DADDY BADGE)
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -1080,33 +1080,42 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         dmLbl.ZIndex = 12
     end
 
-    -- ⚡ CYBER-GLASS OBSIDIAN [ DADDY ] BADGE (CLEAN & SHARP)
+    -- ⚡ PRISM OBSIDIAN [ DADDY ] BADGE
     if isAdminUser then
         local daddyBadge = Instance.new("Frame", headerRow)
         daddyBadge.AutomaticSize = Enum.AutomaticSize.XY
-        daddyBadge.Size = UDim2.new(0, 0, 0, 17)
-        daddyBadge.BackgroundColor3 = Color3.fromRGB(18, 6, 12)
-        daddyBadge.BackgroundTransparency = 0.15
+        daddyBadge.Size = UDim2.new(0, 0, 0, 18)
+        daddyBadge.BackgroundColor3 = Color3.fromRGB(24, 8, 16)
+        daddyBadge.BackgroundTransparency = 0.1
         daddyBadge.ClipsDescendants = true
         daddyBadge.LayoutOrder = 3
         daddyBadge.ZIndex = 13
         Instance.new("UICorner", daddyBadge).CornerRadius = UDim.new(0, 4)
 
-        -- Top Edge Sub-Pixel Glass Bevel Reflection
+        -- Background Subtle Depth Gradient
+        local plateGrad = Instance.new("UIGradient", daddyBadge)
+        plateGrad.Rotation = 90
+        plateGrad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(34, 10, 20)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(13, 3, 7))
+        })
+
+        -- Prism Refraction Edge (Top Highlight)
         local topGloss = Instance.new("Frame", daddyBadge)
-        topGloss.Size = UDim2.new(1, 0, 0.45, 0)
+        topGloss.Size = UDim2.new(1, 0, 0, 1)
+        topGloss.Position = UDim2.new(0, 0, 0, 0)
         topGloss.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        topGloss.BackgroundTransparency = 0.94
+        topGloss.BackgroundTransparency = 0.7
         topGloss.BorderSizePixel = 0
         topGloss.ZIndex = 14
 
         local bPad = Instance.new("UIPadding", daddyBadge)
-        bPad.PaddingLeft = UDim.new(0, 5)
-        bPad.PaddingRight = UDim.new(0, 6)
+        bPad.PaddingLeft = UDim.new(0, 6)
+        bPad.PaddingRight = UDim.new(0, 7)
         bPad.PaddingTop = UDim.new(0, 1)
         bPad.PaddingBottom = UDim.new(0, 1)
 
-        -- 1px Razor-Sharp Cyber Laser Stroke
+        -- 1px Razor-Sharp Dynamic Laser Stroke
         local bStroke = Instance.new("UIStroke", daddyBadge)
         bStroke.Thickness = 1
         bStroke.Color = Color3.fromRGB(255, 30, 70)
@@ -1114,14 +1123,13 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
 
         local sGrad = Instance.new("UIGradient", bStroke)
         sGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(140, 0, 25)),
-            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 45, 85)),
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(130, 0, 25)),
+            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 40, 80)),
             ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(255, 45, 85)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(140, 0, 25))
+            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(255, 40, 80)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(130, 0, 25))
         })
 
-        -- Internal Micro Row
         local innerRow = Instance.new("Frame", daddyBadge)
         innerRow.AutomaticSize = Enum.AutomaticSize.XY
         innerRow.Size = UDim2.new(0, 0, 1, 0)
@@ -1131,17 +1139,16 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         local irLayout = Instance.new("UIListLayout", innerRow)
         irLayout.FillDirection = Enum.FillDirection.Horizontal
         irLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-        irLayout.Padding = UDim.new(0, 4)
+        irLayout.Padding = UDim.new(0, 5)
 
-        -- Micro Holographic Ruby Node
+        -- Micro Ruby Diamond Core
         local rubyNode = Instance.new("Frame", innerRow)
-        rubyNode.Size = UDim2.fromOffset(4, 4)
+        rubyNode.Size = UDim2.fromOffset(4.5, 4.5)
         rubyNode.Rotation = 45
-        rubyNode.BackgroundColor3 = Color3.fromRGB(255, 30, 70)
+        rubyNode.BackgroundColor3 = Color3.fromRGB(255, 40, 80)
         rubyNode.BorderSizePixel = 0
         rubyNode.ZIndex = 16
 
-        -- High-Gloss Specular Text
         local daddyText = Instance.new("TextLabel", innerRow)
         daddyText.AutomaticSize = Enum.AutomaticSize.XY
         daddyText.Size = UDim2.new(0, 0, 1, 0)
@@ -1155,11 +1162,11 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         local tGrad = Instance.new("UIGradient", daddyText)
         tGrad.Rotation = 18
         tGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 30, 65)),
-            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 120, 140)),
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 30, 70)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 130, 150)),
             ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 120, 140)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 30, 65))
+            ColorSequenceKeypoint.new(0.65, Color3.fromRGB(255, 130, 150)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 30, 70))
         })
 
         table.insert(activeDaddyBadges, {
@@ -1689,18 +1696,18 @@ task.spawn(function()
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
         t = t + dt
 
-        -- ⚡ 60 FPS DADDY CYBER-GLASS CHROMA & RUBY NODE ANIMATION
+        -- ⚡ 60 FPS LUXURY PRISM LASER BORDER & RUBY DIAMOND GLINT
         if #activeDaddyBadges > 0 then
-            local sweep = math.sin(t * 2.8) * 0.95
-            local rot = (t * 90) % 360
-            local rubyPulse = (math.sin(t * 5.5) + 1) / 2
+            local sweep = math.sin(t * 3.0) * 0.95
+            local rot = (t * 110) % 360
+            local rubyGlint = (math.sin(t * 6.5) + 1) / 2
 
             for i = #activeDaddyBadges, 1, -1 do
                 local item = activeDaddyBadges[i]
                 if item.textGrad and item.textGrad.Parent then
                     item.textGrad.Offset = Vector2.new(sweep, 0)
                     item.strokeGrad.Rotation = rot
-                    item.ruby.BackgroundTransparency = 0.1 + (rubyPulse * 0.4)
+                    item.ruby.BackgroundColor3 = Color3.fromRGB(255, math.floor(35 + rubyGlint * 80), math.floor(70 + rubyGlint * 100))
                 else
                     table.remove(activeDaddyBadges, i)
                 end
