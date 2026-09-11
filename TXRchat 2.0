@@ -12,7 +12,7 @@ pcall(function()
 end)
 
 -- =========================================================
--- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V15.0 SMART SUITE) 👑
+-- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V16.0 SMART SUITE) 👑
 -- =========================================================
 
 local currentExecutionID = tick()
@@ -358,14 +358,16 @@ local chatMode = "global"
 local privateTarget = nil
 local knownUsers = {}
 local activeUsersTable = {}
-local blockedUsers = {}
 local unreadCount = 0
 local isGhostMode = false
 local ghostDebounce = false
 local userIdCache = {}
 local searchQuery = ""
-local recentSentCache = {}
 local activeBadgesList = {}
+
+-- ⚡ BULLETPROOF DEDUPLICATION ENGINE CACHE
+local processedServerMessageMap = {}
+local recentLocalSentMap = {}
 
 local MY_VIP_ID = 9685785248 
 local Admin = { 
@@ -422,7 +424,7 @@ auraScale.Scale = 1
 local mainFrame = Instance.new("Frame", gui)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.Position = UDim2.fromScale(0.4, 0.5)
-mainFrame.Size = UDim2.new(0, 430, 0, 340)
+mainFrame.Size = UDim2.new(0, 440, 0, 350)
 mainFrame.BackgroundColor3 = Colors.Background
 mainFrame.BackgroundTransparency = 0.08
 mainFrame.ClipsDescendants = true
@@ -705,7 +707,7 @@ end)
 -- =========================================================
 local rosterFrame = Instance.new("Frame", mainFrame)
 rosterFrame.Size = UDim2.new(0, 140, 1, -44)
-rosterFrame.Position = UDim2.new(1, 10, 0, 40)
+rosterFrame.Position = UDim2.new(1, 10, 0, 42)
 rosterFrame.BackgroundColor3 = Colors.Surface
 rosterFrame.BackgroundTransparency = 0.1
 rosterFrame.Visible = false
@@ -770,33 +772,43 @@ local function refreshRosterUI()
 end
 
 -- =========================================================
--- 🌟 HEADER BAR & TACTICAL CONTROLS
+-- 🌟 HEADER BAR & TACTICAL CONTROLS (PIXEL-PERFECT LAYOUT)
 -- =========================================================
 local header = Instance.new("Frame", mainFrame)
-header.Size = UDim2.new(1, 0, 0, 40)
+header.Size = UDim2.new(1, 0, 0, 42)
 header.BackgroundTransparency = 1
 header.ZIndex = 10
 
-local headerTitle = Instance.new("TextLabel", header)
-headerTitle.Size = UDim2.new(0, 110, 1, 0)
-headerTitle.Position = UDim2.fromOffset(16, 0)
+local headerLeftCluster = Instance.new("Frame", header)
+headerLeftCluster.Size = UDim2.new(0, 250, 1, 0)
+headerLeftCluster.Position = UDim2.fromOffset(14, 0)
+headerLeftCluster.BackgroundTransparency = 1
+headerLeftCluster.ZIndex = 11
+
+local hlLayout = Instance.new("UIListLayout", headerLeftCluster)
+hlLayout.FillDirection = Enum.FillDirection.Horizontal
+hlLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+hlLayout.Padding = UDim.new(0, 8)
+
+local headerTitle = Instance.new("TextLabel", headerLeftCluster)
+headerTitle.AutomaticSize = Enum.AutomaticSize.X
+headerTitle.Size = UDim2.new(0, 0, 0, 24)
 headerTitle.BackgroundTransparency = 1
 headerTitle.Text = "TXR // TITAN"
 headerTitle.TextColor3 = Colors.Primary
 headerTitle.Font = Enum.Font.GothamBlack
-headerTitle.TextSize = 13.5
+headerTitle.TextSize = 13
 headerTitle.TextXAlignment = Enum.TextXAlignment.Left
-headerTitle.ZIndex = 11
+headerTitle.ZIndex = 12
 crispText(headerTitle)
 
-local liveBadge = Instance.new("TextButton", header)
-liveBadge.Size = UDim2.fromOffset(78, 20)
-liveBadge.Position = UDim2.new(0, 122, 0.5, -10)
+local liveBadge = Instance.new("TextButton", headerLeftCluster)
+liveBadge.Size = UDim2.fromOffset(78, 22)
 liveBadge.BackgroundColor3 = Colors.Surface
 liveBadge.BackgroundTransparency = 0.3
 liveBadge.Text = ""
 liveBadge.AutoButtonColor = false
-liveBadge.ZIndex = 11
+liveBadge.ZIndex = 12
 Instance.new("UICorner", liveBadge).CornerRadius = UDim.new(1, 0)
 
 local lbStroke = Instance.new("UIStroke", liveBadge)
@@ -806,29 +818,29 @@ lbStroke.Transparency = 0.5
 
 local ledDot = Instance.new("Frame", liveBadge)
 ledDot.Size = UDim2.fromOffset(6, 6)
-ledDot.Position = UDim2.new(0, 8, 0.5, -3)
+ledDot.AnchorPoint = Vector2.new(0, 0.5)
+ledDot.Position = UDim2.new(0, 8, 0.5, 0)
 ledDot.BackgroundColor3 = Color3.fromRGB(50, 255, 140)
-ledDot.ZIndex = 12
+ledDot.ZIndex = 13
 Instance.new("UICorner", ledDot).CornerRadius = UDim.new(1, 0)
 
 local liveText = Instance.new("TextLabel", liveBadge)
-liveText.Size = UDim2.new(1, -18, 1, 0)
-liveText.Position = UDim2.fromOffset(18, 0)
+liveText.Size = UDim2.new(1, -20, 1, 0)
+liveText.Position = UDim2.fromOffset(20, 0)
 liveText.BackgroundTransparency = 1
 liveText.Text = "1 Active"
 liveText.TextColor3 = Colors.Primary
 liveText.Font = Enum.Font.GothamBlack
 liveText.TextSize = 8.5
 liveText.TextXAlignment = Enum.TextXAlignment.Left
-liveText.ZIndex = 12
+liveText.ZIndex = 13
 
 -- ⚡ SMART LATENCY HUD BADGE (MS PING)
-local pingBadge = Instance.new("Frame", header)
-pingBadge.Size = UDim2.fromOffset(48, 20)
-pingBadge.Position = UDim2.new(0, 206, 0.5, -10)
+local pingBadge = Instance.new("Frame", headerLeftCluster)
+pingBadge.Size = UDim2.fromOffset(48, 22)
 pingBadge.BackgroundColor3 = Colors.Surface
 pingBadge.BackgroundTransparency = 0.5
-pingBadge.ZIndex = 11
+pingBadge.ZIndex = 12
 Instance.new("UICorner", pingBadge).CornerRadius = UDim.new(1, 0)
 
 local pbStroke = Instance.new("UIStroke", pingBadge)
@@ -843,27 +855,40 @@ pingText.Text = "42ms"
 pingText.TextColor3 = Color3.fromRGB(80, 220, 140)
 pingText.Font = Enum.Font.GothamBold
 pingText.TextSize = 8.5
-pingText.ZIndex = 12
+pingText.ZIndex = 13
 
 liveBadge.MouseButton1Click:Connect(function()
     refreshRosterUI()
     rosterFrame.Visible = not rosterFrame.Visible
     if rosterFrame.Visible then
-        rosterFrame.Position = UDim2.new(1, 10, 0, 40)
-        TweenService:Create(rosterFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(1, -145, 0, 40)}):Play()
+        rosterFrame.Position = UDim2.new(1, 10, 0, 42)
+        TweenService:Create(rosterFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(1, -145, 0, 42)}):Play()
     end
 end)
 
-local function createHeaderBtn(text, posX, onClick)
-    local b = Instance.new("TextButton", header)
-    b.Size = UDim2.fromOffset(26, 22)
-    b.Position = UDim2.new(1, posX, 0.5, -11)
+-- ⚡ RIGHT-ALIGNED COMPACT HEADER ACTIONS (EVENLY SPACED)
+local headerRightCluster = Instance.new("Frame", header)
+headerRightCluster.AnchorPoint = Vector2.new(1, 0.5)
+headerRightCluster.Position = UDim2.new(1, -12, 0.5, 0)
+headerRightCluster.Size = UDim2.new(0, 180, 0, 24)
+headerRightCluster.BackgroundTransparency = 1
+headerRightCluster.ZIndex = 12
+
+local hrLayout = Instance.new("UIListLayout", headerRightCluster)
+hrLayout.FillDirection = Enum.FillDirection.Horizontal
+hrLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+hrLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+hrLayout.Padding = UDim.new(0, 6)
+
+local function createHeaderBtn(text, onClick)
+    local b = Instance.new("TextButton", headerRightCluster)
+    b.Size = UDim2.fromOffset(26, 24)
     b.BackgroundColor3 = Colors.Surface
-    b.BackgroundTransparency = 0.5
+    b.BackgroundTransparency = 0.4
     b.Text = text
     b.TextColor3 = Colors.Text
     b.Font = Enum.Font.GothamBold
-    b.TextSize = 10
+    b.TextSize = 9.5
     b.AutoButtonColor = false
     b.ZIndex = 15
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
@@ -882,14 +907,14 @@ end
 
 local badgeSelectorModal
 if Admin[lp.Name:lower()] then
-    createHeaderBtn("TAG", -194, function()
+    createHeaderBtn("TAG", function()
         if badgeSelectorModal then
             badgeSelectorModal.Visible = not badgeSelectorModal.Visible
         end
     end)
 end
 
-createHeaderBtn("CLR", -166, function()
+createHeaderBtn("CLR", function()
     currentThemeIdx = (currentThemeIdx % #Themes) + 1
     local th = Themes[currentThemeIdx]
     Colors.Primary = th.Primary
@@ -909,7 +934,7 @@ createHeaderBtn("CLR", -166, function()
 end)
 
 local ghostBtn
-ghostBtn = createHeaderBtn("GST", -138, function()
+ghostBtn = createHeaderBtn("GST", function()
     if ghostDebounce then return end
     ghostDebounce = true
     task.delay(0.4, function() ghostDebounce = false end)
@@ -931,27 +956,16 @@ ghostBtn = createHeaderBtn("GST", -138, function()
 end)
 
 local soundBtn
-soundBtn = createHeaderBtn("SND", -110, function()
+soundBtn = createHeaderBtn("SND", function()
     isAudioMuted = not isAudioMuted
     soundBtn.Text = isAudioMuted and "MUT" or "SND"
     soundBtn.TextColor3 = isAudioMuted and Colors.Danger or Colors.Text
 end)
 
-local messageFeed = Instance.new("ScrollingFrame", mainFrame)
-
-createHeaderBtn("DEL", -82, function()
-    for _, c in ipairs(messageFeed:GetChildren()) do
-        if c:IsA("GuiObject") and c.Name ~= "UIListLayout" and c.Name ~= "UIPadding" then
-            c:Destroy()
-        end
-    end
-    table.clear(activeBadgesList)
-end)
-
 local actionMenu
 local memeFrame
 
-createHeaderBtn("-", -54, function()
+createHeaderBtn("-", function()
     if actionMenu then actionMenu.Visible = false end
     if rosterFrame then rosterFrame.Visible = false end
     if memeFrame then memeFrame.Visible = false end
@@ -975,11 +989,12 @@ createHeaderBtn("-", -54, function()
     TweenService:Create(openBtnScale, tInfo3, {Scale = 1}):Play()
 end)
 
-createHeaderBtn("X", -26, function()
+local closeBtn = createHeaderBtn("X", function()
     _G.TXR_IsPolling = false
     _G.TXR_ChatInstanceID = nil
     gui:Destroy()
-end).TextColor3 = Colors.Danger
+end)
+closeBtn.TextColor3 = Colors.Danger
 
 local headerDivider = Instance.new("Frame", header)
 headerDivider.Size = UDim2.new(1, 0, 0, 1)
@@ -991,14 +1006,14 @@ headerDivider.ZIndex = 12
 
 -- Mode Switcher & Search Bar Container
 local channelFrame = Instance.new("Frame", mainFrame)
-channelFrame.Size = UDim2.new(1, -28, 0, 28)
-channelFrame.Position = UDim2.new(0, 14, 0, 46)
+channelFrame.Size = UDim2.new(1, -24, 0, 28)
+channelFrame.Position = UDim2.new(0, 12, 0, 48)
 channelFrame.BackgroundTransparency = 1
 channelFrame.ZIndex = 8
 
 -- Segmented Pill Shell for Tabs
 local tabShell = Instance.new("Frame", channelFrame)
-tabShell.Size = UDim2.new(0.68, 0, 1, 0)
+tabShell.Size = UDim2.new(0.64, 0, 1, 0)
 tabShell.BackgroundColor3 = Colors.Surface
 tabShell.BackgroundTransparency = 0.4
 tabShell.ZIndex = 9
@@ -1033,12 +1048,12 @@ serverBtn.ZIndex = 10
 Instance.new("UICorner", serverBtn).CornerRadius = UDim.new(0, 6)
 
 local searchBox = Instance.new("TextBox", channelFrame)
-searchBox.Size = UDim2.new(0.30, 0, 1, 0)
-searchBox.Position = UDim2.new(0.70, 0, 0, 0)
+searchBox.Size = UDim2.new(0.34, 0, 1, 0)
+searchBox.Position = UDim2.new(0.66, 0, 0, 0)
 searchBox.BackgroundColor3 = Colors.Surface
 searchBox.BackgroundTransparency = 0.4
 searchBox.Text = ""
-searchBox.PlaceholderText = "Search..."
+searchBox.PlaceholderText = "Search chat..."
 searchBox.PlaceholderColor3 = Colors.SubText
 searchBox.TextColor3 = Colors.Text
 searchBox.Font = Enum.Font.GothamMedium
@@ -1082,7 +1097,7 @@ end)
 -- =========================================================
 badgeSelectorModal = Instance.new("Frame", mainFrame)
 badgeSelectorModal.Size = UDim2.fromOffset(230, 240)
-badgeSelectorModal.Position = UDim2.new(1, -240, 0, 46)
+badgeSelectorModal.Position = UDim2.new(1, -240, 0, 48)
 badgeSelectorModal.BackgroundColor3 = Color3.fromRGB(13, 16, 23)
 badgeSelectorModal.BackgroundTransparency = 0.05
 badgeSelectorModal.Visible = false
@@ -1155,8 +1170,9 @@ end
 -- =========================================================
 -- 💬 FULL-HEIGHT CHAT FEED & SMART AUTOSCROLL DOCK
 -- =========================================================
-messageFeed.Size = UDim2.new(1, -28, 1, -134)
-messageFeed.Position = UDim2.new(0, 14, 0, 80)
+local messageFeed = Instance.new("ScrollingFrame", mainFrame)
+messageFeed.Size = UDim2.new(1, -24, 1, -138)
+messageFeed.Position = UDim2.new(0, 12, 0, 82)
 messageFeed.BackgroundTransparency = 1
 messageFeed.ScrollBarThickness = 3
 messageFeed.ScrollBarImageColor3 = Colors.PrimaryDark
@@ -1170,13 +1186,14 @@ feedLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 local feedPadding = Instance.new("UIPadding", messageFeed)
 feedPadding.PaddingLeft = UDim.new(0, 2)
-feedPadding.PaddingRight = UDim.new(0, 6)
+feedPadding.PaddingRight = UDim.new(0, 4)
 feedPadding.PaddingBottom = UDim.new(0, 4)
 
 -- ⚡ SMART FLOATING JUMP-TO-BOTTOM CHIP
 local jumpBottomBtn = Instance.new("TextButton", mainFrame)
-jumpBottomBtn.Size = UDim2.fromOffset(115, 24)
-jumpBottomBtn.Position = UDim2.new(0.5, -57, 1, -80)
+jumpBottomBtn.Size = UDim2.fromOffset(120, 24)
+jumpBottomBtn.AnchorPoint = Vector2.new(0.5, 1)
+jumpBottomBtn.Position = UDim2.new(0.5, 0, 1, -54)
 jumpBottomBtn.BackgroundColor3 = Colors.Surface
 jumpBottomBtn.BackgroundTransparency = 0.1
 jumpBottomBtn.Text = "↓ New Messages"
@@ -1223,9 +1240,9 @@ end)
 local sendMessageFunc
 local chatInput
 
--- Action Drawer
+-- ⚡ STREAMLINED CONTEXT MENU (NO MUTE BUTTON)
 actionMenu = Instance.new("Frame", mainFrame)
-actionMenu.Size = UDim2.fromOffset(260, 32)
+actionMenu.Size = UDim2.fromOffset(225, 32)
 actionMenu.BackgroundColor3 = Colors.Surface
 actionMenu.Visible = false
 actionMenu.ZIndex = 50
@@ -1243,7 +1260,7 @@ amLayout.Padding = UDim.new(0, 4)
 
 local function createActionBtn(text, color, onClick)
     local b = Instance.new("TextButton", actionMenu)
-    b.Size = UDim2.new(0, 42, 0, 22)
+    b.Size = UDim2.new(0, 40, 0, 22)
     b.BackgroundColor3 = Colors.Background
     b.Text = text
     b.TextColor3 = color
@@ -1302,8 +1319,6 @@ end
 
 local MAX_MESSAGES = 60
 local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSender)
-    if blockedUsers[userName:lower()] then return end
-
     local memeIdMatch = msg:match("%[MEME:(%d+)%]")
     local isMentioned = string.find(string.lower(msg), string.lower(lp.Name), 1, true) or string.find(string.lower(msg), "@" .. string.lower(lp.Name), 1, true)
     local isAdminUser = Admin[userName:lower()] == true
@@ -1562,13 +1577,8 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
             end
         end)
 
-        createActionBtn("MUTE", Colors.Danger, function()
-            blockedUsers[userName:lower()] = true
-            card:Destroy()
-        end)
-
         local cardPos = card.AbsolutePosition - mainFrame.AbsolutePosition
-        actionMenu.Position = UDim2.fromOffset(math.clamp(cardPos.X + 25, 10, 160), math.clamp(cardPos.Y - 24, 30, 280))
+        actionMenu.Position = UDim2.fromOffset(math.clamp(cardPos.X + 25, 10, 180), math.clamp(cardPos.Y - 24, 30, 280))
         actionMenu.Visible = true
     end)
 
@@ -1586,8 +1596,8 @@ end
 -- ⌨️ INPUT CONTAINER, CONTROLS & TYPING PULSE
 -- =========================================================
 local inputContainer = Instance.new("Frame", mainFrame)
-inputContainer.Size = UDim2.new(1, -28, 0, 40)
-inputContainer.Position = UDim2.new(0, 14, 1, -48)
+inputContainer.Size = UDim2.new(1, -24, 0, 42)
+inputContainer.Position = UDim2.new(0, 12, 1, -48)
 inputContainer.BackgroundColor3 = Colors.Surface
 inputContainer.BackgroundTransparency = 0.35
 inputContainer.ZIndex = 12
@@ -1597,14 +1607,6 @@ local inputStroke = Instance.new("UIStroke", inputContainer)
 inputStroke.Thickness = 1.2
 inputStroke.Color = Colors.PrimaryDark
 inputStroke.Transparency = 0.55
-
-local cdBar = Instance.new("Frame", inputContainer)
-cdBar.Size = UDim2.new(1, 0, 0, 2)
-cdBar.Position = UDim2.new(0, 0, 1, -2)
-cdBar.BackgroundColor3 = Colors.Primary
-cdBar.BorderSizePixel = 0
-cdBar.Visible = false
-cdBar.ZIndex = 15
 
 local typingIndicator = Instance.new("Frame", inputContainer)
 typingIndicator.Size = UDim2.new(1, -12, 0, 2)
@@ -1617,7 +1619,8 @@ Instance.new("UICorner", typingIndicator).CornerRadius = UDim.new(1, 0)
 
 local dmBadge = Instance.new("TextButton", inputContainer)
 dmBadge.Size = UDim2.new(0, 0, 1, -12)
-dmBadge.Position = UDim2.new(0, 6, 0, 6)
+dmBadge.AnchorPoint = Vector2.new(0, 0.5)
+dmBadge.Position = UDim2.new(0, 8, 0.5, 0)
 dmBadge.BackgroundColor3 = Color3.fromRGB(45, 20, 65)
 dmBadge.TextColor3 = Colors.Purple
 dmBadge.Font = Enum.Font.GothamBlack
@@ -1628,14 +1631,14 @@ Instance.new("UICorner", dmBadge).CornerRadius = UDim.new(0, 6)
 
 chatInput = Instance.new("TextBox", inputContainer)
 chatInput.Text = ""
-chatInput.Size = UDim2.new(1, -112, 1, 0)
-chatInput.Position = UDim2.new(0, 14, 0, 0)
+chatInput.Size = UDim2.new(1, -116, 1, 0)
+chatInput.Position = UDim2.new(0, 12, 0, 0)
 chatInput.BackgroundTransparency = 1
 chatInput.PlaceholderText = "Type message... (!p user to DM)"
 chatInput.PlaceholderColor3 = Colors.SubText
 chatInput.TextColor3 = Colors.Text
 chatInput.Font = Enum.Font.GothamMedium
-chatInput.TextSize = 12
+chatInput.TextSize = 11.5
 chatInput.ClearTextOnFocus = false
 chatInput.TextXAlignment = Enum.TextXAlignment.Left
 chatInput.ZIndex = 13
@@ -1667,15 +1670,15 @@ end)
 updateInputBar = function()
     if privateTarget then
         dmBadge.Text = "@" .. privateTarget .. " X"
-        local w = TextService:GetTextSize(dmBadge.Text, 10, Enum.Font.GothamBlack, Vector2.new(1000, 30)).X + 10
-        dmBadge.Size = UDim2.new(0, w, 1, -12)
+        local w = TextService:GetTextSize(dmBadge.Text, 10, Enum.Font.GothamBlack, Vector2.new(1000, 30)).X + 12
+        dmBadge.Size = UDim2.new(0, w, 1, -14)
         dmBadge.Visible = true
         chatInput.Position = UDim2.new(0, w + 12, 0, 0)
-        chatInput.Size = UDim2.new(1, -(w + 118), 1, 0)
+        chatInput.Size = UDim2.new(1, -(w + 120), 1, 0)
     else
         dmBadge.Visible = false
-        chatInput.Position = UDim2.new(0, 14, 0, 0)
-        chatInput.Size = UDim2.new(1, -112, 1, 0)
+        chatInput.Position = UDim2.new(0, 12, 0, 0)
+        chatInput.Size = UDim2.new(1, -116, 1, 0)
     end
 end
 
@@ -1686,7 +1689,8 @@ end)
 
 local memeBtn = Instance.new("TextButton", inputContainer)
 memeBtn.Size = UDim2.fromOffset(26, 26)
-memeBtn.Position = UDim2.new(1, -98, 0.5, -13)
+memeBtn.AnchorPoint = Vector2.new(1, 0.5)
+memeBtn.Position = UDim2.new(1, -72, 0.5, 0)
 memeBtn.BackgroundTransparency = 1
 memeBtn.Text = "GIF"
 memeBtn.Font = Enum.Font.GothamBlack
@@ -1697,18 +1701,20 @@ applySpringHover(memeBtn)
 
 local emojiBtn = Instance.new("TextButton", inputContainer)
 emojiBtn.Size = UDim2.fromOffset(26, 26)
-emojiBtn.Position = UDim2.new(1, -68, 0.5, -13)
+emojiBtn.AnchorPoint = Vector2.new(1, 0.5)
+emojiBtn.Position = UDim2.new(1, -42, 0.5, 0)
 emojiBtn.BackgroundTransparency = 1
 emojiBtn.Text = ":)"
 emojiBtn.Font = Enum.Font.GothamBlack
 emojiBtn.TextColor3 = Colors.Text
-emojiBtn.TextSize = 11
+emojiBtn.TextSize = 12
 emojiBtn.ZIndex = 14
 applySpringHover(emojiBtn)
 
 local sendBtn = Instance.new("TextButton", inputContainer)
-sendBtn.Size = UDim2.fromOffset(30, 28)
-sendBtn.Position = UDim2.new(1, -36, 0.5, -14)
+sendBtn.Size = UDim2.fromOffset(28, 28)
+sendBtn.AnchorPoint = Vector2.new(1, 0.5)
+sendBtn.Position = UDim2.new(1, -8, 0.5, 0)
 sendBtn.BackgroundColor3 = Colors.Primary
 sendBtn.Text = ">"
 sendBtn.TextColor3 = Color3.fromRGB(8, 10, 15)
@@ -1927,7 +1933,6 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
         end
     end)
 
-    -- Fixed: UserInputService listener prevents sticky drag cursor bug
     UserInputService.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = false
@@ -2198,7 +2203,7 @@ end)
 -- =========================================================
 -- 📡 SEND MESSAGE (100% INSTANT 0MS ZERO-WAIT ENGINE)
 -- =========================================================
-local isSendingCooldown = false
+local lastSendTick = 0
 sendMessageFunc = function(overrideText)
     local text = overrideText or chatInput.Text
     if not text then return end
@@ -2206,7 +2211,10 @@ sendMessageFunc = function(overrideText)
     if text == "TextBox" then text = "" end
     text = string.gsub(text, "^%s+", "")
     text = string.gsub(text, "%s+$", "")
-    if text == "" or isSendingCooldown then return end
+    
+    -- Anti-Spam / Double-Click Instant Guard
+    if text == "" or (tick() - lastSendTick < 0.15) then return end
+    lastSendTick = tick()
 
     local pMatch = text:match("^!p%s+(%w+)")
     if pMatch then
@@ -2222,10 +2230,10 @@ sendMessageFunc = function(overrideText)
         finalMsg = "( 🔐 " .. lp.Name .. " Private " .. privateTarget .. ") " .. text
     end
 
-    -- ⚡ Instant UI Clearing (No delay, no freeze)
+    -- ⚡ Instant UI Input Flush
     if not overrideText then chatInput.Text = "" end
 
-    -- ⚡ Instant Local Feed Echo
+    -- ⚡ Instant 0ms Local Feed Render
     if privateTarget then
         addMessageToFeed(lp.Name, text, privateTarget, true)
     else
@@ -2233,18 +2241,12 @@ sendMessageFunc = function(overrideText)
     end
     displayBubble(lp.Name, text)
 
-    -- ⚡ Accurate Local Queue for Bulletproof Deduplication
-    table.insert(recentSentCache, { 
-        msg = finalMsg, 
-        rawText = text, 
-        time = tick() 
-    })
-    if #recentSentCache > 30 then
-        table.remove(recentSentCache, 1)
-    end
+    -- ⚡ Deduplication Fingerprint Store
+    local cleanKey = string.lower(finalMsg)
+    recentLocalSentMap[cleanKey] = tick()
+    recentLocalSentMap[string.lower(text)] = tick()
 
-    -- Non-blocking background network send (No loading screen / no '..' indicator)
-    isSendingCooldown = true
+    -- Async Network Push (No freeze, no loading states)
     task.spawn(function()
         if req then
             local payload = HttpService:JSONEncode({
@@ -2262,9 +2264,6 @@ sendMessageFunc = function(overrideText)
                 })
             end)
         end
-
-        task.wait(0.2)
-        isSendingCooldown = false
     end)
 end
 
@@ -2274,7 +2273,7 @@ chatInput.FocusLost:Connect(function(enterPressed)
 end)
 
 -- =========================================================
--- 📥 HIGH-FREQUENCY POLLING ENGINE (DUPLICATE-FREE SYNC)
+-- 📥 HIGH-FREQUENCY POLLING ENGINE (DOUBLE-MSG IMMUNE)
 -- =========================================================
 task.spawn(function()
     while _G.TXR_IsPolling and (_G.TXR_ChatInstanceID == currentExecutionID) and task.wait(0.4) do
@@ -2311,6 +2310,8 @@ task.spawn(function()
                             for i = startIndex, #data do
                                 local m = data[i]
                                 if not m.hidden and m.msg ~= "Joined" then
+                                    local initKey = (m.id and tostring(m.id)) or (m.user .. "_" .. tostring(m.time) .. "_" .. m.msg)
+                                    processedServerMessageMap[initKey] = true
                                     addMessageToFeed(m.user, m.msg, nil, false)
                                     updateLiveCounter(m.user)
                                 end
@@ -2321,12 +2322,19 @@ task.spawn(function()
                     end
 
                     for _, m in ipairs(data) do
-                        if m.time > lastSyncTime then
+                        -- ⚡ 1. Primary Unique Fingerprint Hash Check
+                        local uniqueMsgKey = (m.id and tostring(m.id)) or (m.user .. "_" .. tostring(m.time) .. "_" .. m.msg)
+                        if processedServerMessageMap[uniqueMsgKey] then
+                            continue
+                        end
+
+                        if m.time >= lastSyncTime then
                             lastSyncTime = m.time
                             knownUsers[m.user:lower()] = m.user
                             updateLiveCounter(m.user)
 
                             if m.msg == "Joined" then
+                                processedServerMessageMap[uniqueMsgKey] = true
                                 if m.user ~= lp.Name then
                                     addJoinNotice(m.user)
                                     playSFX("default")
@@ -2334,24 +2342,35 @@ task.spawn(function()
                                 continue
                             end
 
-                            if m.hidden then continue end
-                            if chatMode == "server" and m.jobId ~= game.JobId then continue end
+                            if m.hidden then 
+                                processedServerMessageMap[uniqueMsgKey] = true
+                                continue 
+                            end
+                            if chatMode == "server" and m.jobId ~= game.JobId then 
+                                processedServerMessageMap[uniqueMsgKey] = true
+                                continue 
+                            end
 
-                            -- ⚡ Absolute Local Echo Anti-Duplicate Check (No time-drift failure)
-                            local isLocalEcho = false
+                            -- ⚡ 2. Bulletproof Local Echo Consumption (Solves Double Messages)
                             if m.user:lower() == lp.Name:lower() then
-                                for idx, sent in ipairs(recentSentCache) do
-                                    if (sent.msg == m.msg or sent.rawText == m.msg) and (tick() - sent.time <= 45) then
-                                        isLocalEcho = true
-                                        table.remove(recentSentCache, idx)
+                                local lowMsg = string.lower(m.msg)
+                                local isEcho = false
+
+                                for sentText, sentTime in pairs(recentLocalSentMap) do
+                                    if (sentText == lowMsg or lowMsg:find(sentText, 1, true)) and (tick() - sentTime <= 60) then
+                                        isEcho = true
+                                        recentLocalSentMap[sentText] = nil
                                         break
                                     end
                                 end
+
+                                if isEcho then
+                                    processedServerMessageMap[uniqueMsgKey] = true
+                                    continue
+                                end
                             end
 
-                            if isLocalEcho then
-                                continue
-                            end
+                            processedServerMessageMap[uniqueMsgKey] = true
 
                             local pSender, pTarget, pMsg = string.match(m.msg, "^%( 🔐 ([%w_]+) Private ([%w_]+)%) (.*)$")
                             if pSender and pTarget then
