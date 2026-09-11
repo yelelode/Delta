@@ -205,6 +205,7 @@ local ghostDebounce = false
 local userIdCache = {}
 local searchQuery = ""
 local recentSentCache = {}
+local adminCardsRegistry = {}
 
 local MY_VIP_ID = 9685785248 
 local Admin = { 
@@ -214,6 +215,33 @@ local Admin = {
 
 if lp.UserId == MY_VIP_ID then
     Admin[lp.Name:lower()] = true
+end
+
+-- =========================================================
+-- ⚡ DYNAMIC RED RGB CHROMA GENERATOR
+-- =========================================================
+local function getAnimatedDaddyTag(animTime)
+    local chars = {"[", "👑", " ", "D", "A", "D", "D", "Y", "]"}
+    local str = ""
+    for i, ch in ipairs(chars) do
+        local phase = (animTime * 5.2 - (i * 0.42))
+        local wave = (math.sin(phase) + 1) / 2
+        local wave2 = (math.cos(phase * 0.7) + 1) / 2
+        
+        local r = 255
+        local g = math.floor(10 + (wave * 90) + (wave2 * 30))
+        local b = math.floor(25 + (wave * 85) + (wave2 * 35))
+        
+        -- Specular neon flash
+        if wave > 0.86 then
+            g = math.min(255, g + 85)
+            b = math.min(255, b + 95)
+        end
+        
+        local hex = string.format("#%02X%02X%02X", r, g, b)
+        str = str .. string.format("<font color='%s'><b>%s</b></font>", hex, ch)
+    end
+    return "<stroke color='#400008' thickness='1.5'>" .. str .. "</stroke> "
 end
 
 local function displayBubble(userName, msg)
@@ -749,6 +777,7 @@ createHeaderBtn("🗑️", -82, function()
             c:Destroy()
         end
     end
+    table.clear(adminCardsRegistry)
 end)
 
 local actionMenu
@@ -826,6 +855,7 @@ local searchBox = Instance.new("TextBox", channelFrame)
 searchBox.Size = UDim2.new(0.24, 0, 1, 0)
 searchBox.Position = UDim2.fromScale(0.76, 0)
 searchBox.BackgroundColor3 = Colors.Surface
+searchBox.Text = ""
 searchBox.PlaceholderText = "🔍 Search..."
 searchBox.PlaceholderColor3 = Colors.SubText
 searchBox.TextColor3 = Colors.Text
@@ -851,7 +881,7 @@ serverBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 💬 FULL-HEIGHT CHAT FEED (FALTU BOXES REMOVED)
+-- 💬 FULL-HEIGHT CHAT FEED (BOXES REMOVED)
 -- =========================================================
 messageFeed.Size = UDim2.new(1, -24, 1, -126)
 messageFeed.Position = UDim2.new(0, 12, 0, 72)
@@ -924,7 +954,7 @@ local function createActionBtn(text, color, onClick)
 end
 
 -- =========================================================
--- 💬 MESSAGE PIPELINE (RED RGB DADDY GLOW + ZERO LATENCY)
+-- 💬 MESSAGE PIPELINE (ANIMATED RED RGB DADDY TAG + FAST SYNC)
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -1008,7 +1038,6 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     cardStroke.Transparency = isMentioned and 0.2 or (Admin[userName:lower()] and 0.15 or 0.85)
     cardStroke.Color = isMentioned and Colors.MentionGold or (Admin[userName:lower()] and Color3.fromRGB(255, 0, 50) or Colors.PrimaryDark)
 
-    -- Animated Red RGB Stroke Glow for Admin cards
     if Admin[userName:lower()] then
         local royalGrad = Instance.new("UIGradient", cardStroke)
         royalGrad.Color = ColorSequence.new({
@@ -1064,27 +1093,37 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
 
     local timeStr = os.date("%H:%M")
     local timeTag = string.format("<font color='#657388'>[%s]</font> ", timeStr)
-
-    -- RED RGB GLOW DADDY TAG
-    local prefix = ""
-    if Admin[userName:lower()] then
-        prefix = "<font color='#FFFFFF'><b><stroke color='#FF0038' thickness='1.8' transparency='0.05'>[👑 DADDY]</stroke></b></font> "
-    end
-
     local cleanUserName = sanitizeXml(userName)
-    local headerLine = ""
+
+    local dmTag = ""
     if privateUserTarget then
         cardStroke.Color = Colors.Purple
         cardStroke.Transparency = 0.4
-        local dmTag = isPrivateSender and ("<font color='#A032FF'>[🔐 To @" .. sanitizeXml(privateUserTarget) .. "]</font> ") or ("<font color='#A032FF'>[🔐 From @" .. sanitizeXml(privateUserTarget) .. "]</font> ")
-        headerLine = timeTag .. dmTag .. prefix .. string.format("<font color='%s'><b>%s:</b></font> ", (currentThemeIdx == 2 and "#FF2D55" or "#00FFC8"), cleanUserName)
+        dmTag = isPrivateSender and ("<font color='#A032FF'>[🔐 To @" .. sanitizeXml(privateUserTarget) .. "]</font> ") or ("<font color='#A032FF'>[🔐 From @" .. sanitizeXml(privateUserTarget) .. "]</font> ")
+    end
+
+    local nameTag = string.format("<font color='%s'><b>%s:</b></font> ", (currentThemeIdx == 2 and "#FF2D55" or "#00FFC8"), cleanUserName)
+    local cleanMsg = sanitizeXml(msg)
+
+    if Admin[userName:lower()] then
+        table.insert(adminCardsRegistry, {
+            txt = txt,
+            headerPrefix = timeTag .. dmTag,
+            userTag = nameTag,
+            msgContent = cleanMsg,
+            isMeme = (memeIdMatch ~= nil)
+        })
+        txt.Text = timeTag .. dmTag .. getAnimatedDaddyTag(tick()) .. nameTag .. (memeIdMatch and "<font color='#FFD700'><i>[Sticker]</i></font>" or cleanMsg)
     else
-        headerLine = timeTag .. prefix .. string.format("<font color='%s'><b>%s:</b></font> ", (currentThemeIdx == 2 and "#FF2D55" or "#00FFC8"), cleanUserName)
+        local headerLine = timeTag .. dmTag .. nameTag
+        if memeIdMatch then
+            txt.Text = headerLine .. "<font color='#FFD700'><i>[Sticker]</i></font>"
+        else
+            txt.Text = headerLine .. cleanMsg
+        end
     end
 
     if memeIdMatch then
-        txt.Text = headerLine .. "<font color='#FFD700'><i>[Sticker]</i></font>"
-        
         local memeImg = Instance.new("ImageLabel", card)
         memeImg.Size = UDim2.fromOffset(90, 90)
         memeImg.Position = UDim2.fromOffset(42, 28)
@@ -1099,7 +1138,6 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         mStroke.Color = Colors.PrimaryDark
         mStroke.Thickness = 1.2
     else
-        txt.Text = headerLine .. sanitizeXml(msg)
         local padFix = Instance.new("UIPadding", card)
         padFix.PaddingBottom = UDim.new(0, 6)
     end
@@ -1197,6 +1235,7 @@ local chatInput = Instance.new("TextBox", inputContainer)
 chatInput.Size = UDim2.new(1, -104, 1, 0)
 chatInput.Position = UDim2.new(0, 12, 0, 0)
 chatInput.BackgroundTransparency = 1
+chatInput.Text = ""
 chatInput.PlaceholderText = "Type message... (!p user to DM)"
 chatInput.PlaceholderColor3 = Colors.SubText
 chatInput.TextColor3 = Colors.Text
@@ -1312,7 +1351,7 @@ emojiBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🎭 MEME / STICKER DRAWER
+-- 🎭 MEME / STICKER MODAL DRAWER
 -- =========================================================
 memeFrame = Instance.new("Frame", mainFrame)
 memeFrame.Size = UDim2.new(0, 280, 0, 190)
@@ -1374,7 +1413,7 @@ memeBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🚀 BULLETPROOF DRAG ENGINE & ORB RESTORE
+-- 🚀 BULLETPROOF SAFE CLAMP DRAG ENGINE & ORB RESTORE
 -- =========================================================
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
@@ -1555,8 +1594,9 @@ UserInputService.InputBegan:Connect(function(input, gp)
 end)
 
 -- =========================================================
--- ⚡ REACTOR RENDERING ANIMATION LOOP
+-- ⚡ REACTOR RENDERING ANIMATION & CHROMA ENGINE LOOP
 -- =========================================================
+local lastChromaUpdate = 0
 task.spawn(function()
     local t = 0
     local sonarTimer = 0
@@ -1566,6 +1606,24 @@ task.spawn(function()
     RunService.RenderStepped:Connect(function(dt)
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
         t = t + dt
+
+        -- ⚡ 60 FPS ULTRA FLUID RED RGB CHROMA UPDATE
+        if (t - lastChromaUpdate) >= 0.035 and #adminCardsRegistry > 0 then
+            lastChromaUpdate = t
+            local currentDaddyTag = getAnimatedDaddyTag(t)
+            for i = #adminCardsRegistry, 1, -1 do
+                local item = adminCardsRegistry[i]
+                if item.txt and item.txt.Parent then
+                    if item.isMeme then
+                        item.txt.Text = item.headerPrefix .. currentDaddyTag .. item.userTag .. "<font color='#FFD700'><i>[Sticker]</i></font>"
+                    else
+                        item.txt.Text = item.headerPrefix .. currentDaddyTag .. item.userTag .. item.msgContent
+                    end
+                else
+                    table.remove(adminCardsRegistry, i)
+                end
+            end
+        end
 
         if mainFrame.Visible then
             strokeGrad.Rotation = (t * 40) % 360
@@ -1699,7 +1757,7 @@ task.spawn(function()
 end)
 
 -- =========================================================
--- 📡 SEND MESSAGE (INSTANT 0MS OPTIMISTIC FEED ENGINE)
+-- 📡 SEND MESSAGE (INSTANT 0MS FEED ENGINE)
 -- =========================================================
 local isSendingCooldown = false
 sendMessageFunc = function(overrideText)
@@ -1721,7 +1779,7 @@ sendMessageFunc = function(overrideText)
         finalMsg = "( 🔐 " .. lp.Name .. " Private " .. privateTarget .. ") " .. text
     end
 
-    -- ⚡ 0MS ZERO DELAY: Instant Local Render in UI
+    -- ⚡ Instant Local Echo (Zero Latency)
     if privateTarget then
         addMessageToFeed(lp.Name, text, privateTarget, true)
     else
@@ -1729,7 +1787,6 @@ sendMessageFunc = function(overrideText)
     end
     displayBubble(lp.Name, text)
 
-    -- Deduplication cache entry
     table.insert(recentSentCache, { msg = finalMsg, time = os.time() })
     if #recentSentCache > 25 then
         table.remove(recentSentCache, 1)
@@ -1777,7 +1834,7 @@ chatInput.FocusLost:Connect(function(enterPressed)
 end)
 
 -- =========================================================
--- 📥 HIGH-FREQUENCY POLLING ENGINE (FAST SYNC)
+-- 📥 HIGH-FREQUENCY POLLING ENGINE (FAST REALTIME SYNC)
 -- =========================================================
 task.spawn(function()
     while _G.TXR_IsPolling and task.wait(0.25) do
@@ -1831,7 +1888,6 @@ task.spawn(function()
                             if m.hidden then continue end
                             if chatMode == "server" and m.jobId ~= game.JobId then continue end
 
-                            -- Check for local echo (prevent duplicate print of our own instant message)
                             local isLocalEcho = false
                             if m.user:lower() == lp.Name:lower() then
                                 for idx, sent in ipairs(recentSentCache) do
