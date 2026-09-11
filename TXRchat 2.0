@@ -12,7 +12,7 @@ pcall(function()
 end)
 
 -- =========================================================
--- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V16.0 SMART SUITE) 👑
+-- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V17.0 ULTRA SMART SUITE) 👑
 -- =========================================================
 
 local currentExecutionID = tick()
@@ -115,160 +115,160 @@ local Colors = {
 }
 
 -- =========================================================
--- 👑 16 ZERO-BOX LUXURY TYPOGRAPHY BADGES
+-- 👑 16 HIGH-VELOCITY 60 FPS ULTRA RGB BADGE PRESETS
 -- =========================================================
 local BadgePresets = {
     ["OWNER"] = {
         Title = "OWNER",
-        Speed = 0.85,
+        Speed = 3.2,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 45, 95)),
-            ColorSequenceKeypoint.new(0.20, Color3.fromRGB(255, 165, 35)),
-            ColorSequenceKeypoint.new(0.40, Color3.fromRGB(35, 235, 180)),
-            ColorSequenceKeypoint.new(0.60, Color3.fromRGB(55, 155, 255)),
-            ColorSequenceKeypoint.new(0.80, Color3.fromRGB(175, 65, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 45, 95))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 35, 85)),
+            ColorSequenceKeypoint.new(0.20, Color3.fromRGB(255, 165, 30)),
+            ColorSequenceKeypoint.new(0.40, Color3.fromRGB(0, 255, 190)),
+            ColorSequenceKeypoint.new(0.60, Color3.fromRGB(40, 150, 255)),
+            ColorSequenceKeypoint.new(0.80, Color3.fromRGB(185, 60, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 35, 85))
         }
     },
     ["DADDY"] = {
         Title = "DADDY",
-        Speed = 0.9,
+        Speed = 3.4,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 30, 80)),
-            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 110, 45)),
-            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(255, 215, 50)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 30, 80))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 20, 75)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 120, 40)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(255, 225, 45)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 20, 75))
         }
     },
     ["TITAN"] = {
         Title = "TITAN",
-        Speed = 0.9,
+        Speed = 3.2,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 240, 255)),
-            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(75, 165, 255)),
-            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(155, 55, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 240, 255))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 255)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(65, 160, 255)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(165, 50, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 255))
         }
     },
     ["OVERLORD"] = {
         Title = "OVERLORD",
-        Speed = 0.85,
+        Speed = 3.1,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(175, 65, 255)),
-            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 65, 175)),
-            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(95, 105, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(175, 65, 255))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(185, 55, 255)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 50, 185)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(90, 110, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(185, 55, 255))
         }
     },
     ["DEV"] = {
         Title = "DEV",
-        Speed = 1.0,
+        Speed = 3.5,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 195)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(65, 145, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 195))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 200)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(60, 145, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 200))
         }
     },
     ["VIP"] = {
         Title = "VIP",
-        Speed = 0.9,
+        Speed = 3.2,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 135, 25)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 225, 65)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 135, 25))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 135, 20)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 235, 60)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 135, 20))
         }
     },
     ["GOD"] = {
         Title = "GOD",
-        Speed = 1.1,
+        Speed = 3.6,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 105, 165)),
-            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 225, 105)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(105, 255, 185)),
-            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(105, 185, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 105, 165))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 100, 170)),
+            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 230, 95)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(90, 255, 195)),
+            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(95, 190, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 100, 170))
         }
     },
     ["CYBER"] = {
         Title = "CYBER",
-        Speed = 1.0,
+        Speed = 3.5,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 5, 215)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(5, 245, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 5, 215))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 220)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0, 250, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 220))
         }
     },
     ["VOID"] = {
         Title = "VOID",
-        Speed = 0.8,
+        Speed = 2.8,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(85, 90, 135)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(175, 180, 230)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(85, 90, 135))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(80, 85, 140)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(180, 185, 240)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(80, 85, 140))
         }
     },
     ["ZENITH"] = {
         Title = "ZENITH",
-        Speed = 0.95,
+        Speed = 3.3,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(5, 255, 215)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(45, 180, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(5, 255, 215))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 220)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(40, 180, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 220))
         }
     },
     ["APEX"] = {
         Title = "APEX",
-        Speed = 1.0,
+        Speed = 3.5,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 40, 80)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 155, 40)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 40, 80))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 30, 75)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 160, 30)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 30, 75))
         }
     },
     ["LUCIFER"] = {
         Title = "LUCIFER",
-        Speed = 1.0,
+        Speed = 3.5,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 15, 35)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 85, 30)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 15, 35))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 10, 30)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 95, 25)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 10, 30))
         }
     },
     ["SUPREME"] = {
         Title = "SUPREME",
-        Speed = 0.85,
+        Speed = 3.2,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 210, 65)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 245, 155)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 210, 65))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 215, 60)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 250, 160)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 215, 60))
         }
     },
     ["ROYAL"] = {
         Title = "ROYAL",
-        Speed = 0.8,
+        Speed = 3.0,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(215, 160, 30)),
-            ColorSequenceKeypoint.new(0.40, Color3.fromRGB(255, 225, 105)),
-            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(255, 140, 35)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(215, 160, 30))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(225, 165, 25)),
+            ColorSequenceKeypoint.new(0.40, Color3.fromRGB(255, 230, 110)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(255, 145, 30)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(225, 165, 25))
         }
     },
     ["DEMON"] = {
         Title = "DEMON",
-        Speed = 1.0,
+        Speed = 3.4,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 5, 90)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 70, 40)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 5, 90))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 80)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 75, 35)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 80))
         }
     },
     ["PHANTOM"] = {
         Title = "PHANTOM",
-        Speed = 0.95,
+        Speed = 3.3,
         Colors = {
-            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(5, 255, 155)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(5, 205, 255)),
-            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(5, 255, 155))
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 160)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0, 210, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 160))
         }
     }
 }
@@ -325,9 +325,7 @@ local function applySpringHover(btn)
     end)
 end
 
-local isAudioMuted = false
 local function playSFX(soundType)
-    if isAudioMuted then return end
     task.spawn(function()
         pcall(function()
             local s = Instance.new("Sound")
@@ -354,7 +352,7 @@ end
 local SERVER_URL = "https://my-roblox-private-chat.onrender.com"
 local lastSyncTime = 0
 local isInitialSync = true
-local chatMode = "global"
+local chatMode = "server" -- Default set to SERVER mode
 local privateTarget = nil
 local knownUsers = {}
 local activeUsersTable = {}
@@ -772,7 +770,7 @@ local function refreshRosterUI()
 end
 
 -- =========================================================
--- 🌟 HEADER BAR & TACTICAL CONTROLS (PIXEL-PERFECT LAYOUT)
+-- 🌟 HEADER BAR & TACTICAL CONTROLS (BALANCED AESTHETICS)
 -- =========================================================
 local header = Instance.new("Frame", mainFrame)
 header.Size = UDim2.new(1, 0, 0, 42)
@@ -780,7 +778,7 @@ header.BackgroundTransparency = 1
 header.ZIndex = 10
 
 local headerLeftCluster = Instance.new("Frame", header)
-headerLeftCluster.Size = UDim2.new(0, 250, 1, 0)
+headerLeftCluster.Size = UDim2.new(0, 210, 1, 0)
 headerLeftCluster.Position = UDim2.fromOffset(14, 0)
 headerLeftCluster.BackgroundTransparency = 1
 headerLeftCluster.ZIndex = 11
@@ -788,7 +786,7 @@ headerLeftCluster.ZIndex = 11
 local hlLayout = Instance.new("UIListLayout", headerLeftCluster)
 hlLayout.FillDirection = Enum.FillDirection.Horizontal
 hlLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-hlLayout.Padding = UDim.new(0, 8)
+hlLayout.Padding = UDim.new(0, 10)
 
 local headerTitle = Instance.new("TextLabel", headerLeftCluster)
 headerTitle.AutomaticSize = Enum.AutomaticSize.X
@@ -797,13 +795,13 @@ headerTitle.BackgroundTransparency = 1
 headerTitle.Text = "TXR // TITAN"
 headerTitle.TextColor3 = Colors.Primary
 headerTitle.Font = Enum.Font.GothamBlack
-headerTitle.TextSize = 13
+headerTitle.TextSize = 13.5
 headerTitle.TextXAlignment = Enum.TextXAlignment.Left
 headerTitle.ZIndex = 12
 crispText(headerTitle)
 
 local liveBadge = Instance.new("TextButton", headerLeftCluster)
-liveBadge.Size = UDim2.fromOffset(78, 22)
+liveBadge.Size = UDim2.fromOffset(80, 22)
 liveBadge.BackgroundColor3 = Colors.Surface
 liveBadge.BackgroundTransparency = 0.3
 liveBadge.Text = ""
@@ -835,28 +833,6 @@ liveText.TextSize = 8.5
 liveText.TextXAlignment = Enum.TextXAlignment.Left
 liveText.ZIndex = 13
 
--- ⚡ SMART LATENCY HUD BADGE (MS PING)
-local pingBadge = Instance.new("Frame", headerLeftCluster)
-pingBadge.Size = UDim2.fromOffset(48, 22)
-pingBadge.BackgroundColor3 = Colors.Surface
-pingBadge.BackgroundTransparency = 0.5
-pingBadge.ZIndex = 12
-Instance.new("UICorner", pingBadge).CornerRadius = UDim.new(1, 0)
-
-local pbStroke = Instance.new("UIStroke", pingBadge)
-pbStroke.Color = Colors.SurfaceHover
-pbStroke.Thickness = 1
-pbStroke.Transparency = 0.6
-
-local pingText = Instance.new("TextLabel", pingBadge)
-pingText.Size = UDim2.fromScale(1, 1)
-pingText.BackgroundTransparency = 1
-pingText.Text = "42ms"
-pingText.TextColor3 = Color3.fromRGB(80, 220, 140)
-pingText.Font = Enum.Font.GothamBold
-pingText.TextSize = 8.5
-pingText.ZIndex = 13
-
 liveBadge.MouseButton1Click:Connect(function()
     refreshRosterUI()
     rosterFrame.Visible = not rosterFrame.Visible
@@ -866,11 +842,11 @@ liveBadge.MouseButton1Click:Connect(function()
     end
 end)
 
--- ⚡ RIGHT-ALIGNED COMPACT HEADER ACTIONS (EVENLY SPACED)
+-- ⚡ COMPACT CLEAN HEADER ACTIONS (NO MS / NO MUTE BUTTON)
 local headerRightCluster = Instance.new("Frame", header)
 headerRightCluster.AnchorPoint = Vector2.new(1, 0.5)
 headerRightCluster.Position = UDim2.new(1, -12, 0.5, 0)
-headerRightCluster.Size = UDim2.new(0, 180, 0, 24)
+headerRightCluster.Size = UDim2.new(0, 200, 0, 24)
 headerRightCluster.BackgroundTransparency = 1
 headerRightCluster.ZIndex = 12
 
@@ -878,7 +854,7 @@ local hrLayout = Instance.new("UIListLayout", headerRightCluster)
 hrLayout.FillDirection = Enum.FillDirection.Horizontal
 hrLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 hrLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-hrLayout.Padding = UDim.new(0, 6)
+hrLayout.Padding = UDim.new(0, 5)
 
 local function createHeaderBtn(text, onClick)
     local b = Instance.new("TextButton", headerRightCluster)
@@ -955,11 +931,24 @@ ghostBtn = createHeaderBtn("GST", function()
     end
 end)
 
-local soundBtn
-soundBtn = createHeaderBtn("SND", function()
-    isAudioMuted = not isAudioMuted
-    soundBtn.Text = isAudioMuted and "MUT" or "SND"
-    soundBtn.TextColor3 = isAudioMuted and Colors.Danger or Colors.Text
+local searchContainer
+local searchToggleBtn = createHeaderBtn("SRC", function()
+    if searchContainer then
+        searchContainer.Visible = not searchContainer.Visible
+    end
+end)
+
+local messageFeed
+
+-- ⚡ CLEAN CLEAR CHAT (CLS) FEATURE
+createHeaderBtn("CLS", function()
+    if messageFeed then
+        for _, c in ipairs(messageFeed:GetChildren()) do
+            if c:IsA("GuiObject") and c.Name ~= "UIListLayout" and c.Name ~= "UIPadding" then
+                c:Destroy()
+            end
+        end
+    end
 end)
 
 local actionMenu
@@ -970,6 +959,7 @@ createHeaderBtn("-", function()
     if rosterFrame then rosterFrame.Visible = false end
     if memeFrame then memeFrame.Visible = false end
     if badgeSelectorModal then badgeSelectorModal.Visible = false end
+    if searchContainer then searchContainer.Visible = false end
     
     local tInfo1 = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In)
     local tInfo2 = TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
@@ -1004,16 +994,18 @@ headerDivider.BackgroundColor3 = Color3.fromRGB(25, 32, 46)
 headerDivider.BackgroundTransparency = 0.5
 headerDivider.ZIndex = 12
 
--- Mode Switcher & Search Bar Container
+-- =========================================================
+-- 🔀 CHANNEL TABS & INDEPENDENT DEDICATED SEARCH BAR
+-- =========================================================
 local channelFrame = Instance.new("Frame", mainFrame)
-channelFrame.Size = UDim2.new(1, -24, 0, 28)
+channelFrame.Size = UDim2.new(1, -24, 0, 30)
 channelFrame.Position = UDim2.new(0, 12, 0, 48)
 channelFrame.BackgroundTransparency = 1
 channelFrame.ZIndex = 8
 
--- Segmented Pill Shell for Tabs
+-- Full-width Clean Segmented Shell for Tabs (SERVER FIRST, THEN GLOBAL)
 local tabShell = Instance.new("Frame", channelFrame)
-tabShell.Size = UDim2.new(0.64, 0, 1, 0)
+tabShell.Size = UDim2.new(1, 0, 1, 0)
 tabShell.BackgroundColor3 = Colors.Surface
 tabShell.BackgroundTransparency = 0.4
 tabShell.ZIndex = 9
@@ -1023,48 +1015,79 @@ tsStroke.Thickness = 1
 tsStroke.Color = Colors.SurfaceHover
 tsStroke.Transparency = 0.5
 
-local globalBtn = Instance.new("TextButton", tabShell)
-globalBtn.Size = UDim2.new(0.5, -2, 1, -4)
-globalBtn.Position = UDim2.new(0, 2, 0, 2)
-globalBtn.BackgroundColor3 = Colors.ActiveTint
-globalBtn.Text = "GLOBAL"
-globalBtn.TextColor3 = Colors.Primary
-globalBtn.Font = Enum.Font.GothamBlack
-globalBtn.TextSize = 10
-globalBtn.AutoButtonColor = false
-globalBtn.ZIndex = 10
-Instance.new("UICorner", globalBtn).CornerRadius = UDim.new(0, 6)
-
+-- 1. SERVER TAB (Placed First)
 local serverBtn = Instance.new("TextButton", tabShell)
 serverBtn.Size = UDim2.new(0.5, -2, 1, -4)
-serverBtn.Position = UDim2.new(0.5, 0, 0, 2)
-serverBtn.BackgroundTransparency = 1
+serverBtn.Position = UDim2.new(0, 2, 0, 2)
+serverBtn.BackgroundColor3 = Colors.ActiveTint
 serverBtn.Text = "SERVER"
-serverBtn.TextColor3 = Colors.SubText
-serverBtn.Font = Enum.Font.GothamBold
-serverBtn.TextSize = 10
+serverBtn.TextColor3 = Colors.Primary
+serverBtn.Font = Enum.Font.GothamBlack
+serverBtn.TextSize = 10.5
 serverBtn.AutoButtonColor = false
 serverBtn.ZIndex = 10
 Instance.new("UICorner", serverBtn).CornerRadius = UDim.new(0, 6)
 
-local searchBox = Instance.new("TextBox", channelFrame)
-searchBox.Size = UDim2.new(0.34, 0, 1, 0)
-searchBox.Position = UDim2.new(0.66, 0, 0, 0)
-searchBox.BackgroundColor3 = Colors.Surface
-searchBox.BackgroundTransparency = 0.4
+-- 2. GLOBAL TAB (Placed After Server)
+local globalBtn = Instance.new("TextButton", tabShell)
+globalBtn.Size = UDim2.new(0.5, -2, 1, -4)
+globalBtn.Position = UDim2.new(0.5, 0, 0, 2)
+globalBtn.BackgroundTransparency = 1
+globalBtn.Text = "GLOBAL"
+globalBtn.TextColor3 = Colors.SubText
+globalBtn.Font = Enum.Font.GothamBold
+globalBtn.TextSize = 10.5
+globalBtn.AutoButtonColor = false
+globalBtn.ZIndex = 10
+Instance.new("UICorner", globalBtn).CornerRadius = UDim.new(0, 6)
+
+-- ⚡ SEPARATE SMART FLOATING SEARCH SLIDER (Never blocks the tabs)
+searchContainer = Instance.new("Frame", mainFrame)
+searchContainer.Size = UDim2.new(1, -24, 0, 28)
+searchContainer.Position = UDim2.new(0, 12, 0, 82)
+searchContainer.BackgroundColor3 = Color3.fromRGB(13, 16, 24)
+searchContainer.BackgroundTransparency = 0.05
+searchContainer.Visible = false
+searchContainer.ZIndex = 25
+Instance.new("UICorner", searchContainer).CornerRadius = UDim.new(0, 7)
+local scStroke = Instance.new("UIStroke", searchContainer)
+scStroke.Thickness = 1.2
+scStroke.Color = Colors.Primary
+scStroke.Transparency = 0.4
+
+local searchIcon = Instance.new("TextLabel", searchContainer)
+searchIcon.Size = UDim2.new(0, 28, 1, 0)
+searchIcon.BackgroundTransparency = 1
+searchIcon.Text = "🔍"
+searchIcon.TextSize = 12
+searchIcon.ZIndex = 26
+
+local searchBox = Instance.new("TextBox", searchContainer)
+searchBox.Size = UDim2.new(1, -56, 1, 0)
+searchBox.Position = UDim2.new(0, 28, 0, 0)
+searchBox.BackgroundTransparency = 1
 searchBox.Text = ""
-searchBox.PlaceholderText = "Search chat..."
+searchBox.PlaceholderText = "Type keywords to filter chat..."
 searchBox.PlaceholderColor3 = Colors.SubText
 searchBox.TextColor3 = Colors.Text
 searchBox.Font = Enum.Font.GothamMedium
-searchBox.TextSize = 9.5
+searchBox.TextSize = 10.5
 searchBox.ClearTextOnFocus = false
-searchBox.ZIndex = 9
-Instance.new("UICorner", searchBox).CornerRadius = UDim.new(0, 8)
-local sbStroke = Instance.new("UIStroke", searchBox)
-sbStroke.Thickness = 1
-sbStroke.Color = Colors.SurfaceHover
-sbStroke.Transparency = 0.5
+searchBox.TextXAlignment = Enum.TextXAlignment.Left
+searchBox.ZIndex = 26
+
+local searchClearBtn = Instance.new("TextButton", searchContainer)
+searchClearBtn.Size = UDim2.new(0, 24, 0, 24)
+searchClearBtn.Position = UDim2.new(1, -26, 0.5, -12)
+searchClearBtn.BackgroundTransparency = 1
+searchClearBtn.Text = "✕"
+searchClearBtn.TextColor3 = Colors.SubText
+searchClearBtn.Font = Enum.Font.GothamBold
+searchClearBtn.TextSize = 11
+searchClearBtn.ZIndex = 26
+searchClearBtn.MouseButton1Click:Connect(function()
+    searchBox.Text = ""
+end)
 
 local function sanitizeSearchBox()
     if searchBox.Text == "TextBox" then
@@ -1074,15 +1097,6 @@ end
 searchBox:GetPropertyChangedSignal("Text"):Connect(sanitizeSearchBox)
 task.defer(sanitizeSearchBox)
 
-globalBtn.MouseButton1Click:Connect(function()
-    chatMode = "global"
-    globalBtn.BackgroundColor3 = Colors.ActiveTint
-    globalBtn.BackgroundTransparency = 0
-    globalBtn.TextColor3 = Colors.Primary
-    serverBtn.BackgroundTransparency = 1
-    serverBtn.TextColor3 = Colors.SubText
-end)
-
 serverBtn.MouseButton1Click:Connect(function()
     chatMode = "server"
     serverBtn.BackgroundColor3 = Colors.ActiveTint
@@ -1090,6 +1104,15 @@ serverBtn.MouseButton1Click:Connect(function()
     serverBtn.TextColor3 = Colors.Primary
     globalBtn.BackgroundTransparency = 1
     globalBtn.TextColor3 = Colors.SubText
+end)
+
+globalBtn.MouseButton1Click:Connect(function()
+    chatMode = "global"
+    globalBtn.BackgroundColor3 = Colors.ActiveTint
+    globalBtn.BackgroundTransparency = 0
+    globalBtn.TextColor3 = Colors.Primary
+    serverBtn.BackgroundTransparency = 1
+    serverBtn.TextColor3 = Colors.SubText
 end)
 
 -- =========================================================
@@ -1170,9 +1193,9 @@ end
 -- =========================================================
 -- 💬 FULL-HEIGHT CHAT FEED & SMART AUTOSCROLL DOCK
 -- =========================================================
-local messageFeed = Instance.new("ScrollingFrame", mainFrame)
+messageFeed = Instance.new("ScrollingFrame", mainFrame)
 messageFeed.Size = UDim2.new(1, -24, 1, -138)
-messageFeed.Position = UDim2.new(0, 12, 0, 82)
+messageFeed.Position = UDim2.new(0, 12, 0, 84)
 messageFeed.BackgroundTransparency = 1
 messageFeed.ScrollBarThickness = 3
 messageFeed.ScrollBarImageColor3 = Colors.PrimaryDark
@@ -1188,6 +1211,16 @@ local feedPadding = Instance.new("UIPadding", messageFeed)
 feedPadding.PaddingLeft = UDim.new(0, 2)
 feedPadding.PaddingRight = UDim.new(0, 4)
 feedPadding.PaddingBottom = UDim.new(0, 4)
+
+searchContainer:GetPropertyChangedSignal("Visible"):Connect(function()
+    if searchContainer.Visible then
+        messageFeed.Position = UDim2.new(0, 12, 0, 114)
+        messageFeed.Size = UDim2.new(1, -24, 1, -168)
+    else
+        messageFeed.Position = UDim2.new(0, 12, 0, 84)
+        messageFeed.Size = UDim2.new(1, -24, 1, -138)
+    end
+end)
 
 -- ⚡ SMART FLOATING JUMP-TO-BOTTOM CHIP
 local jumpBottomBtn = Instance.new("TextButton", mainFrame)
@@ -1240,7 +1273,7 @@ end)
 local sendMessageFunc
 local chatInput
 
--- ⚡ STREAMLINED CONTEXT MENU (NO MUTE BUTTON)
+-- ⚡ STREAMLINED CONTEXT MENU
 actionMenu = Instance.new("Frame", mainFrame)
 actionMenu.Size = UDim2.fromOffset(225, 32)
 actionMenu.BackgroundColor3 = Colors.Surface
@@ -1276,7 +1309,7 @@ local function createActionBtn(text, color, onClick)
 end
 
 -- =========================================================
--- 💬 MESSAGE PIPELINE (CLEAN PURE-TEXT LASER BADGES)
+-- 💬 MESSAGE PIPELINE (ULTRA SHINE & 60 FPS CHROMATIC TAGS)
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -1423,7 +1456,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         dmLbl.ZIndex = 12
     end
 
-    -- ⚡ TRUE ZERO-BOX LUXURY TYPOGRAPHY (SUBTLE AMBIENT BLOOM)
+    -- ⚡ TRUE ZERO-BOX LUXURY TYPOGRAPHY WITH CHROMATIC SHINE & LASER BLOOM
     if isAdminUser then
         local badgeHost = Instance.new("Frame", headerRow)
         badgeHost.AutomaticSize = Enum.AutomaticSize.XY
@@ -1433,6 +1466,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         badgeHost.LayoutOrder = 3
         badgeHost.ZIndex = 13
 
+        -- Ambient Outer Glow
         local badgeGlow = Instance.new("TextLabel", badgeHost)
         badgeGlow.AutomaticSize = Enum.AutomaticSize.XY
         badgeGlow.Size = UDim2.fromScale(1, 1)
@@ -1440,16 +1474,17 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         badgeGlow.BorderSizePixel = 0
         badgeGlow.Text = badgeProfile.Title
         badgeGlow.TextColor3 = Color3.fromRGB(255, 255, 255)
-        badgeGlow.TextTransparency = 0.78
+        badgeGlow.TextTransparency = 0.55
         badgeGlow.Font = Enum.Font.GothamBlack
         badgeGlow.TextSize = 11.5
         badgeGlow.ZIndex = 13
 
         local glowStroke = Instance.new("UIStroke", badgeGlow)
-        glowStroke.Thickness = 1.0
-        glowStroke.Transparency = 0.82
+        glowStroke.Thickness = 1.4
+        glowStroke.Transparency = 0.6
         glowStroke.Color = Color3.fromRGB(255, 255, 255)
 
+        -- Sharp Core Text
         local badgeLabel = Instance.new("TextLabel", badgeHost)
         badgeLabel.AutomaticSize = Enum.AutomaticSize.XY
         badgeLabel.Size = UDim2.fromScale(1, 1)
@@ -1462,9 +1497,38 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         badgeLabel.ZIndex = 14
 
         local bStroke = Instance.new("UIStroke", badgeLabel)
-        bStroke.Thickness = 0.8
+        bStroke.Thickness = 0.9
         bStroke.Color = Color3.fromRGB(0, 0, 0)
-        bStroke.Transparency = 0.35
+        bStroke.Transparency = 0.25
+
+        -- Specular Chrome Laser Shine Layer
+        local badgeShine = Instance.new("TextLabel", badgeHost)
+        badgeShine.AutomaticSize = Enum.AutomaticSize.XY
+        badgeShine.Size = UDim2.fromScale(1, 1)
+        badgeShine.BackgroundTransparency = 1
+        badgeShine.BorderSizePixel = 0
+        badgeShine.Text = badgeProfile.Title
+        badgeShine.TextColor3 = Color3.fromRGB(255, 255, 255)
+        badgeShine.TextTransparency = 0.15
+        badgeShine.Font = Enum.Font.GothamBlack
+        badgeShine.TextSize = 11.5
+        badgeShine.ZIndex = 15
+
+        local shineGrad = Instance.new("UIGradient", badgeShine)
+        shineGrad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.45, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.55, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))
+        })
+        shineGrad.Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0.0, 1),
+            NumberSequenceKeypoint.new(0.4, 1),
+            NumberSequenceKeypoint.new(0.5, 0),
+            NumberSequenceKeypoint.new(0.6, 1),
+            NumberSequenceKeypoint.new(1.0, 1)
+        })
 
         local textGrad = Instance.new("UIGradient", badgeLabel)
         textGrad.Color = ColorSequence.new(badgeProfile.Colors)
@@ -1472,16 +1536,17 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         local glowGrad = Instance.new("UIGradient", badgeGlow)
         glowGrad.Color = ColorSequence.new(badgeProfile.Colors)
 
-        local strokeGradGlow = Instance.new("UIGradient", glowStroke)
+        local strokeGradGlow = Instance.new("UIStroke", glowStroke)
         strokeGradGlow.Color = ColorSequence.new(badgeProfile.Colors)
 
         table.insert(activeBadgesList, {
             textGrad = textGrad,
             glowGrad = glowGrad,
             strokeGradGlow = strokeGradGlow,
+            shineGrad = shineGrad,
             badgeGlow = badgeGlow,
             glowStroke = glowStroke,
-            speed = badgeProfile.Speed or 1.0
+            speed = badgeProfile.Speed or 3.2
         })
     end
 
@@ -2028,7 +2093,7 @@ UserInputService.InputBegan:Connect(function(input, gp)
 end)
 
 -- =========================================================
--- ⚡ 60 FPS ULTRA-PREMIUM FLUID GLOW SYNCHRONIZER
+-- ⚡ 60 FPS ULTRA-PREMIUM FLUID GLOW & TAG SHINE ENGINE
 -- =========================================================
 task.spawn(function()
     local t = 0
@@ -2040,28 +2105,40 @@ task.spawn(function()
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
         t = t + dt
 
-        -- ⚡ BUTTERY 60 FPS SUBTLE AMBIENT BLOOM (LIGHT & CLEAN)
+        -- ⚡ 60 FPS ULTRA CHROMATIC ROTATION, OFFSET & SPECULAR LASER SHINE
         if #activeBadgesList > 0 then
             for i = #activeBadgesList, 1, -1 do
                 local item = activeBadgesList[i]
                 if item.textGrad and item.textGrad.Parent and item.glowGrad and item.glowGrad.Parent then
-                    local sSpeed = item.speed or 1.0
+                    local sSpeed = item.speed or 3.2
 
-                    local continuousRotation = (t * 55 * sSpeed) % 360
+                    -- High-velocity continuous cycle
+                    local continuousRotation = (t * 220 * sSpeed) % 360
+                    local waveOffset = math.sin(t * 3.5 * sSpeed) * 0.7
+                    
                     item.textGrad.Rotation = continuousRotation
+                    item.textGrad.Offset = Vector2.new(waveOffset, 0)
+                    
                     item.glowGrad.Rotation = continuousRotation
+                    item.glowGrad.Offset = Vector2.new(-waveOffset, 0)
                     
                     if item.strokeGradGlow and item.strokeGradGlow.Parent then
                         item.strokeGradGlow.Rotation = (continuousRotation + 180) % 360
                     end
 
-                    local breathPulse = (math.sin(t * 2.5 * sSpeed) + 1) / 2
+                    -- Specular Diamond Shine sweep
+                    if item.shineGrad and item.shineGrad.Parent then
+                        local sweep = ((t * 1.8 * (sSpeed / 2)) % 2.5) - 1.2
+                        item.shineGrad.Offset = Vector2.new(sweep, 0)
+                    end
+
+                    local breathPulse = (math.sin(t * 6.0 * sSpeed) + 1) / 2
                     if item.glowStroke and item.glowStroke.Parent then
-                        item.glowStroke.Thickness = 0.8 + (breathPulse * 0.4)
-                        item.glowStroke.Transparency = 0.78 + (breathPulse * 0.12)
+                        item.glowStroke.Thickness = 1.0 + (breathPulse * 0.8)
+                        item.glowStroke.Transparency = 0.55 + (breathPulse * 0.25)
                     end
                     if item.badgeGlow and item.badgeGlow.Parent then
-                        item.badgeGlow.TextTransparency = 0.75 + (breathPulse * 0.15)
+                        item.badgeGlow.TextTransparency = 0.50 + (breathPulse * 0.20)
                     end
                 else
                     table.remove(activeBadgesList, i)
@@ -2070,7 +2147,7 @@ task.spawn(function()
         end
 
         if mainFrame.Visible then
-            strokeGrad.Rotation = (t * 40) % 360
+            strokeGrad.Rotation = (t * 60) % 360
             local breath = (math.sin(t * 2.5) + 1) / 2
             aura.ImageTransparency = isGhostMode and 0.94 or (0.70 + (breath * 0.08))
 
@@ -2278,7 +2355,6 @@ end)
 task.spawn(function()
     while _G.TXR_IsPolling and (_G.TXR_ChatInstanceID == currentExecutionID) and task.wait(0.4) do
         if req then
-            local pollStart = tick()
             local success, res = pcall(function()
                 return req({
                     Url = SERVER_URL .. "/messages?since=" .. tostring(lastSyncTime),
@@ -2288,16 +2364,6 @@ task.spawn(function()
             end)
 
             if success and res and res.StatusCode == 200 then
-                local pingMs = math.floor((tick() - pollStart) * 1000)
-                pingText.Text = tostring(math.clamp(pingMs, 10, 999)) .. "ms"
-                if pingMs > 300 then
-                    pingText.TextColor3 = Colors.Danger
-                elseif pingMs > 150 then
-                    pingText.TextColor3 = Colors.Warning
-                else
-                    pingText.TextColor3 = Color3.fromRGB(80, 220, 140)
-                end
-
                 local decodeSuccess, data = pcall(function()
                     return HttpService:JSONDecode(res.Body)
                 end)
