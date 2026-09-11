@@ -12,10 +12,7 @@ pcall(function()
 end)
 
 -- =========================================================
--- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V12.0 MEME EDITION) 👑
--- * ONLINE ROSTER DRAWER + LIVE SEARCH FILTER + COOLDOWN BAR *
--- * EXACT TXR HUB V18.26 GIMBAL REACTOR REOPEN ORB *
--- * INTEGRATED ROBLOX MEME & STICKER VAULT ENGINE *
+-- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V12.1 MEME FIXED) 👑
 -- =========================================================
 
 local currentExecutionID = tick()
@@ -59,25 +56,25 @@ end
 -- 🎨 MULTI-CHROMA PALETTE & THEMES
 -- =========================================================
 local Themes = {
-    [1] = { -- Cyan Matrix
+    [1] = {
         Primary = Color3.fromRGB(0, 255, 205),
         PrimaryDark = Color3.fromRGB(0, 160, 140),
         Accent = Color3.fromRGB(160, 50, 255),
         ActiveTint = Color3.fromRGB(12, 42, 58)
     },
-    [2] = { -- Crimson Blood
+    [2] = {
         Primary = Color3.fromRGB(255, 45, 85),
         PrimaryDark = Color3.fromRGB(170, 20, 50),
         Accent = Color3.fromRGB(255, 140, 0),
         ActiveTint = Color3.fromRGB(50, 15, 25)
     },
-    [3] = { -- Royal Amethyst
+    [3] = {
         Primary = Color3.fromRGB(180, 75, 255),
         PrimaryDark = Color3.fromRGB(120, 40, 180),
         Accent = Color3.fromRGB(0, 200, 255),
         ActiveTint = Color3.fromRGB(38, 15, 55)
     },
-    [4] = { -- Golden Onyx
+    [4] = {
         Primary = Color3.fromRGB(255, 200, 50),
         PrimaryDark = Color3.fromRGB(180, 130, 20),
         Accent = Color3.fromRGB(255, 80, 80),
@@ -105,34 +102,32 @@ local Colors = {
 }
 
 -- =========================================================
--- 🖼️ VERIFIED ROBLOX MEME / STICKER DATABASE
+-- 🎭 POPULAR / BRAINROT MEME PACK (THUMBNAIL SAFE IDs)
 -- =========================================================
 local MemeLibrary = {
-    { name = "Doge", id = 135898858 },
-    { name = "Trollface", id = 277259367 },
-    { name = "Pepe Cry", id = 363198030 },
-    { name = "GigaChad", id = 7192664724 },
-    { name = "Pop Cat", id = 6046187513 },
-    { name = "Stare Cat", id = 247294471 },
-    { name = "Surprised Pikachu", id = 2589578641 },
-    { name = "Buff Doge", id = 5334791530 },
-    { name = "Cheems", id = 5304675586 },
-    { name = "Roblox Man Face", id = 864877007 },
+    { name = "Mewing Shhh", id = 15632128790 },
+    { name = "Skibidi Toilet", id = 13809623197 },
+    { name = "Smurf Cat", id = 14757657984 },
+    { name = "Josh Hutcherson", id = 15469032734 },
+    { name = "The Wok / Social Credit", id = 7872621021 },
+    { name = "Walter Dog (Nelson)", id = 3698717882 },
+    { name = "Handsome Squidward", id = 6382103444 },
+    { name = "Sad Hamster", id = 16391456108 },
+    { name = "Nah I'd Win (Gojo)", id = 15377035543 },
+    { name = "Cat Stare Huh", id = 13838328014 },
+    { name = "Sigma Face", id = 12271810574 },
+    { name = "Pedro Raccoon", id = 17290159491 },
+    { name = "GigaChad HD", id = 7192664724 },
     { name = "Rock Eyebrow", id = 8011210815 },
-    { name = "Spoderman", id = 179836979 },
-    { name = "Pepe Smug", id = 278385202 },
-    { name = "Sponge Mock", id = 839352723 },
-    { name = "Crying Cat", id = 2275465934 },
-    { name = "Cozy Pepe", id = 478684725 },
-    { name = "Thinking", id = 1118671603 },
-    { name = "Sanic", id = 142851493 },
-    { name = "Derp", id = 134442650 },
-    { name = "Pepe Laugh", id = 1475148419 },
-    { name = "Heavy Breathing", id = 171457199 },
-    { name = "Angry Wojak", id = 6088820054 },
-    { name = "Chad Thad", id = 7083049182 },
-    { name = "Skull Skeleton", id = 9188849503 }
+    { name = "Roblox Man Face", id = 864877007 },
+    { name = "Skull Emoji", id = 9188849503 },
+    { name = "Clown License", id = 4905389658 },
+    { name = "Capybara Pull Up", id = 9811566897 }
 }
+
+local function getAssetThumb(id)
+    return string.format("rbxthumb://type=Asset&id=%s&w=420&h=420", tostring(id))
+end
 
 local function crispText(element)
     local stroke = Instance.new("UIStroke", element)
@@ -157,7 +152,6 @@ local function applySpringHover(btn)
     end)
 end
 
--- SFX Audio
 local isAudioMuted = false
 local function playSFX(soundType)
     if isAudioMuted then return end
@@ -208,14 +202,13 @@ if lp.UserId == MY_VIP_ID then
     Admin[lp.Name:lower()] = true
 end
 
--- Head Bubble
 local function displayBubble(userName, msg)
     local speaker = Players:FindFirstChild(userName)
     if not speaker or not speaker.Character then return end
 
     local cleanMsg = msg
     if cleanMsg:find("%[MEME:") then
-        cleanMsg = "🖼️ [Sent a Meme]"
+        cleanMsg = "🖼️ [Sticker / Meme]"
     end
 
     pcall(function()
@@ -953,7 +946,7 @@ for _, slang in ipairs(quickSlangs) do
 end
 
 -- =========================================================
--- 💬 MESSAGE PIPELINE (TEXT & MEMES/STICKERS SUPPORT)
+-- 💬 MESSAGE PIPELINE (FIXED MEME / STICKER RENDERER)
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -995,9 +988,7 @@ local MAX_MESSAGES = 60
 local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSender)
     if blockedUsers[userName:lower()] then return end
 
-    -- Check if message contains a meme asset tag
     local memeIdMatch = msg:match("%[MEME:(%d+)%]")
-
     local isMentioned = string.find(string.lower(msg), string.lower(lp.Name)) or string.find(string.lower(msg), "@" .. string.lower(lp.Name))
 
     local count = 0
@@ -1013,8 +1004,8 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     end
 
     local card = Instance.new("TextButton", messageFeed)
-    card.Size = UDim2.new(1, 0, 0, 0)
-    card.AutomaticSize = Enum.AutomaticSize.Y
+    card.Size = memeIdMatch and UDim2.new(1, 0, 0, 130) or UDim2.new(1, 0, 0, 0)
+    card.AutomaticSize = memeIdMatch and Enum.AutomaticSize.None or Enum.AutomaticSize.Y
     card.BackgroundColor3 = isMentioned and Colors.MentionBg or Colors.Surface
     card.BackgroundTransparency = isGhostMode and 0.65 or 0.4
     card.Text = ""
@@ -1110,15 +1101,15 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
     end
 
     if memeIdMatch then
-        txt.Text = headerLine .. "<font color='#FFD700'><i>[Sent a Meme Sticker]</i></font>"
+        txt.Text = headerLine .. "<font color='#FFD700'><i>[Sticker]</i></font>"
         
-        -- Meme Image Display
+        -- Thumbnail-safe Image Label for guaranteed display
         local memeImg = Instance.new("ImageLabel", card)
-        memeImg.Size = UDim2.fromOffset(100, 100)
-        memeImg.Position = UDim2.new(0, 42, 0, 24)
+        memeImg.Size = UDim2.fromOffset(90, 90)
+        memeImg.Position = UDim2.fromOffset(42, 28)
         memeImg.BackgroundColor3 = Colors.Background
-        memeImg.BackgroundTransparency = 0.2
-        memeImg.Image = "rbxassetid://" .. memeIdMatch
+        memeImg.BackgroundTransparency = 0.3
+        memeImg.Image = getAssetThumb(memeIdMatch)
         memeImg.ScaleType = Enum.ScaleType.Fit
         memeImg.ZIndex = 12
         Instance.new("UICorner", memeImg).CornerRadius = UDim.new(0, 8)
@@ -1126,9 +1117,6 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         local mStroke = Instance.new("UIStroke", memeImg)
         mStroke.Color = Colors.PrimaryDark
         mStroke.Thickness = 1.2
-        
-        local pad = Instance.new("UIPadding", card)
-        pad.PaddingBottom = UDim.new(0, 108)
     else
         txt.Text = headerLine .. msg
         local padFix = Instance.new("UIPadding", card)
@@ -1157,7 +1145,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
         end)
 
         createActionBtn("📋 COPY", Colors.Primary, function()
-            pcall(function() setClip(memeIdMatch and ("rbxassetid://" .. memeIdMatch) or msg) end)
+            pcall(function() setClip(memeIdMatch and ("ID: " .. memeIdMatch) or msg) end)
         end)
 
         createActionBtn("🚀 TP", Colors.MentionGold, function()
@@ -1190,7 +1178,7 @@ local function addMessageToFeed(userName, msg, privateUserTarget, isPrivateSende
 end
 
 -- =========================================================
--- ⌨️ INPUT CONTAINER & LASER COOLDOWN BAR
+-- ⌨️ INPUT CONTAINER & CONTROLS
 -- =========================================================
 local inputContainer = Instance.new("Frame", mainFrame)
 inputContainer.Size = UDim2.new(1, -24, 0, 38)
@@ -1264,13 +1252,12 @@ dmBadge.MouseButton1Click:Connect(function()
     updateInputBar()
 end)
 
--- 🖼️ MEME & EMOJI LAUNCH BUTTONS
 local memeBtn = Instance.new("TextButton", inputContainer)
 memeBtn.Size = UDim2.fromOffset(26, 26)
 memeBtn.Position = UDim2.new(1, -94, 0.5, -13)
 memeBtn.BackgroundTransparency = 1
-memeBtn.Text = "🖼️"
-memeBtn.TextSize = 15
+memeBtn.Text = "🎭"
+memeBtn.TextSize = 16
 memeBtn.ZIndex = 14
 applySpringHover(memeBtn)
 
@@ -1344,11 +1331,11 @@ emojiBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- 🖼️ MEME / STICKER MODAL DRAWER
+-- 🎭 MODERN MEME / STICKER MODAL DRAWER
 -- =========================================================
 memeFrame = Instance.new("Frame", mainFrame)
-memeFrame.Size = UDim2.new(0, 280, 0, 180)
-memeFrame.Position = UDim2.new(0.5, -140, 0.5, -90)
+memeFrame.Size = UDim2.new(0, 280, 0, 190)
+memeFrame.Position = UDim2.new(0.5, -140, 0.5, -95)
 memeFrame.BackgroundColor3 = Colors.Surface
 memeFrame.Visible = false
 memeFrame.ZIndex = 30
@@ -1360,7 +1347,7 @@ mfStroke.Thickness = 1.4
 local mfTitle = Instance.new("TextLabel", memeFrame)
 mfTitle.Size = UDim2.new(1, 0, 0, 24)
 mfTitle.BackgroundTransparency = 1
-mfTitle.Text = "🎭 ROBLOX MEMES & STICKERS"
+mfTitle.Text = "🎭 BRAINROT & MEME STICKERS"
 mfTitle.TextColor3 = Colors.Purple
 mfTitle.Font = Enum.Font.GothamBlack
 mfTitle.TextSize = 10
@@ -1382,7 +1369,7 @@ memeGrid.CellPadding = UDim2.new(0, 6, 0, 6)
 for _, mData in ipairs(MemeLibrary) do
     local mItem = Instance.new("ImageButton", memeScroll)
     mItem.BackgroundColor3 = Colors.Background
-    mItem.Image = "rbxassetid://" .. tostring(mData.id)
+    mItem.Image = getAssetThumb(mData.id)
     mItem.ScaleType = Enum.ScaleType.Fit
     mItem.ZIndex = 32
     Instance.new("UICorner", mItem).CornerRadius = UDim.new(0, 6)
@@ -1760,7 +1747,6 @@ sendMessageFunc = function(overrideText)
     sendBtn.BackgroundColor3 = Colors.SurfaceHover
     sendBtn.Text = "⏳"
 
-    -- Laser Bar Animation
     cdBar.Visible = true
     cdBar.Size = UDim2.new(0, 0, 0, 2)
     TweenService:Create(cdBar, TweenInfo.new(1.2, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 0, 2)}):Play()
@@ -1896,5 +1882,5 @@ task.spawn(function()
             })
         end)
     end
-    addMessageToFeed("System", "TXR Cyber-Titan V12.0 Online! Tap 🖼️ to send memes.")
+    addMessageToFeed("System", "TXR Cyber-Titan Online! Tap 🎭 for new Meme Stickers.")
 end)
