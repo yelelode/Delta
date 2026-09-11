@@ -1,5 +1,5 @@
 -- =========================================================
--- 🕳️ TXR ANTI-ROBOT (100% PURE HEADLESS TOGGLE - TESTING 3)
+-- 🕳️ TXR ANTI-ROBOT (ANTI-ZERO PREDICTION ENGINE - V5)
 -- =========================================================
 
 local Players = game:GetService("Players")
@@ -8,13 +8,10 @@ local UserInputService = game:GetService("UserInputService")
 local StarterGui = game:GetService("StarterGui")
 local lp = Players.LocalPlayer
 
--- =========================================================
--- 🔐 ADMIN ACCESS / WHITELIST SYSTEM
--- =========================================================
 local ADMIN_WHITELIST = {
-    [9685785248] = true, -- Ashu Papa (Main ID)
-    [lp.UserId] = true,  -- Script Executor ID
-    [lp.Name] = true,    -- Script Executor Name
+    [9685785248] = true,
+    [lp.UserId] = true,
+    [lp.Name] = true,
 }
 
 local function checkAdminAccess(player)
@@ -32,39 +29,17 @@ local function sendNotify(title, text, duration)
     end)
 end
 
--- Admin Check: Agar authorized nahi hai toh yahi block ho jayega
 if not checkAdminAccess(lp) then
     sendNotify("🔒 ACCESS DENIED", "Need admin access", 2.5)
     _G.TXR_VoidLock_Active = false
     return
 end
 
--- Kisi purane screen GUI ko clean karna (taaki screen par koi button na dikhe)
-if _G.VoidBypassGui then
-    pcall(function() _G.VoidBypassGui:Destroy() end)
-    _G.VoidBypassGui = nil
-end
-
--- =========================================================
--- 🛑 STOP ENGINE FUNCTION
--- =========================================================
 local function stopVoidEngine()
-    if _G.TXR_Void_Stepped then
-        pcall(function() _G.TXR_Void_Stepped:Disconnect() end)
-        _G.TXR_Void_Stepped = nil
-    end
-    if _G.TXR_Void_Heartbeat then
-        pcall(function() _G.TXR_Void_Heartbeat:Disconnect() end)
-        _G.TXR_Void_Heartbeat = nil
-    end
-    if _G.TXR_Void_JumpConn then
-        pcall(function() _G.TXR_Void_JumpConn:Disconnect() end)
-        _G.TXR_Void_JumpConn = nil
-    end
-    if _G.TXR_Void_StateConn then
-        pcall(function() _G.TXR_Void_StateConn:Disconnect() end)
-        _G.TXR_Void_StateConn = nil
-    end
+    if _G.TXR_Void_Stepped then pcall(function() _G.TXR_Void_Stepped:Disconnect() end) _G.TXR_Void_Stepped = nil end
+    if _G.TXR_Void_Heartbeat then pcall(function() _G.TXR_Void_Heartbeat:Disconnect() end) _G.TXR_Void_Heartbeat = nil end
+    if _G.TXR_Void_JumpConn then pcall(function() _G.TXR_Void_JumpConn:Disconnect() end) _G.TXR_Void_JumpConn = nil end
+    if _G.TXR_Void_StateConn then pcall(function() _G.TXR_Void_StateConn:Disconnect() end) _G.TXR_Void_StateConn = nil end
 
     _G.TXR_Void_IsAirborne = false
     _G.TXR_Void_AirVelY = 0
@@ -73,38 +48,27 @@ local function stopVoidEngine()
     if char then
         local root = char:FindFirstChild("HumanoidRootPart")
         local hum = char:FindFirstChildOfClass("Humanoid")
-        if root then
-            root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-        end
-        if hum then
-            hum:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
-        end
+        if root then root.AssemblyLinearVelocity = Vector3.zero end
+        if hum then hum:SetStateEnabled(Enum.HumanoidStateType.Seated, true) end
     end
 end
 
--- =========================================================
--- ⚡ START ENGINE FUNCTION (96.5 SAFE CLAMP + KINEMATICS)
--- =========================================================
 local function startVoidEngine()
     local char = lp.Character
     if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-    local root = char.HumanoidRootPart
     local hum = char:FindFirstChildOfClass("Humanoid")
     if not hum then return end
 
-    local MAX_SAFE_LIMIT = 96.5
+    local SAFE_CLAMP = 96.4
     _G.TXR_Void_IsAirborne = false
     _G.TXR_Void_AirVelY = 0
 
     local function getJumpImpulse()
-        local g = workspace.Gravity
-        if g <= 0 then g = 196.2 end
+        local g = workspace.Gravity > 0 and workspace.Gravity or 196.2
         if hum.UseJumpPower then
-            local jp = hum.JumpPower
-            return (jp > 0 and jp) or 50
+            return (hum.JumpPower > 0 and hum.JumpPower) or 50
         else
-            local jh = hum.JumpHeight
-            jh = (jh > 0 and jh) or 7.2
+            local jh = (hum.JumpHeight > 0 and hum.JumpHeight) or 7.2
             return math.sqrt(2 * g * jh)
         end
     end
@@ -129,7 +93,7 @@ local function startVoidEngine()
         end
     end)
 
-    -- 1. Stepped: Local Physics Engine (Smooth Walk & Natural Jump Simulation)
+    -- Loop 1: Physics Lock, Joint Cleaner & Prop Stripper
     _G.TXR_Void_Stepped = RunService.Stepped:Connect(function(_, dt)
         if not _G.TXR_VoidLock_Active then return end
         local c = lp.Character
@@ -138,7 +102,7 @@ local function startVoidEngine()
         if not r or not h then return end
 
         local vel = r.AssemblyLinearVelocity
-        local g = (workspace.Gravity > 0 and workspace.Gravity) or 196.2
+        local g = workspace.Gravity > 0 and workspace.Gravity or 196.2
         local onFloor = (h.FloorMaterial ~= Enum.Material.Air)
 
         if _G.TXR_Void_IsAirborne then
@@ -163,19 +127,25 @@ local function startVoidEngine()
         if h.Sit then h.Sit = false end
         h:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
 
+        -- Stripping Touches so 0-Prediction hits fail
         for _, p in ipairs(c:GetChildren()) do
-            if p:IsA("BasePart") and p.CanCollide then
+            if p:IsA("BasePart") then
                 p.CanCollide = false
+                local tt = p:FindFirstChildOfClass("TouchTransmitter")
+                if tt then tt:Destroy() end
             end
         end
 
+        -- Destroy Seats & External Weld Constraints
         for _, v in ipairs(c:GetDescendants()) do
-            if v:IsA("Weld") and (v.Name == "SeatWeld" or string.find(v.Name:lower(), "seat")) then
-                pcall(function() v:Destroy() end)
+            if v:IsA("Weld") or v:IsA("WeldConstraint") or v:IsA("RigidConstraint") then
+                if v.Name == "SeatWeld" or string.find(v.Name:lower(), "seat") then
+                    pcall(function() v:Destroy() end)
+                end
             end
         end
 
-        -- Hostile Prop Ghost Stripper (WorkspaceCom props neutralize karna)
+        -- Invalidate WorkspaceCom Target Collision
         local com = workspace:FindFirstChild("WorkspaceCom")
         if com then
             for _, folder in ipairs(com:GetChildren()) do
@@ -185,6 +155,7 @@ local function startVoidEngine()
                             if part:IsA("BasePart") then
                                 part.CanCollide = false
                                 part.CanTouch = false
+                                part.CanQuery = false
                             end
                         end
                     end
@@ -193,7 +164,7 @@ local function startVoidEngine()
         end
     end)
 
-    -- 2. Heartbeat: Server Replication (Vector Balancing + Safe Ground Dip)
+    -- Loop 2: Anti Zero-Prediction Heartbeat (Coordinate Desync)
     _G.TXR_Void_Heartbeat = RunService.Heartbeat:Connect(function()
         if not _G.TXR_VoidLock_Active then return end
         local c = lp.Character
@@ -204,30 +175,33 @@ local function startVoidEngine()
         local currentVel = r.AssemblyLinearVelocity
         local hSpeedSq = (currentVel.X * currentVel.X) + (currentVel.Z * currentVel.Z)
 
-        local targetY = -MAX_SAFE_LIMIT
+        -- Velocity Desync Fallback
+        local targetY = -SAFE_CLAMP
         if hSpeedSq > 0 then
-            local remainSq = (MAX_SAFE_LIMIT * MAX_SAFE_LIMIT) - hSpeedSq
+            local remainSq = (SAFE_CLAMP * SAFE_CLAMP) - hSpeedSq
             if remainSq > 400 then
                 targetY = -math.sqrt(remainSq)
             else
                 targetY = -55.0
             end
         end
-
         r.AssemblyLinearVelocity = Vector3.new(currentVel.X, targetY, currentVel.Z)
 
-        -- Micro-Dip on alternate frames while grounded
+        -- ⚡ Anti Zero-Prediction Phase Shift
+        -- Since prediction is 0, the bot tracks literal CFrame.
+        -- This shifts the replicated CFrame coordinate back and forth by millimeters 
+        -- so the server never gives the bot a static lock point.
         if not _G.TXR_Void_IsAirborne and h.FloorMaterial ~= Enum.Material.Air then
-            if math.floor(os.clock() * 60) % 2 == 0 then
-                r.CFrame = r.CFrame * CFrame.new(0, -0.04, 0)
+            local tickMod = math.floor(os.clock() * 120) % 2
+            if tickMod == 0 then
+                r.CFrame = r.CFrame * CFrame.new(0, -0.09, 0)
+            else
+                r.CFrame = r.CFrame * CFrame.new(0, 0.09, 0)
             end
         end
     end)
 end
 
--- =========================================================
--- 🔄 DIRECT STATE TOGGLE CONTROLLER
--- =========================================================
 if _G.TXR_VoidLock_Active then
     _G.TXR_VoidLock_Active = false
     stopVoidEngine()
@@ -235,5 +209,5 @@ if _G.TXR_VoidLock_Active then
 else
     _G.TXR_VoidLock_Active = true
     startVoidEngine()
-    sendNotify("🛡️ ANTI ROBOTS", "Activated: 96.5 Safe-Void Active", 2.5)
+    sendNotify("🛡️ ANTI ROBOTS", "V5 Anti-Zero Prediction Active", 2.5)
 end
