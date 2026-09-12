@@ -12,7 +12,7 @@ pcall(function()
 end)
 
 -- =========================================================
--- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (ULTIMATE SOCIAL GLASS) 👑
+-- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V10 SUPREME OLED) 👑
 -- =========================================================
 
 local currentExecutionID = tick()
@@ -67,7 +67,7 @@ local function sanitizeXml(str)
 end
 
 -- =========================================================
--- 🎨 MULTI-CHROMA PALETTE & THEMES (PURE GLASS AESTHETIC)
+-- 🎨 MULTI-CHROMA PALETTE & THEMES (TRUE OLED PREMIUM)
 -- =========================================================
 local Themes = {
     [1] = {
@@ -119,22 +119,159 @@ local Colors = {
 -- 👑 16 SILK-SMOOTH BALANCED BADGE PRESETS
 -- =========================================================
 local BadgePresets = {
-    ["OWNER"] = { Title = "OWNER", Speed = 1.15, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 45, 95)), ColorSequenceKeypoint.new(0.20, Color3.fromRGB(255, 165, 35)), ColorSequenceKeypoint.new(0.40, Color3.fromRGB(0, 245, 195)), ColorSequenceKeypoint.new(0.60, Color3.fromRGB(50, 155, 255)), ColorSequenceKeypoint.new(0.80, Color3.fromRGB(180, 65, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 45, 95)) } },
-    ["DADDY"] = { Title = "DADDY", Speed = 1.1, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 30, 80)), ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 115, 45)), ColorSequenceKeypoint.new(0.70, Color3.fromRGB(255, 220, 50)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 30, 80)) } },
-    ["TITAN"] = { Title = "TITAN", Speed = 1.15, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 240, 255)), ColorSequenceKeypoint.new(0.35, Color3.fromRGB(70, 165, 255)), ColorSequenceKeypoint.new(0.70, Color3.fromRGB(160, 60, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 240, 255)) } },
-    ["OVERLORD"] = { Title = "OVERLORD", Speed = 1.05, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(180, 60, 255)), ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 60, 180)), ColorSequenceKeypoint.new(0.70, Color3.fromRGB(95, 110, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(180, 60, 255)) } },
-    ["DEV"] = { Title = "DEV", Speed = 1.25, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 195)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(65, 150, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 195)) } },
-    ["VIP"] = { Title = "VIP", Speed = 1.1, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 140, 25)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 230, 65)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 140, 25)) } },
-    ["GOD"] = { Title = "GOD", Speed = 1.2, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 110, 175)), ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 230, 100)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(95, 255, 190)), ColorSequenceKeypoint.new(0.75, Color3.fromRGB(100, 190, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 110, 175)) } },
-    ["CYBER"] = { Title = "CYBER", Speed = 1.2, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 10, 220)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(10, 245, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 10, 220)) } },
-    ["VOID"] = { Title = "VOID", Speed = 0.95, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(85, 90, 145)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(180, 185, 240)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(85, 90, 145)) } },
-    ["ZENITH"] = { Title = "ZENITH", Speed = 1.15, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 215)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(45, 180, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 215)) } },
-    ["APEX"] = { Title = "APEX", Speed = 1.2, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 40, 80)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 160, 35)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 40, 80)) } },
-    ["LUCIFER"] = { Title = "LUCIFER", Speed = 1.2, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 15, 35)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 95, 25)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 15, 35)) } },
-    ["SUPREME"] = { Title = "SUPREME", Speed = 1.1, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 215, 65)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 245, 165)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 215, 65)) } },
-    ["ROYAL"] = { Title = "ROYAL", Speed = 1.0, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(225, 165, 30)), ColorSequenceKeypoint.new(0.40, Color3.fromRGB(255, 230, 110)), ColorSequenceKeypoint.new(0.70, Color3.fromRGB(255, 145, 35)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(225, 165, 30)) } },
-    ["DEMON"] = { Title = "DEMON", Speed = 1.2, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 10, 85)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 75, 40)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 10, 85)) } },
-    ["PHANTOM"] = { Title = "PHANTOM", Speed = 1.15, Colors = { ColorSequenceKeypoint.new(0.00, Color3.fromRGB(5, 255, 160)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(5, 210, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(5, 255, 160)) } }
+    ["OWNER"] = {
+        Title = "OWNER",
+        Speed = 1.15,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 45, 95)),
+            ColorSequenceKeypoint.new(0.20, Color3.fromRGB(255, 165, 35)),
+            ColorSequenceKeypoint.new(0.40, Color3.fromRGB(0, 245, 195)),
+            ColorSequenceKeypoint.new(0.60, Color3.fromRGB(50, 155, 255)),
+            ColorSequenceKeypoint.new(0.80, Color3.fromRGB(180, 65, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 45, 95))
+        }
+    },
+    ["DADDY"] = {
+        Title = "DADDY",
+        Speed = 1.1,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 30, 80)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 115, 45)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(255, 220, 50)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 30, 80))
+        }
+    },
+    ["TITAN"] = {
+        Title = "TITAN",
+        Speed = 1.15,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 240, 255)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(70, 165, 255)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(160, 60, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 240, 255))
+        }
+    },
+    ["OVERLORD"] = {
+        Title = "OVERLORD",
+        Speed = 1.05,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(180, 60, 255)),
+            ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 60, 180)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(95, 110, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(180, 60, 255))
+        }
+    },
+    ["DEV"] = {
+        Title = "DEV",
+        Speed = 1.25,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 195)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(65, 150, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 195))
+        }
+    },
+    ["VIP"] = {
+        Title = "VIP",
+        Speed = 1.1,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 140, 25)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 230, 65)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 140, 25))
+        }
+    },
+    ["GOD"] = {
+        Title = "GOD",
+        Speed = 1.2,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 110, 175)),
+            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 230, 100)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(95, 255, 190)),
+            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(100, 190, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 110, 175))
+        }
+    },
+    ["CYBER"] = {
+        Title = "CYBER",
+        Speed = 1.2,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 10, 220)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(10, 245, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 10, 220))
+        }
+    },
+    ["VOID"] = {
+        Title = "VOID",
+        Speed = 0.95,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(85, 90, 145)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(180, 185, 240)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(85, 90, 145))
+        }
+    },
+    ["ZENITH"] = {
+        Title = "ZENITH",
+        Speed = 1.15,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 215)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(45, 180, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 215))
+        }
+    },
+    ["APEX"] = {
+        Title = "APEX",
+        Speed = 1.2,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 40, 80)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 160, 35)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 40, 80))
+        }
+    },
+    ["LUCIFER"] = {
+        Title = "LUCIFER",
+        Speed = 1.2,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 15, 35)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 95, 25)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 15, 35))
+        }
+    },
+    ["SUPREME"] = {
+        Title = "SUPREME",
+        Speed = 1.1,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 215, 65)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 245, 165)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 215, 65))
+        }
+    },
+    ["ROYAL"] = {
+        Title = "ROYAL",
+        Speed = 1.0,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(225, 165, 30)),
+            ColorSequenceKeypoint.new(0.40, Color3.fromRGB(255, 230, 110)),
+            ColorSequenceKeypoint.new(0.70, Color3.fromRGB(255, 145, 35)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(225, 165, 30))
+        }
+    },
+    ["DEMON"] = {
+        Title = "DEMON",
+        Speed = 1.2,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 10, 85)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 75, 40)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 10, 85))
+        }
+    },
+    ["PHANTOM"] = {
+        Title = "PHANTOM",
+        Speed = 1.15,
+        Colors = {
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(5, 255, 160)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(5, 210, 255)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(5, 255, 160))
+        }
+    }
 }
 local currentOwnerBadge = "OWNER"
 
@@ -142,12 +279,24 @@ local currentOwnerBadge = "OWNER"
 -- 🎭 MEME PACK
 -- =========================================================
 local MemeLibrary = {
-    { name = "Mewing Shhh", id = 15632128790 }, { name = "Skibidi Toilet", id = 13809623197 }, { name = "Smurf Cat", id = 14757657984 },
-    { name = "Josh Hutcherson", id = 15469032734 }, { name = "The Wok", id = 7872621021 }, { name = "Walter Dog", id = 3698717882 },
-    { name = "Handsome Squidward", id = 6382103444 }, { name = "Sad Hamster", id = 16391456108 }, { name = "Nah I'd Win", id = 15377035543 },
-    { name = "Cat Stare Huh", id = 13838328014 }, { name = "Sigma Face", id = 12271810574 }, { name = "Pedro Raccoon", id = 17290159491 },
-    { name = "GigaChad HD", id = 7192664724 }, { name = "Rock Eyebrow", id = 8011210815 }, { name = "Roblox Man Face", id = 864877007 },
-    { name = "Skull Emoji", id = 9188849503 }, { name = "Clown License", id = 4905389658 }, { name = "Capybara", id = 9811566897 }
+    { name = "Mewing Shhh", id = 15632128790 },
+    { name = "Skibidi Toilet", id = 13809623197 },
+    { name = "Smurf Cat", id = 14757657984 },
+    { name = "Josh Hutcherson", id = 15469032734 },
+    { name = "The Wok / Social Credit", id = 7872621021 },
+    { name = "Walter Dog (Nelson)", id = 3698717882 },
+    { name = "Handsome Squidward", id = 6382103444 },
+    { name = "Sad Hamster", id = 16391456108 },
+    { name = "Nah I'd Win (Gojo)", id = 15377035543 },
+    { name = "Cat Stare Huh", id = 13838328014 },
+    { name = "Sigma Face", id = 12271810574 },
+    { name = "Pedro Raccoon", id = 17290159491 },
+    { name = "GigaChad HD", id = 7192664724 },
+    { name = "Rock Eyebrow", id = 8011210815 },
+    { name = "Roblox Man Face", id = 864877007 },
+    { name = "Skull Emoji", id = 9188849503 },
+    { name = "Clown License", id = 4905389658 },
+    { name = "Capybara Pull Up", id = 9811566897 }
 }
 
 local function getAssetThumb(id)
@@ -157,7 +306,7 @@ end
 local function crispText(element, overrideTransparency)
     local stroke = element:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", element)
     stroke.Color = Color3.new(0, 0, 0)
-    stroke.Transparency = overrideTransparency or 0.15 
+    stroke.Transparency = overrideTransparency or 0.1 
     stroke.Thickness = 1.0 
 end
 
@@ -254,14 +403,20 @@ end
 local function displayBubble(userName, msg)
     local speaker = Players:FindFirstChild(userName)
     if not speaker or not speaker.Character then return end
+
     local cleanMsg = msg
-    if cleanMsg:find("%[MEME:") then cleanMsg = "[Sticker / Meme]" end
+    if cleanMsg:find("%[MEME:") then
+        cleanMsg = "[Sticker / Meme]"
+    end
+
     pcall(function()
         if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
             TextChatService:DisplayBubble(speaker.Character, cleanMsg)
         else
             local head = speaker.Character:FindFirstChild("Head")
-            if head then ChatService:Chat(head, cleanMsg, Enum.ChatColor.White) end
+            if head then
+                ChatService:Chat(head, cleanMsg, Enum.ChatColor.White)
+            end
         end
     end)
 end
@@ -281,7 +436,7 @@ shadow.Size = UDim2.new(0, 480, 0, 390)
 shadow.BackgroundTransparency = 1
 shadow.Image = "rbxassetid://1316045217"
 shadow.ImageColor3 = Color3.new(0, 0, 0)
-shadow.ImageTransparency = 0.3 
+shadow.ImageTransparency = 0.25 
 shadow.ZIndex = 1
 
 local aura = Instance.new("ImageLabel", gui)
@@ -303,8 +458,8 @@ local mainFrame = Instance.new("Frame", gui)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.Position = UDim2.fromScale(0.4, 0.5)
 mainFrame.Size = UDim2.new(0, 440, 0, 350)
-mainFrame.BackgroundColor3 = Color3.fromRGB(5, 7, 10)
-mainFrame.BackgroundTransparency = 0.35 -- Perfect Glass
+mainFrame.BackgroundColor3 = Colors.Background
+mainFrame.BackgroundTransparency = 0.02 
 mainFrame.ClipsDescendants = true
 mainFrame.Active = true
 mainFrame.ZIndex = 5
@@ -334,14 +489,14 @@ end)
 
 local mainBgGrad = Instance.new("UIGradient", mainFrame)
 mainBgGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 18, 25)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(5, 7, 10))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(5, 6, 8)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(1, 2, 3))
 })
 mainBgGrad.Rotation = 45
 
 local glassSheen = Instance.new("Frame", mainFrame)
-glassSheen.Size = UDim2.new(1, 0, 0, 60)
-glassSheen.BackgroundTransparency = 0.94
+glassSheen.Size = UDim2.new(1, 0, 0, 40)
+glassSheen.BackgroundTransparency = 0.96
 glassSheen.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 glassSheen.BorderSizePixel = 0
 glassSheen.ZIndex = 6
@@ -351,7 +506,7 @@ gsGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
 })
 gsGrad.Transparency = NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 0.2),
+    NumberSequenceKeypoint.new(0, 0.4),
     NumberSequenceKeypoint.new(1, 1)
 })
 gsGrad.Rotation = 90
@@ -375,7 +530,7 @@ for i = 1, 16 do
     col.Font = Enum.Font.Code
     col.TextSize = 8 
     col.TextColor3 = Colors.PrimaryDark
-    col.TextTransparency = 0.96 
+    col.TextTransparency = 0.98 
     col.TextWrapped = true
     col.TextYAlignment = Enum.TextYAlignment.Top
     col.ZIndex = 6
@@ -891,21 +1046,21 @@ ghostBtn = createHeaderBtn("GST", function()
             end
         end
     else
-        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.35}):Play()
-        TweenService:Create(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.94}):Play()
+        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.02}):Play()
+        TweenService:Create(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.96}):Play()
         TweenService:Create(aura, TweenInfo.new(0.4), {ImageTransparency = 0.85}):Play()
-        TweenService:Create(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.3}):Play()
+        TweenService:Create(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.25}):Play()
         ghostBtn.BackgroundColor3 = Color3.fromRGB(15, 18, 22)
         ghostBtn.TextColor3 = Colors.Text
         mainStroke.Transparency = 0.2
-        mainStroke.Thickness = 1.2
+        mainStroke.Thickness = 1.0
         badgeSelectorModal.BackgroundTransparency = 0.05
 
         for _, cRoot in ipairs(messageFeed:GetChildren()) do
             if cRoot:IsA("Frame") then
                 local card = cRoot:FindFirstChild("SwipeWrapper")
                 if card then
-                    TweenService:Create(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.35}):Play()
+                    TweenService:Create(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.05}):Play()
                 end
             end
         end
@@ -973,7 +1128,7 @@ divGrad.Color = ColorSequence.new({
 })
 
 -- =========================================================
--- 🔀 CHANNEL TABS
+-- 🔀 CHANNEL TABS (SERVER FIRST, THEN GLOBAL)
 -- =========================================================
 local channelFrame = Instance.new("Frame", mainFrame)
 channelFrame.Size = UDim2.new(1, -24, 0, 30)
@@ -992,7 +1147,7 @@ tsStroke.Thickness = 1.0
 tsStroke.Color = Colors.SurfaceHover
 tsStroke.Transparency = 0.2
 
--- 1. SERVER TAB
+-- 1. SERVER TAB (First Position)
 local serverBtn = Instance.new("TextButton", tabShell)
 serverBtn.Size = UDim2.new(0.5, -2, 1, -4)
 serverBtn.Position = UDim2.new(0, 2, 0, 2)
@@ -1005,7 +1160,7 @@ serverBtn.AutoButtonColor = false
 serverBtn.ZIndex = 10
 Instance.new("UICorner", serverBtn).CornerRadius = UDim.new(0, 6)
 
--- 2. GLOBAL TAB
+-- 2. GLOBAL TAB (Second Position)
 local globalBtn = Instance.new("TextButton", tabShell)
 globalBtn.Size = UDim2.new(0.5, -2, 1, -4)
 globalBtn.Position = UDim2.new(0.5, 0, 0, 2)
@@ -1084,6 +1239,7 @@ pmStroke.Color = Colors.Primary
 pmStroke.Thickness = 1.2
 pmStroke.Transparency = 0.3
 
+-- ⚡ V10 DYNAMIC LIQUID PROFILE BANNER
 local pmBanner = Instance.new("Frame", profileModal)
 pmBanner.Size = UDim2.new(1, 0, 0, 48)
 pmBanner.BackgroundColor3 = Colors.Background
@@ -1133,6 +1289,7 @@ local pmaStroke = Instance.new("UIStroke", pmAvatar)
 pmaStroke.Color = Colors.Primary
 pmaStroke.Thickness = 1.4
 
+-- Active Status Dot
 local pmOnlineDot = Instance.new("Frame", pmAvatar)
 pmOnlineDot.Size = UDim2.fromOffset(10, 10)
 pmOnlineDot.Position = UDim2.new(1, -8, 1, -8)
@@ -1271,6 +1428,7 @@ openUserProfileModal = function(username)
     followersCountLbl.Text = tostring(fCount)
     followingCountLbl.Text = tostring(ingCount)
 
+    -- Dynamic Tier Calculator
     if fCount >= 10 then
         pmTierBadge.Text = "CYBER OVERLORD"
         pmTierBadge.TextColor3 = Colors.Danger
@@ -1807,6 +1965,7 @@ local function spawnUIParticles(parentFrame, positionUDim2, color, count)
     end
 end
 
+-- ⚡ V10 NEW: FLOATING DOUBLE-TAP HEART ANIMATION
 local function spawnFloatingHeart(parentFrame, atPosition)
     local heart = Instance.new("TextLabel", parentFrame)
     heart.Size = UDim2.fromOffset(30, 30)
@@ -1831,7 +1990,6 @@ end
 local sendMessageFunc
 local chatInput
 
--- Clean Basic Action Menu
 actionMenu = Instance.new("Frame", mainFrame)
 actionMenu.Size = UDim2.fromOffset(225, 32)
 actionMenu.BackgroundColor3 = Colors.Surface
@@ -2277,6 +2435,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         playSFX("meme")
     end
 
+    -- ⚡ SWIPE-TO-DM / SWIPE-TO-REPLY & DOUBLE-TAP HEART
     local dragStart = nil
     local isDragging = false
     local hasTriggeredSwipe = false
@@ -2285,6 +2444,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     card.InputBegan:Connect(function(input)
         if actualUsername == lp.Name or actualUsername == "System" then return end
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            -- Double-Tap Heart Detector
             if tick() - lastCardClick < 0.28 then
                 spawnFloatingHeart(card, UDim2.fromOffset(input.Position.X - card.AbsolutePosition.X, input.Position.Y - card.AbsolutePosition.Y))
             end
@@ -2378,6 +2538,7 @@ inputContainer.BackgroundTransparency = 0.05
 inputContainer.ZIndex = 12
 Instance.new("UICorner", inputContainer).CornerRadius = UDim.new(1, 0)
 
+-- ⚡ V10 NEW: LIVE @ MENTION AUTOCOMPLETE DOCK
 local mentionDock = Instance.new("ScrollingFrame", mainFrame)
 mentionDock.Size = UDim2.new(1, -28, 0, 30)
 mentionDock.Position = UDim2.new(0, 14, 1, -86)
@@ -2920,9 +3081,9 @@ openBtn.MouseButton1Click:Connect(function()
     TweenService:Create(mainScale, tInfo2, {Scale = 1}):Play()
     TweenService:Create(auraScale, tInfo2, {Scale = 1}):Play()
     TweenService:Create(shadowScale, tInfo2, {Scale = 1}):Play()
-    TweenService:Create(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.40 or 0.35}):Play()
+    TweenService:Create(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.40 or 0.02}):Play()
     TweenService:Create(aura, tInfo3, {ImageTransparency = isGhostMode and 0.95 or 0.85}):Play()
-    TweenService:Create(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.5 or 0.3}):Play()
+    TweenService:Create(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.5 or 0.25}):Play()
 end)
 
 UserInputService.InputBegan:Connect(function(input, gp)
@@ -2942,9 +3103,9 @@ UserInputService.InputBegan:Connect(function(input, gp)
             mainScale.Scale = 1
             auraScale.Scale = 1
             shadowScale.Scale = 1
-            mainFrame.BackgroundTransparency = isGhostMode and 0.40 or 0.35
+            mainFrame.BackgroundTransparency = isGhostMode and 0.40 or 0.02
             aura.ImageTransparency = isGhostMode and 0.95 or 0.85
-            shadow.ImageTransparency = isGhostMode and 0.5 or 0.3
+            shadow.ImageTransparency = isGhostMode and 0.5 or 0.25
         end
     elseif input.KeyCode == Enum.KeyCode.Semicolon or input.KeyCode == Enum.KeyCode.Slash then
         task.delay(0.05, function() chatInput:CaptureFocus() end)
@@ -2957,7 +3118,6 @@ end)
 task.spawn(function()
     local t = 0
     local sonarTimer = 0
-    local statTimer = 0
     local currentSpeedMod = 1
     local currentRadiusMod = 1
     local fpsCount = 0
@@ -3241,6 +3401,8 @@ sendMessageFunc = function(overrideText)
         addMessageToFeed(encodedUserTag, text, nil, false, game.JobId, currentScope)
     end
     displayBubble(lp.Name, text)
+    
+    spawnUIParticles(sendBtn, UDim2.new(0.5, 0, 0.5, 0), Colors.Primary, 8)
 
     local cleanKey = string.lower(finalMsg)
     recentLocalSentMap[cleanKey] = tick()
@@ -3467,5 +3629,5 @@ task.spawn(function()
             })
         end)
     end
-    addMessageToFeed("System::System", "TXR Cyber-Titan Aesthetic Online! Swipe Card Right for DMs.", nil, false, game.JobId, "global")
+    addMessageToFeed("System::System", "TXR Cyber-Titan V10 Supreme Online! Tap PRF for Profile, TOP for Leaderboard.", nil, false, game.JobId, "global")
 end)
