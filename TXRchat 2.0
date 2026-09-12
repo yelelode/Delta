@@ -97,8 +97,8 @@ local Themes = {
 local currentThemeIdx = 1
 
 local Colors = {
-    Background    = Color3.fromRGB(5, 7, 10),       -- OLED True Black Matrix
-    Surface       = Color3.fromRGB(15, 18, 26),     -- Frosted Floating Panel
+    Background    = Color3.fromRGB(5, 7, 10),       
+    Surface       = Color3.fromRGB(15, 18, 26),     
     SurfaceHover  = Color3.fromRGB(25, 30, 45),     
     ActiveTint    = Themes[1].ActiveTint,       
     Primary       = Themes[1].Primary,         
@@ -107,7 +107,7 @@ local Colors = {
     Warning       = Color3.fromRGB(255, 200, 45),         
     Purple        = Themes[1].Accent,         
     Text          = Color3.fromRGB(255, 255, 255),          
-    SubText       = Color3.fromRGB(160, 175, 200),       
+    SubText       = Color3.fromRGB(175, 190, 215),       
     TextDark      = Color3.fromRGB(5, 7, 10),
     MentionGold   = Color3.fromRGB(255, 225, 90),
     MentionBg     = Color3.fromRGB(40, 32, 15),
@@ -305,8 +305,8 @@ end
 local function crispText(element, overrideTransparency)
     local stroke = element:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", element)
     stroke.Color = Color3.new(0, 0, 0)
-    stroke.Transparency = overrideTransparency or 0.25 -- Deepest contrast for OLED look
-    stroke.Thickness = 1.2 -- Bolded crisp stroke
+    stroke.Transparency = overrideTransparency or 0.25 
+    stroke.Thickness = 1.2 
 end
 
 -- ⚡ CINETMATIC APPLE-STYLE SPRING HOVER (ADDED COLOR TINT)
@@ -415,7 +415,7 @@ local function displayBubble(userName, msg)
 end
 
 -- =========================================================
--- 🏗️ ROOT GUI, MAIN ACRYLIC FRAME & AMBIENT AURA (CINEMATIC LIGHTING)
+-- 🏗️ ROOT GUI, MAIN ACRYLIC FRAME & AMBIENT AURA 
 -- =========================================================
 local gui = Instance.new("ScreenGui", targetGuiParent)
 gui.Name = "TXR_OnyxChat_" .. tostring(math.random(100000, 999999))
@@ -425,11 +425,11 @@ gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 local shadow = Instance.new("ImageLabel", gui)
 shadow.AnchorPoint = Vector2.new(0.5, 0.5)
 shadow.Position = UDim2.fromScale(0.4, 0.5)
-shadow.Size = UDim2.new(0, 520, 0, 430) -- Massive blurred shadow
+shadow.Size = UDim2.new(0, 520, 0, 430) 
 shadow.BackgroundTransparency = 1
 shadow.Image = "rbxassetid://1316045217"
 shadow.ImageColor3 = Color3.new(0, 0, 0)
-shadow.ImageTransparency = 0.15 -- Intense deep drop shadow
+shadow.ImageTransparency = 0.15 
 shadow.ZIndex = 1
 
 local aura = Instance.new("ImageLabel", gui)
@@ -439,7 +439,7 @@ aura.Size = UDim2.new(0, 490, 0, 400)
 aura.BackgroundTransparency = 1
 aura.Image = "rbxassetid://1316045217"
 aura.ImageColor3 = Colors.Primary
-aura.ImageTransparency = 0.45 -- Brighter glowing monitor aura
+aura.ImageTransparency = 0.45 
 aura.ZIndex = 2
 
 local auraScale = Instance.new("UIScale", aura)
@@ -452,13 +452,14 @@ mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.Position = UDim2.fromScale(0.4, 0.5)
 mainFrame.Size = UDim2.new(0, 440, 0, 350)
 mainFrame.BackgroundColor3 = Colors.Background
-mainFrame.BackgroundTransparency = 0.05 -- Almost solid OLED
+-- ⚡ LIGHTLY TRANSPARENT UPGRADE (Was 0.05, Now 0.30 for Glass Effect)
+mainFrame.BackgroundTransparency = 0.30 
 mainFrame.ClipsDescendants = true
 mainFrame.Active = true
 mainFrame.ZIndex = 5
 
 local mainCorner = Instance.new("UICorner", mainFrame)
-mainCorner.CornerRadius = UDim.new(0, 20) -- Ultra-round Apple style
+mainCorner.CornerRadius = UDim.new(0, 20)
 
 local mainStroke = Instance.new("UIStroke", mainFrame)
 mainStroke.Thickness = 1.8
@@ -489,7 +490,7 @@ mainBgGrad.Rotation = 45
 
 local glassSheen = Instance.new("Frame", mainFrame)
 glassSheen.Size = UDim2.new(1, 0, 0, 120)
-glassSheen.BackgroundTransparency = 0.90
+glassSheen.BackgroundTransparency = 0.85
 glassSheen.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 glassSheen.BorderSizePixel = 0
 glassSheen.ZIndex = 6
@@ -522,9 +523,9 @@ for i = 1, 16 do
     col.Position = UDim2.new((i - 1) / 16, 4, 0, 0)
     col.BackgroundTransparency = 1
     col.Font = Enum.Font.Code
-    col.TextSize = 9 -- Smaller, less intrusive
+    col.TextSize = 9 
     col.TextColor3 = Colors.PrimaryDark
-    col.TextTransparency = 0.96 -- Very subtle watermark effect
+    col.TextTransparency = 0.98 -- Very subtle watermark
     col.TextWrapped = true
     col.TextYAlignment = Enum.TextYAlignment.Top
     col.ZIndex = 6
@@ -754,7 +755,7 @@ local rosterFrame = Instance.new("Frame", mainFrame)
 rosterFrame.Size = UDim2.new(0, 140, 1, -44)
 rosterFrame.Position = UDim2.new(1, 10, 0, 42)
 rosterFrame.BackgroundColor3 = Colors.Surface
-rosterFrame.BackgroundTransparency = 0.1
+rosterFrame.BackgroundTransparency = 0.35 -- Glass Match
 rosterFrame.Visible = false
 rosterFrame.ZIndex = 40
 Instance.new("UICorner", rosterFrame).CornerRadius = UDim.new(0, 14)
@@ -796,7 +797,7 @@ local function refreshRosterUI()
         uBtn.BackgroundTransparency = 0.5
         uBtn.Text = "  @" .. u
         uBtn.TextColor3 = Colors.Text
-        uBtn.Font = Enum.Font.GothamSemibold -- Softer Apple UI look
+        uBtn.Font = Enum.Font.GothamSemibold 
         uBtn.TextSize = 9.5
         uBtn.TextXAlignment = Enum.TextXAlignment.Left
         uBtn.ZIndex = 42
@@ -850,7 +851,7 @@ crispText(headerTitle, 0.2)
 local liveBadge = Instance.new("TextButton", headerLeftCluster)
 liveBadge.Size = UDim2.fromOffset(80, 22)
 liveBadge.BackgroundColor3 = Colors.Surface
-liveBadge.BackgroundTransparency = 0.2
+liveBadge.BackgroundTransparency = 0.4
 liveBadge.Text = ""
 liveBadge.AutoButtonColor = false
 liveBadge.ZIndex = 12
@@ -907,14 +908,14 @@ local function createHeaderBtn(text, onClick)
     local b = Instance.new("TextButton", headerRightCluster)
     b.Size = UDim2.fromOffset(28, 24)
     b.BackgroundColor3 = Colors.Surface
-    b.BackgroundTransparency = 0.2 -- Premium bold buttons
+    b.BackgroundTransparency = 0.4 
     b.Text = text
     b.TextColor3 = Colors.Text
     b.Font = Enum.Font.GothamBold
     b.TextSize = 9.5
     b.AutoButtonColor = false
     b.ZIndex = 15
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8) -- Softer corners
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8) 
 
     local btnStr = Instance.new("UIStroke", b)
     btnStr.Thickness = 1
@@ -977,7 +978,7 @@ ghostBtn = createHeaderBtn("GST", function()
 
     isGhostMode = not isGhostMode
     if isGhostMode then
-        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.50}):Play()
+        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.65}):Play()
         TweenService:Create(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.85}):Play()
         TweenService:Create(aura, TweenInfo.new(0.4), {ImageTransparency = 0.75}):Play()
         TweenService:Create(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.4}):Play()
@@ -985,27 +986,33 @@ ghostBtn = createHeaderBtn("GST", function()
         ghostBtn.TextColor3 = Colors.Primary
         mainStroke.Transparency = 0.1
         mainStroke.Thickness = 2.0
-        badgeSelectorModal.BackgroundTransparency = 0.50
+        badgeSelectorModal.BackgroundTransparency = 0.60
 
-        for _, card in ipairs(messageFeed:GetChildren()) do
-            if card:IsA("Frame") and card:FindFirstChild("SwipeWrapper") then
-                card.BackgroundTransparency = 0.45
+        for _, cRoot in ipairs(messageFeed:GetChildren()) do
+            if cRoot:IsA("Frame") then
+                local card = cRoot:FindFirstChild("SwipeWrapper")
+                if card then
+                    TweenService:Create(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.65}):Play()
+                end
             end
         end
     else
-        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.05}):Play()
-        TweenService:Create(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.90}):Play()
+        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.30}):Play()
+        TweenService:Create(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.85}):Play()
         TweenService:Create(aura, TweenInfo.new(0.4), {ImageTransparency = 0.45}):Play()
         TweenService:Create(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.15}):Play()
         ghostBtn.BackgroundColor3 = Colors.Surface
         ghostBtn.TextColor3 = Colors.Text
         mainStroke.Transparency = 0.15
         mainStroke.Thickness = 1.8
-        badgeSelectorModal.BackgroundTransparency = 0.05
+        badgeSelectorModal.BackgroundTransparency = 0.30
 
-        for _, card in ipairs(messageFeed:GetChildren()) do
-            if card:IsA("Frame") and card:FindFirstChild("SwipeWrapper") then
-                card.BackgroundTransparency = 0.15
+        for _, cRoot in ipairs(messageFeed:GetChildren()) do
+            if cRoot:IsA("Frame") then
+                local card = cRoot:FindFirstChild("SwipeWrapper")
+                if card then
+                    TweenService:Create(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.35}):Play()
+                end
             end
         end
     end
@@ -1082,7 +1089,7 @@ channelFrame.ZIndex = 8
 local tabShell = Instance.new("Frame", channelFrame)
 tabShell.Size = UDim2.new(1, 0, 1, 0)
 tabShell.BackgroundColor3 = Colors.Surface
-tabShell.BackgroundTransparency = 0.15
+tabShell.BackgroundTransparency = 0.35 -- Glass Match
 tabShell.ZIndex = 9
 Instance.new("UICorner", tabShell).CornerRadius = UDim.new(0, 10)
 local tsStroke = Instance.new("UIStroke", tabShell)
@@ -1117,24 +1124,24 @@ globalBtn.ZIndex = 10
 Instance.new("UICorner", globalBtn).CornerRadius = UDim.new(0, 8)
 
 local function filterFeedMode()
-    for _, card in ipairs(messageFeed:GetChildren()) do
-        if card:IsA("GuiObject") and card.Name ~= "UIListLayout" and card.Name ~= "UIPadding" then
-            local cardScope = card:GetAttribute("ChatScope")
-            local cardJob = card:GetAttribute("JobId")
+    for _, cardRoot in ipairs(messageFeed:GetChildren()) do
+        if cardRoot:IsA("GuiObject") and cardRoot.Name ~= "UIListLayout" and cardRoot.Name ~= "UIPadding" then
+            local cardScope = cardRoot:GetAttribute("ChatScope")
+            local cardJob = cardRoot:GetAttribute("JobId")
 
             if chatMode == "server" then
                 if cardScope == "global" then
-                    card.Visible = false
+                    cardRoot.Visible = false
                 elseif cardJob and cardJob ~= "" and cardJob ~= game.JobId then
-                    card.Visible = false
+                    cardRoot.Visible = false
                 else
-                    card.Visible = true
+                    cardRoot.Visible = true
                 end
             else
                 if cardScope == "server" then
-                    card.Visible = false
+                    cardRoot.Visible = false
                 else
-                    card.Visible = true
+                    cardRoot.Visible = true
                 end
             end
         end
@@ -1168,7 +1175,7 @@ badgeSelectorModal = Instance.new("Frame", mainFrame)
 badgeSelectorModal.Size = UDim2.fromOffset(240, 250)
 badgeSelectorModal.Position = UDim2.new(1, -250, 0, 44)
 badgeSelectorModal.BackgroundColor3 = Color3.fromRGB(12, 16, 24)
-badgeSelectorModal.BackgroundTransparency = 0.05
+badgeSelectorModal.BackgroundTransparency = 0.35 -- Glass match
 badgeSelectorModal.Visible = false
 badgeSelectorModal.ZIndex = 70
 Instance.new("UICorner", badgeSelectorModal).CornerRadius = UDim.new(0, 14)
@@ -1355,7 +1362,7 @@ messageFeed.AutomaticCanvasSize = Enum.AutomaticSize.Y
 messageFeed.ZIndex = 8
 
 local feedLayout = Instance.new("UIListLayout", messageFeed)
-feedLayout.Padding = UDim.new(0, 10) -- Increased padding for airy feel
+feedLayout.Padding = UDim.new(0, 10) 
 feedLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 local feedPadding = Instance.new("UIPadding", messageFeed)
@@ -1564,10 +1571,10 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         end
     end
 
-    -- ⚡ V4 SWIPE-TO-DM REWRITE: Instead of Card being TextButton, Root is Frame, swipeWrapper inside
+    -- ⚡ V5 SWIPE-TO-DM REWRITE (WITH FIXED AUTO-SIZING SO IT DOESNT STRETCH OUT)
     local cardRoot = Instance.new("Frame", messageFeed)
-    cardRoot.Size = memeIdMatch and UDim2.new(1, 0, 0, 130) or UDim2.new(1, 0, 0, 0)
-    cardRoot.AutomaticSize = memeIdMatch and Enum.AutomaticSize.None or Enum.AutomaticSize.Y
+    cardRoot.Size = UDim2.new(1, 0, 0, 0) -- 0 height lets AutomaticSize take control
+    cardRoot.AutomaticSize = Enum.AutomaticSize.Y
     cardRoot.BackgroundTransparency = 1
     cardRoot.ZIndex = 9
     cardRoot:SetAttribute("ChatScope", scopeType or "global")
@@ -1590,15 +1597,21 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     dmIcon.TextSize = 18
     dmIcon.ZIndex = 8
 
-    -- THE ACTUAL SWIPEABLE CARD
+    -- THE ACTUAL SWIPEABLE CARD (This also needs AutomaticSize=Y to wrap the content correctly)
     local card = Instance.new("Frame", cardRoot)
     card.Name = "SwipeWrapper"
-    card.Size = UDim2.fromScale(1, 1)
+    card.Size = UDim2.new(1, 0, 0, 0)
+    card.AutomaticSize = Enum.AutomaticSize.Y
     card.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    card.BackgroundTransparency = isGhostMode and 0.45 or 0.15
+    card.BackgroundTransparency = isGhostMode and 0.65 or 0.35 -- Beautiful Glass Match
     card.ClipsDescendants = false
     card.ZIndex = 9
     Instance.new("UICorner", card).CornerRadius = UDim.new(0, 14)
+
+    -- ⚡ Apply padding INSIDE the card so it clamps properly
+    local padFix = Instance.new("UIPadding", card)
+    padFix.PaddingBottom = UDim.new(0, 10)
+    padFix.PaddingTop = UDim.new(0, 2)
 
     local cardGrad = Instance.new("UIGradient", card)
     cardGrad.Color = ColorSequence.new({
@@ -1864,9 +1877,10 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         bodyTxt.Size = UDim2.new(1, 0, 0, 0)
         bodyTxt.AutomaticSize = Enum.AutomaticSize.Y
         bodyTxt.BackgroundTransparency = 1
-        bodyTxt.TextColor3 = Colors.Text
-        bodyTxt.Font = Enum.Font.GothamSemibold
-        bodyTxt.TextSize = 11.5
+        -- ⚡ TEXT SIZE INCREASED FOR BETTER READABILITY
+        bodyTxt.TextColor3 = Color3.fromRGB(240, 245, 255)
+        bodyTxt.Font = Enum.Font.GothamMedium 
+        bodyTxt.TextSize = 13.5 
         bodyTxt.TextWrapped = true
         bodyTxt.TextXAlignment = Enum.TextXAlignment.Left
         bodyTxt.RichText = true
@@ -1876,16 +1890,13 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         crispText(bodyTxt)
     end
 
-    local padFix = Instance.new("UIPadding", cardRoot)
-    padFix.PaddingBottom = UDim.new(0, 14)
-
     if isMentioned and actualUsername ~= lp.Name then
         playSFX("mention")
     elseif memeIdMatch and actualUsername ~= lp.Name then
         playSFX("meme")
     end
 
-    -- ⚡ V4 FEATURE: SWIPE-TO-DM / SWIPE-TO-REPLY ENGINE
+    -- ⚡ V5 FEATURE: SWIPE-TO-DM / SWIPE-TO-REPLY ENGINE
     local dragStart = nil
     local isDragging = false
     local hasTriggeredSwipe = false
@@ -1981,7 +1992,7 @@ local inputContainer = Instance.new("Frame", mainFrame)
 inputContainer.Size = UDim2.new(1, -24, 0, 44)
 inputContainer.Position = UDim2.new(0, 12, 1, -52)
 inputContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-inputContainer.BackgroundTransparency = 0.15
+inputContainer.BackgroundTransparency = 0.40 -- Premium translucent look
 inputContainer.ZIndex = 12
 Instance.new("UICorner", inputContainer).CornerRadius = UDim.new(1, 0)
 
@@ -2431,7 +2442,7 @@ openBtn.MouseButton1Click:Connect(function()
     TweenService:Create(mainScale, tInfo2, {Scale = 1}):Play()
     TweenService:Create(auraScale, tInfo2, {Scale = 1}):Play()
     TweenService:Create(shadowScale, tInfo2, {Scale = 1}):Play()
-    TweenService:Create(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.50 or 0.05}):Play()
+    TweenService:Create(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.65 or 0.30}):Play()
     TweenService:Create(aura, tInfo3, {ImageTransparency = isGhostMode and 0.75 or 0.45}):Play()
     TweenService:Create(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.4 or 0.15}):Play()
 end)
@@ -2454,7 +2465,7 @@ UserInputService.InputBegan:Connect(function(input, gp)
             mainScale.Scale = 1
             auraScale.Scale = 1
             shadowScale.Scale = 1
-            mainFrame.BackgroundTransparency = isGhostMode and 0.50 or 0.05
+            mainFrame.BackgroundTransparency = isGhostMode and 0.65 or 0.30
             aura.ImageTransparency = isGhostMode and 0.75 or 0.45
             shadow.ImageTransparency = isGhostMode and 0.4 or 0.15
         end
