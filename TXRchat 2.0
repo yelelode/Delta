@@ -12,7 +12,7 @@ pcall(function()
 end)
 
 -- =========================================================
--- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V21.0 LIVE TAG LUXURY) 👑
+-- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V6 STEALTH OLED) 👑
 -- =========================================================
 
 local currentExecutionID = tick()
@@ -66,40 +66,40 @@ local function sanitizeXml(str)
 end
 
 -- =========================================================
--- 🎨 MULTI-CHROMA PALETTE & THEMES (ULTRA OLED PREMIUM)
+-- 🎨 MULTI-CHROMA PALETTE & THEMES (TRUE OLED PREMIUM)
 -- =========================================================
 local Themes = {
     [1] = {
-        Primary = Color3.fromRGB(0, 255, 220), -- Hyper-Cyan
+        Primary = Color3.fromRGB(0, 255, 220), 
         PrimaryDark = Color3.fromRGB(0, 190, 170),
-        Accent = Color3.fromRGB(190, 80, 255), -- Electric Purple
-        ActiveTint = Color3.fromRGB(15, 30, 40)
+        Accent = Color3.fromRGB(190, 80, 255), 
+        ActiveTint = Color3.fromRGB(12, 18, 22)
     },
     [2] = {
-        Primary = Color3.fromRGB(255, 60, 105), -- Crimson Pink
+        Primary = Color3.fromRGB(255, 60, 105), 
         PrimaryDark = Color3.fromRGB(200, 30, 70),
         Accent = Color3.fromRGB(255, 170, 20),
-        ActiveTint = Color3.fromRGB(40, 15, 25)
+        ActiveTint = Color3.fromRGB(22, 12, 15)
     },
     [3] = {
         Primary = Color3.fromRGB(205, 105, 255),
         PrimaryDark = Color3.fromRGB(150, 60, 210),
         Accent = Color3.fromRGB(20, 225, 255),
-        ActiveTint = Color3.fromRGB(35, 15, 50)
+        ActiveTint = Color3.fromRGB(18, 12, 22)
     },
     [4] = {
         Primary = Color3.fromRGB(255, 225, 75),
         PrimaryDark = Color3.fromRGB(210, 160, 40),
         Accent = Color3.fromRGB(255, 105, 105),
-        ActiveTint = Color3.fromRGB(45, 35, 15)
+        ActiveTint = Color3.fromRGB(22, 18, 12)
     }
 }
 local currentThemeIdx = 1
 
 local Colors = {
-    Background    = Color3.fromRGB(5, 7, 10),       
-    Surface       = Color3.fromRGB(15, 18, 26),     
-    SurfaceHover  = Color3.fromRGB(25, 30, 45),     
+    Background    = Color3.fromRGB(2, 3, 5),       -- Pure Deep OLED Black
+    Surface       = Color3.fromRGB(10, 12, 16),     -- Very Dark Gray Surface
+    SurfaceHover  = Color3.fromRGB(16, 20, 26),     
     ActiveTint    = Themes[1].ActiveTint,       
     Primary       = Themes[1].Primary,         
     PrimaryDark   = Themes[1].PrimaryDark,     
@@ -107,11 +107,11 @@ local Colors = {
     Warning       = Color3.fromRGB(255, 200, 45),         
     Purple        = Themes[1].Accent,         
     Text          = Color3.fromRGB(255, 255, 255),          
-    SubText       = Color3.fromRGB(175, 190, 215),       
-    TextDark      = Color3.fromRGB(5, 7, 10),
+    SubText       = Color3.fromRGB(160, 170, 185),       
+    TextDark      = Color3.fromRGB(4, 5, 8),
     MentionGold   = Color3.fromRGB(255, 225, 90),
-    MentionBg     = Color3.fromRGB(40, 32, 15),
-    MacroBg       = Color3.fromRGB(22, 26, 40)
+    MentionBg     = Color3.fromRGB(30, 26, 12),
+    MacroBg       = Color3.fromRGB(12, 14, 18)
 }
 
 -- =========================================================
@@ -305,20 +305,20 @@ end
 local function crispText(element, overrideTransparency)
     local stroke = element:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", element)
     stroke.Color = Color3.new(0, 0, 0)
-    stroke.Transparency = overrideTransparency or 0.25 
-    stroke.Thickness = 1.2 
+    stroke.Transparency = overrideTransparency or 0.1 -- Maximum contrast
+    stroke.Thickness = 1.0 -- Clean sharp text
 end
 
--- ⚡ CINETMATIC APPLE-STYLE SPRING HOVER (ADDED COLOR TINT)
+-- ⚡ CINETMATIC APPLE-STYLE SPRING HOVER
 local function applySpringHover(btn)
     local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
     local originalColor = btn.BackgroundColor3
     local originalTransparency = btn.BackgroundTransparency
     
     btn.MouseEnter:Connect(function()
-        TweenService:Create(btnScale, TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1.04}):Play()
+        TweenService:Create(btnScale, TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1.03}):Play()
         if btn.BackgroundTransparency < 1 then
-            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Colors.SurfaceHover, BackgroundTransparency = originalTransparency - 0.1}):Play()
+            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Colors.SurfaceHover, BackgroundTransparency = math.max(0, originalTransparency - 0.1)}):Play()
         end
     end)
     btn.MouseLeave:Connect(function()
@@ -328,10 +328,10 @@ local function applySpringHover(btn)
         end
     end)
     btn.MouseButton1Down:Connect(function()
-        TweenService:Create(btnScale, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Scale = 0.94}):Play()
+        TweenService:Create(btnScale, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Scale = 0.95}):Play()
     end)
     btn.MouseButton1Up:Connect(function()
-        TweenService:Create(btnScale, TweenInfo.new(0.4, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1.04}):Play()
+        TweenService:Create(btnScale, TweenInfo.new(0.4, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1.03}):Play()
     end)
 end
 
@@ -376,7 +376,7 @@ local userIdCache = {}
 local activeBadgesList = {}
 local modalSelectionIndicators = {}
 
--- ⚡ NEW: LIVE TYPING STATE
+-- ⚡ LIVE TYPING STATE
 local globalTypers = {}
 
 -- ⚡ DEDUPLICATION ENGINE CACHE
@@ -425,21 +425,23 @@ gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 local shadow = Instance.new("ImageLabel", gui)
 shadow.AnchorPoint = Vector2.new(0.5, 0.5)
 shadow.Position = UDim2.fromScale(0.4, 0.5)
-shadow.Size = UDim2.new(0, 520, 0, 430) 
+shadow.Size = UDim2.new(0, 480, 0, 390) 
 shadow.BackgroundTransparency = 1
 shadow.Image = "rbxassetid://1316045217"
 shadow.ImageColor3 = Color3.new(0, 0, 0)
-shadow.ImageTransparency = 0.15 
+shadow.ImageTransparency = 0.25 
 shadow.ZIndex = 1
 
 local aura = Instance.new("ImageLabel", gui)
 aura.AnchorPoint = Vector2.new(0.5, 0.5)
 aura.Position = UDim2.fromScale(0.4, 0.5)
-aura.Size = UDim2.new(0, 490, 0, 400)
+-- ⚡ FIXED: Reduced size so glow stays close to the borders
+aura.Size = UDim2.new(0, 455, 0, 365)
 aura.BackgroundTransparency = 1
 aura.Image = "rbxassetid://1316045217"
 aura.ImageColor3 = Colors.Primary
-aura.ImageTransparency = 0.45 
+-- ⚡ FIXED: Reduced glow intensity drastically
+aura.ImageTransparency = 0.85 
 aura.ZIndex = 2
 
 local auraScale = Instance.new("UIScale", aura)
@@ -451,19 +453,20 @@ local mainFrame = Instance.new("Frame", gui)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.Position = UDim2.fromScale(0.4, 0.5)
 mainFrame.Size = UDim2.new(0, 440, 0, 350)
+-- ⚡ FIXED: Absolute deep black inside.
 mainFrame.BackgroundColor3 = Colors.Background
--- ⚡ LIGHTLY TRANSPARENT UPGRADE (Was 0.05, Now 0.30 for Glass Effect)
-mainFrame.BackgroundTransparency = 0.30 
+mainFrame.BackgroundTransparency = 0.02 -- Blocks aura from leaking inside
 mainFrame.ClipsDescendants = true
 mainFrame.Active = true
 mainFrame.ZIndex = 5
 
 local mainCorner = Instance.new("UICorner", mainFrame)
-mainCorner.CornerRadius = UDim.new(0, 20)
+mainCorner.CornerRadius = UDim.new(0, 16)
 
 local mainStroke = Instance.new("UIStroke", mainFrame)
-mainStroke.Thickness = 1.8
-mainStroke.Transparency = 0.15
+-- ⚡ FIXED: Thinner, sleeker border
+mainStroke.Thickness = 1.0
+mainStroke.Transparency = 0.2
 mainStroke.Color = Colors.Primary
 
 local strokeGrad = Instance.new("UIGradient", mainStroke)
@@ -481,16 +484,18 @@ mainFrame:GetPropertyChangedSignal("Position"):Connect(function()
     shadow.Position = mainFrame.Position
 end)
 
+-- ⚡ Subtler internal gradient
 local mainBgGrad = Instance.new("UIGradient", mainFrame)
 mainBgGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(12, 15, 22)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(4, 5, 8))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(5, 6, 8)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(1, 2, 3))
 })
 mainBgGrad.Rotation = 45
 
+-- ⚡ Extremely faint top edge highlight instead of giant sheen block
 local glassSheen = Instance.new("Frame", mainFrame)
-glassSheen.Size = UDim2.new(1, 0, 0, 120)
-glassSheen.BackgroundTransparency = 0.85
+glassSheen.Size = UDim2.new(1, 0, 0, 40)
+glassSheen.BackgroundTransparency = 0.96
 glassSheen.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 glassSheen.BorderSizePixel = 0
 glassSheen.ZIndex = 6
@@ -500,14 +505,13 @@ gsGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
 })
 gsGrad.Transparency = NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 0.15),
-    NumberSequenceKeypoint.new(0.5, 0.8),
+    NumberSequenceKeypoint.new(0, 0.4),
     NumberSequenceKeypoint.new(1, 1)
 })
 gsGrad.Rotation = 90
 
 -- =========================================================
--- 🌧️ MATRIX CODE RAIN (SUBTLE ELEGANCE)
+-- 🌧️ MATRIX CODE RAIN (ALMOST INVISIBLE ELEGANCE)
 -- =========================================================
 local matrixBox = Instance.new("Frame", mainFrame)
 matrixBox.Size = UDim2.fromScale(1, 1)
@@ -523,9 +527,9 @@ for i = 1, 16 do
     col.Position = UDim2.new((i - 1) / 16, 4, 0, 0)
     col.BackgroundTransparency = 1
     col.Font = Enum.Font.Code
-    col.TextSize = 9 
+    col.TextSize = 8 
     col.TextColor3 = Colors.PrimaryDark
-    col.TextTransparency = 0.98 -- Very subtle watermark
+    col.TextTransparency = 0.98 -- Faint OLED Burn-in look
     col.TextWrapped = true
     col.TextYAlignment = Enum.TextYAlignment.Top
     col.ZIndex = 6
@@ -755,13 +759,13 @@ local rosterFrame = Instance.new("Frame", mainFrame)
 rosterFrame.Size = UDim2.new(0, 140, 1, -44)
 rosterFrame.Position = UDim2.new(1, 10, 0, 42)
 rosterFrame.BackgroundColor3 = Colors.Surface
-rosterFrame.BackgroundTransparency = 0.35 -- Glass Match
+rosterFrame.BackgroundTransparency = 0.1
 rosterFrame.Visible = false
 rosterFrame.ZIndex = 40
 Instance.new("UICorner", rosterFrame).CornerRadius = UDim.new(0, 14)
 local rfStroke = Instance.new("UIStroke", rosterFrame)
 rfStroke.Color = Colors.PrimaryDark
-rfStroke.Thickness = 1.2
+rfStroke.Thickness = 1.0
 rfStroke.Transparency = 0.25
 
 local rfTitle = Instance.new("TextLabel", rosterFrame)
@@ -777,7 +781,7 @@ local rosterScroll = Instance.new("ScrollingFrame", rosterFrame)
 rosterScroll.Size = UDim2.new(1, -10, 1, -30)
 rosterScroll.Position = UDim2.fromOffset(5, 26)
 rosterScroll.BackgroundTransparency = 1
-rosterScroll.ScrollBarThickness = 2
+rosterScroll.ScrollBarThickness = 1
 rosterScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 rosterScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 rosterScroll.ZIndex = 41
@@ -793,15 +797,15 @@ local function refreshRosterUI()
     for u, _ in pairs(activeUsersTable) do
         local uBtn = Instance.new("TextButton", rosterScroll)
         uBtn.Size = UDim2.new(1, 0, 0, 24)
-        uBtn.BackgroundColor3 = Colors.Background
-        uBtn.BackgroundTransparency = 0.5
+        uBtn.BackgroundColor3 = Color3.fromRGB(12, 14, 18)
+        uBtn.BackgroundTransparency = 0.2
         uBtn.Text = "  @" .. u
         uBtn.TextColor3 = Colors.Text
         uBtn.Font = Enum.Font.GothamSemibold 
         uBtn.TextSize = 9.5
         uBtn.TextXAlignment = Enum.TextXAlignment.Left
         uBtn.ZIndex = 42
-        Instance.new("UICorner", uBtn).CornerRadius = UDim.new(0, 8)
+        Instance.new("UICorner", uBtn).CornerRadius = UDim.new(0, 6)
         
         local ubStr = Instance.new("UIStroke", uBtn)
         ubStr.Color = Colors.SurfaceHover
@@ -846,12 +850,12 @@ headerTitle.Font = Enum.Font.GothamBlack
 headerTitle.TextSize = 13.5
 headerTitle.TextXAlignment = Enum.TextXAlignment.Left
 headerTitle.ZIndex = 12
-crispText(headerTitle, 0.2)
+crispText(headerTitle, 0.1)
 
 local liveBadge = Instance.new("TextButton", headerLeftCluster)
 liveBadge.Size = UDim2.fromOffset(80, 22)
-liveBadge.BackgroundColor3 = Colors.Surface
-liveBadge.BackgroundTransparency = 0.4
+liveBadge.BackgroundColor3 = Color3.fromRGB(15, 18, 22)
+liveBadge.BackgroundTransparency = 0.2
 liveBadge.Text = ""
 liveBadge.AutoButtonColor = false
 liveBadge.ZIndex = 12
@@ -907,15 +911,15 @@ hrLayout.Padding = UDim.new(0, 6)
 local function createHeaderBtn(text, onClick)
     local b = Instance.new("TextButton", headerRightCluster)
     b.Size = UDim2.fromOffset(28, 24)
-    b.BackgroundColor3 = Colors.Surface
-    b.BackgroundTransparency = 0.4 
+    b.BackgroundColor3 = Color3.fromRGB(15, 18, 22)
+    b.BackgroundTransparency = 0.2 
     b.Text = text
     b.TextColor3 = Colors.Text
     b.Font = Enum.Font.GothamBold
     b.TextSize = 9.5
     b.AutoButtonColor = false
     b.ZIndex = 15
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8) 
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
 
     local btnStr = Instance.new("UIStroke", b)
     btnStr.Thickness = 1
@@ -978,40 +982,40 @@ ghostBtn = createHeaderBtn("GST", function()
 
     isGhostMode = not isGhostMode
     if isGhostMode then
-        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.65}):Play()
-        TweenService:Create(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.85}):Play()
-        TweenService:Create(aura, TweenInfo.new(0.4), {ImageTransparency = 0.75}):Play()
-        TweenService:Create(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.4}):Play()
+        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.40}):Play()
+        TweenService:Create(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.95}):Play()
+        TweenService:Create(aura, TweenInfo.new(0.4), {ImageTransparency = 0.95}):Play()
+        TweenService:Create(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.5}):Play()
         ghostBtn.BackgroundColor3 = Colors.ActiveTint
         ghostBtn.TextColor3 = Colors.Primary
         mainStroke.Transparency = 0.1
-        mainStroke.Thickness = 2.0
-        badgeSelectorModal.BackgroundTransparency = 0.60
+        mainStroke.Thickness = 1.4
+        badgeSelectorModal.BackgroundTransparency = 0.40
 
         for _, cRoot in ipairs(messageFeed:GetChildren()) do
             if cRoot:IsA("Frame") then
                 local card = cRoot:FindFirstChild("SwipeWrapper")
                 if card then
-                    TweenService:Create(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.65}):Play()
+                    TweenService:Create(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.40}):Play()
                 end
             end
         end
     else
-        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.30}):Play()
-        TweenService:Create(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.85}):Play()
-        TweenService:Create(aura, TweenInfo.new(0.4), {ImageTransparency = 0.45}):Play()
-        TweenService:Create(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.15}):Play()
-        ghostBtn.BackgroundColor3 = Colors.Surface
+        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.02}):Play()
+        TweenService:Create(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.96}):Play()
+        TweenService:Create(aura, TweenInfo.new(0.4), {ImageTransparency = 0.85}):Play()
+        TweenService:Create(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.25}):Play()
+        ghostBtn.BackgroundColor3 = Color3.fromRGB(15, 18, 22)
         ghostBtn.TextColor3 = Colors.Text
-        mainStroke.Transparency = 0.15
-        mainStroke.Thickness = 1.8
-        badgeSelectorModal.BackgroundTransparency = 0.30
+        mainStroke.Transparency = 0.2
+        mainStroke.Thickness = 1.0
+        badgeSelectorModal.BackgroundTransparency = 0.05
 
         for _, cRoot in ipairs(messageFeed:GetChildren()) do
             if cRoot:IsA("Frame") then
                 local card = cRoot:FindFirstChild("SwipeWrapper")
                 if card then
-                    TweenService:Create(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.35}):Play()
+                    TweenService:Create(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.05}):Play()
                 end
             end
         end
@@ -1061,11 +1065,11 @@ closeBtn.TextColor3 = Colors.Danger
 
 -- Sexy Glowing Underline for Header
 local headerDivider = Instance.new("Frame", header)
-headerDivider.Size = UDim2.new(1, 0, 0, 2)
+headerDivider.Size = UDim2.new(1, 0, 0, 1)
 headerDivider.Position = UDim2.new(0, 0, 1, 0)
 headerDivider.BorderSizePixel = 0
 headerDivider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-headerDivider.BackgroundTransparency = 0.2
+headerDivider.BackgroundTransparency = 0.5
 headerDivider.ZIndex = 12
 
 local divGrad = Instance.new("UIGradient", headerDivider)
@@ -1088,12 +1092,12 @@ channelFrame.ZIndex = 8
 
 local tabShell = Instance.new("Frame", channelFrame)
 tabShell.Size = UDim2.new(1, 0, 1, 0)
-tabShell.BackgroundColor3 = Colors.Surface
-tabShell.BackgroundTransparency = 0.35 -- Glass Match
+tabShell.BackgroundColor3 = Color3.fromRGB(15, 18, 22)
+tabShell.BackgroundTransparency = 0.2
 tabShell.ZIndex = 9
-Instance.new("UICorner", tabShell).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", tabShell).CornerRadius = UDim.new(0, 8)
 local tsStroke = Instance.new("UIStroke", tabShell)
-tsStroke.Thickness = 1.2
+tsStroke.Thickness = 1.0
 tsStroke.Color = Colors.SurfaceHover
 tsStroke.Transparency = 0.2
 
@@ -1108,7 +1112,7 @@ serverBtn.Font = Enum.Font.GothamBlack
 serverBtn.TextSize = 11
 serverBtn.AutoButtonColor = false
 serverBtn.ZIndex = 10
-Instance.new("UICorner", serverBtn).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", serverBtn).CornerRadius = UDim.new(0, 6)
 
 -- 2. GLOBAL TAB (Second Position)
 local globalBtn = Instance.new("TextButton", tabShell)
@@ -1121,7 +1125,7 @@ globalBtn.Font = Enum.Font.GothamBold
 globalBtn.TextSize = 11
 globalBtn.AutoButtonColor = false
 globalBtn.ZIndex = 10
-Instance.new("UICorner", globalBtn).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", globalBtn).CornerRadius = UDim.new(0, 6)
 
 local function filterFeedMode()
     for _, cardRoot in ipairs(messageFeed:GetChildren()) do
@@ -1175,17 +1179,17 @@ badgeSelectorModal = Instance.new("Frame", mainFrame)
 badgeSelectorModal.Size = UDim2.fromOffset(240, 250)
 badgeSelectorModal.Position = UDim2.new(1, -250, 0, 44)
 badgeSelectorModal.BackgroundColor3 = Color3.fromRGB(12, 16, 24)
-badgeSelectorModal.BackgroundTransparency = 0.35 -- Glass match
+badgeSelectorModal.BackgroundTransparency = 0.05
 badgeSelectorModal.Visible = false
 badgeSelectorModal.ZIndex = 70
-Instance.new("UICorner", badgeSelectorModal).CornerRadius = UDim.new(0, 14)
+Instance.new("UICorner", badgeSelectorModal).CornerRadius = UDim.new(0, 10)
 
 local bsmScale = Instance.new("UIScale", badgeSelectorModal)
 bsmScale.Scale = 0
 
 local bsStroke = Instance.new("UIStroke", badgeSelectorModal)
 bsStroke.Color = Colors.PrimaryDark
-bsStroke.Thickness = 1.2
+bsStroke.Thickness = 1.0
 bsStroke.Transparency = 0.2
 
 local bsTitle = Instance.new("TextLabel", badgeSelectorModal)
@@ -1227,7 +1231,7 @@ for _, bKey in ipairs(badgeKeysOrder) do
     bBtn.Text = "" 
     bBtn.AutoButtonColor = false
     bBtn.ZIndex = 72
-    Instance.new("UICorner", bBtn).CornerRadius = UDim.new(0, 8)
+    Instance.new("UICorner", bBtn).CornerRadius = UDim.new(0, 6)
     
     local btnStroke = Instance.new("UIStroke", bBtn)
     btnStroke.Color = Colors.PrimaryDark
@@ -1355,7 +1359,7 @@ messageFeed = Instance.new("ScrollingFrame", mainFrame)
 messageFeed.Size = UDim2.new(1, -24, 1, -142)
 messageFeed.Position = UDim2.new(0, 12, 0, 84)
 messageFeed.BackgroundTransparency = 1
-messageFeed.ScrollBarThickness = 1 -- Ultra sleek scrollbar
+messageFeed.ScrollBarThickness = 1
 messageFeed.ScrollBarImageColor3 = Colors.PrimaryDark
 messageFeed.CanvasSize = UDim2.new(0, 0, 0, 0)
 messageFeed.AutomaticCanvasSize = Enum.AutomaticSize.Y
@@ -1402,10 +1406,10 @@ messageFeed:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
     end
 end)
 
--- ⚡ NEW: GLOBAL TYPING UI INDICATOR BAR
+-- ⚡ GLOBAL TYPING UI INDICATOR BAR
 local globalTypingBar = Instance.new("Frame", mainFrame)
 globalTypingBar.Size = UDim2.new(1, -24, 0, 20)
-globalTypingBar.Position = UDim2.new(0, 12, 1, -74) -- Just above input box
+globalTypingBar.Position = UDim2.new(0, 12, 1, -74)
 globalTypingBar.BackgroundTransparency = 1
 globalTypingBar.Visible = false
 globalTypingBar.ZIndex = 11
@@ -1422,7 +1426,7 @@ globalTypingText.TextTransparency = 0.1
 globalTypingText.ZIndex = 11
 crispText(globalTypingText, 0.5)
 
--- ⚡ NEW: UI PARTICLE SPAWNER (CLICK/SWIPE EFFECTS)
+-- ⚡ UI PARTICLE SPAWNER
 local function spawnUIParticles(parentFrame, positionUDim2, color, count)
     for i = 1, (count or 5) do
         local p = Instance.new("Frame", parentFrame)
@@ -1456,8 +1460,8 @@ actionMenu.ZIndex = 50
 Instance.new("UICorner", actionMenu).CornerRadius = UDim.new(0, 8)
 local amStroke = Instance.new("UIStroke", actionMenu)
 amStroke.Color = Colors.Primary
-amStroke.Thickness = 1.2
-amStroke.Transparency = 0.4
+amStroke.Thickness = 1.0
+amStroke.Transparency = 0.2
 
 local amLayout = Instance.new("UIListLayout", actionMenu)
 amLayout.FillDirection = Enum.FillDirection.Horizontal
@@ -1483,7 +1487,7 @@ local function createActionBtn(text, color, onClick)
 end
 
 -- =========================================================
--- 💬 MESSAGE PIPELINE (MAIN DISPLAY NAME + @USERNAME)
+-- 💬 MESSAGE PIPELINE
 -- =========================================================
 local function updateLiveCounter(username)
     activeUsersTable[username:lower()] = os.time()
@@ -1499,7 +1503,7 @@ local function updateLiveCounter(username)
     liveText.Text = string.format("%d Active", math.max(1, count))
 end
 
--- ⚡ NEW: VIP ANIMATED WELCOME SYSTEM
+-- ⚡ VIP ANIMATED WELCOME SYSTEM
 local function addJoinNotice(username)
     local pill = Instance.new("Frame", messageFeed)
     pill.Size = UDim2.new(1, 0, 0, 28)
@@ -1508,16 +1512,10 @@ local function addJoinNotice(username)
     pill.ZIndex = 9
     Instance.new("UICorner", pill).CornerRadius = UDim.new(0, 8)
     
-    local grad = Instance.new("UIGradient", pill)
-    grad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 35, 25)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 25, 35))
-    })
-    
     local s = Instance.new("UIStroke", pill)
     s.Color = Color3.fromRGB(50, 255, 140)
-    s.Thickness = 1.2
-    s.Transparency = 0.4
+    s.Thickness = 1.0
+    s.Transparency = 0.6
 
     local lbl = Instance.new("TextLabel", pill)
     lbl.Size = UDim2.fromScale(1, 1)
@@ -1531,7 +1529,6 @@ local function addJoinNotice(username)
     lbl.ZIndex = 10
     crispText(lbl, 0.4)
 
-    -- Pop-in animation
     local scale = Instance.new("UIScale", pill)
     scale.Scale = 0.5
     TweenService:Create(scale, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
@@ -1571,16 +1568,15 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         end
     end
 
-    -- ⚡ V5 SWIPE-TO-DM REWRITE (WITH FIXED AUTO-SIZING SO IT DOESNT STRETCH OUT)
+    -- ⚡ V6 FIXED: Frame Wrapping prevents massive stretching
     local cardRoot = Instance.new("Frame", messageFeed)
-    cardRoot.Size = UDim2.new(1, 0, 0, 0) -- 0 height lets AutomaticSize take control
+    cardRoot.Size = UDim2.new(1, 0, 0, 0) 
     cardRoot.AutomaticSize = Enum.AutomaticSize.Y
     cardRoot.BackgroundTransparency = 1
     cardRoot.ZIndex = 9
     cardRoot:SetAttribute("ChatScope", scopeType or "global")
     cardRoot:SetAttribute("JobId", msgJobId or game.JobId)
 
-    -- SWIPE ACTION ICONS (Hidden behind card)
     local replyIcon = Instance.new("TextLabel", cardRoot)
     replyIcon.Size = UDim2.fromOffset(40, 40)
     replyIcon.Position = UDim2.new(1, -45, 0.5, -20)
@@ -1597,28 +1593,20 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     dmIcon.TextSize = 18
     dmIcon.ZIndex = 8
 
-    -- THE ACTUAL SWIPEABLE CARD (This also needs AutomaticSize=Y to wrap the content correctly)
+    -- ⚡ TRUE OLED BLACK MESSAGE CARD
     local card = Instance.new("Frame", cardRoot)
     card.Name = "SwipeWrapper"
     card.Size = UDim2.new(1, 0, 0, 0)
     card.AutomaticSize = Enum.AutomaticSize.Y
-    card.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    card.BackgroundTransparency = isGhostMode and 0.65 or 0.35 -- Beautiful Glass Match
+    card.BackgroundColor3 = Color3.fromRGB(8, 10, 14) -- Deep Space Gray/Black
+    card.BackgroundTransparency = 0.05 -- Solid
     card.ClipsDescendants = false
     card.ZIndex = 9
-    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 14)
+    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 10)
 
-    -- ⚡ Apply padding INSIDE the card so it clamps properly
     local padFix = Instance.new("UIPadding", card)
     padFix.PaddingBottom = UDim.new(0, 10)
     padFix.PaddingTop = UDim.new(0, 2)
-
-    local cardGrad = Instance.new("UIGradient", card)
-    cardGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, isMentioned and Colors.MentionBg or Colors.SurfaceHover),
-        ColorSequenceKeypoint.new(1, isMentioned and Colors.MentionBg or Colors.Background)
-    })
-    cardGrad.Rotation = -45
 
     if chatMode == "server" then
         if scopeType == "global" or (msgJobId and msgJobId ~= "" and msgJobId ~= game.JobId) then
@@ -1637,8 +1625,8 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     TweenService:Create(cardRoot, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
 
     local accentStrip = Instance.new("Frame", card)
-    accentStrip.Size = UDim2.new(0, 4, 1, -12)
-    accentStrip.Position = UDim2.new(0, 6, 0, 6)
+    accentStrip.Size = UDim2.new(0, 3, 1, -12)
+    accentStrip.Position = UDim2.new(0, 5, 0, 6)
     accentStrip.BorderSizePixel = 0
     accentStrip.BackgroundColor3 = Color3.new(1,1,1)
     accentStrip.ZIndex = 10
@@ -1652,20 +1640,20 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     stripGrad.Rotation = 90
 
     local cardStroke = Instance.new("UIStroke", card)
-    cardStroke.Thickness = isMentioned and 1.8 or 1.4
+    cardStroke.Thickness = 1.0
     cardStroke.Transparency = isMentioned and 0.15 or 0.6
     cardStroke.Color = isMentioned and Colors.MentionGold or Colors.SurfaceHover
 
     local avatarImg = Instance.new("ImageLabel", card)
-    avatarImg.Size = UDim2.fromOffset(32, 32)
-    avatarImg.Position = UDim2.fromOffset(18, 10)
+    avatarImg.Size = UDim2.fromOffset(30, 30)
+    avatarImg.Position = UDim2.fromOffset(16, 10)
     avatarImg.BackgroundColor3 = Colors.Background
     avatarImg.BackgroundTransparency = 0.5
     avatarImg.ZIndex = 11
     Instance.new("UICorner", avatarImg).CornerRadius = UDim.new(1, 0)
     
     local avStroke = Instance.new("UIStroke", avatarImg)
-    avStroke.Thickness = 1.6
+    avStroke.Thickness = 1.2
     avStroke.Transparency = 0.2
     avStroke.Color = isAdminUser and Colors.Primary or Colors.SurfaceHover
     
@@ -1693,8 +1681,8 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     end)
 
     local cardContent = Instance.new("Frame", card)
-    cardContent.Size = UDim2.new(1, -60, 0, 0)
-    cardContent.Position = UDim2.fromOffset(60, 10)
+    cardContent.Size = UDim2.new(1, -56, 0, 0)
+    cardContent.Position = UDim2.fromOffset(56, 10)
     cardContent.AutomaticSize = Enum.AutomaticSize.Y
     cardContent.BackgroundTransparency = 1
     cardContent.ZIndex = 11
@@ -1764,7 +1752,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         badgeGlow.ZIndex = 13
 
         local glowStroke = Instance.new("UIStroke", badgeGlow)
-        glowStroke.Thickness = 1.2
+        glowStroke.Thickness = 1.0
         glowStroke.Transparency = 0.55
         glowStroke.Color = Color3.fromRGB(255, 255, 255)
 
@@ -1870,7 +1858,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         Instance.new("UICorner", memeImg).CornerRadius = UDim.new(0, 8)
         local mStroke = Instance.new("UIStroke", memeImg)
         mStroke.Color = Colors.PrimaryDark
-        mStroke.Thickness = 1.2
+        mStroke.Thickness = 1.0
     else
         local bodyTxt = Instance.new("TextLabel", cardContent)
         bodyTxt.Name = "MsgContent"
@@ -1878,7 +1866,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         bodyTxt.AutomaticSize = Enum.AutomaticSize.Y
         bodyTxt.BackgroundTransparency = 1
         -- ⚡ TEXT SIZE INCREASED FOR BETTER READABILITY
-        bodyTxt.TextColor3 = Color3.fromRGB(240, 245, 255)
+        bodyTxt.TextColor3 = Color3.fromRGB(250, 252, 255)
         bodyTxt.Font = Enum.Font.GothamMedium 
         bodyTxt.TextSize = 13.5 
         bodyTxt.TextWrapped = true
@@ -1896,7 +1884,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         playSFX("meme")
     end
 
-    -- ⚡ V5 FEATURE: SWIPE-TO-DM / SWIPE-TO-REPLY ENGINE
+    -- ⚡ SWIPE-TO-DM / SWIPE-TO-REPLY ENGINE
     local dragStart = nil
     local isDragging = false
     local hasTriggeredSwipe = false
@@ -1914,7 +1902,6 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     card.InputChanged:Connect(function(input)
         if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position.X - dragStart
-            -- Clamp drag between -70 (Left) and 70 (Right)
             local clampedX = math.clamp(delta, -80, 80)
             card.Position = UDim2.new(0, clampedX, 0, 0)
             
@@ -1939,16 +1926,13 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
             TweenService:Create(card, TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
 
             if finalDelta > 50 then
-                -- RIGHT SWIPE = DM
                 privateTarget = actualUsername
                 updateInputBar()
                 playSFX("dm")
             elseif finalDelta < -50 then
-                -- LEFT SWIPE = REPLY
                 chatInput.Text = "@" .. actualUsername .. " "
                 chatInput:CaptureFocus()
             elseif math.abs(finalDelta) < 5 then
-                -- NORMAL CLICK = OLD MENU (Fallback)
                 for _, c in ipairs(actionMenu:GetChildren()) do
                     if c:IsA("TextButton") then c:Destroy() end
                 end
@@ -1991,22 +1975,15 @@ end
 local inputContainer = Instance.new("Frame", mainFrame)
 inputContainer.Size = UDim2.new(1, -24, 0, 44)
 inputContainer.Position = UDim2.new(0, 12, 1, -52)
-inputContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-inputContainer.BackgroundTransparency = 0.40 -- Premium translucent look
+inputContainer.BackgroundColor3 = Color3.fromRGB(8, 10, 14)
+inputContainer.BackgroundTransparency = 0.05 
 inputContainer.ZIndex = 12
 Instance.new("UICorner", inputContainer).CornerRadius = UDim.new(1, 0)
 
-local inputGrad = Instance.new("UIGradient", inputContainer)
-inputGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Colors.Surface),
-    ColorSequenceKeypoint.new(1, Colors.Background)
-})
-inputGrad.Rotation = 90
-
 local inputStroke = Instance.new("UIStroke", inputContainer)
-inputStroke.Thickness = 1.4
+inputStroke.Thickness = 1.0
 inputStroke.Color = Colors.PrimaryDark
-inputStroke.Transparency = 0.35
+inputStroke.Transparency = 0.4
 
 local typingIndicator = Instance.new("Frame", inputContainer)
 typingIndicator.Size = UDim2.new(1, -24, 0, 2)
@@ -2050,7 +2027,6 @@ chatInput.TextXAlignment = Enum.TextXAlignment.Left
 chatInput.ZIndex = 13
 crispText(chatInput)
 
--- ⚡ NEW: TYPING BROADCAST THROTTLE
 local lastTypingBroadcast = 0
 
 local function sanitizeChatInput()
@@ -2062,7 +2038,6 @@ chatInput:GetPropertyChangedSignal("Text"):Connect(function()
     sanitizeChatInput()
     if #chatInput.Text > 0 then
         typingIndicator.BackgroundTransparency = 0.2
-        -- Broadcast Typing Packet securely
         if tick() - lastTypingBroadcast > 4 then
             lastTypingBroadcast = tick()
             task.spawn(function()
@@ -2090,11 +2065,11 @@ task.defer(sanitizeChatInput)
 
 chatInput.Focused:Connect(function()
     sanitizeChatInput()
-    TweenService:Create(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Color = Colors.Primary, Transparency = 0.0, Thickness = 2.0}):Play()
+    TweenService:Create(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Color = Colors.Primary, Transparency = 0.0, Thickness = 1.4}):Play()
 end)
 chatInput.FocusLost:Connect(function()
     typingIndicator.BackgroundTransparency = 1
-    TweenService:Create(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Color = Colors.PrimaryDark, Transparency = 0.35, Thickness = 1.4}):Play()
+    TweenService:Create(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Color = Colors.PrimaryDark, Transparency = 0.4, Thickness = 1.0}):Play()
 end)
 
 updateInputBar = function()
@@ -2162,14 +2137,14 @@ local emojiFrame = Instance.new("Frame", mainFrame)
 emojiFrame.Size = UDim2.new(0, 240, 0, 160)
 emojiFrame.Position = UDim2.new(0.5, -120, 0.5, -80)
 emojiFrame.BackgroundColor3 = Colors.Surface
-emojiFrame.BackgroundTransparency = 0.08
+emojiFrame.BackgroundTransparency = 0.05
 emojiFrame.Visible = false
 emojiFrame.ZIndex = 30
-Instance.new("UICorner", emojiFrame).CornerRadius = UDim.new(0, 14)
+Instance.new("UICorner", emojiFrame).CornerRadius = UDim.new(0, 10)
 local efStroke = Instance.new("UIStroke", emojiFrame)
 efStroke.Color = Colors.Primary
-efStroke.Thickness = 1.2
-efStroke.Transparency = 0.4
+efStroke.Thickness = 1.0
+efStroke.Transparency = 0.3
 
 local emojiScroll = Instance.new("ScrollingFrame", emojiFrame)
 emojiScroll.Size = UDim2.new(1, -8, 1, -8)
@@ -2216,14 +2191,14 @@ memeFrame = Instance.new("Frame", mainFrame)
 memeFrame.Size = UDim2.new(0, 280, 0, 190)
 memeFrame.Position = UDim2.new(0.5, -140, 0.5, -95)
 memeFrame.BackgroundColor3 = Colors.Surface
-memeFrame.BackgroundTransparency = 0.08
+memeFrame.BackgroundTransparency = 0.05
 memeFrame.Visible = false
 memeFrame.ZIndex = 30
-Instance.new("UICorner", memeFrame).CornerRadius = UDim.new(0, 14)
+Instance.new("UICorner", memeFrame).CornerRadius = UDim.new(0, 10)
 local mfStroke = Instance.new("UIStroke", memeFrame)
 mfStroke.Color = Colors.Purple
-mfStroke.Thickness = 1.2
-mfStroke.Transparency = 0.4
+mfStroke.Thickness = 1.0
+mfStroke.Transparency = 0.3
 
 local mfTitle = Instance.new("TextLabel", memeFrame)
 mfTitle.Size = UDim2.new(1, 0, 0, 24)
@@ -2442,9 +2417,9 @@ openBtn.MouseButton1Click:Connect(function()
     TweenService:Create(mainScale, tInfo2, {Scale = 1}):Play()
     TweenService:Create(auraScale, tInfo2, {Scale = 1}):Play()
     TweenService:Create(shadowScale, tInfo2, {Scale = 1}):Play()
-    TweenService:Create(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.65 or 0.30}):Play()
-    TweenService:Create(aura, tInfo3, {ImageTransparency = isGhostMode and 0.75 or 0.45}):Play()
-    TweenService:Create(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.4 or 0.15}):Play()
+    TweenService:Create(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.40 or 0.02}):Play()
+    TweenService:Create(aura, tInfo3, {ImageTransparency = isGhostMode and 0.95 or 0.85}):Play()
+    TweenService:Create(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.5 or 0.25}):Play()
 end)
 
 -- Keyboard Shortcuts
@@ -2465,9 +2440,9 @@ UserInputService.InputBegan:Connect(function(input, gp)
             mainScale.Scale = 1
             auraScale.Scale = 1
             shadowScale.Scale = 1
-            mainFrame.BackgroundTransparency = isGhostMode and 0.65 or 0.30
-            aura.ImageTransparency = isGhostMode and 0.75 or 0.45
-            shadow.ImageTransparency = isGhostMode and 0.4 or 0.15
+            mainFrame.BackgroundTransparency = isGhostMode and 0.40 or 0.02
+            aura.ImageTransparency = isGhostMode and 0.95 or 0.85
+            shadow.ImageTransparency = isGhostMode and 0.5 or 0.25
         end
     elseif input.KeyCode == Enum.KeyCode.Semicolon or input.KeyCode == Enum.KeyCode.Slash then
         task.delay(0.05, function() chatInput:CaptureFocus() end)
@@ -2506,14 +2481,13 @@ task.spawn(function()
             globalTypingBar.Visible = false
         end
 
-        -- ⚡ 60 FPS CALIBRATED SILK-SMOOTH IRIDESCENT GRADIENT & SHINE (Fixes Tag Freeze)
+        -- ⚡ 60 FPS CALIBRATED SILK-SMOOTH IRIDESCENT GRADIENT & SHINE 
         if #activeBadgesList > 0 then
             for i = #activeBadgesList, 1, -1 do
                 local item = activeBadgesList[i]
                 if item.textGrad and item.textGrad.Parent and item.glowGrad and item.glowGrad.Parent then
                     local sSpeed = item.speed or 1.15
 
-                    -- Buttery continuous rotation
                     local continuousRotation = (t * 55 * sSpeed) % 360
                     local waveOffset = math.sin(t * 1.5 * sSpeed) * 0.35
                     
@@ -2527,7 +2501,6 @@ task.spawn(function()
                         item.strokeGradGlow.Rotation = (continuousRotation + 180) % 360
                     end
 
-                    -- Elegant Specular Glare pass
                     if item.shineGrad and item.shineGrad.Parent then
                         local sweep = ((t * 0.75 * sSpeed) % 3.5) - 1.75
                         item.shineGrad.Offset = Vector2.new(sweep, 0)
@@ -2550,7 +2523,7 @@ task.spawn(function()
         if mainFrame.Visible then
             strokeGrad.Rotation = (t * 35) % 360
             local breath = (math.sin(t * 2.5) + 1) / 2
-            aura.ImageTransparency = isGhostMode and 0.75 or (0.45 + (breath * 0.08))
+            aura.ImageTransparency = isGhostMode and 0.95 or (0.85 + (breath * 0.05))
 
             local ledAlpha = (math.sin(t * 4) + 1) / 2
             ledDot.BackgroundTransparency = 0.1 + (ledAlpha * 0.5)
@@ -2726,7 +2699,6 @@ sendMessageFunc = function(overrideText)
     end
     displayBubble(lp.Name, text)
     
-    -- Send Particles
     spawnUIParticles(sendBtn, UDim2.new(0.5, 0, 0.5, 0), Colors.Primary, 8)
 
     local cleanKey = string.lower(finalMsg)
@@ -2835,7 +2807,6 @@ task.spawn(function()
                                 continue
                             end
 
-                            -- ⚡ HANDLE TYPING BROADCASTS
                             if m.hidden then 
                                 processedServerMessageMap[uniqueMsgKey] = true
                                 if m.msg == "[TYPING]" and rawUsernameOnly ~= lp.Name then
@@ -2844,7 +2815,6 @@ task.spawn(function()
                                 continue 
                             end
 
-                            -- Local Echo Deduplication
                             if rawUsernameOnly:lower() == lp.Name:lower() then
                                 local lowMsg = string.lower(m.msg)
                                 local isEcho = false
@@ -2904,7 +2874,6 @@ task.spawn(function()
                             if rawUsernameOnly ~= lp.Name then
                                 displayBubble(rawUsernameOnly, effectiveMsg)
                                 playSFX("default")
-                                -- Remove from typers once they send message
                                 globalTypers[rawUsernameOnly] = nil
 
                                 if not mainFrame.Visible then
