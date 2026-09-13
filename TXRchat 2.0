@@ -376,7 +376,7 @@ local userIdCache = {}
 local activeBadgesList = {}
 local modalSelectionIndicators = {}
 
--- ⚡ PROFILE & USER DATA ENGINE
+-- ⚡ PROFILE & USER BIO REGISTRY
 local personalCustomBios = {
     [lp.UserId] = "⚡ Cyber-Titan Apex Elite | System Architect"
 }
@@ -555,7 +555,7 @@ task.spawn(function()
 end)
 
 -- =========================================================
--- 🌐 PROFESSIONAL WEBSITE PROFILE MODAL (GLOBAL OBJECT)
+-- 🌐 PROFESSIONAL WEBSITE PROFILE MODAL (FULL WEB ENGINE)
 -- =========================================================
 local profileOverlay = Instance.new("Frame", gui)
 profileOverlay.Size = UDim2.fromScale(1, 1)
@@ -590,7 +590,10 @@ pfBanner.BorderSizePixel = 0
 pfBanner.ZIndex = 122
 
 local bannerGrad = Instance.new("UIGradient", pfBanner)
-bannerGrad.Color = ColorSequence.new(Color3.fromRGB(15, 25, 35), Color3.fromRGB(10, 12, 18))
+bannerGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 25, 35)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 12, 18))
+})
 
 local pfCloseBtn = Instance.new("TextButton", profileFrame)
 pfCloseBtn.Size = UDim2.fromOffset(26, 26)
@@ -744,7 +747,7 @@ local bioScroll = Instance.new("ScrollingFrame", bioCard)
 bioScroll.Size = UDim2.new(1, -12, 1, -10)
 bioScroll.Position = UDim2.fromOffset(6, 5)
 bioScroll.BackgroundTransparency = 1
-bioScroll.ScrollBarThickness = 2 -- Strictly integer
+bioScroll.ScrollBarThickness = 2
 bioScroll.ScrollBarImageColor3 = Colors.Primary
 bioScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 bioScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
@@ -825,6 +828,8 @@ local function closeProfile()
 end
 
 pfCloseBtn.MouseButton1Click:Connect(closeProfile)
+
+local updateInputBar
 
 local dmProfileBtn = createPfBtn("DIRECT MSG", Colors.Purple, function()
     if currentProfileUser then
@@ -1221,8 +1226,6 @@ rosterScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 rosterScroll.ZIndex = 41
 local rsLay = Instance.new("UIListLayout", rosterScroll)
 rsLay.Padding = UDim.new(0, 4)
-
-local updateInputBar
 
 local function refreshRosterUI()
     for _, c in ipairs(rosterScroll:GetChildren()) do
@@ -1885,7 +1888,7 @@ local sendMessageFunc
 local chatInput
 
 actionMenu = Instance.new("Frame", mainFrame)
-actionMenu.Size = UDim2.fromOffset(265, 32)
+actionMenu.Size = UDim2.fromOffset(275, 32)
 actionMenu.BackgroundColor3 = Colors.Surface
 actionMenu.Visible = false
 actionMenu.ZIndex = 50
@@ -2964,4 +2967,403 @@ task.spawn(function()
 
                     local breathPulse = (math.sin(t * 2.2 * sSpeed) + 1) / 2
                     if item.glowStroke and item.glowStroke.Parent then
-                        item.glowStroke.Thickness = 1.0Main ismein aapki madad nahin kar sakta, kyunki main sirf ek language model hoon. Mujhe is baare mein jaankari nahin hai.
+                        item.glowStroke.Thickness = 1.0 + (breathPulse * 0.4)
+                        item.glowStroke.Transparency = 0.50 + (breathPulse * 0.20)
+                    end
+                    if item.badgeGlow and item.badgeGlow.Parent then
+                        item.badgeGlow.TextTransparency = 0.45 + (breathPulse * 0.20)
+                    end
+                else
+                    table.remove(activeBadgesList, i)
+                end
+            end
+        end
+
+        if mainFrame.Visible then
+            strokeGrad.Rotation = (t * 35) % 360
+            local breath = (math.sin(t * 2.5) + 1) / 2
+            aura.ImageTransparency = isGhostMode and 0.95 or (0.85 + (breath * 0.05))
+
+            local ledAlpha = (math.sin(t * 4) + 1) / 2
+            ledDot.BackgroundTransparency = 0.1 + (ledAlpha * 0.5)
+
+            local typingWave = (math.sin(t * 8) + 1) / 2
+            if typingIndicator.BackgroundTransparency < 1 then
+                typingIndicator.Size = UDim2.new(0.3 + (typingWave * 0.68), 0, 0, 2)
+            end
+        end
+
+        if openBtnContainer.Visible then
+            local targetSpeed = 1
+            if orbHovered then targetSpeed = targetSpeed * 1.5 end
+            
+            currentSpeedMod = currentSpeedMod + (targetSpeed - currentSpeedMod) * dt * 5
+            local targetRadius = orbHovered and 0.6 or 1
+            currentRadiusMod = currentRadiusMod + (targetRadius - currentRadiusMod) * dt * 8
+            local activeT = t * 3 * currentSpeedMod
+            
+            local baseColor1 = Colors.Primary
+            local baseColor2 = Colors.Purple
+            local lerpAlpha = (math.sin(activeT * 0.8) + 1) / 2
+            
+            coreGlow.ImageColor3 = baseColor1:Lerp(baseColor2, lerpAlpha)
+            coreGlow.ImageTransparency = 0.4 + (math.sin(activeT) * 0.25)
+            eventGlow.ImageColor3 = baseColor2:Lerp(Color3.new(1,1,1), lerpAlpha)
+            
+            openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
+            goGrad.Rotation = (activeT * 50) % 360
+            goStroke.Transparency = orbHovered and 0.1 or 0.5
+            
+            local gPulse = 40 + (math.sin(activeT * 2) * 3)
+            gimbals[1].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 0.8)), gPulse)
+            gimbals[1].frame.Rotation = (activeT * 20) % 360
+            gimbals[1].stroke.Color = baseColor1
+            
+            gimbals[2].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 0.9)))
+            gimbals[2].frame.Rotation = -(activeT * 25) % 360
+            gimbals[2].stroke.Color = baseColor2
+            
+            gimbals[3].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 1.1)), gPulse)
+            gimbals[3].frame.Rotation = 45 + (activeT * 15) % 360
+            gimbals[3].stroke.Color = baseColor1:Lerp(Color3.new(1,1,1), 0.5)
+            
+            gimbals[4].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 1.2)))
+            gimbals[4].frame.Rotation = -45 - (activeT * 15) % 360
+            gimbals[4].stroke.Color = baseColor2:Lerp(Color3.new(1,1,1), 0.5)
+            
+            for i, d in ipairs(diamonds) do
+                local breath = math.sin(activeT * 2 + (i * math.pi / 2)) * 4
+                d.frame.Size = UDim2.fromOffset(24 + breath, 24 - breath)
+                d.frame.Rotation = (activeT * 40) * (i % 2 == 0 and 1 or -1) + (i * 22.5)
+                d.stroke.Color = (i % 2 == 0) and baseColor1 or baseColor2
+            end
+            
+            crosshair.Rotation = -(activeT * 60) % 360
+            crosshair.ImageColor3 = baseColor1
+            
+            centerCore.BackgroundColor3 = baseColor1:Lerp(Color3.new(1,1,1), lerpAlpha * 0.5)
+            coreStroke.Color = baseColor2
+
+            local rBase = 32 * currentRadiusMod
+            for i = 1, 12 do
+                local offset = (i - 1) * (math.pi * 2 / 4)
+                local orb = orbs[i]
+                if i <= 4 then
+                    local a = activeT * 1.5 + offset
+                    local depth = math.sin(a)
+                    orb.Position = UDim2.new(0.5, math.cos(a) * rBase, 0.5, depth * (rBase * 0.2))
+                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
+                    orb.ZIndex = depth > 0 and 106 or 102
+                    orb.BackgroundColor3 = baseColor1
+                elseif i <= 8 then
+                    local a = -activeT * 1.8 + offset
+                    local depth = math.cos(a)
+                    orb.Position = UDim2.new(0.5, math.cos(a) * (rBase * 0.2), 0.5, math.sin(a) * rBase)
+                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
+                    orb.ZIndex = depth > 0 and 106 or 102
+                    orb.BackgroundColor3 = baseColor2
+                else
+                    local a = activeT * 2.5 + offset
+                    local depth = math.sin(a + math.pi / 4)
+                    orb.Position = UDim2.new(0.5, math.sin(a) * rBase, 0.5, math.sin(a * 2) * (rBase * 0.5))
+                    orb.Size = UDim2.fromOffset(4 + (depth * 2), 4 + (depth * 2))
+                    orb.ZIndex = 107
+                    orb.BackgroundColor3 = Color3.new(1,1,1)
+                end
+            end
+
+            local mouseLoc = UserInputService:GetMouseLocation()
+            local btnAbsCenter = openBtnContainer.AbsolutePosition + (openBtnContainer.AbsoluteSize / 2)
+            local mPos = Vector2.new(mouseLoc.X, mouseLoc.Y)
+            local mDist = (mPos - btnAbsCenter).Magnitude
+            local magneticRadius = 150
+
+            if orbHovered and mDist < magneticRadius and not isDraggingOrb then
+                local pullStr = 1 - (mDist / magneticRadius)
+                local offsetX = (mPos.X - btnAbsCenter.X) * 0.25 * pullStr
+                local offsetY = (mPos.Y - btnAbsCenter.Y) * 0.25 * pullStr
+                local stretchX = 0.85 + (math.abs(offsetX) / 200)
+                local stretchY = 0.85 + (math.abs(offsetY) / 200)
+
+                openBtn.Size = openBtn.Size:Lerp(UDim2.fromScale(stretchX, stretchY), dt * 12)
+                openBtn.Position = openBtn.Position:Lerp(UDim2.new(0.5, offsetX, 0.5, offsetY), dt * 10)
+                eventGlow.Position = eventGlow.Position:Lerp(UDim2.new(0.5, offsetX * 0.4, 0.5, offsetY * 0.4), dt * 10)
+                crosshair.Position = crosshair.Position:Lerp(UDim2.new(0.5, offsetX * 0.7, 0.5, offsetY * 0.7), dt * 12)
+                centerCore.Position = centerCore.Position:Lerp(UDim2.new(0.5, offsetX * 1.2, 0.5, offsetY * 1.2), dt * 15)
+                
+                eventGlow.ImageTransparency = 0.1 + (math.sin(activeT * 10) * 0.05)
+            else
+                openBtn.Size = openBtn.Size:Lerp(baseOrbScale, dt * 12)
+                openBtn.Position = openBtn.Position:Lerp(baseCenterPos, dt * 12)
+                eventGlow.Position = eventGlow.Position:Lerp(baseCenterPos, dt * 12)
+                crosshair.Position = crosshair.Position:Lerp(baseCenterPos, dt * 12)
+                centerCore.Position = centerCore.Position:Lerp(baseCenterPos, dt * 12)
+                eventGlow.ImageTransparency = 0.3 + (math.cos(activeT * 2) * 0.3)
+            end
+
+            sonarTimer = sonarTimer + dt
+            if sonarTimer >= 1.0 then
+                sonarTimer = 0
+                spawnSonar(baseColor1)
+            end
+        end
+    end)
+end)
+
+-- =========================================================
+-- 📡 SEND MESSAGE (SCOPE-LOCKED ZERO-LEAK ENGINE)
+-- =========================================================
+local lastSendTick = 0
+sendMessageFunc = function(overrideText)
+    local text = overrideText or chatInput.Text
+    if not text then return end
+
+    if text == "TextBox" then text = "" end
+    text = string.gsub(text, "^%s+", "")
+    text = string.gsub(text, "%s+$", "")
+    
+    if text == "" or (tick() - lastSendTick < 0.15) then return end
+    lastSendTick = tick()
+
+    local pMatch = text:match("^!p%s+(%w+)")
+    if pMatch then
+        chatInput.Text = ""
+        privateTarget = pMatch
+        updateInputBar()
+        addMessageToFeed("System::System", "DM mode locked with @" .. pMatch, nil, false, game.JobId, "global")
+        return
+    end
+
+    local finalMsg = text
+    local currentScope = chatMode
+
+    if privateTarget then
+        finalMsg = "( 🔐 " .. lp.Name .. " Private " .. privateTarget .. ") " .. text
+    else
+        if currentScope == "server" then
+            finalMsg = "[SRV:" .. tostring(game.JobId) .. "] " .. text
+        else
+            finalMsg = "[GLB] " .. text
+        end
+    end
+
+    if not overrideText then chatInput.Text = "" end
+
+    local encodedUserTag = lp.Name .. "::" .. lp.DisplayName
+
+    if privateTarget then
+        addMessageToFeed(encodedUserTag, text, privateTarget, true, game.JobId, currentScope)
+    else
+        addMessageToFeed(encodedUserTag, text, nil, false, game.JobId, currentScope)
+    end
+    displayBubble(lp.Name, text)
+    
+    spawnUIParticles(sendBtn, UDim2.new(0.5, 0, 0.5, 0), Colors.Primary, 8)
+
+    local cleanKey = string.lower(finalMsg)
+    recentLocalSentMap[cleanKey] = tick()
+    recentLocalSentMap[string.lower(text)] = tick()
+
+    task.spawn(function()
+        if req then
+            local payload = HttpService:JSONEncode({
+                user = encodedUserTag,
+                msg = finalMsg,
+                jobId = game.JobId
+            })
+
+            pcall(function()
+                req({
+                    Url = SERVER_URL .. "/send",
+                    Method = "POST",
+                    Headers = { ["Content-Type"] = "application/json", ["User-Agent"] = "Roblox/WinInet" },
+                    Body = payload
+                })
+            end)
+        end
+    end)
+end
+
+sendBtn.MouseButton1Click:Connect(function() sendMessageFunc() end)
+chatInput.FocusLost:Connect(function(enterPressed)
+    if enterPressed then sendMessageFunc() end
+end)
+
+-- =========================================================
+-- 📥 HIGH-FREQUENCY POLLING ENGINE
+-- =========================================================
+task.spawn(function()
+    while _G.TXR_IsPolling and (_G.TXR_ChatInstanceID == currentExecutionID) and task.wait(0.4) do
+        if req then
+            local success, res = pcall(function()
+                return req({
+                    Url = SERVER_URL .. "/messages?since=" .. tostring(lastSyncTime),
+                    Method = "GET",
+                    Headers = { ["User-Agent"] = "Roblox/WinInet" }
+                })
+            end)
+
+            if success and res and res.StatusCode == 200 then
+                local decodeSuccess, data = pcall(function()
+                    return HttpService:JSONDecode(res.Body)
+                end)
+
+                if decodeSuccess and type(data) == "table" then
+                    if isInitialSync then
+                        isInitialSync = false
+                        if #data > 0 then
+                            local startIndex = math.max(1, #data - 6)
+                            for i = startIndex, #data do
+                                local m = data[i]
+                                if not m.hidden and m.msg ~= "Joined" then
+                                    local initKey = (m.id and tostring(m.id)) or (m.user .. "_" .. tostring(m.time) .. "_" .. m.msg)
+                                    processedServerMessageMap[initKey] = true
+                                    
+                                    local srvJob, cleanSrvMsg = m.msg:match("^%[SRV:(.-)%]%s*(.*)$")
+                                    local cleanGlbMsg = m.msg:match("^%[GLB%]%s*(.*)$")
+                                    local scope = "global"
+                                    local parsedMsg = m.msg
+
+                                    if srvJob then
+                                        scope = "server"
+                                        parsedMsg = cleanSrvMsg
+                                        if srvJob ~= game.JobId then
+                                            continue
+                                        end
+                                    elseif cleanGlbMsg then
+                                        scope = "global"
+                                        parsedMsg = cleanGlbMsg
+                                    end
+
+                                    addMessageToFeed(m.user, parsedMsg, nil, false, m.jobId, scope)
+                                    local rawUsernameOnly = m.user:match("^(.-)::") or m.user
+                                    updateLiveCounter(rawUsernameOnly)
+                                end
+                            end
+                            lastSyncTime = data[#data].time
+                        end
+                        continue
+                    end
+
+                    for _, m in ipairs(data) do
+                        local uniqueMsgKey = (m.id and tostring(m.id)) or (m.user .. "_" .. tostring(m.time) .. "_" .. m.msg)
+                        if processedServerMessageMap[uniqueMsgKey] then
+                            continue
+                        end
+
+                        if m.time >= lastSyncTime then
+                            lastSyncTime = m.time
+                            local rawUsernameOnly = m.user:match("^(.-)::") or m.user
+                            knownUsers[rawUsernameOnly:lower()] = rawUsernameOnly
+                            updateLiveCounter(rawUsernameOnly)
+
+                            if m.msg == "Joined" then
+                                processedServerMessageMap[uniqueMsgKey] = true
+                                if rawUsernameOnly ~= lp.Name then
+                                    addJoinNotice(rawUsernameOnly)
+                                    playSFX("default")
+                                end
+                                continue
+                            end
+
+                            if m.hidden then 
+                                processedServerMessageMap[uniqueMsgKey] = true
+                                if m.msg == "[TYPING]" and rawUsernameOnly ~= lp.Name then
+                                    globalTypers[rawUsernameOnly] = tick()
+                                end
+                                continue 
+                            end
+
+                            if rawUsernameOnly:lower() == lp.Name:lower() then
+                                local lowMsg = string.lower(m.msg)
+                                local isEcho = false
+
+                                for sentText, sentTime in pairs(recentLocalSentMap) do
+                                    if (sentText == lowMsg or lowMsg:find(sentText, 1, true)) and (tick() - sentTime <= 60) then
+                                        isEcho = true
+                                        recentLocalSentMap[sentText] = nil
+                                        break
+                                    end
+                                end
+
+                                if isEcho then
+                                    processedServerMessageMap[uniqueMsgKey] = true
+                                    continue
+                                end
+                            end
+
+                            processedServerMessageMap[uniqueMsgKey] = true
+
+                            local srvJob, cleanSrvMsg = m.msg:match("^%[SRV:(.-)%]%s*(.*)$")
+                            local cleanGlbMsg = m.msg:match("^%[GLB%]%s*(.*)$")
+                            local scope = "global"
+                            local effectiveMsg = m.msg
+
+                            if srvJob then
+                                scope = "server"
+                                effectiveMsg = cleanSrvMsg
+                                if srvJob ~= game.JobId then
+                                    continue
+                                end
+                            elseif cleanGlbMsg then
+                                scope = "global"
+                                effectiveMsg = cleanGlbMsg
+                            end
+
+                            local pSender, pTarget, pMsg = string.match(effectiveMsg, "^%( 🔐 ([%w_]+) Private ([%w_]+)%) (.*)$")
+                            if pSender and pTarget then
+                                if lp.Name == pSender then
+                                    addMessageToFeed(m.user, pMsg, pTarget, true, m.jobId, scope)
+                                elseif lp.Name == pTarget then
+                                    addMessageToFeed(m.user, pMsg, pSender, false, m.jobId, scope)
+                                    displayBubble(rawUsernameOnly, pMsg)
+                                    playSFX("dm")
+
+                                    if not mainFrame.Visible then
+                                        unreadCount = unreadCount + 1
+                                        unreadTxt.Text = tostring(unreadCount)
+                                        unreadBadge.Visible = true
+                                    end
+                                end
+                                continue
+                            end
+
+                            addMessageToFeed(m.user, effectiveMsg, nil, false, m.jobId, scope)
+
+                            if rawUsernameOnly ~= lp.Name then
+                                displayBubble(rawUsernameOnly, effectiveMsg)
+                                playSFX("default")
+                                globalTypers[rawUsernameOnly] = nil
+
+                                if not mainFrame.Visible then
+                                    unreadCount = unreadCount + 1
+                                    unreadTxt.Text = tostring(unreadCount)
+                                    unreadBadge.Visible = true
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
+
+-- Handshake
+task.spawn(function()
+    if req then
+        pcall(function()
+            req({
+                Url = SERVER_URL .. "/send", Method = "POST",
+                Headers = { ["Content-Type"] = "application/json", ["User-Agent"] = "Roblox/WinInet" },
+                Body = HttpService:JSONEncode({ 
+                    user = lp.Name .. "::" .. lp.DisplayName, 
+                    msg = "Joined", 
+                    jobId = game.JobId, 
+                    hidden = false 
+                })
+            })
+        end)
+    end
+    addMessageToFeed("System::System", "TXR Cyber-Titan Online! Tap TAG to switch custom live badges.", nil, false, game.JobId, "global")
+end)
