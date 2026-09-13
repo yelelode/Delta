@@ -422,14 +422,13 @@ local personalCustomBios = {
     [lp.UserId] = "⚡ Cyber-Titan Apex Elite | System Architect"
 }
 
--- 🌟 INSTAGRAM-STYLE GLOBAL SESSION PERSISTENT FOLLOW REGISTRY
+-- 🌟 GLOBAL SESSION PERSISTENT FOLLOW REGISTRY (NO LOSS ON REOPEN)
 local gEnv = (getgenv and getgenv()) or _G or shared
 if not gEnv.TXR_FollowedUsers then
     gEnv.TXR_FollowedUsers = {}
 end
 local followedUsers = gEnv.TXR_FollowedUsers
 local profileCache = {}
-local followersListCache = {}
 
 local globalTypers = {}
 local processedServerMessageMap = {}
@@ -702,12 +701,10 @@ sgStroke.Color = Colors.SurfaceHover
 sgStroke.Thickness = 1.0
 
 local function createStatMetric(titleText, valueDefault, xOffsetScale)
-    local box = Instance.new("TextButton", statsGrid)
+    local box = Instance.new("Frame", statsGrid)
     box.Size = UDim2.new(0.5, 0, 1, 0)
     box.Position = UDim2.new(xOffsetScale, 0, 0, 0)
     box.BackgroundTransparency = 1
-    box.Text = ""
-    box.AutoButtonColor = false
     box.ZIndex = 126
 
     local valLbl = Instance.new("TextLabel", box)
@@ -731,64 +728,11 @@ local function createStatMetric(titleText, valueDefault, xOffsetScale)
     subLbl.TextSize = 8.5
     subLbl.ZIndex = 127
 
-    return valLbl, box
+    return valLbl
 end
 
-local metricFollowers, metricFollowersBtn = createStatMetric("FOLLOWERS", "--", 0)
-local metricFollowing, _ = createStatMetric("FOLLOWING", "--", 0.5)
-
--- 🌟 FOLLOWERS LIST MODAL (INSTA STYLE DRILL-DOWN DRAWER WITH CLICKABLE USERS)
-local followersListModal = Instance.new("Frame", profileFrame)
-followersListModal.Size = UDim2.new(1, 0, 1, 0)
-followersListModal.Position = UDim2.new(0, 0, 1, 0)
-followersListModal.BackgroundColor3 = Colors.Background
-followersListModal.BackgroundTransparency = 0.02
-followersListModal.ZIndex = 140
-Instance.new("UICorner", followersListModal).CornerRadius = UDim.new(0, 16)
-
-local flmHeader = Instance.new("Frame", followersListModal)
-flmHeader.Size = UDim2.new(1, 0, 0, 40)
-flmHeader.BackgroundTransparency = 1
-flmHeader.ZIndex = 141
-
-local flmBackBtn = Instance.new("TextButton", flmHeader)
-flmBackBtn.Size = UDim2.fromOffset(30, 30)
-flmBackBtn.Position = UDim2.fromOffset(10, 5)
-flmBackBtn.BackgroundTransparency = 1
-flmBackBtn.Text = "←"
-flmBackBtn.TextColor3 = Colors.Primary
-flmBackBtn.Font = Enum.Font.GothamBlack
-flmBackBtn.TextSize = 14
-flmBackBtn.ZIndex = 142
-
-local flmTitle = Instance.new("TextLabel", flmHeader)
-flmTitle.Size = UDim2.new(1, -80, 1, 0)
-flmTitle.Position = UDim2.fromOffset(40, 0)
-flmTitle.BackgroundTransparency = 1
-flmTitle.Text = "FOLLOWERS"
-flmTitle.TextColor3 = Colors.Text
-flmTitle.Font = Enum.Font.GothamBlack
-flmTitle.TextSize = 11
-flmTitle.TextXAlignment = Enum.TextXAlignment.Left
-flmTitle.ZIndex = 142
-
-local flmScroll = Instance.new("ScrollingFrame", followersListModal)
-flmScroll.Size = UDim2.new(1, -20, 1, -50)
-flmScroll.Position = UDim2.fromOffset(10, 44)
-flmScroll.BackgroundTransparency = 1
-flmScroll.ScrollBarThickness = 2
-flmScroll.ScrollBarImageColor3 = Colors.Primary
-flmScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-flmScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-flmScroll.ZIndex = 142
-
-local flmLayout = Instance.new("UIListLayout", flmScroll)
-flmLayout.Padding = UDim.new(0, 6)
-
-local function closeFollowersModal()
-    SafeTween(followersListModal, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Position = UDim2.new(0, 0, 1, 0)})
-end
-flmBackBtn.MouseButton1Click:Connect(closeFollowersModal)
+local metricFollowers = createStatMetric("FOLLOWERS", "--", 0)
+local metricFollowing = createStatMetric("FOLLOWING", "--", 0.5)
 
 -- 🌟 INSTAGRAM-STYLE ACTION ROW
 local instaActionRow = Instance.new("Frame", profileFrame)
@@ -901,7 +845,6 @@ local currentProfileId = nil
 local isEditingBio = false
 
 local function closeProfile()
-    closeFollowersModal()
     SafeTween(pfScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0})
     SafeTween(profileOverlay, TweenInfo.new(0.18), {BackgroundTransparency = 1})
     task.delay(0.2, function()
@@ -986,7 +929,6 @@ local function openProfileModal(username)
     currentProfileId = nil
 
     profileOverlay.Visible = true
-    followersListModal.Position = UDim2.new(0, 0, 1, 0)
     bioInputBox.Visible = false
     bioScroll.Visible = true
     isEditingBio = false
@@ -1114,105 +1056,6 @@ local function openProfileModal(username)
         end
     end)
 end
-
-metricFollowersBtn.MouseButton1Click:Connect(function()
-    if not currentProfileId or currentProfileId == 0 then return end
-    for _, c in ipairs(flmScroll:GetChildren()) do
-        if c:IsA("GuiObject") and c.Name ~= "UIListLayout" then c:Destroy() end
-    end
-    flmTitle.Text = "FOLLOWERS (" .. tostring(metricFollowers.Text) .. ")"
-    SafeTween(followersListModal, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)})
-
-    task.spawn(function()
-        local cached = followersListCache[currentProfileId]
-        if cached then
-            for _, fUser in ipairs(cached) do
-                local row = Instance.new("TextButton", flmScroll)
-                row.Size = UDim2.new(1, 0, 0, 32)
-                row.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
-                row.BackgroundTransparency = 0.2
-                row.Text = ""
-                row.AutoButtonColor = false
-                row.ZIndex = 143
-                Instance.new("UICorner", row).CornerRadius = UDim.new(0, 6)
-
-                local rAvatar = Instance.new("ImageLabel", row)
-                rAvatar.Size = UDim2.fromOffset(24, 24)
-                rAvatar.Position = UDim2.fromOffset(4, 4)
-                rAvatar.BackgroundTransparency = 1
-                rAvatar.Image = string.format("rbxthumb://type=AvatarHeadShot&id=%d&w=48&h=48", fUser.id)
-                rAvatar.ZIndex = 144
-                Instance.new("UICorner", rAvatar).CornerRadius = UDim.new(1, 0)
-
-                local rName = Instance.new("TextLabel", row)
-                rName.Size = UDim2.new(1, -38, 1, 0)
-                rName.Position = UDim2.fromOffset(34, 0)
-                rName.BackgroundTransparency = 1
-                rName.Text = fUser.displayName .. " (@" .. fUser.name .. ")"
-                rName.TextColor3 = Colors.Text
-                rName.Font = Enum.Font.GothamBold
-                rName.TextSize = 10
-                rName.TextXAlignment = Enum.TextXAlignment.Left
-                rName.ZIndex = 144
-
-                applySpringHover(row)
-                row.MouseButton1Click:Connect(function()
-                    closeFollowersModal()
-                    openProfileModal(fUser.name)
-                end)
-            end
-            return
-        end
-
-        if req then
-            local r = req({
-                Url = "https://friends.roblox.com/v1/users/" .. tostring(currentProfileId) .. "/followers?limit=15&sortOrder=Desc",
-                Method = "GET"
-            })
-            if r and r.StatusCode == 200 then
-                local res = HttpService:JSONDecode(r.Body)
-                if res and res.data then
-                    followersListCache[currentProfileId] = res.data
-                    for _, fUser in ipairs(res.data) do
-                        local row = Instance.new("TextButton", flmScroll)
-                        row.Size = UDim2.new(1, 0, 0, 32)
-                        row.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
-                        row.BackgroundTransparency = 0.2
-                        row.Text = ""
-                        row.AutoButtonColor = false
-                        row.ZIndex = 143
-                        Instance.new("UICorner", row).CornerRadius = UDim.new(0, 6)
-
-                        local rAvatar = Instance.new("ImageLabel", row)
-                        rAvatar.Size = UDim2.fromOffset(24, 24)
-                        rAvatar.Position = UDim2.fromOffset(4, 4)
-                        rAvatar.BackgroundTransparency = 1
-                        rAvatar.Image = string.format("rbxthumb://type=AvatarHeadShot&id=%d&w=48&h=48", fUser.id)
-                        rAvatar.ZIndex = 144
-                        Instance.new("UICorner", rAvatar).CornerRadius = UDim.new(1, 0)
-
-                        local rName = Instance.new("TextLabel", row)
-                        rName.Size = UDim2.new(1, -38, 1, 0)
-                        rName.Position = UDim2.fromOffset(34, 0)
-                        rName.BackgroundTransparency = 1
-                        rName.Text = fUser.displayName .. " (@" .. fUser.name .. ")"
-                        rName.TextColor3 = Colors.Text
-                        rName.Font = Enum.Font.GothamBold
-                        rName.TextSize = 10
-                        rName.TextXAlignment = Enum.TextXAlignment.Left
-                        rName.ZIndex = 144
-
-                        applySpringHover(row)
-                        row.MouseButton1Click:Connect(function()
-                            closeFollowersModal()
-                            openProfileModal(fUser.name)
-                        end)
-                    end
-                end
-            end
-        end
-    end)
-end)
 
 -- =========================================================
 -- 🛸 REOPEN ORB ENGINE
@@ -2184,8 +2027,8 @@ local function addJoinNotice(username)
     end)
 end
 
--- 🌟 EXPANDED GLOBAL CHAT MESSAGE RETENTION (300 MESSAGES)
-local MAX_MESSAGES = 300
+-- 🌟 STABLE 150 RETENTION LIMIT
+local MAX_MESSAGES = 150
 local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSender, msgJobId, scopeType)
     if msg == "[TYPING]" or msg:find("%[TYPING%]") then return end
 
@@ -3451,8 +3294,8 @@ task.spawn(function()
                 if isInitialSync then
                     isInitialSync = false
                     if #data > 0 then
-                        -- Full retention: Replays all stored history for the session
-                        for i = 1, #data do
+                        local startIndex = math.max(1, #data - 40)
+                        for i = startIndex, #data do
                             local m = data[i]
                             if not m.hidden and m.msg ~= "Joined" and m.msg ~= "[TYPING]" and not tostring(m.msg):find("%[TYPING%]") then
                                 local initKey = (m.id and tostring(m.id)) or (m.user .. "_" .. tostring(m.time) .. "_" .. m.msg)
