@@ -422,8 +422,12 @@ local personalCustomBios = {
     [lp.UserId] = "⚡ Cyber-Titan Apex Elite | System Architect"
 }
 
--- 🌟 INSTAGRAM-STYLE FOLLOW REGISTRY & PROFILE CACHE
-local followedUsers = {}
+-- 🌟 INSTAGRAM-STYLE GLOBAL SESSION PERSISTENT FOLLOW REGISTRY
+local gEnv = (getgenv and getgenv()) or _G or shared
+if not gEnv.TXR_FollowedUsers then
+    gEnv.TXR_FollowedUsers = {}
+end
+local followedUsers = gEnv.TXR_FollowedUsers
 local profileCache = {}
 local followersListCache = {}
 
@@ -733,7 +737,7 @@ end
 local metricFollowers, metricFollowersBtn = createStatMetric("FOLLOWERS", "--", 0)
 local metricFollowing, _ = createStatMetric("FOLLOWING", "--", 0.5)
 
--- 🌟 FOLLOWERS LIST MODAL (INSTA STYLE DRILL-DOWN DRAWER)
+-- 🌟 FOLLOWERS LIST MODAL (INSTA STYLE DRILL-DOWN DRAWER WITH CLICKABLE USERS)
 local followersListModal = Instance.new("Frame", profileFrame)
 followersListModal.Size = UDim2.new(1, 0, 1, 0)
 followersListModal.Position = UDim2.new(0, 0, 1, 0)
@@ -940,14 +944,24 @@ followBtn.MouseButton1Click:Connect(function()
         followBtn.TextColor3 = Color3.fromRGB(50, 255, 140)
         playSFX("mention")
         local curCount = tonumber(metricFollowers.Text)
-        if curCount then metricFollowers.Text = tostring(curCount + 1) end
+        if curCount then 
+            metricFollowers.Text = tostring(curCount + 1)
+            if profileCache[currentProfileId] then
+                profileCache[currentProfileId].followers = tostring(curCount + 1)
+            end
+        end
     else
         followBtn.Text = "Follow"
         followBtn.BackgroundColor3 = Colors.Primary
         followBtn.TextColor3 = Color3.fromRGB(5, 7, 10)
         playSFX("default")
         local curCount = tonumber(metricFollowers.Text)
-        if curCount and curCount > 0 then metricFollowers.Text = tostring(curCount - 1) end
+        if curCount and curCount > 0 then 
+            metricFollowers.Text = tostring(curCount - 1)
+            if profileCache[currentProfileId] then
+                profileCache[currentProfileId].followers = tostring(curCount - 1)
+            end
+        end
     end
 end)
 
@@ -1011,7 +1025,7 @@ local function openProfileModal(username)
                 followBtn.Text = "Edit Bio"
                 followBtn.BackgroundColor3 = Colors.Primary
                 followBtn.TextColor3 = Color3.fromRGB(5, 7, 10)
-            elseif followedUsers[uId] then
+            elseif followedUsers[uId] == true then
                 followBtn.Text = "Following"
                 followBtn.BackgroundColor3 = Color3.fromRGB(22, 28, 38)
                 followBtn.TextColor3 = Color3.fromRGB(50, 255, 140)
@@ -1048,9 +1062,10 @@ local function openProfileModal(username)
                     if r1 and r1.StatusCode == 200 then
                         local d1 = HttpService:JSONDecode(r1.Body)
                         if d1 and d1.count and currentProfileId == uId then 
-                            metricFollowers.Text = tostring(d1.count)
+                            local countVal = tostring(d1.count)
+                            metricFollowers.Text = countVal
                             if not profileCache[uId] then profileCache[uId] = {} end
-                            profileCache[uId].followers = tostring(d1.count)
+                            profileCache[uId].followers = countVal
                         end
                     end
                 end)
@@ -1065,9 +1080,10 @@ local function openProfileModal(username)
                     if r2 and r2.StatusCode == 200 then
                         local d2 = HttpService:JSONDecode(r2.Body)
                         if d2 and d2.count and currentProfileId == uId then 
-                            metricFollowing.Text = tostring(d2.count)
+                            local countVal = tostring(d2.count)
+                            metricFollowing.Text = countVal
                             if not profileCache[uId] then profileCache[uId] = {} end
-                            profileCache[uId].following = tostring(d2.count)
+                            profileCache[uId].following = countVal
                         end
                     end
                 end)
@@ -1111,10 +1127,12 @@ metricFollowersBtn.MouseButton1Click:Connect(function()
         local cached = followersListCache[currentProfileId]
         if cached then
             for _, fUser in ipairs(cached) do
-                local row = Instance.new("Frame", flmScroll)
+                local row = Instance.new("TextButton", flmScroll)
                 row.Size = UDim2.new(1, 0, 0, 32)
                 row.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
                 row.BackgroundTransparency = 0.2
+                row.Text = ""
+                row.AutoButtonColor = false
                 row.ZIndex = 143
                 Instance.new("UICorner", row).CornerRadius = UDim.new(0, 6)
 
@@ -1136,6 +1154,12 @@ metricFollowersBtn.MouseButton1Click:Connect(function()
                 rName.TextSize = 10
                 rName.TextXAlignment = Enum.TextXAlignment.Left
                 rName.ZIndex = 144
+
+                applySpringHover(row)
+                row.MouseButton1Click:Connect(function()
+                    closeFollowersModal()
+                    openProfileModal(fUser.name)
+                end)
             end
             return
         end
@@ -1150,10 +1174,12 @@ metricFollowersBtn.MouseButton1Click:Connect(function()
                 if res and res.data then
                     followersListCache[currentProfileId] = res.data
                     for _, fUser in ipairs(res.data) do
-                        local row = Instance.new("Frame", flmScroll)
+                        local row = Instance.new("TextButton", flmScroll)
                         row.Size = UDim2.new(1, 0, 0, 32)
                         row.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
                         row.BackgroundTransparency = 0.2
+                        row.Text = ""
+                        row.AutoButtonColor = false
                         row.ZIndex = 143
                         Instance.new("UICorner", row).CornerRadius = UDim.new(0, 6)
 
@@ -1175,6 +1201,12 @@ metricFollowersBtn.MouseButton1Click:Connect(function()
                         rName.TextSize = 10
                         rName.TextXAlignment = Enum.TextXAlignment.Left
                         rName.ZIndex = 144
+
+                        applySpringHover(row)
+                        row.MouseButton1Click:Connect(function()
+                            closeFollowersModal()
+                            openProfileModal(fUser.name)
+                        end)
                     end
                 end
             end
@@ -3419,8 +3451,8 @@ task.spawn(function()
                 if isInitialSync then
                     isInitialSync = false
                     if #data > 0 then
-                        local startIndex = math.max(1, #data - 60)
-                        for i = startIndex, #data do
+                        -- Full retention: Replays all stored history for the session
+                        for i = 1, #data do
                             local m = data[i]
                             if not m.hidden and m.msg ~= "Joined" and m.msg ~= "[TYPING]" and not tostring(m.msg):find("%[TYPING%]") then
                                 local initKey = (m.id and tostring(m.id)) or (m.user .. "_" .. tostring(m.time) .. "_" .. m.msg)
