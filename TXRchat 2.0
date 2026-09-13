@@ -408,6 +408,7 @@ local lastSyncTime = 0
 local isInitialSync = true
 local chatMode = "server" 
 local privateTarget = nil
+local activeReplyData = nil
 local knownUsers = {}
 local activeUsersTable = {}
 local unreadCount = 0
@@ -1952,6 +1953,9 @@ end
 
 local sendMessageFunc
 local chatInput
+local updateInputBar
+local replyPreviewFrame
+local replyPreviewText
 
 -- =========================================================
 -- 💬 MESSAGE PIPELINE
@@ -2011,7 +2015,10 @@ local MAX_MESSAGES = 60
 local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSender, msgJobId, scopeType)
     if msg == "[TYPING]" or msg:find("%[TYPING%]") then return end
 
-    local memeIdMatch = msg:match("%[MEME:(%d+)%]")
+    local replyAuthor, replySnippet, cleanMsgText = msg:match("^%[REPLY:@(.-)|(.-)%]%s*(.*)$")
+    local finalRenderMsg = cleanMsgText or msg
+
+    local memeIdMatch = finalRenderMsg:match("%[MEME:(%d+)%]")
 
     local actualUsername, dispName = rawUserName:match("^(.-)::(.*)$")
     if not actualUsername then
@@ -2020,7 +2027,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         dispName = targetPlr and targetPlr.DisplayName or rawUserName
     end
 
-    local isMentioned = string.find(string.lower(msg), string.lower(lp.Name), 1, true) or string.find(string.lower(msg), string.lower(lp.DisplayName), 1, true)
+    local isMentioned = string.find(string.lower(finalRenderMsg), string.lower(lp.Name), 1, true) or string.find(string.lower(finalRenderMsg), string.lower(lp.DisplayName), 1, true)
     local isAdminUser = Admin[actualUsername:lower()] == true
     local badgeProfile = BadgePresets[currentOwnerBadge] or BadgePresets["OWNER"]
 
@@ -2149,7 +2156,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     ccLayout.SortOrder = Enum.SortOrder.LayoutOrder
     ccLayout.Padding = UDim.new(0, 3)
 
-    -- 🌟 TIME STAMP MOVED TO THE TOP ROW (CLEARS SPACE)
+    -- 🌟 TIME STAMP TOP ROW
     local topRow = Instance.new("Frame", cardContent)
     topRow.Size = UDim2.new(1, 0, 0, 12)
     topRow.BackgroundTransparency = 1
@@ -2167,10 +2174,41 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     timeLbl.ZIndex = 12
     crispText(timeLbl, 0.7)
 
+    -- 🌟 LIGHTLY QUOTED REPLY PREVIEW (OFFICIAL DISCORD / APP STYLE)
+    if replyAuthor and replySnippet then
+        local replyPill = Instance.new("Frame", cardContent)
+        replyPill.Size = UDim2.new(1, -10, 0, 18)
+        replyPill.BackgroundColor3 = Color3.fromRGB(18, 22, 28)
+        replyPill.BackgroundTransparency = 0.3
+        replyPill.LayoutOrder = 2
+        replyPill.ZIndex = 12
+        Instance.new("UICorner", replyPill).CornerRadius = UDim.new(0, 4)
+
+        local replyBar = Instance.new("Frame", replyPill)
+        replyBar.Size = UDim2.new(0, 2, 1, -4)
+        replyBar.Position = UDim2.fromOffset(2, 2)
+        replyBar.BackgroundColor3 = Colors.Primary
+        replyBar.BorderSizePixel = 0
+        replyBar.ZIndex = 13
+
+        local replyTxt = Instance.new("TextLabel", replyPill)
+        replyTxt.Size = UDim2.new(1, -12, 1, 0)
+        replyTxt.Position = UDim2.fromOffset(8, 0)
+        replyTxt.BackgroundTransparency = 1
+        replyTxt.RichText = true
+        replyTxt.Text = string.format("<font color='#00FFDC'>@%s:</font> %s", sanitizeXml(replyAuthor), sanitizeXml(replySnippet))
+        replyTxt.TextColor3 = Color3.fromRGB(170, 180, 195)
+        replyTxt.Font = Enum.Font.GothamMedium
+        replyTxt.TextSize = 9.5
+        replyTxt.TextTruncate = Enum.TextTruncate.AtEnd
+        replyTxt.TextXAlignment = Enum.TextXAlignment.Left
+        replyTxt.ZIndex = 13
+    end
+
     local headerRow = Instance.new("Frame", cardContent)
     headerRow.Size = UDim2.new(1, 0, 0, 18)
     headerRow.BackgroundTransparency = 1
-    headerRow.LayoutOrder = 2
+    headerRow.LayoutOrder = 3
     headerRow.ZIndex = 11
 
     local hLayout = Instance.new("UIListLayout", headerRow)
@@ -2294,7 +2332,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         local memeHolder = Instance.new("Frame", cardContent)
         memeHolder.Size = UDim2.new(1, 0, 0, 94)
         memeHolder.BackgroundTransparency = 1
-        memeHolder.LayoutOrder = 3
+        memeHolder.LayoutOrder = 4
         memeHolder.ZIndex = 12
 
         local memeImg = Instance.new("ImageLabel", memeHolder)
@@ -2321,9 +2359,9 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         bodyTxt.TextWrapped = true
         bodyTxt.TextXAlignment = Enum.TextXAlignment.Left
         bodyTxt.RichText = true
-        bodyTxt.LayoutOrder = 3
+        bodyTxt.LayoutOrder = 4
         bodyTxt.ZIndex = 12
-        bodyTxt.Text = sanitizeXml(msg)
+        bodyTxt.Text = sanitizeXml(finalRenderMsg)
         crispText(bodyTxt)
     end
 
@@ -2333,6 +2371,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         playSFX("meme")
     end
 
+    -- 🌟 DRAG ACTIONS (LEFT = REPLY WITH PREVIEW, RIGHT = PRIVATE DM)
     local dragStart = nil
     local isDragging = false
     local hasTriggeredSwipe = false
@@ -2356,11 +2395,11 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
             if clampedX > 50 and not hasTriggeredSwipe then
                 hasTriggeredSwipe = true
                 playSFX("swipe")
-                spawnUIParticles(cardRoot, UDim2.new(0, 20, 0.5, 0), Colors.Purple, 6)
+                spawnUIParticles(cardRoot, UDim2.new(1, -20, 0.5, 0), Colors.Purple, 6)
             elseif clampedX < -50 and not hasTriggeredSwipe then
                 hasTriggeredSwipe = true
                 playSFX("swipe")
-                spawnUIParticles(cardRoot, UDim2.new(1, -20, 0.5, 0), Colors.Primary, 6)
+                spawnUIParticles(cardRoot, UDim2.new(0, 20, 0.5, 0), Colors.Primary, 6)
             end
         end
     end)
@@ -2374,12 +2413,23 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
             SafeTween(card, TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)})
 
             if finalDelta > 50 then
+                -- Right drag = Private chat
                 privateTarget = actualUsername
+                activeReplyData = nil
                 updateInputBar()
                 playSFX("dm")
             elseif finalDelta < -50 then
-                chatInput.Text = "@" .. actualUsername .. " "
+                -- Left drag = Reply with visual light preview
+                local snippet = finalRenderMsg
+                if #snippet > 28 then snippet = snippet:sub(1, 25) .. "..." end
+                activeReplyData = {
+                    author = dispName or actualUsername,
+                    rawAuthor = actualUsername,
+                    snippet = snippet
+                }
+                updateInputBar()
                 chatInput:CaptureFocus()
+                playSFX("default")
             end
         end
     end)
@@ -2409,6 +2459,45 @@ local inputStroke = Instance.new("UIStroke", inputContainer)
 inputStroke.Thickness = 1.0
 inputStroke.Color = Colors.PrimaryDark
 inputStroke.Transparency = 0.4
+
+-- 🌟 LIGHT APP STYLE REPLY PREVIEW BAR (DOCKED ABOVE INPUT)
+replyPreviewFrame = Instance.new("Frame", mainFrame)
+replyPreviewFrame.Size = UDim2.new(1, -30, 0, 24)
+replyPreviewFrame.Position = UDim2.new(0, 15, 1, -78)
+replyPreviewFrame.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
+replyPreviewFrame.BackgroundTransparency = 0.15
+replyPreviewFrame.Visible = false
+replyPreviewFrame.ZIndex = 11
+Instance.new("UICorner", replyPreviewFrame).CornerRadius = UDim.new(0, 6)
+
+local rpStroke = Instance.new("UIStroke", replyPreviewFrame)
+rpStroke.Color = Colors.Primary
+rpStroke.Thickness = 1
+rpStroke.Transparency = 0.5
+
+replyPreviewText = Instance.new("TextLabel", replyPreviewFrame)
+replyPreviewText.Size = UDim2.new(1, -30, 1, 0)
+replyPreviewText.Position = UDim2.fromOffset(8, 0)
+replyPreviewText.BackgroundTransparency = 1
+replyPreviewText.Font = Enum.Font.GothamBold
+replyPreviewText.TextSize = 10
+replyPreviewText.TextColor3 = Colors.Primary
+replyPreviewText.TextXAlignment = Enum.TextXAlignment.Left
+replyPreviewText.ZIndex = 12
+
+local replyCloseBtn = Instance.new("TextButton", replyPreviewFrame)
+replyCloseBtn.Size = UDim2.fromOffset(20, 20)
+replyCloseBtn.Position = UDim2.new(1, -22, 0, 2)
+replyCloseBtn.BackgroundTransparency = 1
+replyCloseBtn.Text = "X"
+replyCloseBtn.TextColor3 = Colors.Danger
+replyCloseBtn.Font = Enum.Font.GothamBlack
+replyCloseBtn.TextSize = 9
+replyCloseBtn.ZIndex = 13
+replyCloseBtn.MouseButton1Click:Connect(function()
+    activeReplyData = nil
+    updateInputBar()
+end)
 
 local typingIndicator = Instance.new("Frame", inputContainer)
 typingIndicator.Size = UDim2.new(1, -24, 0, 2)
@@ -2440,7 +2529,7 @@ Instance.new("UICorner", dmBadge).CornerRadius = UDim.new(1, 0)
 chatInput = Instance.new("TextBox", inputContainer)
 chatInput.Text = ""
 chatInput.Size = UDim2.new(1, -125, 1, 0)
-chatInput.Position = UDim2.new(0, 16, 0, 0)
+chatInput.Position = UDim2.fromOffset(16, 0)
 chatInput.BackgroundTransparency = 1
 chatInput.PlaceholderText = "Type message... (Swipe card -> to DM)"
 chatInput.PlaceholderColor3 = Colors.SubText
@@ -2494,6 +2583,13 @@ chatInput.FocusLost:Connect(function()
 end)
 
 updateInputBar = function()
+    if activeReplyData then
+        replyPreviewFrame.Visible = true
+        replyPreviewText.Text = "Replying to @" .. activeReplyData.author .. ': "' .. activeReplyData.snippet .. '"'
+    else
+        replyPreviewFrame.Visible = false
+    end
+
     if privateTarget then
         dmBadge.Text = "@" .. privateTarget .. " X"
         local w = SafeGetTextSize(dmBadge.Text, 10, Enum.Font.GothamBlack, Vector2.new(1000, 30)).X + 16
@@ -3108,13 +3204,17 @@ sendMessageFunc = function(overrideText)
     local finalMsg = text
     local currentScope = chatMode
 
+    if activeReplyData then
+        finalMsg = string.format("[REPLY:@%s|%s] %s", activeReplyData.rawAuthor, activeReplyData.snippet, text)
+    end
+
     if privateTarget then
-        finalMsg = "( 🔐 " .. lp.Name .. " Private " .. privateTarget .. ") " .. text
+        finalMsg = "( 🔐 " .. lp.Name .. " Private " .. privateTarget .. ") " .. finalMsg
     else
         if currentScope == "server" then
-            finalMsg = "[SRV:" .. tostring(game.JobId) .. "] " .. text
+            finalMsg = "[SRV:" .. tostring(game.JobId) .. "] " .. finalMsg
         else
-            finalMsg = "[GLB] " .. text
+            finalMsg = "[GLB] " .. finalMsg
         end
     end
 
@@ -3123,9 +3223,9 @@ sendMessageFunc = function(overrideText)
     local encodedUserTag = lp.Name .. "::" .. lp.DisplayName
 
     if privateTarget then
-        addMessageToFeed(encodedUserTag, text, privateTarget, true, game.JobId, currentScope)
+        addMessageToFeed(encodedUserTag, finalMsg, privateTarget, true, game.JobId, currentScope)
     else
-        addMessageToFeed(encodedUserTag, text, nil, false, game.JobId, currentScope)
+        addMessageToFeed(encodedUserTag, finalMsg, nil, false, game.JobId, currentScope)
     end
     displayBubble(lp.Name, text)
     
@@ -3134,6 +3234,9 @@ sendMessageFunc = function(overrideText)
     local cleanKey = string.lower(finalMsg)
     recentLocalSentMap[cleanKey] = tick()
     recentLocalSentMap[string.lower(text)] = tick()
+
+    activeReplyData = nil
+    updateInputBar()
 
     task.spawn(function()
         SafeRequest({
