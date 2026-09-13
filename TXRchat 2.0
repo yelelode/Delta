@@ -42,49 +42,18 @@ local Camera = workspace.CurrentCamera
 local setClip = setclipboard or toclipboard or function() end
 local req = (syn and syn.request) or (http and http.request) or http_request or request
 
--- =========================================================
--- 🛡️ MODULAR FAULT-ISOLATION SUBSYSTEM (ZERO-FREEZE)
--- =========================================================
-local function BootSubsystem(subsystemName, loaderFunc)
-    local ok, err = pcall(loaderFunc)
-    if not ok then
-        warn(string.format("[TXR Module Skipped]: %s encountered an error: %s", tostring(subsystemName), tostring(err)))
-    end
-    return ok
-end
+-- ⚡ PERSISTENT GLOBAL SYSTEM REGISTRIES (NEVER CLEARED ON RE-EXECUTION)
+_G.TXR_GlobalChatCache = _G.TXR_GlobalChatCache or {}
+_G.TXR_FollowedUsers = _G.TXR_FollowedUsers or {}
 
-local function SafeTween(obj, tweenInfo, props)
-    if not obj or not obj.Parent then return end
-    pcall(function()
-        TweenService:Create(obj, tweenInfo, props):Play()
-    end)
-end
+local targetGuiParent
+pcall(function() targetGuiParent = game:GetService("CoreGui") end)
+if gethui then pcall(function() targetGuiParent = gethui() end) end
+if not targetGuiParent then targetGuiParent = lp:WaitForChild("PlayerGui") end
 
-local function SafeRequest(opts)
-    if not req then return false, nil end
-    return pcall(function()
-        return req(opts)
-    end)
-end
-
-local function SafeGetTextSize(text, size, font, bounds)
-    local ok, res = pcall(function()
-        return TextService:GetTextSize(text or "", size or 10, font or Enum.Font.SourceSans, bounds or Vector2.new(1000, 1000))
-    end)
-    return (ok and res) or Vector2.new(50, 18)
-end
-
-local targetGuiParent = nil
-pcall(function() targetGuiParent = (gethui and gethui()) or game:GetService("CoreGui") end)
-if not targetGuiParent then
-    pcall(function() targetGuiParent = lp:FindFirstChildOfClass("PlayerGui") or lp:WaitForChild("PlayerGui", 3) end)
-end
-
-if targetGuiParent then
-    for _, v in pairs(targetGuiParent:GetChildren()) do
-        if v.Name:find("TXR_OnyxChat") or v.Name:find("HiddenChatUI") then 
-            pcall(function() v:Destroy() end)
-        end
+for _, v in pairs(targetGuiParent:GetChildren()) do
+    if v.Name:find("TXR_OnyxChat") or v.Name:find("HiddenChatUI") then 
+        pcall(function() v:Destroy() end)
     end
 end
 
@@ -133,17 +102,17 @@ local Themes = {
 local currentThemeIdx = 1
 
 local Colors = {
-    Background    = Color3.fromRGB(2, 3, 5),
-    Surface       = Color3.fromRGB(10, 12, 16),
-    SurfaceHover  = Color3.fromRGB(16, 20, 26),
-    ActiveTint    = Themes[1].ActiveTint,
-    Primary       = Themes[1].Primary,
-    PrimaryDark   = Themes[1].PrimaryDark,
-    Danger        = Color3.fromRGB(255, 65, 90),
-    Warning       = Color3.fromRGB(255, 200, 45),
-    Purple        = Themes[1].Accent,
-    Text          = Color3.fromRGB(255, 255, 255),
-    SubText       = Color3.fromRGB(160, 170, 185),
+    Background    = Color3.fromRGB(2, 3, 5),       -- Pure Deep OLED Black
+    Surface       = Color3.fromRGB(10, 12, 16),     -- Very Dark Gray Surface
+    SurfaceHover  = Color3.fromRGB(16, 20, 26),     
+    ActiveTint    = Themes[1].ActiveTint,       
+    Primary       = Themes[1].Primary,         
+    PrimaryDark   = Themes[1].PrimaryDark,     
+    Danger        = Color3.fromRGB(255, 65, 90),          
+    Warning       = Color3.fromRGB(255, 200, 45),         
+    Purple        = Themes[1].Accent,         
+    Text          = Color3.fromRGB(255, 255, 255),          
+    SubText       = Color3.fromRGB(160, 170, 185),       
     TextDark      = Color3.fromRGB(4, 5, 8),
     MentionGold   = Color3.fromRGB(255, 225, 90),
     MentionBg     = Color3.fromRGB(30, 26, 12),
@@ -339,40 +308,35 @@ local function getAssetThumb(id)
 end
 
 local function crispText(element, overrideTransparency)
-    if not element then return end
-    pcall(function()
-        local stroke = element:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", element)
-        stroke.Color = Color3.new(0, 0, 0)
-        stroke.Transparency = overrideTransparency or 0.1
-        stroke.Thickness = 1.0
-    end)
+    local stroke = element:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", element)
+    stroke.Color = Color3.new(0, 0, 0)
+    stroke.Transparency = overrideTransparency or 0.1 -- Maximum contrast
+    stroke.Thickness = 1.0 -- Clean sharp text
 end
 
+-- ⚡ CINEMATIC APPLE-STYLE SPRING HOVER
 local function applySpringHover(btn)
-    if not btn then return end
-    pcall(function()
-        local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
-        local originalColor = btn.BackgroundColor3
-        local originalTransparency = btn.BackgroundTransparency
-        
-        btn.MouseEnter:Connect(function()
-            SafeTween(btnScale, TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1.03})
-            if btn.BackgroundTransparency < 1 then
-                SafeTween(btn, TweenInfo.new(0.2), {BackgroundColor3 = Colors.SurfaceHover, BackgroundTransparency = math.max(0, originalTransparency - 0.1)})
-            end
-        end)
-        btn.MouseLeave:Connect(function()
-            SafeTween(btnScale, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = 1})
-            if btn.BackgroundTransparency < 1 then
-                SafeTween(btn, TweenInfo.new(0.3), {BackgroundColor3 = originalColor, BackgroundTransparency = originalTransparency})
-            end
-        end)
-        btn.MouseButton1Down:Connect(function()
-            SafeTween(btnScale, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Scale = 0.95})
-        end)
-        btn.MouseButton1Up:Connect(function()
-            SafeTween(btnScale, TweenInfo.new(0.4, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1.03})
-        end)
+    local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
+    local originalColor = btn.BackgroundColor3
+    local originalTransparency = btn.BackgroundTransparency
+    
+    btn.MouseEnter:Connect(function()
+        TweenService:Create(btnScale, TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1.03}):Play()
+        if btn.BackgroundTransparency < 1 then
+            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Colors.SurfaceHover, BackgroundTransparency = math.max(0, originalTransparency - 0.1)}):Play()
+        end
+    end)
+    btn.MouseLeave:Connect(function()
+        TweenService:Create(btnScale, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = 1}):Play()
+        if btn.BackgroundTransparency < 1 then
+            TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = originalColor, BackgroundTransparency = originalTransparency}):Play()
+        end
+    end)
+    btn.MouseButton1Down:Connect(function()
+        TweenService:Create(btnScale, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Scale = 0.95}):Play()
+    end)
+    btn.MouseButton1Up:Connect(function()
+        TweenService:Create(btnScale, TweenInfo.new(0.4, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1.03}):Play()
     end)
 end
 
@@ -408,6 +372,7 @@ local lastSyncTime = 0
 local isInitialSync = true
 local chatMode = "server" 
 local privateTarget = nil
+local activeReplyContext = nil
 local knownUsers = {}
 local activeUsersTable = {}
 local unreadCount = 0
@@ -416,16 +381,26 @@ local ghostDebounce = false
 local userIdCache = {}
 local activeBadgesList = {}
 local modalSelectionIndicators = {}
+local profileCache = {}
+
+-- Pre-warm user cache to eliminate cold lookup stutters
+for _, p in ipairs(Players:GetPlayers()) do
+    userIdCache[p.Name:lower()] = p.UserId
+    userIdCache[p.DisplayName:lower()] = p.UserId
+end
+Players.PlayerAdded:Connect(function(p)
+    userIdCache[p.Name:lower()] = p.UserId
+    userIdCache[p.DisplayName:lower()] = p.UserId
+end)
 
 local personalCustomBios = {
     [lp.UserId] = "⚡ Cyber-Titan Apex Elite | System Architect"
 }
 
--- 🌟 INSTAGRAM-STYLE FOLLOW REGISTRY & PROFILE CACHE
-local followedUsers = {}
-local profileCache = {}
-
+-- ⚡ LIVE TYPING STATE
 local globalTypers = {}
+
+-- ⚡ DEDUPLICATION ENGINE CACHE
 local processedServerMessageMap = {}
 local recentLocalSentMap = {}
 
@@ -440,15 +415,15 @@ if lp.UserId == MY_VIP_ID then
 end
 
 local function displayBubble(userName, msg)
+    local speaker = Players:FindFirstChild(userName)
+    if not speaker or not speaker.Character then return end
+
+    local cleanMsg = msg
+    if cleanMsg:find("%[MEME:") then
+        cleanMsg = "[Sticker / Meme]"
+    end
+
     pcall(function()
-        local speaker = Players:FindFirstChild(userName)
-        if not speaker or not speaker.Character then return end
-
-        local cleanMsg = msg
-        if cleanMsg:find("%[MEME:") then
-            cleanMsg = "[Sticker / Meme]"
-        end
-
         if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
             TextChatService:DisplayBubble(speaker.Character, cleanMsg)
         else
@@ -463,11 +438,10 @@ end
 -- =========================================================
 -- 🏗️ ROOT GUI, MAIN ACRYLIC FRAME & AMBIENT AURA 
 -- =========================================================
-local gui = Instance.new("ScreenGui")
+local gui = Instance.new("ScreenGui", targetGuiParent)
 gui.Name = "TXR_OnyxChat_" .. tostring(math.random(100000, 999999))
 gui.ResetOnSpawn = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-pcall(function() gui.Parent = targetGuiParent end)
 
 local shadow = Instance.new("ImageLabel", gui)
 shadow.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -490,7 +464,9 @@ aura.ImageTransparency = 0.85
 aura.ZIndex = 2
 
 local auraScale = Instance.new("UIScale", aura)
+auraScale.Scale = 1
 local shadowScale = Instance.new("UIScale", shadow)
+shadowScale.Scale = 1
 
 local mainFrame = Instance.new("Frame", gui)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -502,7 +478,8 @@ mainFrame.ClipsDescendants = true
 mainFrame.Active = true
 mainFrame.ZIndex = 5
 
-Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 16)
+local mainCorner = Instance.new("UICorner", mainFrame)
+mainCorner.CornerRadius = UDim.new(0, 16)
 
 local mainStroke = Instance.new("UIStroke", mainFrame)
 mainStroke.Thickness = 1.0
@@ -548,47 +525,47 @@ gsGrad.Transparency = NumberSequence.new({
 })
 gsGrad.Rotation = 90
 
--- Matrix Rain Subsystem
-BootSubsystem("MatrixRain", function()
-    local matrixBox = Instance.new("Frame", mainFrame)
-    matrixBox.Size = UDim2.fromScale(1, 1)
-    matrixBox.BackgroundTransparency = 1
-    matrixBox.ZIndex = 6
-    matrixBox.ClipsDescendants = true
+-- =========================================================
+-- 🌧️ MATRIX CODE RAIN (ALMOST INVISIBLE ELEGANCE)
+-- =========================================================
+local matrixBox = Instance.new("Frame", mainFrame)
+matrixBox.Size = UDim2.fromScale(1, 1)
+matrixBox.BackgroundTransparency = 1
+matrixBox.ZIndex = 6
+matrixBox.ClipsDescendants = true
 
-    local matrixChars = {"0", "1", "X", "Z", "9", "A", "F", "TXR", "7", "3"}
-    local matrixColumns = {}
-    for i = 1, 16 do
-        local col = Instance.new("TextLabel", matrixBox)
-        col.Size = UDim2.new(0, 18, 1, 0)
-        col.Position = UDim2.new((i - 1) / 16, 4, 0, 0)
-        col.BackgroundTransparency = 1
-        col.Font = Enum.Font.Code
-        col.TextSize = 8 
-        col.TextColor3 = Colors.PrimaryDark
-        col.TextTransparency = 0.98
-        col.TextWrapped = true
-        col.TextYAlignment = Enum.TextYAlignment.Top
-        col.ZIndex = 6
-        table.insert(matrixColumns, col)
-    end
+local matrixChars = {"0", "1", "X", "Z", "9", "A", "F", "TXR", "7", "3"}
+local matrixColumns = {}
+for i = 1, 16 do
+    local col = Instance.new("TextLabel", matrixBox)
+    col.Size = UDim2.new(0, 18, 1, 0)
+    col.Position = UDim2.new((i - 1) / 16, 4, 0, 0)
+    col.BackgroundTransparency = 1
+    col.Font = Enum.Font.Code
+    col.TextSize = 8 
+    col.TextColor3 = Colors.PrimaryDark
+    col.TextTransparency = 0.98 -- Faint OLED Burn-in look
+    col.TextWrapped = true
+    col.TextYAlignment = Enum.TextYAlignment.Top
+    col.ZIndex = 6
+    table.insert(matrixColumns, col)
+end
 
-    task.spawn(function()
-        while _G.TXR_ChatInstanceID == currentExecutionID and gui.Parent do
-            for _, col in ipairs(matrixColumns) do
-                local str = ""
-                for j = 1, 14 do
-                    str = str .. matrixChars[math.random(1, #matrixChars)] .. "\n"
-                end
-                col.Text = str
+task.spawn(function()
+    while _G.TXR_ChatInstanceID == currentExecutionID and gui.Parent do
+        for _, col in ipairs(matrixColumns) do
+            local str = ""
+            for j = 1, 14 do
+                str = str .. matrixChars[math.random(1, #matrixChars)] .. "\n"
             end
-            task.wait(0.3)
+            col.Text = str
         end
-    end)
+        task.wait(0.3)
+    end
 end)
 
 -- =========================================================
--- 🌐 INSTAGRAM-STYLE PROFILE MODAL (NO UID, CLEAN ACTION)
+-- 🌐 INSTAGRAM-STYLE PROFILE MODAL (NO UID, ONLY AVATAR CLICKABLE)
 -- =========================================================
 local profileOverlay = Instance.new("Frame", gui)
 profileOverlay.Size = UDim2.fromScale(1, 1)
@@ -683,7 +660,7 @@ pfHandle.TextSize = 10.5
 pfHandle.TextXAlignment = Enum.TextXAlignment.Left
 pfHandle.ZIndex = 125
 
--- ⚡ STATS GRID: EXACTLY 2 COLUMNS (FOLLOWERS & FOLLOWING) - UID REMOVED
+-- ⚡ EXACTLY 2 CLEAN COLUMNS (FOLLOWERS & FOLLOWING) - UID REMOVED
 local statsGrid = Instance.new("Frame", profileFrame)
 statsGrid.Size = UDim2.new(1, -40, 0, 46)
 statsGrid.Position = UDim2.fromOffset(20, 134)
@@ -696,10 +673,12 @@ sgStroke.Color = Colors.SurfaceHover
 sgStroke.Thickness = 1.0
 
 local function createStatMetric(titleText, valueDefault, xOffsetScale)
-    local box = Instance.new("Frame", statsGrid)
+    local box = Instance.new("TextButton", statsGrid)
     box.Size = UDim2.new(0.5, 0, 1, 0)
     box.Position = UDim2.new(xOffsetScale, 0, 0, 0)
     box.BackgroundTransparency = 1
+    box.Text = ""
+    box.AutoButtonColor = false
     box.ZIndex = 126
 
     local valLbl = Instance.new("TextLabel", box)
@@ -723,13 +702,13 @@ local function createStatMetric(titleText, valueDefault, xOffsetScale)
     subLbl.TextSize = 8.5
     subLbl.ZIndex = 127
 
-    return valLbl
+    return valLbl, box
 end
 
-local metricFollowers = createStatMetric("FOLLOWERS", "--", 0)
-local metricFollowing = createStatMetric("FOLLOWING", "--", 0.5)
+local metricFollowers, followersBox = createStatMetric("FOLLOWERS", "--", 0)
+local metricFollowing, followingBox = createStatMetric("FOLLOWING", "--", 0.5)
 
--- 🌟 INSTAGRAM-STYLE ACTION ROW (DIRECTLY UNDER FOLLOWERS/FOLLOWING)
+-- 🌟 INSTAGRAM-STYLE DIRECT ACTION ROW (UNDER METRICS)
 local instaActionRow = Instance.new("Frame", profileFrame)
 instaActionRow.Size = UDim2.new(1, -40, 0, 30)
 instaActionRow.Position = UDim2.fromOffset(20, 186)
@@ -768,7 +747,7 @@ clStroke.Color = Colors.SurfaceHover
 clStroke.Thickness = 1.0
 applySpringHover(copyLinkBtn)
 
--- BIO SECTION
+-- BIO CONTAINER
 local bioHeaderRow = Instance.new("Frame", profileFrame)
 bioHeaderRow.Size = UDim2.new(1, -40, 0, 16)
 bioHeaderRow.Position = UDim2.fromOffset(20, 224)
@@ -835,15 +814,71 @@ bioInputBox.ClearTextOnFocus = false
 bioInputBox.Visible = false
 bioInputBox.ZIndex = 128
 
+-- 👥 FOLLOWERS LIST DRAWER POPUP
+local followersDrawer = Instance.new("Frame", profileFrame)
+followersDrawer.Size = UDim2.new(1, 0, 1, 0)
+followersDrawer.Position = UDim2.new(0, 0, 1, 0)
+followersDrawer.BackgroundColor3 = Colors.Background
+followersDrawer.BackgroundTransparency = 0.02
+followersDrawer.ZIndex = 140
+Instance.new("UICorner", followersDrawer).CornerRadius = UDim.new(0, 16)
+local fdStroke = Instance.new("UIStroke", followersDrawer)
+fdStroke.Color = Colors.Primary
+fdStroke.Thickness = 1.0
+
+local fdHeader = Instance.new("Frame", followersDrawer)
+fdHeader.Size = UDim2.new(1, 0, 0, 36)
+fdHeader.BackgroundTransparency = 1
+fdHeader.ZIndex = 141
+
+local fdTitle = Instance.new("TextLabel", fdHeader)
+fdTitle.Size = UDim2.new(1, -40, 1, 0)
+fdTitle.Position = UDim2.fromOffset(14, 0)
+fdTitle.BackgroundTransparency = 1
+fdTitle.Text = "FOLLOWERS LIST"
+fdTitle.TextColor3 = Colors.Primary
+fdTitle.Font = Enum.Font.GothamBlack
+fdTitle.TextSize = 11
+fdTitle.TextXAlignment = Enum.TextXAlignment.Left
+fdTitle.ZIndex = 142
+
+local fdClose = Instance.new("TextButton", fdHeader)
+fdClose.Size = UDim2.fromOffset(24, 24)
+fdClose.Position = UDim2.new(1, -32, 0.5, -12)
+fdClose.BackgroundColor3 = Color3.fromRGB(20, 24, 30)
+fdClose.Text = "X"
+fdClose.TextColor3 = Colors.Danger
+fdClose.Font = Enum.Font.GothamBlack
+fdClose.TextSize = 9.5
+fdClose.ZIndex = 142
+Instance.new("UICorner", fdClose).CornerRadius = UDim.new(1, 0)
+
+local fdScroll = Instance.new("ScrollingFrame", followersDrawer)
+fdScroll.Size = UDim2.new(1, -20, 1, -46)
+fdScroll.Position = UDim2.fromOffset(10, 38)
+fdScroll.BackgroundTransparency = 1
+fdScroll.ScrollBarThickness = 2
+fdScroll.ScrollBarImageColor3 = Colors.Primary
+fdScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+fdScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+fdScroll.ZIndex = 141
+local fdLay = Instance.new("UIListLayout", fdScroll)
+fdLay.Padding = UDim.new(0, 4)
+
+fdClose.MouseButton1Click:Connect(function()
+    TweenService:Create(followersDrawer, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Position = UDim2.new(0, 0, 1, 0)}):Play()
+end)
+
 local currentProfileUser = nil
 local currentProfileId = nil
 local isEditingBio = false
 
 local function closeProfile()
-    SafeTween(pfScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0})
-    SafeTween(profileOverlay, TweenInfo.new(0.18), {BackgroundTransparency = 1})
+    TweenService:Create(pfScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0}):Play()
+    TweenService:Create(profileOverlay, TweenInfo.new(0.18), {BackgroundTransparency = 1}):Play()
     task.delay(0.2, function()
         profileOverlay.Visible = false
+        followersDrawer.Position = UDim2.new(0, 0, 1, 0)
     end)
 end
 
@@ -873,8 +908,9 @@ followBtn.MouseButton1Click:Connect(function()
         return
     end
 
-    local isNowFollowed = not (followedUsers[currentProfileId] == true)
-    followedUsers[currentProfileId] = isNowFollowed
+    local isNowFollowed = not (_G.TXR_FollowedUsers[currentProfileId] == true or _G.TXR_FollowedUsers[currentProfileUser:lower()] == true)
+    _G.TXR_FollowedUsers[currentProfileId] = isNowFollowed
+    _G.TXR_FollowedUsers[currentProfileUser:lower()] = isNowFollowed
     
     if isNowFollowed then
         followBtn.Text = "Following"
@@ -902,43 +938,135 @@ copyLinkBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ⚡ INSTANT PROFILE OPENER WITH DEBOUNCE (0% FREEZE / NO HANG)
+-- Open Followers Drawer
+followersBox.MouseButton1Click:Connect(function()
+    if not currentProfileId or currentProfileId == 0 then return end
+    for _, c in ipairs(fdScroll:GetChildren()) do
+        if c:IsA("GuiObject") and c.Name ~= "UIListLayout" then c:Destroy() end
+    end
+
+    TweenService:Create(followersDrawer, TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
+    
+    task.spawn(function()
+        local listLoaded = false
+        if req then
+            pcall(function()
+                local r = req({
+                    Url = string.format("https://friends.roblox.com/v1/users/%d/followers?limit=18", currentProfileId),
+                    Method = "GET"
+                })
+                if r and r.StatusCode == 200 then
+                    local data = HttpService:JSONDecode(r.Body)
+                    if data and data.data and #data.data > 0 then
+                        listLoaded = true
+                        for _, fItem in ipairs(data.data) do
+                            local row = Instance.new("Frame", fdScroll)
+                            row.Size = UDim2.new(1, 0, 0, 28)
+                            row.BackgroundColor3 = Color3.fromRGB(12, 14, 18)
+                            row.BackgroundTransparency = 0.2
+                            Instance.new("UICorner", row).CornerRadius = UDim.new(0, 6)
+
+                            local fAv = Instance.new("ImageLabel", row)
+                            fAv.Size = UDim2.fromOffset(22, 22)
+                            fAv.Position = UDim2.fromOffset(4, 3)
+                            fAv.BackgroundColor3 = Colors.Background
+                            fAv.Image = string.format("rbxthumb://type=AvatarHeadShot&id=%d&w=48&h=48", fItem.id)
+                            Instance.new("UICorner", fAv).CornerRadius = UDim.new(1, 0)
+
+                            local fName = Instance.new("TextLabel", row)
+                            fName.Size = UDim2.new(1, -34, 1, 0)
+                            fName.Position = UDim2.fromOffset(32, 0)
+                            fName.BackgroundTransparency = 1
+                            fName.Text = fItem.displayName or fItem.name
+                            fName.TextColor3 = Colors.Text
+                            fName.Font = Enum.Font.GothamBold
+                            fName.TextSize = 10
+                            fName.TextXAlignment = Enum.TextXAlignment.Left
+                        end
+                    end
+                end
+            end)
+        end
+
+        if not listLoaded then
+            for u, _ in pairs(activeUsersTable) do
+                local row = Instance.new("Frame", fdScroll)
+                row.Size = UDim2.new(1, 0, 0, 28)
+                row.BackgroundColor3 = Color3.fromRGB(12, 14, 18)
+                row.BackgroundTransparency = 0.2
+                Instance.new("UICorner", row).CornerRadius = UDim.new(0, 6)
+
+                local fName = Instance.new("TextLabel", row)
+                fName.Size = UDim2.new(1, -12, 1, 0)
+                fName.Position = UDim2.fromOffset(8, 0)
+                fName.BackgroundTransparency = 1
+                fName.Text = "@" .. u
+                fName.TextColor3 = Colors.Primary
+                fName.Font = Enum.Font.GothamBold
+                fName.TextSize = 10
+                fName.TextXAlignment = Enum.TextXAlignment.Left
+            end
+        end
+    end)
+end)
+
+-- ⚡ 100% NON-BLOCKING ASYNC PROFILE OPENER (ZERO-HANG GUARANTEED)
 local profileOpenDebounce = false
 local function openProfileModal(username)
     if profileOpenDebounce then return end
     profileOpenDebounce = true
-    task.delay(0.35, function() profileOpenDebounce = false end)
+    task.delay(0.25, function() profileOpenDebounce = false end)
 
     local rawName = username:match("^(.-)::") or username
     currentProfileUser = rawName
-    currentProfileId = nil
+    currentProfileId = userIdCache[rawName:lower()] or nil
 
     profileOverlay.Visible = true
     bioInputBox.Visible = false
     bioScroll.Visible = true
+    followersDrawer.Position = UDim2.new(0, 0, 1, 0)
     isEditingBio = false
 
-    pfDisplayName.Text = rawName
+    local targetPlr = Players:FindFirstChild(rawName)
+    pfDisplayName.Text = targetPlr and targetPlr.DisplayName or rawName
     pfHandle.Text = "@" .. rawName
     metricFollowers.Text = "..."
     metricFollowing.Text = "..."
     bioLabel.Text = "Loading network bio..."
     pfAvatar.Image = ""
 
+    if currentProfileId and currentProfileId > 0 then
+        pfAvatar.Image = string.format("rbxthumb://type=AvatarHeadShot&id=%d&w=150&h=150", currentProfileId)
+        local isFollowed = (_G.TXR_FollowedUsers[currentProfileId] == true or _G.TXR_FollowedUsers[rawName:lower()] == true)
+        if currentProfileId == lp.UserId then
+            followBtn.Text = "Edit Bio"
+            followBtn.BackgroundColor3 = Colors.Primary
+            followBtn.TextColor3 = Color3.fromRGB(5, 7, 10)
+        elseif isFollowed then
+            followBtn.Text = "Following"
+            followBtn.BackgroundColor3 = Color3.fromRGB(22, 28, 38)
+            followBtn.TextColor3 = Color3.fromRGB(50, 255, 140)
+        else
+            followBtn.Text = "Follow"
+            followBtn.BackgroundColor3 = Colors.Primary
+            followBtn.TextColor3 = Color3.fromRGB(5, 7, 10)
+        end
+    end
+
     pfScale.Scale = 0.6
     profileOverlay.BackgroundTransparency = 1
-    SafeTween(profileOverlay, TweenInfo.new(0.2), {BackgroundTransparency = 0.5})
-    SafeTween(pfScale, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1})
+    TweenService:Create(profileOverlay, TweenInfo.new(0.18), {BackgroundTransparency = 0.5}):Play()
+    TweenService:Create(pfScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
     playSFX("default")
 
     task.spawn(function()
-        local targetPlr = Players:FindFirstChild(rawName)
-        local uId = (targetPlr and targetPlr.UserId) or userIdCache[rawName:lower()]
-
+        local uId = currentProfileId
         if not uId then
             pcall(function()
                 uId = Players:GetUserIdFromNameAsync(rawName)
-                if uId then userIdCache[rawName:lower()] = uId end
+                if uId then 
+                    userIdCache[rawName:lower()] = uId 
+                end
             end)
         end
 
@@ -948,12 +1076,12 @@ local function openProfileModal(username)
 
         if uId and uId > 0 then
             pfAvatar.Image = string.format("rbxthumb://type=AvatarHeadShot&id=%d&w=150&h=150", uId)
-
+            local isFollowed = (_G.TXR_FollowedUsers[uId] == true or _G.TXR_FollowedUsers[rawName:lower()] == true)
             if uId == lp.UserId then
                 followBtn.Text = "Edit Bio"
                 followBtn.BackgroundColor3 = Colors.Primary
                 followBtn.TextColor3 = Color3.fromRGB(5, 7, 10)
-            elseif followedUsers[uId] then
+            elseif isFollowed then
                 followBtn.Text = "Following"
                 followBtn.BackgroundColor3 = Color3.fromRGB(22, 28, 38)
                 followBtn.TextColor3 = Color3.fromRGB(50, 255, 140)
@@ -965,10 +1093,6 @@ local function openProfileModal(username)
         else
             bioLabel.Text = "User offline or data unavailable."
             return 
-        end
-
-        if targetPlr then
-            pfDisplayName.Text = targetPlr.DisplayName
         end
 
         if profileCache[uId] then
@@ -1221,8 +1345,8 @@ local function spawnSonar(pulseColor)
     rs.Transparency = 0
     
     local pulseSpeed = 1.0
-    SafeTween(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(105, 105)})
-    SafeTween(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1})
+    TweenService:Create(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(105, 105)}):Play()
+    TweenService:Create(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
     
     task.delay(pulseSpeed, function()
         pcall(function() ring:Destroy() end)
@@ -1378,10 +1502,11 @@ liveBadge.MouseButton1Click:Connect(function()
     rosterFrame.Visible = not rosterFrame.Visible
     if rosterFrame.Visible then
         rosterFrame.Position = UDim2.new(1, 10, 0, 42)
-        SafeTween(rosterFrame, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(1, -145, 0, 42)})
+        TweenService:Create(rosterFrame, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(1, -145, 0, 42)}):Play()
     end
 end)
 
+-- Header Action Buttons
 local headerRightCluster = Instance.new("Frame", header)
 headerRightCluster.AnchorPoint = Vector2.new(1, 0.5)
 headerRightCluster.Position = UDim2.new(1, -16, 0.5, 0)
@@ -1429,9 +1554,9 @@ if Admin[lp.Name:lower()] then
         local bsScale = badgeSelectorModal:FindFirstChildOfClass("UIScale")
         if isBadgeModalOpen then
             badgeSelectorModal.Visible = true
-            SafeTween(bsScale, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1})
+            TweenService:Create(bsScale, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1}):Play()
         else
-            SafeTween(bsScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0})
+            TweenService:Create(bsScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0}):Play()
             task.delay(0.2, function()
                 if not isBadgeModalOpen then badgeSelectorModal.Visible = false end
             end)
@@ -1460,20 +1585,26 @@ end)
 
 local messageFeed
 
--- ⚡ SCROLL TO BOTTOM ENGINE (FIXES REOPEN SCROLL GLITCH)
+-- ⚡ SCROLL TO ABSOLUTE BOTTOM ENGINE (NO MESSAGE MISSED)
 local function scrollToBottom()
     task.defer(function()
         pcall(function()
-            messageFeed.CanvasPosition = Vector2.new(0, math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y + 250))
+            messageFeed.CanvasPosition = Vector2.new(0, math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y + 1500))
         end)
     end)
-    task.delay(0.08, function()
+    task.delay(0.06, function()
         pcall(function()
-            messageFeed.CanvasPosition = Vector2.new(0, math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y + 250))
+            messageFeed.CanvasPosition = Vector2.new(0, math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y + 1500))
+        end)
+    end)
+    task.delay(0.18, function()
+        pcall(function()
+            messageFeed.CanvasPosition = Vector2.new(0, math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y + 1500))
         end)
     end)
 end
 
+-- ⚡ ULTRA FROSTED GLASS HUD TOGGLE (GST MODE)
 local ghostBtn
 ghostBtn = createHeaderBtn("GST", function()
     if ghostDebounce then return end
@@ -1482,10 +1613,10 @@ ghostBtn = createHeaderBtn("GST", function()
 
     isGhostMode = not isGhostMode
     if isGhostMode then
-        SafeTween(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.40})
-        SafeTween(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.95})
-        SafeTween(aura, TweenInfo.new(0.4), {ImageTransparency = 0.95})
-        SafeTween(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.5})
+        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.40}):Play()
+        TweenService:Create(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.95}):Play()
+        TweenService:Create(aura, TweenInfo.new(0.4), {ImageTransparency = 0.95}):Play()
+        TweenService:Create(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.5}):Play()
         ghostBtn.BackgroundColor3 = Colors.ActiveTint
         ghostBtn.TextColor3 = Colors.Primary
         mainStroke.Transparency = 0.1
@@ -1496,15 +1627,15 @@ ghostBtn = createHeaderBtn("GST", function()
             if cRoot:IsA("Frame") then
                 local card = cRoot:FindFirstChild("SwipeWrapper")
                 if card then
-                    SafeTween(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.40})
+                    TweenService:Create(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.40}):Play()
                 end
             end
         end
     else
-        SafeTween(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.02})
-        SafeTween(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.96})
-        SafeTween(aura, TweenInfo.new(0.4), {ImageTransparency = 0.85})
-        SafeTween(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.25})
+        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.02}):Play()
+        TweenService:Create(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.96}):Play()
+        TweenService:Create(aura, TweenInfo.new(0.4), {ImageTransparency = 0.85}):Play()
+        TweenService:Create(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.25}):Play()
         ghostBtn.BackgroundColor3 = Color3.fromRGB(15, 18, 22)
         ghostBtn.TextColor3 = Colors.Text
         mainStroke.Transparency = 0.2
@@ -1515,7 +1646,7 @@ ghostBtn = createHeaderBtn("GST", function()
             if cRoot:IsA("Frame") then
                 local card = cRoot:FindFirstChild("SwipeWrapper")
                 if card then
-                    SafeTween(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.05})
+                    TweenService:Create(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.05}):Play()
                 end
             end
         end
@@ -1536,12 +1667,12 @@ createHeaderBtn("-", function()
     local tInfo1 = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In)
     local tInfo2 = TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
     
-    SafeTween(mainScale, tInfo1, {Scale = 0})
-    SafeTween(auraScale, tInfo1, {Scale = 0})
-    SafeTween(shadowScale, tInfo1, {Scale = 0})
-    SafeTween(mainFrame, tInfo2, {BackgroundTransparency = 1})
-    SafeTween(aura, tInfo2, {ImageTransparency = 1})
-    SafeTween(shadow, tInfo2, {ImageTransparency = 1})
+    TweenService:Create(mainScale, tInfo1, {Scale = 0}):Play()
+    TweenService:Create(auraScale, tInfo1, {Scale = 0}):Play()
+    TweenService:Create(shadowScale, tInfo1, {Scale = 0}):Play()
+    TweenService:Create(mainFrame, tInfo2, {BackgroundTransparency = 1}):Play()
+    TweenService:Create(aura, tInfo2, {ImageTransparency = 1}):Play()
+    TweenService:Create(shadow, tInfo2, {ImageTransparency = 1}):Play()
     
     task.wait(0.35)
     mainFrame.Visible = false
@@ -1551,7 +1682,7 @@ createHeaderBtn("-", function()
     openBtnScale.Scale = 0
     
     local tInfo3 = TweenInfo.new(0.6, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
-    SafeTween(openBtnScale, tInfo3, {Scale = 1})
+    TweenService:Create(openBtnScale, tInfo3, {Scale = 1}):Play()
 end)
 
 local closeBtn = createHeaderBtn("X", function()
@@ -1561,6 +1692,7 @@ local closeBtn = createHeaderBtn("X", function()
 end)
 closeBtn.TextColor3 = Colors.Danger
 
+-- Underline for Header
 local headerDivider = Instance.new("Frame", header)
 headerDivider.Size = UDim2.new(1, 0, 0, 1)
 headerDivider.Position = UDim2.new(0, 0, 1, 0)
@@ -1718,137 +1850,135 @@ local badgeKeysOrder = {
     "LUCIFER", "SUPREME", "ROYAL", "DEMON"
 }
 
-BootSubsystem("BadgeSelectorModal", function()
-    for _, bKey in ipairs(badgeKeysOrder) do
-        local bData = BadgePresets[bKey]
-        local bBtn = Instance.new("TextButton", bsScroll)
-        bBtn.Size = UDim2.new(0.95, 0, 0, 30)
-        bBtn.BackgroundColor3 = Colors.Surface
-        bBtn.BackgroundTransparency = 0.3
-        bBtn.Text = "" 
-        bBtn.AutoButtonColor = false
-        bBtn.ZIndex = 72
-        Instance.new("UICorner", bBtn).CornerRadius = UDim.new(0, 6)
+for _, bKey in ipairs(badgeKeysOrder) do
+    local bData = BadgePresets[bKey]
+    local bBtn = Instance.new("TextButton", bsScroll)
+    bBtn.Size = UDim2.new(0.95, 0, 0, 30)
+    bBtn.BackgroundColor3 = Colors.Surface
+    bBtn.BackgroundTransparency = 0.3
+    bBtn.Text = "" 
+    bBtn.AutoButtonColor = false
+    bBtn.ZIndex = 72
+    Instance.new("UICorner", bBtn).CornerRadius = UDim.new(0, 6)
+    
+    local btnStroke = Instance.new("UIStroke", bBtn)
+    btnStroke.Color = Colors.PrimaryDark
+    btnStroke.Thickness = 0.8
+    btnStroke.Transparency = 0.5
+    
+    local tagWidth = TextService:GetTextSize(bData.Title, 11, Enum.Font.GothamBlack, Vector2.new(1000, 20)).X + 4
+    
+    local badgeHost = Instance.new("Frame", bBtn)
+    badgeHost.Size = UDim2.fromOffset(tagWidth, 18)
+    badgeHost.AnchorPoint = Vector2.new(0, 0.5)
+    badgeHost.Position = UDim2.new(0, 12, 0.5, 0)
+    badgeHost.BackgroundTransparency = 1
+    badgeHost.BorderSizePixel = 0
+    badgeHost.ZIndex = 73
+
+    local badgeGlow = Instance.new("TextLabel", badgeHost)
+    badgeGlow.Size = UDim2.fromScale(1, 1)
+    badgeGlow.BackgroundTransparency = 1
+    badgeGlow.BorderSizePixel = 0
+    badgeGlow.Text = bData.Title
+    badgeGlow.TextColor3 = Color3.fromRGB(255, 255, 255)
+    badgeGlow.TextTransparency = 0.50
+    badgeGlow.Font = Enum.Font.GothamBlack
+    badgeGlow.TextSize = 11
+    badgeGlow.ZIndex = 73
+
+    local glowStroke = Instance.new("UIStroke", badgeGlow)
+    glowStroke.Thickness = 1.2
+    glowStroke.Transparency = 0.55
+    glowStroke.Color = Color3.fromRGB(255, 255, 255)
+
+    local badgeLabel = Instance.new("TextLabel", badgeHost)
+    badgeLabel.Size = UDim2.fromScale(1, 1)
+    badgeLabel.BackgroundTransparency = 1
+    badgeLabel.BorderSizePixel = 0
+    badgeLabel.Text = bData.Title
+    badgeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    badgeLabel.Font = Enum.Font.GothamBlack
+    badgeLabel.TextSize = 11
+    badgeLabel.ZIndex = 74
+
+    local bStroke = Instance.new("UIStroke", badgeLabel)
+    bStroke.Thickness = 0.8
+    bStroke.Color = Color3.fromRGB(0, 0, 0)
+    bStroke.Transparency = 0.3
+
+    local badgeShine = Instance.new("TextLabel", badgeHost)
+    badgeShine.Size = UDim2.fromScale(1, 1)
+    badgeShine.BackgroundTransparency = 1
+    badgeShine.BorderSizePixel = 0
+    badgeShine.Text = bData.Title
+    badgeShine.TextColor3 = Color3.fromRGB(255, 255, 255)
+    badgeShine.Font = Enum.Font.GothamBlack
+    badgeShine.TextSize = 11
+    badgeShine.ZIndex = 75
+
+    local shineGrad = Instance.new("UIGradient", badgeShine)
+    shineGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
+        ColorSequenceKeypoint.new(0.48, Color3.fromRGB(255, 255, 255)),
+        ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+        ColorSequenceKeypoint.new(0.52, Color3.fromRGB(255, 255, 255)),
+        ColorSequenceKeypoint.new(1.0, Color3.fromRGB(255, 255, 255))
+    })
+    shineGrad.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0.0, 1),
+        NumberSequenceKeypoint.new(0.45, 1),
+        NumberSequenceKeypoint.new(0.5, 0.05),
+        NumberSequenceKeypoint.new(0.55, 1),
+        NumberSequenceKeypoint.new(1.0, 1)
+    })
+
+    local textGrad = Instance.new("UIGradient", badgeLabel)
+    textGrad.Color = ColorSequence.new(bData.Colors)
+
+    local glowGrad = Instance.new("UIGradient", badgeGlow)
+    glowGrad.Color = ColorSequence.new(bData.Colors)
+
+    local strokeGradGlow = Instance.new("UIGradient", glowStroke)
+    strokeGradGlow.Color = ColorSequence.new(bData.Colors)
+
+    table.insert(activeBadgesList, {
+        textGrad = textGrad, glowGrad = glowGrad, strokeGradGlow = strokeGradGlow,
+        shineGrad = shineGrad, badgeGlow = badgeGlow, glowStroke = glowStroke,
+        speed = bData.Speed or 1.15
+    })
+
+    local dotIndicator = Instance.new("Frame", bBtn)
+    dotIndicator.Size = UDim2.fromOffset(8, 8)
+    dotIndicator.AnchorPoint = Vector2.new(1, 0.5)
+    dotIndicator.Position = UDim2.new(1, -12, 0.5, 0)
+    dotIndicator.BackgroundColor3 = Color3.fromRGB(50, 255, 140)
+    dotIndicator.BackgroundTransparency = (currentOwnerBadge == bKey) and 0.1 or 1
+    dotIndicator.ZIndex = 74
+    Instance.new("UICorner", dotIndicator).CornerRadius = UDim.new(1, 0)
+    
+    local dStroke = Instance.new("UIStroke", dotIndicator)
+    dStroke.Color = Color3.fromRGB(0, 0, 0)
+    dStroke.Transparency = (currentOwnerBadge == bKey) and 0.4 or 1
+    
+    modalSelectionIndicators[bKey] = {dot = dotIndicator, stroke = dStroke}
+
+    applySpringHover(bBtn)
+    bBtn.MouseButton1Click:Connect(function()
+        currentOwnerBadge = bKey
+        for k, ind in pairs(modalSelectionIndicators) do
+            ind.dot.BackgroundTransparency = (k == currentOwnerBadge) and 0.1 or 1
+            ind.stroke.Transparency = (k == currentOwnerBadge) and 0.4 or 1
+        end
         
-        local btnStroke = Instance.new("UIStroke", bBtn)
-        btnStroke.Color = Colors.PrimaryDark
-        btnStroke.Thickness = 0.8
-        btnStroke.Transparency = 0.5
-        
-        local tagWidth = SafeGetTextSize(bData.Title, 11, Enum.Font.GothamBlack, Vector2.new(1000, 20)).X + 4
-        
-        local badgeHost = Instance.new("Frame", bBtn)
-        badgeHost.Size = UDim2.fromOffset(tagWidth, 18)
-        badgeHost.AnchorPoint = Vector2.new(0, 0.5)
-        badgeHost.Position = UDim2.new(0, 12, 0.5, 0)
-        badgeHost.BackgroundTransparency = 1
-        badgeHost.BorderSizePixel = 0
-        badgeHost.ZIndex = 73
-
-        local badgeGlow = Instance.new("TextLabel", badgeHost)
-        badgeGlow.Size = UDim2.fromScale(1, 1)
-        badgeGlow.BackgroundTransparency = 1
-        badgeGlow.BorderSizePixel = 0
-        badgeGlow.Text = bData.Title
-        badgeGlow.TextColor3 = Color3.fromRGB(255, 255, 255)
-        badgeGlow.TextTransparency = 0.50
-        badgeGlow.Font = Enum.Font.GothamBlack
-        badgeGlow.TextSize = 11
-        badgeGlow.ZIndex = 73
-
-        local glowStroke = Instance.new("UIStroke", badgeGlow)
-        glowStroke.Thickness = 1.2
-        glowStroke.Transparency = 0.55
-        glowStroke.Color = Color3.fromRGB(255, 255, 255)
-
-        local badgeLabel = Instance.new("TextLabel", badgeHost)
-        badgeLabel.Size = UDim2.fromScale(1, 1)
-        badgeLabel.BackgroundTransparency = 1
-        badgeLabel.BorderSizePixel = 0
-        badgeLabel.Text = bData.Title
-        badgeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-        badgeLabel.Font = Enum.Font.GothamBlack
-        badgeLabel.TextSize = 11
-        badgeLabel.ZIndex = 74
-
-        local bStroke = Instance.new("UIStroke", badgeLabel)
-        bStroke.Thickness = 0.8
-        bStroke.Color = Color3.fromRGB(0, 0, 0)
-        bStroke.Transparency = 0.3
-
-        local badgeShine = Instance.new("TextLabel", badgeHost)
-        badgeShine.Size = UDim2.fromScale(1, 1)
-        badgeShine.BackgroundTransparency = 1
-        badgeShine.BorderSizePixel = 0
-        badgeShine.Text = bData.Title
-        badgeShine.TextColor3 = Color3.fromRGB(255, 255, 255)
-        badgeShine.Font = Enum.Font.GothamBlack
-        badgeShine.TextSize = 11
-        badgeShine.ZIndex = 75
-
-        local shineGrad = Instance.new("UIGradient", badgeShine)
-        shineGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.48, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(0.52, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(1.0, Color3.fromRGB(255, 255, 255))
-        })
-        shineGrad.Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0.0, 1),
-            NumberSequenceKeypoint.new(0.45, 1),
-            NumberSequenceKeypoint.new(0.5, 0.05),
-            NumberSequenceKeypoint.new(0.55, 1),
-            NumberSequenceKeypoint.new(1.0, 1)
-        })
-
-        local textGrad = Instance.new("UIGradient", badgeLabel)
-        textGrad.Color = ColorSequence.new(bData.Colors)
-
-        local glowGrad = Instance.new("UIGradient", badgeGlow)
-        glowGrad.Color = ColorSequence.new(bData.Colors)
-
-        local strokeGradGlow = Instance.new("UIGradient", glowStroke)
-        strokeGradGlow.Color = ColorSequence.new(bData.Colors)
-
-        table.insert(activeBadgesList, {
-            textGrad = textGrad, glowGrad = glowGrad, strokeGradGlow = strokeGradGlow,
-            shineGrad = shineGrad, badgeGlow = badgeGlow, glowStroke = glowStroke,
-            speed = bData.Speed or 1.15
-        })
-
-        local dotIndicator = Instance.new("Frame", bBtn)
-        dotIndicator.Size = UDim2.fromOffset(8, 8)
-        dotIndicator.AnchorPoint = Vector2.new(1, 0.5)
-        dotIndicator.Position = UDim2.new(1, -12, 0.5, 0)
-        dotIndicator.BackgroundColor3 = Color3.fromRGB(50, 255, 140)
-        dotIndicator.BackgroundTransparency = (currentOwnerBadge == bKey) and 0.1 or 1
-        dotIndicator.ZIndex = 74
-        Instance.new("UICorner", dotIndicator).CornerRadius = UDim.new(1, 0)
-        
-        local dStroke = Instance.new("UIStroke", dotIndicator)
-        dStroke.Color = Color3.fromRGB(0, 0, 0)
-        dStroke.Transparency = (currentOwnerBadge == bKey) and 0.4 or 1
-        
-        modalSelectionIndicators[bKey] = {dot = dotIndicator, stroke = dStroke}
-
-        applySpringHover(bBtn)
-        bBtn.MouseButton1Click:Connect(function()
-            currentOwnerBadge = bKey
-            for k, ind in pairs(modalSelectionIndicators) do
-                ind.dot.BackgroundTransparency = (k == currentOwnerBadge) and 0.1 or 1
-                ind.stroke.Transparency = (k == currentOwnerBadge) and 0.4 or 1
-            end
-            
-            SafeTween(bsmScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0})
-            task.delay(0.2, function()
-                isBadgeModalOpen = false
-                badgeSelectorModal.Visible = false
-            end)
-            playSFX("default")
+        TweenService:Create(bsmScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0}):Play()
+        task.delay(0.2, function()
+            isBadgeModalOpen = false
+            badgeSelectorModal.Visible = false
         end)
-    end
-end)
+        playSFX("default")
+    end)
+end
 
 -- =========================================================
 -- 💬 CHAT FEED & AUTOSCROLL DOCK
@@ -1904,10 +2034,10 @@ messageFeed:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
     end
 end)
 
--- ⚡ CLEAN DEDICATED TYPING BAR (ONLY DIRECTLY ABOVE INPUT)
+-- ⚡ CLEAN DEDICATED TYPING BAR
 local globalTypingBar = Instance.new("Frame", mainFrame)
 globalTypingBar.Size = UDim2.new(1, -24, 0, 18)
-globalTypingBar.Position = UDim2.new(0, 14, 1, -72)
+globalTypingBar.Position = UDim2.new(0, 14, 1, -74)
 globalTypingBar.BackgroundTransparency = 1
 globalTypingBar.Visible = false
 globalTypingBar.ZIndex = 11
@@ -1924,6 +2054,55 @@ globalTypingText.TextTransparency = 0.1
 globalTypingText.ZIndex = 11
 crispText(globalTypingText, 0.5)
 
+-- ⚡ OFFICIAL APP-STYLE FLOATING REPLY BAR (ABOVE INPUT CONTAINER)
+local replyPreviewBar = Instance.new("Frame", mainFrame)
+replyPreviewBar.Size = UDim2.new(1, -24, 0, 26)
+replyPreviewBar.Position = UDim2.new(0, 12, 1, -80)
+replyPreviewBar.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
+replyPreviewBar.BackgroundTransparency = 0.05
+replyPreviewBar.Visible = false
+replyPreviewBar.ZIndex = 25
+Instance.new("UICorner", replyPreviewBar).CornerRadius = UDim.new(0, 8)
+local rpbStroke = Instance.new("UIStroke", replyPreviewBar)
+rpbStroke.Color = Colors.Primary
+rpbStroke.Thickness = 1.0
+
+local rpbAccent = Instance.new("Frame", replyPreviewBar)
+rpbAccent.Size = UDim2.new(0, 3, 1, -6)
+rpbAccent.Position = UDim2.fromOffset(4, 3)
+rpbAccent.BackgroundColor3 = Colors.Primary
+rpbAccent.BorderSizePixel = 0
+rpbAccent.ZIndex = 26
+Instance.new("UICorner", rpbAccent).CornerRadius = UDim.new(1, 0)
+
+local rpbText = Instance.new("TextLabel", replyPreviewBar)
+rpbText.Size = UDim2.new(1, -38, 1, 0)
+rpbText.Position = UDim2.fromOffset(12, 0)
+rpbText.BackgroundTransparency = 1
+rpbText.TextColor3 = Colors.SubText
+rpbText.Font = Enum.Font.GothamMedium
+rpbText.TextSize = 10
+rpbText.RichText = true
+rpbText.TextTruncate = Enum.TextTruncate.AtEnd
+rpbText.TextXAlignment = Enum.TextXAlignment.Left
+rpbText.ZIndex = 26
+
+local rpbClose = Instance.new("TextButton", replyPreviewBar)
+rpbClose.Size = UDim2.fromOffset(20, 20)
+rpbClose.Position = UDim2.new(1, -24, 0.5, -10)
+rpbClose.BackgroundTransparency = 1
+rpbClose.Text = "✕"
+rpbClose.TextColor3 = Colors.Danger
+rpbClose.Font = Enum.Font.GothamBlack
+rpbClose.TextSize = 11
+rpbClose.ZIndex = 26
+
+rpbClose.MouseButton1Click:Connect(function()
+    activeReplyContext = nil
+    replyPreviewBar.Visible = false
+end)
+
+-- ⚡ UI PARTICLE SPAWNER
 local function spawnUIParticles(parentFrame, positionUDim2, color, count)
     for i = 1, (count or 5) do
         local p = Instance.new("Frame", parentFrame)
@@ -1937,17 +2116,18 @@ local function spawnUIParticles(parentFrame, positionUDim2, color, count)
         local rx = (math.random() - 0.5) * 60
         local ry = (math.random() - 0.5) * 60
         
-        SafeTween(p, TweenInfo.new(0.5 + math.random()*0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
+        TweenService:Create(p, TweenInfo.new(0.5 + math.random()*0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
             Position = UDim2.new(positionUDim2.X.Scale, positionUDim2.X.Offset + rx, positionUDim2.Y.Scale, positionUDim2.Y.Offset + ry),
             Size = UDim2.fromOffset(0, 0),
             BackgroundTransparency = 1
-        })
+        }):Play()
         task.delay(0.9, function() pcall(function() p:Destroy() end) end)
     end
 end
 
 local sendMessageFunc
 local chatInput
+local updateInputBar
 
 -- =========================================================
 -- 💬 MESSAGE PIPELINE
@@ -1966,6 +2146,7 @@ local function updateLiveCounter(username)
     liveText.Text = string.format("%d Active", math.max(1, count))
 end
 
+-- ⚡ VIP ANIMATED WELCOME SYSTEM
 local function addJoinNotice(username)
     local pill = Instance.new("Frame", messageFeed)
     pill.Size = UDim2.new(1, 0, 0, 28)
@@ -1993,21 +2174,20 @@ local function addJoinNotice(username)
 
     local scale = Instance.new("UIScale", pill)
     scale.Scale = 0.5
-    SafeTween(scale, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1})
+    TweenService:Create(scale, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
 
-    task.defer(function()
-        local maxOffset = math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y)
-        if maxOffset - messageFeed.CanvasPosition.Y < 80 then
-            messageFeed.CanvasPosition = Vector2.new(0, maxOffset)
-        end
-    end)
+    scrollToBottom()
 end
 
 local MAX_MESSAGES = 60
 local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSender, msgJobId, scopeType)
     if msg == "[TYPING]" or msg:find("%[TYPING%]") then return end
 
-    local memeIdMatch = msg:match("%[MEME:(%d+)%]")
+    -- Parse quote reply if present
+    local replyAuthor, replySnippet, pureMsg = msg:match("^%[REPLY:(.-)::(.-)%]%s*(.*)$")
+    local effectiveMsg = pureMsg or msg
+
+    local memeIdMatch = effectiveMsg:match("%[MEME:(%d+)%]")
 
     local actualUsername, dispName = rawUserName:match("^(.-)::(.*)$")
     if not actualUsername then
@@ -2016,7 +2196,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         dispName = targetPlr and targetPlr.DisplayName or rawUserName
     end
 
-    local isMentioned = string.find(string.lower(msg), string.lower(lp.Name), 1, true) or string.find(string.lower(msg), string.lower(lp.DisplayName), 1, true)
+    local isMentioned = string.find(string.lower(effectiveMsg), string.lower(lp.Name), 1, true) or string.find(string.lower(effectiveMsg), string.lower(lp.DisplayName), 1, true)
     local isAdminUser = Admin[actualUsername:lower()] == true
     local badgeProfile = BadgePresets[currentOwnerBadge] or BadgePresets["OWNER"]
 
@@ -2052,7 +2232,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
 
     local padFix = Instance.new("UIPadding", card)
     padFix.PaddingBottom = UDim.new(0, 10)
-    padFix.PaddingTop = UDim.new(0, 2)
+    padFix.PaddingTop = UDim.new(0, 4)
 
     if chatMode == "server" then
         if scopeType == "global" or (msgJobId and msgJobId ~= "" and msgJobId ~= game.JobId) then
@@ -2067,8 +2247,8 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     local cardScale = Instance.new("UIScale", cardRoot)
     cardScale.Scale = 0.85
     cardRoot.Position = UDim2.new(0, -20, 0, 0)
-    SafeTween(cardScale, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1})
-    SafeTween(cardRoot, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)})
+    TweenService:Create(cardScale, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(cardRoot, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
 
     local accentStrip = Instance.new("Frame", card)
     accentStrip.Size = UDim2.new(0, 3, 1, -12)
@@ -2090,9 +2270,10 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     cardStroke.Transparency = isMentioned and 0.15 or 0.6
     cardStroke.Color = isMentioned and Colors.MentionGold or Colors.SurfaceHover
 
+    -- 🌟 ONLY AVATAR CLICK OPENS PROFILE MODAL
     local avatarImg = Instance.new("ImageLabel", card)
-    avatarImg.Size = UDim2.fromOffset(30, 30)
-    avatarImg.Position = UDim2.fromOffset(16, 10)
+    avatarImg.Size = UDim2.fromOffset(32, 32)
+    avatarImg.Position = UDim2.fromOffset(14, 8)
     avatarImg.BackgroundColor3 = Colors.Background
     avatarImg.BackgroundTransparency = 0.5
     avatarImg.Active = true
@@ -2113,7 +2294,6 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         avGrad.Rotation = 45
     end
 
-    -- 🌟 ONLY AVATAR OR USERNAME OPENS PROFILE
     avatarImg.InputBegan:Connect(function(input)
         if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and actualUsername ~= "System" then
             openProfileModal(actualUsername)
@@ -2136,19 +2316,68 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
 
     local cardContent = Instance.new("Frame", card)
     cardContent.Size = UDim2.new(1, -56, 0, 0)
-    cardContent.Position = UDim2.fromOffset(56, 10)
+    cardContent.Position = UDim2.fromOffset(54, 6)
     cardContent.AutomaticSize = Enum.AutomaticSize.Y
     cardContent.BackgroundTransparency = 1
     cardContent.ZIndex = 11
 
     local ccLayout = Instance.new("UIListLayout", cardContent)
     ccLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    ccLayout.Padding = UDim.new(0, 4)
+    ccLayout.Padding = UDim.new(0, 3)
+
+    -- ⚡ DEDICATED TOP MICRO-LINE FOR TIMESTAMP (NO HORIZONTAL BLOCKING)
+    local topMetaRow = Instance.new("Frame", cardContent)
+    topMetaRow.Size = UDim2.new(1, 0, 0, 11)
+    topMetaRow.BackgroundTransparency = 1
+    topMetaRow.LayoutOrder = 1
+    topMetaRow.ZIndex = 11
+
+    local timeLbl = Instance.new("TextLabel", topMetaRow)
+    timeLbl.Size = UDim2.new(1, 0, 1, 0)
+    timeLbl.BackgroundTransparency = 1
+    timeLbl.Text = os.date("%H:%M")
+    timeLbl.TextColor3 = Color3.fromRGB(110, 125, 145)
+    timeLbl.Font = Enum.Font.GothamMedium
+    timeLbl.TextSize = 9
+    timeLbl.TextXAlignment = Enum.TextXAlignment.Left
+    timeLbl.ZIndex = 12
+
+    -- 🌟 REPLIED QUOTE EMBED CARD (OFFICIAL APP-STYLE)
+    if replyAuthor and replySnippet then
+        local quoteCard = Instance.new("Frame", cardContent)
+        quoteCard.Size = UDim2.new(1, -4, 0, 22)
+        quoteCard.BackgroundColor3 = Color3.fromRGB(16, 20, 28)
+        quoteCard.BackgroundTransparency = 0.3
+        quoteCard.LayoutOrder = 2
+        quoteCard.ZIndex = 11
+        Instance.new("UICorner", quoteCard).CornerRadius = UDim.new(0, 6)
+        
+        local qcAccent = Instance.new("Frame", quoteCard)
+        qcAccent.Size = UDim2.new(0, 3, 1, -4)
+        qcAccent.Position = UDim2.fromOffset(3, 2)
+        qcAccent.BackgroundColor3 = Colors.Purple
+        qcAccent.BorderSizePixel = 0
+        qcAccent.ZIndex = 12
+        Instance.new("UICorner", qcAccent).CornerRadius = UDim.new(1, 0)
+
+        local qcTxt = Instance.new("TextLabel", quoteCard)
+        qcTxt.Size = UDim2.new(1, -14, 1, 0)
+        qcTxt.Position = UDim2.fromOffset(10, 0)
+        qcTxt.BackgroundTransparency = 1
+        qcTxt.TextColor3 = Color3.fromRGB(180, 190, 210)
+        qcTxt.Font = Enum.Font.GothamMedium
+        qcTxt.TextSize = 9.5
+        qcTxt.RichText = true
+        qcTxt.TextTruncate = Enum.TextTruncate.AtEnd
+        qcTxt.TextXAlignment = Enum.TextXAlignment.Left
+        qcTxt.Text = string.format("<font color='#CD69FF'><b>%s</b></font> %s", sanitizeXml(replyAuthor), sanitizeXml(replySnippet))
+        qcTxt.ZIndex = 12
+    end
 
     local headerRow = Instance.new("Frame", cardContent)
     headerRow.Size = UDim2.new(1, 0, 0, 18)
     headerRow.BackgroundTransparency = 1
-    headerRow.LayoutOrder = 1
+    headerRow.LayoutOrder = 3
     headerRow.ZIndex = 11
 
     local hLayout = Instance.new("UIListLayout", headerRow)
@@ -2156,18 +2385,6 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     hLayout.VerticalAlignment = Enum.VerticalAlignment.Center
     hLayout.Padding = UDim.new(0, 6)
     hLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-    local timeLbl = Instance.new("TextLabel", headerRow)
-    timeLbl.AutomaticSize = Enum.AutomaticSize.X
-    timeLbl.Size = UDim2.new(0, 0, 1, 0)
-    timeLbl.BackgroundTransparency = 1
-    timeLbl.Text = string.format("[%s]", os.date("%H:%M"))
-    timeLbl.TextColor3 = Color3.fromRGB(110, 125, 145)
-    timeLbl.Font = Enum.Font.GothamBold
-    timeLbl.TextSize = 10.5
-    timeLbl.LayoutOrder = 1
-    timeLbl.ZIndex = 12
-    crispText(timeLbl, 0.6)
 
     if privateUserTarget then
         local dmLbl = Instance.new("TextLabel", headerRow)
@@ -2179,19 +2396,19 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         dmLbl.TextColor3 = Colors.Purple
         dmLbl.Font = Enum.Font.GothamBold
         dmLbl.TextSize = 10.5
-        dmLbl.LayoutOrder = 2
+        dmLbl.LayoutOrder = 1
         dmLbl.ZIndex = 12
         crispText(dmLbl, 0.5)
     end
 
     if isAdminUser then
-        local tagWidth = SafeGetTextSize(badgeProfile.Title, 11, Enum.Font.GothamBlack, Vector2.new(1000, 20)).X + 4
+        local tagWidth = TextService:GetTextSize(badgeProfile.Title, 11, Enum.Font.GothamBlack, Vector2.new(1000, 20)).X + 4
         
         local badgeHost = Instance.new("Frame", headerRow)
         badgeHost.Size = UDim2.fromOffset(tagWidth, 18)
         badgeHost.BackgroundTransparency = 1
         badgeHost.BorderSizePixel = 0
-        badgeHost.LayoutOrder = 3
+        badgeHost.LayoutOrder = 2
         badgeHost.ZIndex = 13
 
         local badgeGlow = Instance.new("TextLabel", badgeHost)
@@ -2265,55 +2482,25 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         })
     end
 
+    -- 🌟 ONLY DISPLAY NAME (REAL USERNAME @ LABEL REMOVED COMPLETELY)
     local nameLbl = Instance.new("TextLabel", headerRow)
     nameLbl.AutomaticSize = Enum.AutomaticSize.X
     nameLbl.Size = UDim2.new(0, 0, 1, 0)
     nameLbl.BackgroundTransparency = 1
     nameLbl.RichText = true
-    nameLbl.Text = sanitizeXml(dispName)
+    nameLbl.Text = sanitizeXml(dispName) .. ":"
     nameLbl.TextColor3 = (currentThemeIdx == 2 and Color3.fromRGB(255, 45, 85) or Colors.Primary)
     nameLbl.Font = Enum.Font.GothamBlack
     nameLbl.TextSize = 12
-    nameLbl.LayoutOrder = 4
-    nameLbl.Active = true
+    nameLbl.LayoutOrder = 3
     nameLbl.ZIndex = 12
     crispText(nameLbl)
-
-    -- 🌟 ONLY AVATAR OR USERNAME OPENS PROFILE
-    nameLbl.InputBegan:Connect(function(input)
-        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and actualUsername ~= "System" then
-            openProfileModal(actualUsername)
-        end
-    end)
-
-    if actualUsername ~= dispName and actualUsername ~= "System" then
-        local handleLbl = Instance.new("TextLabel", headerRow)
-        handleLbl.AutomaticSize = Enum.AutomaticSize.X
-        handleLbl.Size = UDim2.new(0, 0, 1, 0)
-        handleLbl.BackgroundTransparency = 1
-        handleLbl.Text = "@" .. sanitizeXml(actualUsername) .. ":"
-        handleLbl.TextColor3 = Colors.SubText
-        handleLbl.Font = Enum.Font.GothamMedium
-        handleLbl.TextSize = 10
-        handleLbl.LayoutOrder = 5
-        handleLbl.Active = true
-        handleLbl.ZIndex = 12
-        crispText(handleLbl, 0.6)
-
-        handleLbl.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                openProfileModal(actualUsername)
-            end
-        end)
-    else
-        nameLbl.Text = sanitizeXml(dispName) .. ":"
-    end
 
     if memeIdMatch then
         local memeHolder = Instance.new("Frame", cardContent)
         memeHolder.Size = UDim2.new(1, 0, 0, 94)
         memeHolder.BackgroundTransparency = 1
-        memeHolder.LayoutOrder = 2
+        memeHolder.LayoutOrder = 4
         memeHolder.ZIndex = 12
 
         local memeImg = Instance.new("ImageLabel", memeHolder)
@@ -2340,9 +2527,9 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         bodyTxt.TextWrapped = true
         bodyTxt.TextXAlignment = Enum.TextXAlignment.Left
         bodyTxt.RichText = true
-        bodyTxt.LayoutOrder = 2
+        bodyTxt.LayoutOrder = 4
         bodyTxt.ZIndex = 12
-        bodyTxt.Text = sanitizeXml(msg)
+        bodyTxt.Text = sanitizeXml(effectiveMsg)
         crispText(bodyTxt)
     end
 
@@ -2352,6 +2539,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         playSFX("meme")
     end
 
+    -- ⚡ SWIPE ENGINE: LEFT = REPLY (WITH PREVIEW), RIGHT = PRIVATE DM (NO TAP POPUP MENU)
     local dragStart = nil
     local isDragging = false
     local hasTriggeredSwipe = false
@@ -2362,7 +2550,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
             dragStart = input.Position.X
             isDragging = true
             hasTriggeredSwipe = false
-            SafeTween(cardScale, TweenInfo.new(0.1), {Scale = 0.98})
+            TweenService:Create(cardScale, TweenInfo.new(0.1), {Scale = 0.98}):Play()
         end
     end)
 
@@ -2387,30 +2575,31 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     card.InputEnded:Connect(function(input)
         if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and isDragging then
             isDragging = false
-            SafeTween(cardScale, TweenInfo.new(0.3, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1})
+            TweenService:Create(cardScale, TweenInfo.new(0.3, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
             
             local finalDelta = card.Position.X.Offset
-            SafeTween(card, TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)})
+            TweenService:Create(card, TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
 
             if finalDelta > 50 then
+                -- Right Swipe -> DM Mode
                 privateTarget = actualUsername
                 updateInputBar()
                 playSFX("dm")
             elseif finalDelta < -50 then
-                chatInput.Text = "@" .. actualUsername .. " "
+                -- Left Swipe -> App-Style Reply Mode
+                activeReplyContext = {
+                    author = dispName,
+                    snippet = string.sub(effectiveMsg, 1, 35) .. (#effectiveMsg > 35 and "..." or "")
+                }
+                rpbText.Text = string.format("Replying to <font color='#00FFDC'><b>@%s</b></font>: %s", sanitizeXml(dispName), sanitizeXml(activeReplyContext.snippet))
+                replyPreviewBar.Visible = true
                 chatInput:CaptureFocus()
+                playSFX("swipe")
             end
         end
     end)
 
-    task.defer(function()
-        local maxOffset = math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y)
-        if maxOffset - messageFeed.CanvasPosition.Y < 90 then
-            messageFeed.CanvasPosition = Vector2.new(0, maxOffset)
-        else
-            jumpBottomBtn.Visible = true
-        end
-    end)
+    scrollToBottom()
 end
 
 -- =========================================================
@@ -2461,7 +2650,7 @@ chatInput.Text = ""
 chatInput.Size = UDim2.new(1, -125, 1, 0)
 chatInput.Position = UDim2.new(0, 16, 0, 0)
 chatInput.BackgroundTransparency = 1
-chatInput.PlaceholderText = "Type message... (Swipe card -> to DM)"
+chatInput.PlaceholderText = "Type message... (Swipe left to reply)"
 chatInput.PlaceholderColor3 = Colors.SubText
 chatInput.TextColor3 = Colors.Text
 chatInput.Font = Enum.Font.GothamSemibold
@@ -2485,16 +2674,20 @@ chatInput:GetPropertyChangedSignal("Text"):Connect(function()
         if tick() - lastTypingBroadcast > 4 then
             lastTypingBroadcast = tick()
             task.spawn(function()
-                SafeRequest({
-                    Url = SERVER_URL .. "/send", Method = "POST",
-                    Headers = { ["Content-Type"] = "application/json" },
-                    Body = HttpService:JSONEncode({ 
-                        user = lp.Name .. "::" .. lp.DisplayName, 
-                        msg = "[TYPING]", 
-                        jobId = game.JobId, 
-                        hidden = true 
-                    })
-                })
+                if req then
+                    pcall(function()
+                        req({
+                            Url = SERVER_URL .. "/send", Method = "POST",
+                            Headers = { ["Content-Type"] = "application/json" },
+                            Body = HttpService:JSONEncode({ 
+                                user = lp.Name .. "::" .. lp.DisplayName, 
+                                msg = "[TYPING]", 
+                                jobId = game.JobId, 
+                                hidden = true 
+                            })
+                        })
+                    end)
+                end
             end)
         end
     else
@@ -2505,17 +2698,17 @@ task.defer(sanitizeChatInput)
 
 chatInput.Focused:Connect(function()
     sanitizeChatInput()
-    SafeTween(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Color = Colors.Primary, Transparency = 0.0, Thickness = 1.4})
+    TweenService:Create(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Color = Colors.Primary, Transparency = 0.0, Thickness = 1.4}):Play()
 end)
 chatInput.FocusLost:Connect(function()
     typingIndicator.BackgroundTransparency = 1
-    SafeTween(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Color = Colors.PrimaryDark, Transparency = 0.4, Thickness = 1.0})
+    TweenService:Create(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Color = Colors.PrimaryDark, Transparency = 0.4, Thickness = 1.0}):Play()
 end)
 
 updateInputBar = function()
     if privateTarget then
         dmBadge.Text = "@" .. privateTarget .. " X"
-        local w = SafeGetTextSize(dmBadge.Text, 10, Enum.Font.GothamBlack, Vector2.new(1000, 30)).X + 16
+        local w = TextService:GetTextSize(dmBadge.Text, 10, Enum.Font.GothamBlack, Vector2.new(1000, 30)).X + 16
         dmBadge.Size = UDim2.new(0, w, 1, -14)
         dmBadge.Visible = true
         chatInput.Position = UDim2.new(0, w + 16, 0, 0)
@@ -2598,23 +2791,21 @@ local emojiGrid = Instance.new("UIGridLayout", emojiScroll)
 emojiGrid.CellSize = UDim2.new(0, 26, 0, 26)
 emojiGrid.CellPadding = UDim2.new(0, 3, 0, 3)
 
-BootSubsystem("EmojiSystem", function()
-    local emojiRaw = "😃😁😆😂🤣😎🫡🔥💀❤️🖤✨💯👑⚡⚠️🔒💬🍜🍕🚀🎉"
-    if utf8 and utf8.graphemes then
-        for p, c in utf8.graphemes(emojiRaw) do
-            local em = string.sub(emojiRaw, p, c)
-            local btn = Instance.new("TextButton", emojiScroll)
-            btn.Text = em
-            btn.TextSize = 15
-            btn.BackgroundTransparency = 1
-            btn.ZIndex = 32
-            btn.MouseButton1Click:Connect(function()
-                chatInput.Text = chatInput.Text .. em
-                chatInput:CaptureFocus()
-            end)
-        end
+local emojiRaw = "😃😁😆😂🤣😎🫡🔥💀❤️🖤✨💯👑⚡⚠️🔒💬🍜🍕🚀🎉"
+if utf8 and utf8.graphemes then
+    for p, c in utf8.graphemes(emojiRaw) do
+        local em = string.sub(emojiRaw, p, c)
+        local btn = Instance.new("TextButton", emojiScroll)
+        btn.Text = em
+        btn.TextSize = 15
+        btn.BackgroundTransparency = 1
+        btn.ZIndex = 32
+        btn.MouseButton1Click:Connect(function()
+            chatInput.Text = chatInput.Text .. em
+            chatInput:CaptureFocus()
+        end)
     end
-end)
+end
 
 emojiBtn.MouseButton1Click:Connect(function()
     emojiFrame.Visible = not emojiFrame.Visible
@@ -2664,29 +2855,27 @@ local memeGrid = Instance.new("UIGridLayout", memeScroll)
 memeGrid.CellSize = UDim2.new(0, 60, 0, 60)
 memeGrid.CellPadding = UDim2.new(0, 6, 0, 6)
 
-BootSubsystem("MemeLibrary", function()
-    for _, mData in ipairs(MemeLibrary) do
-        local mItem = Instance.new("ImageButton", memeScroll)
-        mItem.BackgroundColor3 = Colors.Background
-        mItem.Image = getAssetThumb(mData.id)
-        mItem.ScaleType = Enum.ScaleType.Fit
-        mItem.ZIndex = 32
-        Instance.new("UICorner", mItem).CornerRadius = UDim.new(0, 8)
-        
-        local is = Instance.new("UIStroke", mItem)
-        is.Color = Colors.PrimaryDark
-        is.Thickness = 1
-        is.Transparency = 0.6
-        
-        applySpringHover(mItem)
-        mItem.MouseButton1Click:Connect(function()
-            memeFrame.Visible = false
-            if sendMessageFunc then
-                sendMessageFunc(string.format("[MEME:%d]", mData.id))
-            end
-        end)
-    end
-end)
+for _, mData in ipairs(MemeLibrary) do
+    local mItem = Instance.new("ImageButton", memeScroll)
+    mItem.BackgroundColor3 = Colors.Background
+    mItem.Image = getAssetThumb(mData.id)
+    mItem.ScaleType = Enum.ScaleType.Fit
+    mItem.ZIndex = 32
+    Instance.new("UICorner", mItem).CornerRadius = UDim.new(0, 8)
+    
+    local is = Instance.new("UIStroke", mItem)
+    is.Color = Colors.PrimaryDark
+    is.Thickness = 1
+    is.Transparency = 0.6
+    
+    applySpringHover(mItem)
+    mItem.MouseButton1Click:Connect(function()
+        memeFrame.Visible = false
+        if sendMessageFunc then
+            sendMessageFunc(string.format("[MEME:%d]", mData.id))
+        end
+    end)
+end
 
 memeBtn.MouseButton1Click:Connect(function()
     memeFrame.Visible = not memeFrame.Visible
@@ -2820,11 +3009,13 @@ makeDraggable(mainFrame, header, aura, false)
 makeDraggable(openBtnContainer, openBtn, nil, true)
 
 openBtn.MouseButton1Down:Connect(function()
-    SafeTween(openBtnScale, TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Scale = 0.85})
+    local tInfo = TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+    TweenService:Create(openBtnScale, tInfo, {Scale = 0.85}):Play()
 end)
 
 openBtn.MouseButton1Up:Connect(function()
-    SafeTween(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05})
+    local tInfo = TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2)
+    TweenService:Create(openBtnScale, tInfo, {Scale = 1.05}):Play()
 end)
 
 -- ⚡ REOPEN BUTTON CLICK: AUTO-SCROLLS TO BOTTOM INSTANTLY
@@ -2837,7 +3028,8 @@ openBtn.MouseButton1Click:Connect(function()
     ghostDebounce = true
     task.delay(0.5, function() ghostDebounce = false end)
     
-    SafeTween(openBtnScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0})
+    local tInfo1 = TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+    TweenService:Create(openBtnScale, tInfo1, {Scale = 0}):Play()
     
     task.wait(0.25)
     
@@ -2855,14 +3047,13 @@ openBtn.MouseButton1Click:Connect(function()
     local tInfo2 = TweenInfo.new(0.7, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
     local tInfo3 = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
     
-    SafeTween(mainScale, tInfo2, {Scale = 1})
-    SafeTween(auraScale, tInfo2, {Scale = 1})
-    SafeTween(shadowScale, tInfo2, {Scale = 1})
-    SafeTween(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.40 or 0.02})
-    SafeTween(aura, tInfo3, {ImageTransparency = isGhostMode and 0.95 or 0.85})
-    SafeTween(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.5 or 0.25})
+    TweenService:Create(mainScale, tInfo2, {Scale = 1}):Play()
+    TweenService:Create(auraScale, tInfo2, {Scale = 1}):Play()
+    TweenService:Create(shadowScale, tInfo2, {Scale = 1}):Play()
+    TweenService:Create(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.40 or 0.02}):Play()
+    TweenService:Create(aura, tInfo3, {ImageTransparency = isGhostMode and 0.95 or 0.85}):Play()
+    TweenService:Create(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.5 or 0.25}):Play()
 
-    -- Instantly jump to latest messages!
     scrollToBottom()
 end)
 
@@ -3124,16 +3315,23 @@ sendMessageFunc = function(overrideText)
         return
     end
 
-    local finalMsg = text
+    local outgoingMsg = text
+    if activeReplyContext then
+        outgoingMsg = string.format("[REPLY:%s::%s] %s", activeReplyContext.author, activeReplyContext.snippet, text)
+        activeReplyContext = nil
+        replyPreviewBar.Visible = false
+    end
+
+    local finalMsg = outgoingMsg
     local currentScope = chatMode
 
     if privateTarget then
-        finalMsg = "( 🔐 " .. lp.Name .. " Private " .. privateTarget .. ") " .. text
+        finalMsg = "( 🔐 " .. lp.Name .. " Private " .. privateTarget .. ") " .. outgoingMsg
     else
         if currentScope == "server" then
-            finalMsg = "[SRV:" .. tostring(game.JobId) .. "] " .. text
+            finalMsg = "[SRV:" .. tostring(game.JobId) .. "] " .. outgoingMsg
         else
-            finalMsg = "[GLB] " .. text
+            finalMsg = "[GLB] " .. outgoingMsg
         end
     end
 
@@ -3142,9 +3340,20 @@ sendMessageFunc = function(overrideText)
     local encodedUserTag = lp.Name .. "::" .. lp.DisplayName
 
     if privateTarget then
-        addMessageToFeed(encodedUserTag, text, privateTarget, true, game.JobId, currentScope)
+        addMessageToFeed(encodedUserTag, outgoingMsg, privateTarget, true, game.JobId, currentScope)
     else
-        addMessageToFeed(encodedUserTag, text, nil, false, game.JobId, currentScope)
+        addMessageToFeed(encodedUserTag, outgoingMsg, nil, false, game.JobId, currentScope)
+        if currentScope == "global" then
+            table.insert(_G.TXR_GlobalChatCache, {
+                user = encodedUserTag,
+                msg = outgoingMsg,
+                time = os.time(),
+                jobId = game.JobId
+            })
+            if #_G.TXR_GlobalChatCache > 150 then
+                table.remove(_G.TXR_GlobalChatCache, 1)
+            end
+        end
     end
     displayBubble(lp.Name, text)
     
@@ -3155,16 +3364,22 @@ sendMessageFunc = function(overrideText)
     recentLocalSentMap[string.lower(text)] = tick()
 
     task.spawn(function()
-        SafeRequest({
-            Url = SERVER_URL .. "/send",
-            Method = "POST",
-            Headers = { ["Content-Type"] = "application/json", ["User-Agent"] = "Roblox/WinInet" },
-            Body = HttpService:JSONEncode({
+        if req then
+            local payload = HttpService:JSONEncode({
                 user = encodedUserTag,
                 msg = finalMsg,
                 jobId = game.JobId
             })
-        })
+
+            pcall(function()
+                req({
+                    Url = SERVER_URL .. "/send",
+                    Method = "POST",
+                    Headers = { ["Content-Type"] = "application/json", ["User-Agent"] = "Roblox/WinInet" },
+                    Body = payload
+                })
+            end)
+        end
     end)
 end
 
@@ -3174,153 +3389,188 @@ chatInput.FocusLost:Connect(function(enterPressed)
 end)
 
 -- =========================================================
--- 📥 HIGH-FREQUENCY POLLING ENGINE (ZERO-LEAK TYPING FILTER)
+-- 📥 HIGH-FREQUENCY POLLING ENGINE (GLOBAL PERSISTENCE LOAD)
 -- =========================================================
 task.spawn(function()
-    while _G.TXR_IsPolling and (_G.TXR_ChatInstanceID == currentExecutionID) and task.wait(0.4) do
-        local success, res = SafeRequest({
-            Url = SERVER_URL .. "/messages?since=" .. tostring(lastSyncTime),
-            Method = "GET",
-            Headers = { ["User-Agent"] = "Roblox/WinInet" }
-        })
+    -- Restore old persistent global messages on execution
+    if #_G.TXR_GlobalChatCache > 0 then
+        for _, oldM in ipairs(_G.TXR_GlobalChatCache) do
+            addMessageToFeed(oldM.user, oldM.msg, nil, false, oldM.jobId, "global")
+        end
+        scrollToBottom()
+    end
 
-        if success and res and res.StatusCode == 200 then
-            local decodeSuccess, data = pcall(function()
-                return HttpService:JSONDecode(res.Body)
+    while _G.TXR_IsPolling and (_G.TXR_ChatInstanceID == currentExecutionID) and task.wait(0.4) do
+        if req then
+            local success, res = pcall(function()
+                return req({
+                    Url = SERVER_URL .. "/messages?since=" .. tostring(lastSyncTime),
+                    Method = "GET",
+                    Headers = { ["User-Agent"] = "Roblox/WinInet" }
+                })
             end)
 
-            if decodeSuccess and type(data) == "table" then
-                if isInitialSync then
-                    isInitialSync = false
-                    if #data > 0 then
-                        local startIndex = math.max(1, #data - 6)
-                        for i = startIndex, #data do
-                            local m = data[i]
-                            if not m.hidden and m.msg ~= "Joined" and m.msg ~= "[TYPING]" and not tostring(m.msg):find("%[TYPING%]") then
-                                local initKey = (m.id and tostring(m.id)) or (m.user .. "_" .. tostring(m.time) .. "_" .. m.msg)
-                                processedServerMessageMap[initKey] = true
-                                
-                                local srvJob, cleanSrvMsg = m.msg:match("^%[SRV:(.-)%]%s*(.*)$")
-                                local cleanGlbMsg = m.msg:match("^%[GLB%]%s*(.*)$")
-                                local scope = "global"
-                                local parsedMsg = m.msg
+            if success and res and res.StatusCode == 200 then
+                local decodeSuccess, data = pcall(function()
+                    return HttpService:JSONDecode(res.Body)
+                end)
 
-                                if srvJob then
-                                    scope = "server"
-                                    parsedMsg = cleanSrvMsg
-                                    if srvJob ~= game.JobId then
-                                        continue
+                if decodeSuccess and type(data) == "table" then
+                    if isInitialSync then
+                        isInitialSync = false
+                        if #data > 0 then
+                            local startIndex = math.max(1, #data - 6)
+                            for i = startIndex, #data do
+                                local m = data[i]
+                                if not m.hidden and m.msg ~= "Joined" and m.msg ~= "[TYPING]" and not tostring(m.msg):find("%[TYPING%]") then
+                                    local initKey = (m.id and tostring(m.id)) or (m.user .. "_" .. tostring(m.time) .. "_" .. m.msg)
+                                    processedServerMessageMap[initKey] = true
+                                    
+                                    local srvJob, cleanSrvMsg = m.msg:match("^%[SRV:(.-)%]%s*(.*)$")
+                                    local cleanGlbMsg = m.msg:match("^%[GLB%]%s*(.*)$")
+                                    local scope = "global"
+                                    local parsedMsg = m.msg
+
+                                    if srvJob then
+                                        scope = "server"
+                                        parsedMsg = cleanSrvMsg
+                                        if srvJob ~= game.JobId then
+                                            continue
+                                        end
+                                    elseif cleanGlbMsg then
+                                        scope = "global"
+                                        parsedMsg = cleanGlbMsg
                                     end
-                                elseif cleanGlbMsg then
-                                    scope = "global"
-                                    parsedMsg = cleanGlbMsg
+
+                                    addMessageToFeed(m.user, parsedMsg, nil, false, m.jobId, scope)
+                                    if scope == "global" then
+                                        table.insert(_G.TXR_GlobalChatCache, {
+                                            user = m.user,
+                                            msg = parsedMsg,
+                                            time = m.time,
+                                            jobId = m.jobId
+                                        })
+                                        if #_G.TXR_GlobalChatCache > 150 then
+                                            table.remove(_G.TXR_GlobalChatCache, 1)
+                                        end
+                                    end
+
+                                    local rawUsernameOnly = m.user:match("^(.-)::") or m.user
+                                    updateLiveCounter(rawUsernameOnly)
                                 end
-
-                                addMessageToFeed(m.user, parsedMsg, nil, false, m.jobId, scope)
-                                local rawUsernameOnly = m.user:match("^(.-)::") or m.user
-                                updateLiveCounter(rawUsernameOnly)
                             end
+                            lastSyncTime = data[#data].time
+                            scrollToBottom()
                         end
-                        lastSyncTime = data[#data].time
-                        scrollToBottom()
-                    end
-                    continue
-                end
-
-                for _, m in ipairs(data) do
-                    local uniqueMsgKey = (m.id and tostring(m.id)) or (m.user .. "_" .. tostring(m.time) .. "_" .. m.msg)
-                    if processedServerMessageMap[uniqueMsgKey] then
                         continue
                     end
 
-                    if m.time >= lastSyncTime then
-                        lastSyncTime = m.time
-                        local rawUsernameOnly = m.user:match("^(.-)::") or m.user
-                        knownUsers[rawUsernameOnly:lower()] = rawUsernameOnly
-                        updateLiveCounter(rawUsernameOnly)
-
-                        if m.msg == "Joined" then
-                            processedServerMessageMap[uniqueMsgKey] = true
-                            if rawUsernameOnly ~= lp.Name then
-                                addJoinNotice(rawUsernameOnly)
-                                playSFX("default")
-                            end
+                    for _, m in ipairs(data) do
+                        local uniqueMsgKey = (m.id and tostring(m.id)) or (m.user .. "_" .. tostring(m.time) .. "_" .. m.msg)
+                        if processedServerMessageMap[uniqueMsgKey] then
                             continue
                         end
 
-                        if m.hidden or m.msg == "[TYPING]" or tostring(m.msg):find("%[TYPING%]") then 
-                            processedServerMessageMap[uniqueMsgKey] = true
-                            if rawUsernameOnly:lower() ~= lp.Name:lower() then
-                                globalTypers[rawUsernameOnly] = tick()
+                        if m.time >= lastSyncTime then
+                            lastSyncTime = m.time
+                            local rawUsernameOnly = m.user:match("^(.-)::") or m.user
+                            knownUsers[rawUsernameOnly:lower()] = rawUsernameOnly
+                            updateLiveCounter(rawUsernameOnly)
+
+                            if m.msg == "Joined" then
+                                processedServerMessageMap[uniqueMsgKey] = true
+                                if rawUsernameOnly ~= lp.Name then
+                                    addJoinNotice(rawUsernameOnly)
+                                    playSFX("default")
+                                end
+                                continue
                             end
-                            continue 
-                        end
 
-                        if rawUsernameOnly:lower() == lp.Name:lower() then
-                            local lowMsg = string.lower(m.msg)
-                            local isEcho = false
+                            if m.hidden or m.msg == "[TYPING]" or tostring(m.msg):find("%[TYPING%]") then 
+                                processedServerMessageMap[uniqueMsgKey] = true
+                                if rawUsernameOnly:lower() ~= lp.Name:lower() then
+                                    globalTypers[rawUsernameOnly] = tick()
+                                end
+                                continue 
+                            end
 
-                            for sentText, sentTime in pairs(recentLocalSentMap) do
-                                if (sentText == lowMsg or lowMsg:find(sentText, 1, true)) and (tick() - sentTime <= 60) then
-                                    isEcho = true
-                                    recentLocalSentMap[sentText] = nil
-                                    break
+                            if rawUsernameOnly:lower() == lp.Name:lower() then
+                                local lowMsg = string.lower(m.msg)
+                                local isEcho = false
+
+                                for sentText, sentTime in pairs(recentLocalSentMap) do
+                                    if (sentText == lowMsg or lowMsg:find(sentText, 1, true)) and (tick() - sentTime <= 60) then
+                                        isEcho = true
+                                        recentLocalSentMap[sentText] = nil
+                                        break
+                                    end
+                                end
+
+                                if isEcho then
+                                    processedServerMessageMap[uniqueMsgKey] = true
+                                    continue
                                 end
                             end
 
-                            if isEcho then
-                                processedServerMessageMap[uniqueMsgKey] = true
+                            processedServerMessageMap[uniqueMsgKey] = true
+
+                            local srvJob, cleanSrvMsg = m.msg:match("^%[SRV:(.-)%]%s*(.*)$")
+                            local cleanGlbMsg = m.msg:match("^%[GLB%]%s*(.*)$")
+                            local scope = "global"
+                            local effectiveMsg = m.msg
+
+                            if srvJob then
+                                scope = "server"
+                                effectiveMsg = cleanSrvMsg
+                                if srvJob ~= game.JobId then
+                                    continue
+                                end
+                            elseif cleanGlbMsg then
+                                scope = "global"
+                                effectiveMsg = cleanGlbMsg
+                            end
+
+                            local pSender, pTarget, pMsg = string.match(effectiveMsg, "^%( 🔐 ([%w_]+) Private ([%w_]+)%) (.*)$")
+                            if pSender and pTarget then
+                                if lp.Name == pSender then
+                                    addMessageToFeed(m.user, pMsg, pTarget, true, m.jobId, scope)
+                                elseif lp.Name == pTarget then
+                                    addMessageToFeed(m.user, pMsg, pSender, false, m.jobId, scope)
+                                    displayBubble(rawUsernameOnly, pMsg)
+                                    playSFX("dm")
+
+                                    if not mainFrame.Visible then
+                                        unreadCount = unreadCount + 1
+                                        unreadTxt.Text = tostring(unreadCount)
+                                        unreadBadge.Visible = true
+                                    end
+                                end
                                 continue
                             end
-                        end
 
-                        processedServerMessageMap[uniqueMsgKey] = true
-
-                        local srvJob, cleanSrvMsg = m.msg:match("^%[SRV:(.-)%]%s*(.*)$")
-                        local cleanGlbMsg = m.msg:match("^%[GLB%]%s*(.*)$")
-                        local scope = "global"
-                        local effectiveMsg = m.msg
-
-                        if srvJob then
-                            scope = "server"
-                            effectiveMsg = cleanSrvMsg
-                            if srvJob ~= game.JobId then
-                                continue
+                            addMessageToFeed(m.user, effectiveMsg, nil, false, m.jobId, scope)
+                            if scope == "global" then
+                                table.insert(_G.TXR_GlobalChatCache, {
+                                    user = m.user,
+                                    msg = effectiveMsg,
+                                    time = m.time,
+                                    jobId = m.jobId
+                                })
+                                if #_G.TXR_GlobalChatCache > 150 then
+                                    table.remove(_G.TXR_GlobalChatCache, 1)
+                                end
                             end
-                        elseif cleanGlbMsg then
-                            scope = "global"
-                            effectiveMsg = cleanGlbMsg
-                        end
 
-                        local pSender, pTarget, pMsg = string.match(effectiveMsg, "^%( 🔐 ([%w_]+) Private ([%w_]+)%) (.*)$")
-                        if pSender and pTarget then
-                            if lp.Name == pSender then
-                                addMessageToFeed(m.user, pMsg, pTarget, true, m.jobId, scope)
-                            elseif lp.Name == pTarget then
-                                addMessageToFeed(m.user, pMsg, pSender, false, m.jobId, scope)
-                                displayBubble(rawUsernameOnly, pMsg)
-                                playSFX("dm")
+                            if rawUsernameOnly ~= lp.Name then
+                                displayBubble(rawUsernameOnly, effectiveMsg)
+                                playSFX("default")
+                                globalTypers[rawUsernameOnly] = nil
 
                                 if not mainFrame.Visible then
                                     unreadCount = unreadCount + 1
                                     unreadTxt.Text = tostring(unreadCount)
                                     unreadBadge.Visible = true
                                 end
-                            end
-                            continue
-                        end
-
-                        addMessageToFeed(m.user, effectiveMsg, nil, false, m.jobId, scope)
-
-                        if rawUsernameOnly ~= lp.Name then
-                            displayBubble(rawUsernameOnly, effectiveMsg)
-                            playSFX("default")
-                            globalTypers[rawUsernameOnly] = nil
-
-                            if not mainFrame.Visible then
-                                unreadCount = unreadCount + 1
-                                unreadTxt.Text = tostring(unreadCount)
-                                unreadBadge.Visible = true
                             end
                         end
                     end
@@ -3332,16 +3582,20 @@ end)
 
 -- Handshake
 task.spawn(function()
-    SafeRequest({
-        Url = SERVER_URL .. "/send", Method = "POST",
-        Headers = { ["Content-Type"] = "application/json", ["User-Agent"] = "Roblox/WinInet" },
-        Body = HttpService:JSONEncode({ 
-            user = lp.Name .. "::" .. lp.DisplayName, 
-            msg = "Joined", 
-            jobId = game.JobId, 
-            hidden = false 
-        })
-    })
+    if req then
+        pcall(function()
+            req({
+                Url = SERVER_URL .. "/send", Method = "POST",
+                Headers = { ["Content-Type"] = "application/json", ["User-Agent"] = "Roblox/WinInet" },
+                Body = HttpService:JSONEncode({ 
+                    user = lp.Name .. "::" .. lp.DisplayName, 
+                    msg = "Joined", 
+                    jobId = game.JobId, 
+                    hidden = false 
+                })
+            })
+        end)
+    end
     addMessageToFeed("System::System", "TXR Cyber-Titan Online! Tap TAG to switch custom live badges.", nil, false, game.JobId, "global")
     scrollToBottom()
 end)
