@@ -77,7 +77,9 @@ end
 local targetGuiParent = nil
 pcall(function() targetGuiParent = (gethui and gethui()) or game:GetService("CoreGui") end)
 if not targetGuiParent then
-    pcall(function() targetGuiParent = lp:FindFirstChildOfClass("PlayerGui") or lp:WaitForChild("PlayerGui", 3) end)
+    pcall(function() 
+        targetGuiParent = lp:FindFirstChildOfClass("PlayerGui") or lp:WaitForChild("PlayerGui", 5) 
+    end)
 end
 
 if targetGuiParent then
@@ -422,7 +424,7 @@ local personalCustomBios = {
     [lp.UserId] = "⚡ Cyber-Titan Apex Elite | System Architect"
 }
 
--- 🌟 GLOBAL SESSION PERSISTENT FOLLOW REGISTRY (NO LOSS ON REOPEN)
+-- 🌟 GLOBAL SESSION PERSISTENT FOLLOW REGISTRY
 local gEnv = (getgenv and getgenv()) or _G or shared
 if not gEnv.TXR_FollowedUsers then
     gEnv.TXR_FollowedUsers = {}
@@ -595,7 +597,7 @@ end)
 -- =========================================================
 -- 🌐 INSTAGRAM-STYLE PROFILE MODAL (NO UID, CLEAN ACTION)
 -- =========================================================
-local openProfileModal
+local openProfileModal = nil
 local profileOverlay = Instance.new("Frame", gui)
 profileOverlay.Size = UDim2.fromScale(1, 1)
 profileOverlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -920,30 +922,35 @@ copyLinkBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 🌟 LOADSTRING GITHUB MODULAR INTEGRATION FOR FOLLOWERS
+-- 🌟 LOADSTRING GITHUB MODULAR INTEGRATION FOR FOLLOWERS WITH SAFE FALLBACK
 metricFollowersBtn.MouseButton1Click:Connect(function()
     if not currentProfileId or currentProfileId == 0 then return end
     task.spawn(function()
         local ok, moduleFunc = pcall(function()
-            return loadstring(game:HttpGet("https://raw.githubusercontent.com/yelelode/TXR-chat-/refs/heads/main/Profile"))()
+            local code = game:HttpGet("https://raw.githubusercontent.com/yelelode/TXR-chat-/refs/heads/main/Profile")
+            return loadstring(code)()
         end)
         if ok and type(moduleFunc) == "function" then
-            moduleFunc({
-                ProfileFrame = profileFrame,
-                UserId = currentProfileId,
-                Count = metricFollowers.Text,
-                Colors = Colors,
-                OnUserSelected = function(targetUsername)
-                    openProfileModal(targetUsername)
-                end
-            })
+            pcall(function()
+                moduleFunc({
+                    ProfileFrame = profileFrame,
+                    UserId = currentProfileId,
+                    Count = metricFollowers.Text,
+                    Colors = Colors,
+                    OnUserSelected = function(targetUsername)
+                        if openProfileModal then
+                            openProfileModal(targetUsername)
+                        end
+                    end
+                })
+            end)
         else
             warn("[TXR Followers Module Load Error]:", tostring(moduleFunc))
         end
     end)
 end)
 
--- ⚡ ASYNC NON-BLOCKING PROFILE MODAL (NO FIRST-TIME FREEZE)
+-- ⚡ ASYNC NON-BLOCKING PROFILE MODAL
 local profileOpenDebounce = false
 openProfileModal = function(username)
     if profileOpenDebounce then return end
@@ -1345,7 +1352,9 @@ local function refreshRosterUI()
         
         applySpringHover(uBtn)
         uBtn.MouseButton1Click:Connect(function()
-            openProfileModal(u)
+            if openProfileModal then
+                openProfileModal(u)
+            end
             rosterFrame.Visible = false
         end)
     end
@@ -1951,7 +1960,7 @@ messageFeed:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
     end
 end)
 
--- ⚡ CLEAN DEDICATED TYPING BAR (ONLY DIRECTLY ABOVE INPUT)
+-- ⚡ CLEAN DEDICATED TYPING BAR
 local globalTypingBar = Instance.new("Frame", mainFrame)
 globalTypingBar.Size = UDim2.new(1, -24, 0, 18)
 globalTypingBar.Position = UDim2.new(0, 14, 1, -72)
@@ -2143,7 +2152,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     cardStroke.Transparency = isMentioned and 0.15 or 0.6
     cardStroke.Color = isMentioned and Colors.MentionGold or Colors.SurfaceHover
 
-    -- 🌟 AVATAR CIRCLE BUTTON TRIGGER (ONLY CLICKING THIS OPENS PROFILE)
+    -- 🌟 AVATAR CIRCLE BUTTON TRIGGER
     local avatarBtn = Instance.new("ImageButton", card)
     avatarBtn.Size = UDim2.fromOffset(30, 30)
     avatarBtn.Position = UDim2.fromOffset(16, 12)
@@ -2168,7 +2177,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     end
 
     avatarBtn.MouseButton1Click:Connect(function()
-        if actualUsername ~= "System" then
+        if actualUsername ~= "System" and openProfileModal then
             openProfileModal(actualUsername)
         end
     end)
@@ -2216,7 +2225,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     timeLbl.ZIndex = 12
     crispText(timeLbl, 0.7)
 
-    -- 🌟 LIGHTLY QUOTED REPLY PREVIEW (OFFICIAL DISCORD / APP STYLE)
+    -- 🌟 LIGHTLY QUOTED REPLY PREVIEW
     if replyAuthor and replySnippet then
         local replyPill = Instance.new("Frame", cardContent)
         replyPill.Size = UDim2.new(1, -10, 0, 18)
@@ -2355,7 +2364,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         })
     end
 
-    -- 🌟 DISPLAY NAME ONLY (NO @USERNAME NEXT TO DISPLAY NAME)
+    -- 🌟 DISPLAY NAME ONLY
     local nameLbl = Instance.new("TextLabel", headerRow)
     nameLbl.AutomaticSize = Enum.AutomaticSize.X
     nameLbl.Size = UDim2.new(0, 0, 1, 0)
@@ -2455,13 +2464,11 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
             SafeTween(card, TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)})
 
             if finalDelta > 50 then
-                -- Right drag = Private chat
                 privateTarget = actualUsername
                 activeReplyData = nil
                 updateInputBar()
                 playSFX("dm")
             elseif finalDelta < -50 then
-                -- Left drag = Reply with visual light preview
                 local snippet = finalRenderMsg
                 if #snippet > 28 then snippet = snippet:sub(1, 25) .. "..." end
                 activeReplyData = {
@@ -2502,7 +2509,6 @@ inputStroke.Thickness = 1.0
 inputStroke.Color = Colors.PrimaryDark
 inputStroke.Transparency = 0.4
 
--- 🌟 LIGHT APP STYLE REPLY PREVIEW BAR (DOCKED ABOVE INPUT)
 replyPreviewFrame = Instance.new("Frame", mainFrame)
 replyPreviewFrame.Size = UDim2.new(1, -30, 0, 24)
 replyPreviewFrame.Position = UDim2.new(0, 15, 1, -78)
@@ -2946,7 +2952,7 @@ openBtn.MouseButton1Up:Connect(function()
     SafeTween(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05})
 end)
 
--- ⚡ REOPEN BUTTON CLICK: AUTO-SCROLLS TO BOTTOM INSTANTLY (ALL PLAYERS INCLUDED)
+-- ⚡ REOPEN BUTTON CLICK
 openBtn.MouseButton1Click:Connect(function()
     if dragThresholdMet then 
         dragThresholdMet = false 
@@ -2981,7 +2987,6 @@ openBtn.MouseButton1Click:Connect(function()
     SafeTween(aura, tInfo3, {ImageTransparency = isGhostMode and 0.95 or 0.85})
     SafeTween(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.5 or 0.25})
 
-    -- Instantly jump to latest messages!
     scrollToBottom()
 end)
 
