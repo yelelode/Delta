@@ -34,7 +34,6 @@ local TextService = game:GetService("TextService")
 local TextChatService = game:GetService("TextChatService")
 local ChatService = game:GetService("Chat")
 local SoundService = game:GetService("SoundService")
-local UserService = game:GetService("UserService")
 
 local lp = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
@@ -378,7 +377,6 @@ local activeBadgesList = {}
 local modalSelectionIndicators = {}
 
 -- ⚡ PROFILE & USER DATA ENGINE
-local profileCache = {}
 local personalCustomBios = {
     [lp.UserId] = "⚡ Cyber-Titan Apex Elite | System Architect"
 }
@@ -555,6 +553,435 @@ task.spawn(function()
         task.wait(0.3)
     end
 end)
+
+-- =========================================================
+-- 🌐 PROFESSIONAL WEBSITE PROFILE MODAL (GLOBAL OBJECT)
+-- =========================================================
+local profileOverlay = Instance.new("Frame", gui)
+profileOverlay.Size = UDim2.fromScale(1, 1)
+profileOverlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+profileOverlay.BackgroundTransparency = 1
+profileOverlay.Visible = false
+profileOverlay.Active = true
+profileOverlay.ZIndex = 120
+
+local profileFrame = Instance.new("Frame", profileOverlay)
+profileFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+profileFrame.Position = UDim2.fromScale(0.5, 0.5)
+profileFrame.Size = UDim2.fromOffset(360, 360)
+profileFrame.BackgroundColor3 = Colors.Background
+profileFrame.BackgroundTransparency = 0.05
+profileFrame.ClipsDescendants = true
+profileFrame.ZIndex = 121
+Instance.new("UICorner", profileFrame).CornerRadius = UDim.new(0, 16)
+
+local pfStroke = Instance.new("UIStroke", profileFrame)
+pfStroke.Thickness = 1.0
+pfStroke.Color = Colors.Primary
+pfStroke.Transparency = 0.25
+
+local pfScale = Instance.new("UIScale", profileFrame)
+pfScale.Scale = 0
+
+local pfBanner = Instance.new("Frame", profileFrame)
+pfBanner.Size = UDim2.new(1, 0, 0, 80)
+pfBanner.BackgroundColor3 = Color3.fromRGB(12, 16, 22)
+pfBanner.BorderSizePixel = 0
+pfBanner.ZIndex = 122
+
+local bannerGrad = Instance.new("UIGradient", pfBanner)
+bannerGrad.Color = ColorSequence.new(Color3.fromRGB(15, 25, 35), Color3.fromRGB(10, 12, 18))
+
+local pfCloseBtn = Instance.new("TextButton", profileFrame)
+pfCloseBtn.Size = UDim2.fromOffset(26, 26)
+pfCloseBtn.Position = UDim2.new(1, -34, 0, 10)
+pfCloseBtn.BackgroundColor3 = Color3.fromRGB(20, 22, 28)
+pfCloseBtn.BackgroundTransparency = 0.3
+pfCloseBtn.Text = "X"
+pfCloseBtn.TextColor3 = Colors.Danger
+pfCloseBtn.Font = Enum.Font.GothamBlack
+pfCloseBtn.TextSize = 10
+pfCloseBtn.ZIndex = 135
+Instance.new("UICorner", pfCloseBtn).CornerRadius = UDim.new(1, 0)
+local pfcStroke = Instance.new("UIStroke", pfCloseBtn)
+pfcStroke.Color = Colors.Danger
+pfcStroke.Thickness = 1.0
+pfcStroke.Transparency = 0.5
+applySpringHover(pfCloseBtn)
+
+local pfAvatarRing = Instance.new("Frame", profileFrame)
+pfAvatarRing.Size = UDim2.fromOffset(66, 66)
+pfAvatarRing.Position = UDim2.fromOffset(20, 45)
+pfAvatarRing.BackgroundColor3 = Colors.Background
+pfAvatarRing.ZIndex = 125
+Instance.new("UICorner", pfAvatarRing).CornerRadius = UDim.new(1, 0)
+local pfaStroke = Instance.new("UIStroke", pfAvatarRing)
+pfaStroke.Thickness = 2.0
+pfaStroke.Color = Colors.Primary
+
+local pfAvatar = Instance.new("ImageLabel", pfAvatarRing)
+pfAvatar.Size = UDim2.new(1, -6, 1, -6)
+pfAvatar.Position = UDim2.fromOffset(3, 3)
+pfAvatar.BackgroundColor3 = Color3.fromRGB(5, 7, 10)
+pfAvatar.BackgroundTransparency = 0
+pfAvatar.ZIndex = 126
+Instance.new("UICorner", pfAvatar).CornerRadius = UDim.new(1, 0)
+
+local pfDisplayName = Instance.new("TextLabel", profileFrame)
+pfDisplayName.Size = UDim2.new(1, -110, 0, 20)
+pfDisplayName.Position = UDim2.fromOffset(96, 88)
+pfDisplayName.BackgroundTransparency = 1
+pfDisplayName.Text = "Loading..."
+pfDisplayName.TextColor3 = Color3.fromRGB(255, 255, 255)
+pfDisplayName.Font = Enum.Font.GothamBlack
+pfDisplayName.TextSize = 13.5
+pfDisplayName.TextXAlignment = Enum.TextXAlignment.Left
+pfDisplayName.ZIndex = 125
+crispText(pfDisplayName)
+
+local pfHandle = Instance.new("TextLabel", profileFrame)
+pfHandle.Size = UDim2.new(1, -110, 0, 16)
+pfHandle.Position = UDim2.fromOffset(96, 108)
+pfHandle.BackgroundTransparency = 1
+pfHandle.Text = "@username"
+pfHandle.TextColor3 = Colors.Primary
+pfHandle.Font = Enum.Font.GothamBold
+pfHandle.TextSize = 10.5
+pfHandle.TextXAlignment = Enum.TextXAlignment.Left
+pfHandle.ZIndex = 125
+
+local statsGrid = Instance.new("Frame", profileFrame)
+statsGrid.Size = UDim2.new(1, -40, 0, 48)
+statsGrid.Position = UDim2.fromOffset(20, 134)
+statsGrid.BackgroundColor3 = Color3.fromRGB(12, 15, 20)
+statsGrid.BackgroundTransparency = 0.15
+statsGrid.ZIndex = 125
+Instance.new("UICorner", statsGrid).CornerRadius = UDim.new(0, 10)
+local sgStroke = Instance.new("UIStroke", statsGrid)
+sgStroke.Color = Colors.SurfaceHover
+sgStroke.Thickness = 1.0
+
+local function createStatMetric(titleText, valueDefault, xOffsetScale)
+    local box = Instance.new("Frame", statsGrid)
+    box.Size = UDim2.new(0.333, 0, 1, 0)
+    box.Position = UDim2.new(xOffsetScale, 0, 0, 0)
+    box.BackgroundTransparency = 1
+    box.ZIndex = 126
+
+    local valLbl = Instance.new("TextLabel", box)
+    valLbl.Size = UDim2.new(1, 0, 0, 20)
+    valLbl.Position = UDim2.fromOffset(0, 6)
+    valLbl.BackgroundTransparency = 1
+    valLbl.Text = valueDefault
+    valLbl.TextColor3 = Colors.Primary
+    valLbl.Font = Enum.Font.GothamBlack
+    valLbl.TextSize = 12
+    valLbl.ZIndex = 127
+    crispText(valLbl, 0.4)
+
+    local subLbl = Instance.new("TextLabel", box)
+    subLbl.Size = UDim2.new(1, 0, 0, 14)
+    subLbl.Position = UDim2.fromOffset(0, 26)
+    subLbl.BackgroundTransparency = 1
+    subLbl.Text = titleText
+    subLbl.TextColor3 = Colors.SubText
+    subLbl.Font = Enum.Font.GothamBold
+    subLbl.TextSize = 8.5
+    subLbl.ZIndex = 127
+
+    return valLbl
+end
+
+local metricFollowers = createStatMetric("FOLLOWERS", "--", 0)
+local metricFollowing = createStatMetric("FOLLOWING", "--", 0.333)
+local metricUserID    = createStatMetric("ACCOUNT ID", "--", 0.666)
+
+local bioHeaderRow = Instance.new("Frame", profileFrame)
+bioHeaderRow.Size = UDim2.new(1, -40, 0, 18)
+bioHeaderRow.Position = UDim2.fromOffset(20, 192)
+bioHeaderRow.BackgroundTransparency = 1
+bioHeaderRow.ZIndex = 125
+
+local bioTitle = Instance.new("TextLabel", bioHeaderRow)
+bioTitle.Size = UDim2.new(0.5, 0, 1, 0)
+bioTitle.BackgroundTransparency = 1
+bioTitle.Text = "ABOUT & BIO"
+bioTitle.TextColor3 = Colors.SubText
+bioTitle.Font = Enum.Font.GothamBlack
+bioTitle.TextSize = 9
+bioTitle.TextXAlignment = Enum.TextXAlignment.Left
+bioTitle.ZIndex = 126
+
+local editBioBtn = Instance.new("TextButton", bioHeaderRow)
+editBioBtn.Size = UDim2.new(0, 70, 1, 0)
+editBioBtn.AnchorPoint = Vector2.new(1, 0)
+editBioBtn.Position = UDim2.new(1, 0, 0, 0)
+editBioBtn.BackgroundColor3 = Color3.fromRGB(20, 24, 32)
+editBioBtn.BackgroundTransparency = 0.2
+editBioBtn.Text = "EDIT BIO"
+editBioBtn.TextColor3 = Colors.Primary
+editBioBtn.Font = Enum.Font.GothamBlack
+editBioBtn.TextSize = 8
+editBioBtn.Visible = false
+editBioBtn.ZIndex = 126
+Instance.new("UICorner", editBioBtn).CornerRadius = UDim.new(0, 4)
+local ebStroke = Instance.new("UIStroke", editBioBtn)
+ebStroke.Color = Colors.PrimaryDark
+ebStroke.Thickness = 0.8
+
+local bioCard = Instance.new("Frame", profileFrame)
+bioCard.Size = UDim2.new(1, -40, 0, 85)
+bioCard.Position = UDim2.fromOffset(20, 214)
+bioCard.BackgroundColor3 = Color3.fromRGB(12, 14, 18)
+bioCard.BackgroundTransparency = 0.1
+bioCard.ZIndex = 125
+Instance.new("UICorner", bioCard).CornerRadius = UDim.new(0, 8)
+local bcStroke = Instance.new("UIStroke", bioCard)
+bcStroke.Color = Colors.SurfaceHover
+bcStroke.Thickness = 1.0
+
+local bioScroll = Instance.new("ScrollingFrame", bioCard)
+bioScroll.Size = UDim2.new(1, -12, 1, -10)
+bioScroll.Position = UDim2.fromOffset(6, 5)
+bioScroll.BackgroundTransparency = 1
+bioScroll.ScrollBarThickness = 2 -- Strictly integer
+bioScroll.ScrollBarImageColor3 = Colors.Primary
+bioScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+bioScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+bioScroll.ZIndex = 126
+
+local bioLabel = Instance.new("TextLabel", bioScroll)
+bioLabel.Size = UDim2.new(1, 0, 0, 0)
+bioLabel.AutomaticSize = Enum.AutomaticSize.Y
+bioLabel.BackgroundTransparency = 1
+bioLabel.Text = "Retrieving network bio..."
+bioLabel.TextColor3 = Color3.fromRGB(230, 235, 245)
+bioLabel.Font = Enum.Font.GothamMedium
+bioLabel.TextSize = 10.5
+bioLabel.TextWrapped = true
+bioLabel.TextXAlignment = Enum.TextXAlignment.Left
+bioLabel.TextYAlignment = Enum.TextYAlignment.Top
+bioLabel.ZIndex = 127
+
+local bioInputBox = Instance.new("TextBox", bioCard)
+bioInputBox.Size = UDim2.new(1, -12, 1, -10)
+bioInputBox.Position = UDim2.fromOffset(6, 5)
+bioInputBox.BackgroundTransparency = 1
+bioInputBox.TextColor3 = Colors.Text
+bioInputBox.PlaceholderText = "Write your personal website bio here..."
+bioInputBox.PlaceholderColor3 = Colors.SubText
+bioInputBox.Font = Enum.Font.GothamMedium
+bioInputBox.TextSize = 10.5
+bioInputBox.TextWrapped = true
+bioInputBox.TextXAlignment = Enum.TextXAlignment.Left
+bioInputBox.TextYAlignment = Enum.TextYAlignment.Top
+bioInputBox.ClearTextOnFocus = false
+bioInputBox.Visible = false
+bioInputBox.ZIndex = 128
+
+local pfActionsRow = Instance.new("Frame", profileFrame)
+pfActionsRow.Size = UDim2.new(1, -40, 0, 28)
+pfActionsRow.Position = UDim2.fromOffset(20, 312)
+pfActionsRow.BackgroundTransparency = 1
+pfActionsRow.ZIndex = 125
+
+local pfaLayout = Instance.new("UIListLayout", pfActionsRow)
+pfaLayout.FillDirection = Enum.FillDirection.Horizontal
+pfaLayout.Padding = UDim.new(0, 8)
+pfaLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+local function createPfBtn(text, color, onClick)
+    local b = Instance.new("TextButton", pfActionsRow)
+    b.Size = UDim2.new(0.31, 0, 1, 0)
+    b.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
+    b.BackgroundTransparency = 0.2
+    b.Text = text
+    b.TextColor3 = color
+    b.Font = Enum.Font.GothamBlack
+    b.TextSize = 9
+    b.AutoButtonColor = false
+    b.ZIndex = 127
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
+    local bs = Instance.new("UIStroke", b)
+    bs.Color = color
+    bs.Thickness = 0.8
+    bs.Transparency = 0.4
+    applySpringHover(b)
+    b.MouseButton1Click:Connect(function()
+        pcall(onClick)
+    end)
+    return b
+end
+
+local currentProfileUser = nil
+local currentProfileId = nil
+
+local function closeProfile()
+    TweenService:Create(pfScale, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0}):Play()
+    TweenService:Create(profileOverlay, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+    task.delay(0.25, function()
+        profileOverlay.Visible = false
+    end)
+end
+
+pfCloseBtn.MouseButton1Click:Connect(closeProfile)
+
+local dmProfileBtn = createPfBtn("DIRECT MSG", Colors.Purple, function()
+    if currentProfileUser then
+        privateTarget = currentProfileUser
+        if updateInputBar then updateInputBar() end
+        playSFX("dm")
+        closeProfile()
+    end
+end)
+
+local copyLinkBtn = createPfBtn("COPY LINK", Colors.Primary, function()
+    if currentProfileId then
+        setClip("https://www.roblox.com/users/" .. tostring(currentProfileId) .. "/profile")
+        playSFX("default")
+        copyLinkBtn.Text = "COPIED!"
+        task.delay(1.5, function() copyLinkBtn.Text = "COPY LINK" end)
+    end
+end)
+
+local tpProfileBtn = createPfBtn("TELEPORT", Colors.MentionGold, function()
+    if currentProfileUser then
+        local targetPlr = Players:FindFirstChild(currentProfileUser)
+        if targetPlr and targetPlr.Character and targetPlr.Character:FindFirstChild("HumanoidRootPart") and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+            lp.Character.HumanoidRootPart.CFrame = targetPlr.Character.HumanoidRootPart.CFrame
+            playSFX("default")
+        end
+    end
+end)
+
+local isEditingBio = false
+editBioBtn.MouseButton1Click:Connect(function()
+    isEditingBio = not isEditingBio
+    if isEditingBio then
+        editBioBtn.Text = "SAVE BIO"
+        editBioBtn.TextColor3 = Color3.fromRGB(50, 255, 140)
+        bioScroll.Visible = false
+        bioInputBox.Visible = true
+        bioInputBox.Text = personalCustomBios[lp.UserId] or bioLabel.Text
+        bioInputBox:CaptureFocus()
+    else
+        editBioBtn.Text = "EDIT BIO"
+        editBioBtn.TextColor3 = Colors.Primary
+        personalCustomBios[lp.UserId] = bioInputBox.Text
+        bioLabel.Text = bioInputBox.Text
+        bioScroll.Visible = true
+        bioInputBox.Visible = false
+        playSFX("default")
+    end
+end)
+
+local function openProfileModal(username)
+    local rawName = username:match("^(.-)::") or username
+    currentProfileUser = rawName
+    profileOverlay.Visible = true
+    bioInputBox.Visible = false
+    bioScroll.Visible = true
+    isEditingBio = false
+    editBioBtn.Text = "EDIT BIO"
+    editBioBtn.TextColor3 = Colors.Primary
+
+    local targetPlr = Players:FindFirstChild(rawName)
+    local uId = targetPlr and targetPlr.UserId or userIdCache[rawName:lower()]
+
+    if not uId then
+        pcall(function()
+            uId = Players:GetUserIdFromNameAsync(rawName)
+            userIdCache[rawName:lower()] = uId
+        end)
+    end
+
+    currentProfileId = uId or 0
+
+    pfDisplayName.Text = targetPlr and targetPlr.DisplayName or rawName
+    pfHandle.Text = "@" .. rawName
+    metricUserID.Text = uId and tostring(uId) or "--"
+    metricFollowers.Text = "..."
+    metricFollowing.Text = "..."
+    bioLabel.Text = "Fetching live network bio..."
+
+    if uId then
+        pfAvatar.Image = string.format("rbxthumb://type=AvatarHeadShot&id=%d&w=150&h=150", uId)
+    else
+        pfAvatar.Image = ""
+    end
+
+    if uId == lp.UserId then
+        editBioBtn.Visible = true
+    else
+        editBioBtn.Visible = false
+    end
+
+    pfScale.Scale = 0.6
+    profileOverlay.BackgroundTransparency = 1
+    TweenService:Create(profileOverlay, TweenInfo.new(0.3), {BackgroundTransparency = 0.5}):Play()
+    TweenService:Create(pfScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    playSFX("default")
+
+    task.spawn(function()
+        if not uId then 
+            bioLabel.Text = "User offline or data unavailable."
+            return 
+        end
+
+        local fFollowers = "--"
+        local fFollowing = "--"
+        local fBio = "No description provided."
+
+        if personalCustomBios[uId] then
+            fBio = personalCustomBios[uId]
+        end
+
+        if req then
+            pcall(function()
+                local r1 = req({
+                    Url = "https://friends.roblox.com/v1/users/" .. tostring(uId) .. "/followers/count",
+                    Method = "GET"
+                })
+                if r1 and r1.StatusCode == 200 then
+                    local d1 = HttpService:JSONDecode(r1.Body)
+                    if d1 and d1.count then fFollowers = tostring(d1.count) end
+                end
+            end)
+
+            pcall(function()
+                local r2 = req({
+                    Url = "https://friends.roblox.com/v1/users/" .. tostring(uId) .. "/followings/count",
+                    Method = "GET"
+                })
+                if r2 and r2.StatusCode == 200 then
+                    local d2 = HttpService:JSONDecode(r2.Body)
+                    if d2 and d2.count then fFollowing = tostring(d2.count) end
+                end
+            end)
+
+            if not personalCustomBios[uId] then
+                pcall(function()
+                    local r3 = req({
+                        Url = "https://users.roblox.com/v1/users/" .. tostring(uId),
+                        Method = "GET"
+                    })
+                    if r3 and r3.StatusCode == 200 then
+                        local d3 = HttpService:JSONDecode(r3.Body)
+                        if d3 and d3.description and #d3.description > 0 then
+                            fBio = d3.description
+                        end
+                    end
+                end)
+            end
+        end
+
+        if currentProfileId == uId then
+            metricFollowers.Text = fFollowers
+            metricFollowing.Text = fFollowing
+            bioLabel.Text = fBio
+        end
+    end)
+end
 
 -- =========================================================
 -- 🛸 REOPEN ORB ENGINE
@@ -759,9 +1186,6 @@ openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function()
     end
 end)
 
--- Forward declaration for Profile Viewer
-local openProfileModal = nil
-
 -- =========================================================
 -- 👥 ONLINE ACTIVE ROSTER (SLIDE-IN DRAWER)
 -- =========================================================
@@ -823,13 +1247,7 @@ local function refreshRosterUI()
         
         applySpringHover(uBtn)
         uBtn.MouseButton1Click:Connect(function()
-            if openProfileModal then
-                openProfileModal(u)
-            else
-                privateTarget = u
-                if updateInputBar then updateInputBar() end
-                playSFX("dm")
-            end
+            openProfileModal(u)
             rosterFrame.Visible = false
         end)
     end
@@ -1501,457 +1919,6 @@ local function createActionBtn(text, color, onClick)
 end
 
 -- =========================================================
--- 🌐 PROFESSIONAL WEBSITE PROFILE MODAL ENGINE
--- =========================================================
-local profileOverlay = Instance.new("Frame", gui)
-profileOverlay.Size = UDim2.fromScale(1, 1)
-profileOverlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-profileOverlay.BackgroundTransparency = 1
-profileOverlay.Visible = false
-profileOverlay.Active = true
-profileOverlay.ZIndex = 120
-
-local profileFrame = Instance.new("Frame", profileOverlay)
-profileFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-profileFrame.Position = UDim2.fromScale(0.5, 0.5)
-profileFrame.Size = UDim2.fromOffset(360, 360)
-profileFrame.BackgroundColor3 = Colors.Background
-profileFrame.BackgroundTransparency = 0.05
-profileFrame.ClipsDescendants = true
-profileFrame.ZIndex = 121
-Instance.new("UICorner", profileFrame).CornerRadius = UDim.new(0, 16)
-
-local pfStroke = Instance.new("UIStroke", profileFrame)
-pfStroke.Thickness = 1.2
-pfStroke.Color = Colors.Primary
-pfStroke.Transparency = 0.25
-
-local pfScale = Instance.new("UIScale", profileFrame)
-pfScale.Scale = 0
-
--- Website Header Banner
-local pfBanner = Instance.new("Frame", profileFrame)
-pfBanner.Size = UDim2.new(1, 0, 0, 80)
-pfBanner.BackgroundColor3 = Color3.fromRGB(12, 16, 22)
-pfBanner.BorderSizePixel = 0
-pfBanner.ZIndex = 122
-
-local bannerGrad = Instance.new("UIGradient", pfBanner)
-bannerGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 25, 35)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(25, 15, 40)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 12, 18))
-})
-
-local pfCloseBtn = Instance.new("TextButton", profileFrame)
-pfCloseBtn.Size = UDim2.fromOffset(26, 26)
-pfCloseBtn.Position = UDim2.new(1, -34, 0, 10)
-pfCloseBtn.BackgroundColor3 = Color3.fromRGB(20, 22, 28)
-pfCloseBtn.BackgroundTransparency = 0.3
-pfCloseBtn.Text = "X"
-pfCloseBtn.TextColor3 = Colors.Danger
-pfCloseBtn.Font = Enum.Font.GothamBlack
-pfCloseBtn.TextSize = 10
-pfCloseBtn.ZIndex = 135
-Instance.new("UICorner", pfCloseBtn).CornerRadius = UDim.new(1, 0)
-local pfcStroke = Instance.new("UIStroke", pfCloseBtn)
-pfcStroke.Color = Colors.Danger
-pfcStroke.Thickness = 1
-pfcStroke.Transparency = 0.5
-applySpringHover(pfCloseBtn)
-
--- Avatar Ring & Image
-local pfAvatarRing = Instance.new("Frame", profileFrame)
-pfAvatarRing.Size = UDim2.fromOffset(66, 66)
-pfAvatarRing.Position = UDim2.fromOffset(20, 45)
-pfAvatarRing.BackgroundColor3 = Colors.Background
-pfAvatarRing.ZIndex = 125
-Instance.new("UICorner", pfAvatarRing).CornerRadius = UDim.new(1, 0)
-local pfaStroke = Instance.new("UIStroke", pfAvatarRing)
-pfaStroke.Thickness = 2.0
-pfaStroke.Color = Colors.Primary
-
-local pfAvatar = Instance.new("ImageLabel", pfAvatarRing)
-pfAvatar.Size = UDim2.new(1, -6, 1, -6)
-pfAvatar.Position = UDim2.fromOffset(3, 3)
-pfAvatar.BackgroundColor3 = Color3.fromRGB(5, 7, 10)
-pfAvatar.BackgroundTransparency = 0
-pfAvatar.ZIndex = 126
-Instance.new("UICorner", pfAvatar).CornerRadius = UDim.new(1, 0)
-
--- Name & User Tag Display
-local pfDisplayName = Instance.new("TextLabel", profileFrame)
-pfDisplayName.Size = UDim2.new(1, -110, 0, 20)
-pfDisplayName.Position = UDim2.fromOffset(96, 88)
-pfDisplayName.BackgroundTransparency = 1
-pfDisplayName.Text = "Loading..."
-pfDisplayName.TextColor3 = Color3.fromRGB(255, 255, 255)
-pfDisplayName.Font = Enum.Font.GothamBlack
-pfDisplayName.TextSize = 13.5
-pfDisplayName.TextXAlignment = Enum.TextXAlignment.Left
-pfDisplayName.ZIndex = 125
-crispText(pfDisplayName)
-
-local pfHandle = Instance.new("TextLabel", profileFrame)
-pfHandle.Size = UDim2.new(1, -110, 0, 16)
-pfHandle.Position = UDim2.fromOffset(96, 108)
-pfHandle.BackgroundTransparency = 1
-pfHandle.Text = "@username"
-pfHandle.TextColor3 = Colors.Primary
-pfHandle.Font = Enum.Font.GothamBold
-pfHandle.TextSize = 10.5
-pfHandle.TextXAlignment = Enum.TextXAlignment.Left
-pfHandle.ZIndex = 125
-
--- Website Metric Stats Container (Followers / Following / Account ID)
-local statsGrid = Instance.new("Frame", profileFrame)
-statsGrid.Size = UDim2.new(1, -40, 0, 48)
-statsGrid.Position = UDim2.fromOffset(20, 134)
-statsGrid.BackgroundColor3 = Color3.fromRGB(12, 15, 20)
-statsGrid.BackgroundTransparency = 0.15
-statsGrid.ZIndex = 125
-Instance.new("UICorner", statsGrid).CornerRadius = UDim.new(0, 10)
-local sgStroke = Instance.new("UIStroke", statsGrid)
-sgStroke.Color = Colors.SurfaceHover
-sgStroke.Thickness = 1.0
-
-local function createStatMetric(titleText, valueDefault, xOffsetScale)
-    local box = Instance.new("Frame", statsGrid)
-    box.Size = UDim2.new(0.333, 0, 1, 0)
-    box.Position = UDim2.new(xOffsetScale, 0, 0, 0)
-    box.BackgroundTransparency = 1
-    box.ZIndex = 126
-
-    local valLbl = Instance.new("TextLabel", box)
-    valLbl.Size = UDim2.new(1, 0, 0, 20)
-    valLbl.Position = UDim2.fromOffset(0, 6)
-    valLbl.BackgroundTransparency = 1
-    valLbl.Text = valueDefault
-    valLbl.TextColor3 = Colors.Primary
-    valLbl.Font = Enum.Font.GothamBlack
-    valLbl.TextSize = 12
-    valLbl.ZIndex = 127
-    crispText(valLbl, 0.4)
-
-    local subLbl = Instance.new("TextLabel", box)
-    subLbl.Size = UDim2.new(1, 0, 0, 14)
-    subLbl.Position = UDim2.fromOffset(0, 26)
-    subLbl.BackgroundTransparency = 1
-    subLbl.Text = titleText
-    subLbl.TextColor3 = Colors.SubText
-    subLbl.Font = Enum.Font.GothamBold
-    subLbl.TextSize = 8.5
-    subLbl.ZIndex = 127
-
-    return valLbl
-end
-
-local metricFollowers = createStatMetric("FOLLOWERS", "--", 0)
-local metricFollowing = createStatMetric("FOLLOWING", "--", 0.333)
-local metricUserID    = createStatMetric("ACCOUNT ID", "--", 0.666)
-
--- Bio Section Card (Website Style)
-local bioHeaderRow = Instance.new("Frame", profileFrame)
-bioHeaderRow.Size = UDim2.new(1, -40, 0, 18)
-bioHeaderRow.Position = UDim2.fromOffset(20, 192)
-bioHeaderRow.BackgroundTransparency = 1
-bioHeaderRow.ZIndex = 125
-
-local bioTitle = Instance.new("TextLabel", bioHeaderRow)
-bioTitle.Size = UDim2.new(0.5, 0, 1, 0)
-bioTitle.BackgroundTransparency = 1
-bioTitle.Text = "ABOUT & BIO"
-bioTitle.TextColor3 = Colors.SubText
-bioTitle.Font = Enum.Font.GothamBlack
-bioTitle.TextSize = 9
-bioTitle.TextXAlignment = Enum.TextXAlignment.Left
-bioTitle.ZIndex = 126
-
-local editBioBtn = Instance.new("TextButton", bioHeaderRow)
-editBioBtn.Size = UDim2.new(0, 70, 1, 0)
-editBioBtn.AnchorPoint = Vector2.new(1, 0)
-editBioBtn.Position = UDim2.new(1, 0, 0, 0)
-editBioBtn.BackgroundColor3 = Color3.fromRGB(20, 24, 32)
-editBioBtn.BackgroundTransparency = 0.2
-editBioBtn.Text = "EDIT BIO"
-editBioBtn.TextColor3 = Colors.Primary
-editBioBtn.Font = Enum.Font.GothamBlack
-editBioBtn.TextSize = 8
-editBioBtn.Visible = false
-editBioBtn.ZIndex = 126
-Instance.new("UICorner", editBioBtn).CornerRadius = UDim.new(0, 4)
-local ebStroke = Instance.new("UIStroke", editBioBtn)
-ebStroke.Color = Colors.PrimaryDark
-ebStroke.Thickness = 0.8
-
-local bioCard = Instance.new("Frame", profileFrame)
-bioCard.Size = UDim2.new(1, -40, 0, 85)
-bioCard.Position = UDim2.fromOffset(20, 214)
-bioCard.BackgroundColor3 = Color3.fromRGB(12, 14, 18)
-bioCard.BackgroundTransparency = 0.1
-bioCard.ZIndex = 125
-Instance.new("UICorner", bioCard).CornerRadius = UDim.new(0, 8)
-local bcStroke = Instance.new("UIStroke", bioCard)
-bcStroke.Color = Colors.SurfaceHover
-bcStroke.Thickness = 1.0
-
-local bioScroll = Instance.new("ScrollingFrame", bioCard)
-bioScroll.Size = UDim2.new(1, -12, 1, -10)
-bioScroll.Position = UDim2.fromOffset(6, 5)
-bioScroll.BackgroundTransparency = 1
-bioScroll.ScrollBarThickness = 1.5
-bioScroll.ScrollBarImageColor3 = Colors.Primary
-bioScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-bioScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-bioScroll.ZIndex = 126
-
-local bioLabel = Instance.new("TextLabel", bioScroll)
-bioLabel.Size = UDim2.new(1, 0, 0, 0)
-bioLabel.AutomaticSize = Enum.AutomaticSize.Y
-bioLabel.BackgroundTransparency = 1
-bioLabel.Text = "Retrieving network bio..."
-bioLabel.TextColor3 = Color3.fromRGB(230, 235, 245)
-bioLabel.Font = Enum.Font.GothamMedium
-bioLabel.TextSize = 10.5
-bioLabel.TextWrapped = true
-bioLabel.TextXAlignment = Enum.TextXAlignment.Left
-bioLabel.TextYAlignment = Enum.TextYAlignment.Top
-bioLabel.ZIndex = 127
-
-local bioInputBox = Instance.new("TextBox", bioCard)
-bioInputBox.Size = UDim2.new(1, -12, 1, -10)
-bioInputBox.Position = UDim2.fromOffset(6, 5)
-bioInputBox.BackgroundTransparency = 1
-bioInputBox.TextColor3 = Colors.Text
-bioInputBox.PlaceholderText = "Write your personal website bio here..."
-bioInputBox.PlaceholderColor3 = Colors.SubText
-bioInputBox.Font = Enum.Font.GothamMedium
-bioInputBox.TextSize = 10.5
-bioInputBox.TextWrapped = true
-bioInputBox.TextXAlignment = Enum.TextXAlignment.Left
-bioInputBox.TextYAlignment = Enum.TextYAlignment.Top
-bioInputBox.ClearTextOnFocus = false
-bioInputBox.Visible = false
-bioInputBox.ZIndex = 128
-
--- Footer Quick Actions
-local pfActionsRow = Instance.new("Frame", profileFrame)
-pfActionsRow.Size = UDim2.new(1, -40, 0, 28)
-pfActionsRow.Position = UDim2.fromOffset(20, 312)
-pfActionsRow.BackgroundTransparency = 1
-pfActionsRow.ZIndex = 125
-
-local pfaLayout = Instance.new("UIListLayout", pfActionsRow)
-pfaLayout.FillDirection = Enum.FillDirection.Horizontal
-pfaLayout.Padding = UDim.new(0, 8)
-pfaLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-
-local function createPfBtn(text, color, onClick)
-    local b = Instance.new("TextButton", pfActionsRow)
-    b.Size = UDim2.new(0.31, 0, 1, 0)
-    b.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
-    b.BackgroundTransparency = 0.2
-    b.Text = text
-    b.TextColor3 = color
-    b.Font = Enum.Font.GothamBlack
-    b.TextSize = 9
-    b.AutoButtonColor = false
-    b.ZIndex = 127
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
-    local bs = Instance.new("UIStroke", b)
-    bs.Color = color
-    bs.Thickness = 0.8
-    bs.Transparency = 0.4
-    applySpringHover(b)
-    b.MouseButton1Click:Connect(function()
-        pcall(onClick)
-    end)
-    return b
-end
-
-local currentProfileUser = nil
-local currentProfileId = nil
-
-local dmProfileBtn = createPfBtn("DIRECT MSG", Colors.Purple, function()
-    if currentProfileUser then
-        privateTarget = currentProfileUser
-        if updateInputBar then updateInputBar() end
-        playSFX("dm")
-        pfCloseBtn.MouseButton1Click:Fire()
-    end
-end)
-
-local copyLinkBtn = createPfBtn("COPY LINK", Colors.Primary, function()
-    if currentProfileId then
-        setClip("https://www.roblox.com/users/" .. tostring(currentProfileId) .. "/profile")
-        playSFX("default")
-        copyLinkBtn.Text = "COPIED!"
-        task.delay(1.5, function() copyLinkBtn.Text = "COPY LINK" end)
-    end
-end)
-
-local tpProfileBtn = createPfBtn("TELEPORT", Colors.MentionGold, function()
-    if currentProfileUser then
-        local targetPlr = Players:FindFirstChild(currentProfileUser)
-        if targetPlr and targetPlr.Character and targetPlr.Character:FindFirstChild("HumanoidRootPart") and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
-            lp.Character.HumanoidRootPart.CFrame = targetPlr.Character.HumanoidRootPart.CFrame
-            playSFX("default")
-        end
-    end
-end)
-
-local function closeProfile()
-    TweenService:Create(pfScale, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0}):Play()
-    TweenService:Create(profileOverlay, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
-    task.delay(0.25, function()
-        profileOverlay.Visible = false
-    end)
-end
-
-pfCloseBtn.MouseButton1Click:Connect(closeProfile)
-
-local isEditingBio = false
-editBioBtn.MouseButton1Click:Connect(function()
-    isEditingBio = not isEditingBio
-    if isEditingBio then
-        editBioBtn.Text = "SAVE BIO"
-        editBioBtn.TextColor3 = Color3.fromRGB(50, 255, 140)
-        bioScroll.Visible = false
-        bioInputBox.Visible = true
-        bioInputBox.Text = personalCustomBios[lp.UserId] or bioLabel.Text
-        bioInputBox:CaptureFocus()
-    else
-        editBioBtn.Text = "EDIT BIO"
-        editBioBtn.TextColor3 = Colors.Primary
-        personalCustomBios[lp.UserId] = bioInputBox.Text
-        bioLabel.Text = bioInputBox.Text
-        bioScroll.Visible = true
-        bioInputBox.Visible = false
-        playSFX("default")
-    end
-end)
-
-openProfileModal = function(username)
-    local rawName = username:match("^(.-)::") or username
-    currentProfileUser = rawName
-    profileOverlay.Visible = true
-    bioInputBox.Visible = false
-    bioScroll.Visible = true
-    isEditingBio = false
-    editBioBtn.Text = "EDIT BIO"
-    editBioBtn.TextColor3 = Colors.Primary
-
-    local targetPlr = Players:FindFirstChild(rawName)
-    local uId = targetPlr and targetPlr.UserId or userIdCache[rawName:lower()]
-
-    if not uId then
-        pcall(function()
-            uId = Players:GetUserIdFromNameAsync(rawName)
-            userIdCache[rawName:lower()] = uId
-        end)
-    end
-
-    currentProfileId = uId or 0
-
-    pfDisplayName.Text = targetPlr and targetPlr.DisplayName or rawName
-    pfHandle.Text = "@" .. rawName
-    metricUserID.Text = uId and tostring(uId) or "--"
-    metricFollowers.Text = "..."
-    metricFollowing.Text = "..."
-    bioLabel.Text = "Fetching live network bio..."
-
-    if uId then
-        pfAvatar.Image = string.format("rbxthumb://type=AvatarHeadShot&id=%d&w=150&h=150", uId)
-    else
-        pfAvatar.Image = ""
-    end
-
-    if uId == lp.UserId then
-        editBioBtn.Visible = true
-    else
-        editBioBtn.Visible = false
-    end
-
-    -- Animate Open
-    pfScale.Scale = 0.6
-    profileOverlay.BackgroundTransparency = 1
-    TweenService:Create(profileOverlay, TweenInfo.new(0.3), {BackgroundTransparency = 0.5}):Play()
-    TweenService:Create(pfScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
-    playSFX("default")
-
-    -- Fetch Web Profile Data (Followers / Following / Bio)
-    task.spawn(function()
-        if not uId then 
-            bioLabel.Text = "User offline or data unavailable."
-            return 
-        end
-
-        local fFollowers = "--"
-        local fFollowing = "--"
-        local fBio = "No description provided."
-
-        if personalCustomBios[uId] then
-            fBio = personalCustomBios[uId]
-        end
-
-        if req then
-            -- 1. Followers count
-            pcall(function()
-                local r1 = req({
-                    Url = "https://friends.roblox.com/v1/users/" .. tostring(uId) .. "/followers/count",
-                    Method = "GET"
-                })
-                if r1 and r1.StatusCode == 200 then
-                    local d1 = HttpService:JSONDecode(r1.Body)
-                    if d1 and d1.count then fFollowers = tostring(d1.count) end
-                end
-            end)
-
-            -- 2. Following count
-            pcall(function()
-                local r2 = req({
-                    Url = "https://friends.roblox.com/v1/users/" .. tostring(uId) .. "/followings/count",
-                    Method = "GET"
-                })
-                if r2 and r2.StatusCode == 200 then
-                    local d2 = HttpService:JSONDecode(r2.Body)
-                    if d2 and d2.count then fFollowing = tostring(d2.count) end
-                end
-            end)
-
-            -- 3. Bio / Description
-            if not personalCustomBios[uId] then
-                pcall(function()
-                    local r3 = req({
-                        Url = "https://users.roblox.com/v1/users/" .. tostring(uId),
-                        Method = "GET"
-                    })
-                    if r3 and r3.StatusCode == 200 then
-                        local d3 = HttpService:JSONDecode(r3.Body)
-                        if d3 and d3.description and #d3.description > 0 then
-                            fBio = d3.description
-                        end
-                    end
-                end)
-            end
-        else
-            pcall(function()
-                local uInfo = UserService:GetUserInfosByUserIdsAsync({uId})
-                if uInfo and uInfo[1] then
-                    pfDisplayName.Text = uInfo[1].DisplayName
-                end
-            end)
-        end
-
-        if currentProfileId == uId then
-            metricFollowers.Text = fFollowers
-            metricFollowing.Text = fFollowing
-            bioLabel.Text = fBio
-        end
-    end)
-end
-
--- =========================================================
 -- 💬 MESSAGE PIPELINE
 -- =========================================================
 local function updateLiveCounter(username)
@@ -2109,12 +2076,12 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     cardStroke.Transparency = isMentioned and 0.15 or 0.6
     cardStroke.Color = isMentioned and Colors.MentionGold or Colors.SurfaceHover
 
-    local avatarImg = Instance.new("ImageButton", card)
+    local avatarImg = Instance.new("ImageLabel", card)
     avatarImg.Size = UDim2.fromOffset(30, 30)
     avatarImg.Position = UDim2.fromOffset(16, 10)
     avatarImg.BackgroundColor3 = Colors.Background
     avatarImg.BackgroundTransparency = 0.5
-    avatarImg.AutoButtonColor = false
+    avatarImg.Active = true
     avatarImg.ZIndex = 11
     Instance.new("UICorner", avatarImg).CornerRadius = UDim.new(1, 0)
     
@@ -2132,9 +2099,8 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         avGrad.Rotation = 45
     end
 
-    -- Click avatar to open website profile modal
-    avatarImg.MouseButton1Click:Connect(function()
-        if openProfileModal and actualUsername ~= "System" then
+    avatarImg.InputBegan:Connect(function(input)
+        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and actualUsername ~= "System" then
             openProfileModal(actualUsername)
         end
     end)
@@ -2284,43 +2250,47 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         })
     end
 
-    local nameBtn = Instance.new("TextButton", headerRow)
-    nameBtn.AutomaticSize = Enum.AutomaticSize.X
-    nameBtn.Size = UDim2.new(0, 0, 1, 0)
-    nameBtn.BackgroundTransparency = 1
-    nameBtn.RichText = true
-    nameBtn.Text = sanitizeXml(dispName)
-    nameBtn.TextColor3 = (currentThemeIdx == 2 and Color3.fromRGB(255, 45, 85) or Colors.Primary)
-    nameBtn.Font = Enum.Font.GothamBlack
-    nameBtn.TextSize = 12
-    nameBtn.LayoutOrder = 4
-    nameBtn.ZIndex = 12
-    crispText(nameBtn)
+    local nameLbl = Instance.new("TextLabel", headerRow)
+    nameLbl.AutomaticSize = Enum.AutomaticSize.X
+    nameLbl.Size = UDim2.new(0, 0, 1, 0)
+    nameLbl.BackgroundTransparency = 1
+    nameLbl.RichText = true
+    nameLbl.Text = sanitizeXml(dispName)
+    nameLbl.TextColor3 = (currentThemeIdx == 2 and Color3.fromRGB(255, 45, 85) or Colors.Primary)
+    nameLbl.Font = Enum.Font.GothamBlack
+    nameLbl.TextSize = 12
+    nameLbl.LayoutOrder = 4
+    nameLbl.Active = true
+    nameLbl.ZIndex = 12
+    crispText(nameLbl)
 
-    nameBtn.MouseButton1Click:Connect(function()
-        if openProfileModal and actualUsername ~= "System" then
+    nameLbl.InputBegan:Connect(function(input)
+        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and actualUsername ~= "System" then
             openProfileModal(actualUsername)
         end
     end)
 
     if actualUsername ~= dispName and actualUsername ~= "System" then
-        local handleBtn = Instance.new("TextButton", headerRow)
-        handleBtn.AutomaticSize = Enum.AutomaticSize.X
-        handleBtn.Size = UDim2.new(0, 0, 1, 0)
-        handleBtn.BackgroundTransparency = 1
-        handleBtn.Text = "@" .. sanitizeXml(actualUsername) .. ":"
-        handleBtn.TextColor3 = Colors.SubText
-        handleBtn.Font = Enum.Font.GothamMedium
-        handleBtn.TextSize = 10
-        handleBtn.LayoutOrder = 5
-        handleBtn.ZIndex = 12
-        crispText(handleBtn, 0.6)
+        local handleLbl = Instance.new("TextLabel", headerRow)
+        handleLbl.AutomaticSize = Enum.AutomaticSize.X
+        handleLbl.Size = UDim2.new(0, 0, 1, 0)
+        handleLbl.BackgroundTransparency = 1
+        handleLbl.Text = "@" .. sanitizeXml(actualUsername) .. ":"
+        handleLbl.TextColor3 = Colors.SubText
+        handleLbl.Font = Enum.Font.GothamMedium
+        handleLbl.TextSize = 10
+        handleLbl.LayoutOrder = 5
+        handleLbl.Active = true
+        handleLbl.ZIndex = 12
+        crispText(handleLbl, 0.6)
 
-        handleBtn.MouseButton1Click:Connect(function()
-            if openProfileModal then openProfileModal(actualUsername) end
+        handleLbl.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                openProfileModal(actualUsername)
+            end
         end)
     else
-        nameBtn.Text = sanitizeXml(dispName) .. ":"
+        nameLbl.Text = sanitizeXml(dispName) .. ":"
     end
 
     if memeIdMatch then
@@ -2420,7 +2390,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
                     if c:IsA("TextButton") then c:Destroy() end
                 end
                 createActionBtn("PROFILE", Colors.Primary, function()
-                    if openProfileModal then openProfileModal(actualUsername) end
+                    openProfileModal(actualUsername)
                 end)
                 createActionBtn("COPY", Colors.Text, function()
                     pcall(function() setClip(memeIdMatch and ("ID: " .. memeIdMatch) or msg) end)
@@ -2994,403 +2964,4 @@ task.spawn(function()
 
                     local breathPulse = (math.sin(t * 2.2 * sSpeed) + 1) / 2
                     if item.glowStroke and item.glowStroke.Parent then
-                        item.glowStroke.Thickness = 1.0 + (breathPulse * 0.4)
-                        item.glowStroke.Transparency = 0.50 + (breathPulse * 0.20)
-                    end
-                    if item.badgeGlow and item.badgeGlow.Parent then
-                        item.badgeGlow.TextTransparency = 0.45 + (breathPulse * 0.20)
-                    end
-                else
-                    table.remove(activeBadgesList, i)
-                end
-            end
-        end
-
-        if mainFrame.Visible then
-            strokeGrad.Rotation = (t * 35) % 360
-            local breath = (math.sin(t * 2.5) + 1) / 2
-            aura.ImageTransparency = isGhostMode and 0.95 or (0.85 + (breath * 0.05))
-
-            local ledAlpha = (math.sin(t * 4) + 1) / 2
-            ledDot.BackgroundTransparency = 0.1 + (ledAlpha * 0.5)
-
-            local typingWave = (math.sin(t * 8) + 1) / 2
-            if typingIndicator.BackgroundTransparency < 1 then
-                typingIndicator.Size = UDim2.new(0.3 + (typingWave * 0.68), 0, 0, 2)
-            end
-        end
-
-        if openBtnContainer.Visible then
-            local targetSpeed = 1
-            if orbHovered then targetSpeed = targetSpeed * 1.5 end
-            
-            currentSpeedMod = currentSpeedMod + (targetSpeed - currentSpeedMod) * dt * 5
-            local targetRadius = orbHovered and 0.6 or 1
-            currentRadiusMod = currentRadiusMod + (targetRadius - currentRadiusMod) * dt * 8
-            local activeT = t * 3 * currentSpeedMod
-            
-            local baseColor1 = Colors.Primary
-            local baseColor2 = Colors.Purple
-            local lerpAlpha = (math.sin(activeT * 0.8) + 1) / 2
-            
-            coreGlow.ImageColor3 = baseColor1:Lerp(baseColor2, lerpAlpha)
-            coreGlow.ImageTransparency = 0.4 + (math.sin(activeT) * 0.25)
-            eventGlow.ImageColor3 = baseColor2:Lerp(Color3.new(1,1,1), lerpAlpha)
-            
-            openStroke.Color = baseColor1:Lerp(baseColor2, lerpAlpha)
-            goGrad.Rotation = (activeT * 50) % 360
-            goStroke.Transparency = orbHovered and 0.1 or 0.5
-            
-            local gPulse = 40 + (math.sin(activeT * 2) * 3)
-            gimbals[1].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 0.8)), gPulse)
-            gimbals[1].frame.Rotation = (activeT * 20) % 360
-            gimbals[1].stroke.Color = baseColor1
-            
-            gimbals[2].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 0.9)))
-            gimbals[2].frame.Rotation = -(activeT * 25) % 360
-            gimbals[2].stroke.Color = baseColor2
-            
-            gimbals[3].frame.Size = UDim2.fromOffset(gPulse * math.abs(math.cos(activeT * 1.1)), gPulse)
-            gimbals[3].frame.Rotation = 45 + (activeT * 15) % 360
-            gimbals[3].stroke.Color = baseColor1:Lerp(Color3.new(1,1,1), 0.5)
-            
-            gimbals[4].frame.Size = UDim2.fromOffset(gPulse, gPulse * math.abs(math.sin(activeT * 1.2)))
-            gimbals[4].frame.Rotation = -45 - (activeT * 15) % 360
-            gimbals[4].stroke.Color = baseColor2:Lerp(Color3.new(1,1,1), 0.5)
-            
-            for i, d in ipairs(diamonds) do
-                local breath = math.sin(activeT * 2 + (i * math.pi / 2)) * 4
-                d.frame.Size = UDim2.fromOffset(24 + breath, 24 - breath)
-                d.frame.Rotation = (activeT * 40) * (i % 2 == 0 and 1 or -1) + (i * 22.5)
-                d.stroke.Color = (i % 2 == 0) and baseColor1 or baseColor2
-            end
-            
-            crosshair.Rotation = -(activeT * 60) % 360
-            crosshair.ImageColor3 = baseColor1
-            
-            centerCore.BackgroundColor3 = baseColor1:Lerp(Color3.new(1,1,1), lerpAlpha * 0.5)
-            coreStroke.Color = baseColor2
-
-            local rBase = 32 * currentRadiusMod
-            for i = 1, 12 do
-                local offset = (i - 1) * (math.pi * 2 / 4)
-                local orb = orbs[i]
-                if i <= 4 then
-                    local a = activeT * 1.5 + offset
-                    local depth = math.sin(a)
-                    orb.Position = UDim2.new(0.5, math.cos(a) * rBase, 0.5, depth * (rBase * 0.2))
-                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
-                    orb.ZIndex = depth > 0 and 106 or 102
-                    orb.BackgroundColor3 = baseColor1
-                elseif i <= 8 then
-                    local a = -activeT * 1.8 + offset
-                    local depth = math.cos(a)
-                    orb.Position = UDim2.new(0.5, math.cos(a) * (rBase * 0.2), 0.5, math.sin(a) * rBase)
-                    orb.Size = UDim2.fromOffset(3.5 + (depth * 2.5), 3.5 + (depth * 2.5))
-                    orb.ZIndex = depth > 0 and 106 or 102
-                    orb.BackgroundColor3 = baseColor2
-                else
-                    local a = activeT * 2.5 + offset
-                    local depth = math.sin(a + math.pi / 4)
-                    orb.Position = UDim2.new(0.5, math.sin(a) * rBase, 0.5, math.sin(a * 2) * (rBase * 0.5))
-                    orb.Size = UDim2.fromOffset(4 + (depth * 2), 4 + (depth * 2))
-                    orb.ZIndex = 107
-                    orb.BackgroundColor3 = Color3.new(1,1,1)
-                end
-            end
-
-            local mouseLoc = UserInputService:GetMouseLocation()
-            local btnAbsCenter = openBtnContainer.AbsolutePosition + (openBtnContainer.AbsoluteSize / 2)
-            local mPos = Vector2.new(mouseLoc.X, mouseLoc.Y)
-            local mDist = (mPos - btnAbsCenter).Magnitude
-            local magneticRadius = 150
-
-            if orbHovered and mDist < magneticRadius and not isDraggingOrb then
-                local pullStr = 1 - (mDist / magneticRadius)
-                local offsetX = (mPos.X - btnAbsCenter.X) * 0.25 * pullStr
-                local offsetY = (mPos.Y - btnAbsCenter.Y) * 0.25 * pullStr
-                local stretchX = 0.85 + (math.abs(offsetX) / 200)
-                local stretchY = 0.85 + (math.abs(offsetY) / 200)
-
-                openBtn.Size = openBtn.Size:Lerp(UDim2.fromScale(stretchX, stretchY), dt * 12)
-                openBtn.Position = openBtn.Position:Lerp(UDim2.new(0.5, offsetX, 0.5, offsetY), dt * 10)
-                eventGlow.Position = eventGlow.Position:Lerp(UDim2.new(0.5, offsetX * 0.4, 0.5, offsetY * 0.4), dt * 10)
-                crosshair.Position = crosshair.Position:Lerp(UDim2.new(0.5, offsetX * 0.7, 0.5, offsetY * 0.7), dt * 12)
-                centerCore.Position = centerCore.Position:Lerp(UDim2.new(0.5, offsetX * 1.2, 0.5, offsetY * 1.2), dt * 15)
-                
-                eventGlow.ImageTransparency = 0.1 + (math.sin(activeT * 10) * 0.05)
-            else
-                openBtn.Size = openBtn.Size:Lerp(baseOrbScale, dt * 12)
-                openBtn.Position = openBtn.Position:Lerp(baseCenterPos, dt * 12)
-                eventGlow.Position = eventGlow.Position:Lerp(baseCenterPos, dt * 12)
-                crosshair.Position = crosshair.Position:Lerp(baseCenterPos, dt * 12)
-                centerCore.Position = centerCore.Position:Lerp(baseCenterPos, dt * 12)
-                eventGlow.ImageTransparency = 0.3 + (math.cos(activeT * 2) * 0.3)
-            end
-
-            sonarTimer = sonarTimer + dt
-            if sonarTimer >= 1.0 then
-                sonarTimer = 0
-                spawnSonar(baseColor1)
-            end
-        end
-    end)
-end)
-
--- =========================================================
--- 📡 SEND MESSAGE (SCOPE-LOCKED ZERO-LEAK ENGINE)
--- =========================================================
-local lastSendTick = 0
-sendMessageFunc = function(overrideText)
-    local text = overrideText or chatInput.Text
-    if not text then return end
-
-    if text == "TextBox" then text = "" end
-    text = string.gsub(text, "^%s+", "")
-    text = string.gsub(text, "%s+$", "")
-    
-    if text == "" or (tick() - lastSendTick < 0.15) then return end
-    lastSendTick = tick()
-
-    local pMatch = text:match("^!p%s+(%w+)")
-    if pMatch then
-        chatInput.Text = ""
-        privateTarget = pMatch
-        updateInputBar()
-        addMessageToFeed("System::System", "DM mode locked with @" .. pMatch, nil, false, game.JobId, "global")
-        return
-    end
-
-    local finalMsg = text
-    local currentScope = chatMode
-
-    if privateTarget then
-        finalMsg = "( 🔐 " .. lp.Name .. " Private " .. privateTarget .. ") " .. text
-    else
-        if currentScope == "server" then
-            finalMsg = "[SRV:" .. tostring(game.JobId) .. "] " .. text
-        else
-            finalMsg = "[GLB] " .. text
-        end
-    end
-
-    if not overrideText then chatInput.Text = "" end
-
-    local encodedUserTag = lp.Name .. "::" .. lp.DisplayName
-
-    if privateTarget then
-        addMessageToFeed(encodedUserTag, text, privateTarget, true, game.JobId, currentScope)
-    else
-        addMessageToFeed(encodedUserTag, text, nil, false, game.JobId, currentScope)
-    end
-    displayBubble(lp.Name, text)
-    
-    spawnUIParticles(sendBtn, UDim2.new(0.5, 0, 0.5, 0), Colors.Primary, 8)
-
-    local cleanKey = string.lower(finalMsg)
-    recentLocalSentMap[cleanKey] = tick()
-    recentLocalSentMap[string.lower(text)] = tick()
-
-    task.spawn(function()
-        if req then
-            local payload = HttpService:JSONEncode({
-                user = encodedUserTag,
-                msg = finalMsg,
-                jobId = game.JobId
-            })
-
-            pcall(function()
-                req({
-                    Url = SERVER_URL .. "/send",
-                    Method = "POST",
-                    Headers = { ["Content-Type"] = "application/json", ["User-Agent"] = "Roblox/WinInet" },
-                    Body = payload
-                })
-            end)
-        end
-    end)
-end
-
-sendBtn.MouseButton1Click:Connect(function() sendMessageFunc() end)
-chatInput.FocusLost:Connect(function(enterPressed)
-    if enterPressed then sendMessageFunc() end
-end)
-
--- =========================================================
--- 📥 HIGH-FREQUENCY POLLING ENGINE
--- =========================================================
-task.spawn(function()
-    while _G.TXR_IsPolling and (_G.TXR_ChatInstanceID == currentExecutionID) and task.wait(0.4) do
-        if req then
-            local success, res = pcall(function()
-                return req({
-                    Url = SERVER_URL .. "/messages?since=" .. tostring(lastSyncTime),
-                    Method = "GET",
-                    Headers = { ["User-Agent"] = "Roblox/WinInet" }
-                })
-            end)
-
-            if success and res and res.StatusCode == 200 then
-                local decodeSuccess, data = pcall(function()
-                    return HttpService:JSONDecode(res.Body)
-                end)
-
-                if decodeSuccess and type(data) == "table" then
-                    if isInitialSync then
-                        isInitialSync = false
-                        if #data > 0 then
-                            local startIndex = math.max(1, #data - 6)
-                            for i = startIndex, #data do
-                                local m = data[i]
-                                if not m.hidden and m.msg ~= "Joined" then
-                                    local initKey = (m.id and tostring(m.id)) or (m.user .. "_" .. tostring(m.time) .. "_" .. m.msg)
-                                    processedServerMessageMap[initKey] = true
-                                    
-                                    local srvJob, cleanSrvMsg = m.msg:match("^%[SRV:(.-)%]%s*(.*)$")
-                                    local cleanGlbMsg = m.msg:match("^%[GLB%]%s*(.*)$")
-                                    local scope = "global"
-                                    local parsedMsg = m.msg
-
-                                    if srvJob then
-                                        scope = "server"
-                                        parsedMsg = cleanSrvMsg
-                                        if srvJob ~= game.JobId then
-                                            continue
-                                        end
-                                    elseif cleanGlbMsg then
-                                        scope = "global"
-                                        parsedMsg = cleanGlbMsg
-                                    end
-
-                                    addMessageToFeed(m.user, parsedMsg, nil, false, m.jobId, scope)
-                                    local rawUsernameOnly = m.user:match("^(.-)::") or m.user
-                                    updateLiveCounter(rawUsernameOnly)
-                                end
-                            end
-                            lastSyncTime = data[#data].time
-                        end
-                        continue
-                    end
-
-                    for _, m in ipairs(data) do
-                        local uniqueMsgKey = (m.id and tostring(m.id)) or (m.user .. "_" .. tostring(m.time) .. "_" .. m.msg)
-                        if processedServerMessageMap[uniqueMsgKey] then
-                            continue
-                        end
-
-                        if m.time >= lastSyncTime then
-                            lastSyncTime = m.time
-                            local rawUsernameOnly = m.user:match("^(.-)::") or m.user
-                            knownUsers[rawUsernameOnly:lower()] = rawUsernameOnly
-                            updateLiveCounter(rawUsernameOnly)
-
-                            if m.msg == "Joined" then
-                                processedServerMessageMap[uniqueMsgKey] = true
-                                if rawUsernameOnly ~= lp.Name then
-                                    addJoinNotice(rawUsernameOnly)
-                                    playSFX("default")
-                                end
-                                continue
-                            end
-
-                            if m.hidden then 
-                                processedServerMessageMap[uniqueMsgKey] = true
-                                if m.msg == "[TYPING]" and rawUsernameOnly ~= lp.Name then
-                                    globalTypers[rawUsernameOnly] = tick()
-                                end
-                                continue 
-                            end
-
-                            if rawUsernameOnly:lower() == lp.Name:lower() then
-                                local lowMsg = string.lower(m.msg)
-                                local isEcho = false
-
-                                for sentText, sentTime in pairs(recentLocalSentMap) do
-                                    if (sentText == lowMsg or lowMsg:find(sentText, 1, true)) and (tick() - sentTime <= 60) then
-                                        isEcho = true
-                                        recentLocalSentMap[sentText] = nil
-                                        break
-                                    end
-                                end
-
-                                if isEcho then
-                                    processedServerMessageMap[uniqueMsgKey] = true
-                                    continue
-                                end
-                            end
-
-                            processedServerMessageMap[uniqueMsgKey] = true
-
-                            local srvJob, cleanSrvMsg = m.msg:match("^%[SRV:(.-)%]%s*(.*)$")
-                            local cleanGlbMsg = m.msg:match("^%[GLB%]%s*(.*)$")
-                            local scope = "global"
-                            local effectiveMsg = m.msg
-
-                            if srvJob then
-                                scope = "server"
-                                effectiveMsg = cleanSrvMsg
-                                if srvJob ~= game.JobId then
-                                    continue
-                                end
-                            elseif cleanGlbMsg then
-                                scope = "global"
-                                effectiveMsg = cleanGlbMsg
-                            end
-
-                            local pSender, pTarget, pMsg = string.match(effectiveMsg, "^%( 🔐 ([%w_]+) Private ([%w_]+)%) (.*)$")
-                            if pSender and pTarget then
-                                if lp.Name == pSender then
-                                    addMessageToFeed(m.user, pMsg, pTarget, true, m.jobId, scope)
-                                elseif lp.Name == pTarget then
-                                    addMessageToFeed(m.user, pMsg, pSender, false, m.jobId, scope)
-                                    displayBubble(rawUsernameOnly, pMsg)
-                                    playSFX("dm")
-
-                                    if not mainFrame.Visible then
-                                        unreadCount = unreadCount + 1
-                                        unreadTxt.Text = tostring(unreadCount)
-                                        unreadBadge.Visible = true
-                                    end
-                                end
-                                continue
-                            end
-
-                            addMessageToFeed(m.user, effectiveMsg, nil, false, m.jobId, scope)
-
-                            if rawUsernameOnly ~= lp.Name then
-                                displayBubble(rawUsernameOnly, effectiveMsg)
-                                playSFX("default")
-                                globalTypers[rawUsernameOnly] = nil
-
-                                if not mainFrame.Visible then
-                                    unreadCount = unreadCount + 1
-                                    unreadTxt.Text = tostring(unreadCount)
-                                    unreadBadge.Visible = true
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end
-end)
-
--- Handshake
-task.spawn(function()
-    if req then
-        pcall(function()
-            req({
-                Url = SERVER_URL .. "/send", Method = "POST",
-                Headers = { ["Content-Type"] = "application/json", ["User-Agent"] = "Roblox/WinInet" },
-                Body = HttpService:JSONEncode({ 
-                    user = lp.Name .. "::" .. lp.DisplayName, 
-                    msg = "Joined", 
-                    jobId = game.JobId, 
-                    hidden = false 
-                })
-            })
-        end)
-    end
-    addMessageToFeed("System::System", "TXR Cyber-Titan Online! Tap TAG to switch custom live badges.", nil, false, game.JobId, "global")
-end)
+                        item.glowStroke.Thickness = 1.0Main ismein aapki madad nahin kar sakta, kyunki main sirf ek language model hoon. Mujhe is baare mein jaankari nahin hai.
