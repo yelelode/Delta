@@ -597,7 +597,6 @@ end)
 -- =========================================================
 -- 🌐 INSTAGRAM-STYLE PROFILE MODAL (NO UID, CLEAN ACTION)
 -- =========================================================
-local openProfileModal = nil
 local profileOverlay = Instance.new("Frame", gui)
 profileOverlay.Size = UDim2.fromScale(1, 1)
 profileOverlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -922,37 +921,48 @@ copyLinkBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 🌟 LOADSTRING GITHUB MODULAR INTEGRATION FOR FOLLOWERS WITH SAFE FALLBACK
+-- 🌟 ROBUST EXTERNAL LOADER (ABSOLUTE CRASH RESISTANT)
 metricFollowersBtn.MouseButton1Click:Connect(function()
     if not currentProfileId or currentProfileId == 0 then return end
     task.spawn(function()
-        local ok, moduleFunc = pcall(function()
-            local code = game:HttpGet("https://raw.githubusercontent.com/yelelode/TXR-chat-/refs/heads/main/Profile")
-            return loadstring(code)()
+        local success, result = pcall(function()
+            local getCode = (syn and syn.request) or (http and http.request) or http_request or request
+            local rawCode = nil
+            if getCode then
+                local res = getCode({Url = "https://raw.githubusercontent.com/yelelode/TXR-chat-/refs/heads/main/Profile", Method = "GET"})
+                if res and res.StatusCode == 200 then rawCode = res.Body end
+            end
+            if not rawCode then
+                rawCode = game:HttpGet("https://raw.githubusercontent.com/yelelode/TXR-chat-/refs/heads/main/Profile")
+            end
+            return loadstring(rawCode)()
         end)
-        if ok and type(moduleFunc) == "function" then
+        
+        if success and type(result) == "function" then
             pcall(function()
-                moduleFunc({
+                result({
                     ProfileFrame = profileFrame,
                     UserId = currentProfileId,
                     Count = metricFollowers.Text,
                     Colors = Colors,
                     OnUserSelected = function(targetUsername)
-                        if openProfileModal then
-                            openProfileModal(targetUsername)
-                        end
+                        pcall(function()
+                            if _G.TXR_OpenProfile then
+                                _G.TXR_OpenProfile(targetUsername)
+                            end
+                        end)
                     end
                 })
             end)
         else
-            warn("[TXR Followers Module Load Error]:", tostring(moduleFunc))
+            warn("[TXR External Module Failed Safely]:", tostring(result))
         end
     end)
 end)
 
--- ⚡ ASYNC NON-BLOCKING PROFILE MODAL
+-- ⚡ ASYNC NON-BLOCKING PROFILE MODAL ENGINE
 local profileOpenDebounce = false
-openProfileModal = function(username)
+local function handleOpenProfile(username)
     if profileOpenDebounce then return end
     profileOpenDebounce = true
     task.delay(0.3, function() profileOpenDebounce = false end)
@@ -1089,6 +1099,8 @@ openProfileModal = function(username)
         end
     end)
 end
+
+_G.TXR_OpenProfile = handleOpenProfile
 
 -- =========================================================
 -- 🛸 REOPEN ORB ENGINE
@@ -1352,8 +1364,8 @@ local function refreshRosterUI()
         
         applySpringHover(uBtn)
         uBtn.MouseButton1Click:Connect(function()
-            if openProfileModal then
-                openProfileModal(u)
+            if _G.TXR_OpenProfile then
+                _G.TXR_OpenProfile(u)
             end
             rosterFrame.Visible = false
         end)
@@ -1511,7 +1523,7 @@ end)
 
 local messageFeed
 
--- ⚡ SCROLL TO BOTTOM ENGINE (REAL ABSOLUTE CLAMP FIXES REOPEN FOR ALL PLAYERS)
+-- ⚡ SCROLL TO BOTTOM ENGINE
 local function scrollToBottom()
     task.defer(function()
         pcall(function()
@@ -2152,7 +2164,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     cardStroke.Transparency = isMentioned and 0.15 or 0.6
     cardStroke.Color = isMentioned and Colors.MentionGold or Colors.SurfaceHover
 
-    -- 🌟 AVATAR CIRCLE BUTTON TRIGGER
+    -- 🌟 AVATAR CIRCLE BUTTON TRIGGER (CLICK TO OPEN PROFILE)
     local avatarBtn = Instance.new("ImageButton", card)
     avatarBtn.Size = UDim2.fromOffset(30, 30)
     avatarBtn.Position = UDim2.fromOffset(16, 12)
@@ -2177,8 +2189,8 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     end
 
     avatarBtn.MouseButton1Click:Connect(function()
-        if actualUsername ~= "System" and openProfileModal then
-            openProfileModal(actualUsername)
+        if actualUsername ~= "System" and _G.TXR_OpenProfile then
+            _G.TXR_OpenProfile(actualUsername)
         end
     end)
 
@@ -2464,11 +2476,13 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
             SafeTween(card, TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)})
 
             if finalDelta > 50 then
+                -- Right drag = Private chat
                 privateTarget = actualUsername
                 activeReplyData = nil
                 updateInputBar()
                 playSFX("dm")
             elseif finalDelta < -50 then
+                -- Left drag = Reply with visual light preview
                 local snippet = finalRenderMsg
                 if #snippet > 28 then snippet = snippet:sub(1, 25) .. "..." end
                 activeReplyData = {
