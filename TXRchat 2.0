@@ -2027,8 +2027,8 @@ local function addJoinNotice(username)
     end)
 end
 
--- 🌟 STABLE 150 RETENTION LIMIT
-local MAX_MESSAGES = 150
+-- 🌟 ROBUST RETENTION LIMIT (BALANCED FOR PERFORMANCE & HISTORY)
+local MAX_MESSAGES = 100
 local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSender, msgJobId, scopeType)
     if msg == "[TYPING]" or msg:find("%[TYPING%]") then return end
 
@@ -3294,7 +3294,7 @@ task.spawn(function()
                 if isInitialSync then
                     isInitialSync = false
                     if #data > 0 then
-                        local startIndex = math.max(1, #data - 40)
+                        local startIndex = math.max(1, #data - 20)
                         for i = startIndex, #data do
                             local m = data[i]
                             if not m.hidden and m.msg ~= "Joined" and m.msg ~= "[TYPING]" and not tostring(m.msg):find("%[TYPING%]") then
