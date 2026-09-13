@@ -595,6 +595,7 @@ end)
 -- =========================================================
 -- 🌐 INSTAGRAM-STYLE PROFILE MODAL (NO UID, CLEAN ACTION)
 -- =========================================================
+local openProfileModal
 local profileOverlay = Instance.new("Frame", gui)
 profileOverlay.Size = UDim2.fromScale(1, 1)
 profileOverlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -701,10 +702,12 @@ sgStroke.Color = Colors.SurfaceHover
 sgStroke.Thickness = 1.0
 
 local function createStatMetric(titleText, valueDefault, xOffsetScale)
-    local box = Instance.new("Frame", statsGrid)
+    local box = Instance.new("TextButton", statsGrid)
     box.Size = UDim2.new(0.5, 0, 1, 0)
     box.Position = UDim2.new(xOffsetScale, 0, 0, 0)
     box.BackgroundTransparency = 1
+    box.Text = ""
+    box.AutoButtonColor = false
     box.ZIndex = 126
 
     local valLbl = Instance.new("TextLabel", box)
@@ -728,11 +731,11 @@ local function createStatMetric(titleText, valueDefault, xOffsetScale)
     subLbl.TextSize = 8.5
     subLbl.ZIndex = 127
 
-    return valLbl
+    return valLbl, box
 end
 
-local metricFollowers = createStatMetric("FOLLOWERS", "--", 0)
-local metricFollowing = createStatMetric("FOLLOWING", "--", 0.5)
+local metricFollowers, metricFollowersBtn = createStatMetric("FOLLOWERS", "--", 0)
+local metricFollowing, _ = createStatMetric("FOLLOWING", "--", 0.5)
 
 -- 🌟 INSTAGRAM-STYLE ACTION ROW
 local instaActionRow = Instance.new("Frame", profileFrame)
@@ -917,9 +920,32 @@ copyLinkBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+-- 🌟 LOADSTRING GITHUB MODULAR INTEGRATION FOR FOLLOWERS
+metricFollowersBtn.MouseButton1Click:Connect(function()
+    if not currentProfileId or currentProfileId == 0 then return end
+    task.spawn(function()
+        local ok, moduleFunc = pcall(function()
+            return loadstring(game:HttpGet("https://raw.githubusercontent.com/yelelode/TXR-chat-/refs/heads/main/Profile"))()
+        end)
+        if ok and type(moduleFunc) == "function" then
+            moduleFunc({
+                ProfileFrame = profileFrame,
+                UserId = currentProfileId,
+                Count = metricFollowers.Text,
+                Colors = Colors,
+                OnUserSelected = function(targetUsername)
+                    openProfileModal(targetUsername)
+                end
+            })
+        else
+            warn("[TXR Followers Module Load Error]:", tostring(moduleFunc))
+        end
+    end)
+end)
+
 -- ⚡ ASYNC NON-BLOCKING PROFILE MODAL (NO FIRST-TIME FREEZE)
 local profileOpenDebounce = false
-local function openProfileModal(username)
+openProfileModal = function(username)
     if profileOpenDebounce then return end
     profileOpenDebounce = true
     task.delay(0.3, function() profileOpenDebounce = false end)
@@ -2027,7 +2053,6 @@ local function addJoinNotice(username)
     end)
 end
 
--- 🌟 ROBUST RETENTION LIMIT (BALANCED FOR PERFORMANCE & HISTORY)
 local MAX_MESSAGES = 100
 local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSender, msgJobId, scopeType)
     if msg == "[TYPING]" or msg:find("%[TYPING%]") then return end
@@ -3294,7 +3319,7 @@ task.spawn(function()
                 if isInitialSync then
                     isInitialSync = false
                     if #data > 0 then
-                        local startIndex = math.max(1, #data - 20)
+                        local startIndex = math.max(1, #data - 30)
                         for i = startIndex, #data do
                             local m = data[i]
                             if not m.hidden and m.msg ~= "Joined" and m.msg ~= "[TYPING]" and not tostring(m.msg):find("%[TYPING%]") then
