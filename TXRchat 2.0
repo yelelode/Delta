@@ -12,19 +12,39 @@ pcall(function()
 end)
 
 -- =========================================================
--- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (V6 STEALTH OLED) 👑
+-- 🛡️ ULTRA-FAST FAULT-ISOLATED CORE ENGINE
+-- =========================================================
+local function SafeWrap(moduleName, fn)
+    local success, result = pcall(fn)
+    if not success then
+        warn(string.format("[TXR Fail-Safe Skipped]: %s -> %s", tostring(moduleName), tostring(result)))
+    end
+    return success, result
+end
+
+local function SafeThread(moduleName, fn)
+    task.spawn(function()
+        local success, result = pcall(fn)
+        if not success then
+            warn(string.format("[TXR Thread Error in %s]: %s", tostring(moduleName), tostring(result)))
+        end
+    end)
+end
+
+-- =========================================================
+-- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (RESILIENT V6)
 -- =========================================================
 
 local currentExecutionID = tick()
 _G.TXR_ChatInstanceID = currentExecutionID
 
-pcall(function()
-    if _G.TXR_ChatConnection then 
+SafeWrap("ClearPreviousConnections", function()
+    if _G.TXR_ChatConnection and typeof(_G.TXR_ChatConnection) == "RBXScriptConnection" then 
         _G.TXR_ChatConnection:Disconnect() 
     end
 end)
 _G.TXR_IsPolling = false
-task.wait(0.05)
+task.wait(0.02)
 _G.TXR_IsPolling = true
 
 local Players = game:GetService("Players")
@@ -37,21 +57,10 @@ local TextChatService = game:GetService("TextChatService")
 local ChatService = game:GetService("Chat")
 local SoundService = game:GetService("SoundService")
 
-local lp = Players.LocalPlayer
+local lp = Players.LocalPlayer or Players:GetPropertyChangedSignal("LocalPlayer"):Wait() or Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 local setClip = setclipboard or toclipboard or function() end
 local req = (syn and syn.request) or (http and http.request) or http_request or request
-
--- =========================================================
--- 🛡️ MODULAR FAULT-ISOLATION SUBSYSTEM (ZERO-FREEZE)
--- =========================================================
-local function BootSubsystem(subsystemName, loaderFunc)
-    local ok, err = pcall(loaderFunc)
-    if not ok then
-        warn(string.format("[TXR Module Skipped]: %s encountered an error: %s", tostring(subsystemName), tostring(err)))
-    end
-    return ok
-end
 
 local function SafeTween(obj, tweenInfo, props)
     if not obj or not obj.Parent then return end
@@ -74,19 +83,43 @@ local function SafeGetTextSize(text, size, font, bounds)
     return (ok and res) or Vector2.new(50, 18)
 end
 
+-- 🛡️ GUARANTEED PARENT RESOLUTION (NO CRASH ON CORE-GUI SECURITY)
 local targetGuiParent = nil
-pcall(function() targetGuiParent = (gethui and gethui()) or game:GetService("CoreGui") end)
-if not targetGuiParent then
-    pcall(function() targetGuiParent = lp:FindFirstChildOfClass("PlayerGui") or lp:WaitForChild("PlayerGui", 3) end)
-end
-
-if targetGuiParent then
-    for _, v in pairs(targetGuiParent:GetChildren()) do
-        if v.Name:find("TXR_OnyxChat") or v.Name:find("HiddenChatUI") then 
-            pcall(function() v:Destroy() end)
+SafeWrap("ResolveGuiParent", function()
+    if gethui then
+        local ok, h = pcall(gethui)
+        if ok and h then targetGuiParent = h end
+    end
+    if not targetGuiParent then
+        local ok, cg = pcall(function() return game:GetService("CoreGui") end)
+        if ok and cg then
+            local testOk = pcall(function() return cg:GetChildren() end)
+            if testOk then targetGuiParent = cg end
         end
     end
+    if not targetGuiParent and lp then
+        local ok, pg = pcall(function() return lp:FindFirstChildOfClass("PlayerGui") or lp:WaitForChild("PlayerGui", 3) end)
+        if ok and pg then targetGuiParent = pg end
+    end
+end)
+
+if not targetGuiParent then
+    targetGuiParent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
 end
+
+-- 🛡️ SAFE CLEANUP OF PREVIOUS UI
+SafeWrap("PurgeOldInstances", function()
+    if targetGuiParent then
+        local ok, children = pcall(function() return targetGuiParent:GetChildren() end)
+        if ok and children then
+            for _, v in ipairs(children) do
+                if v and (v.Name:find("TXR_OnyxChat") or v.Name:find("HiddenChatUI")) then 
+                    pcall(function() v:Destroy() end)
+                end
+            end
+        end
+    end
+end)
 
 -- =========================================================
 -- 🛡️ STRING SANITIZATION (RICHTEXT SAFETY)
@@ -377,26 +410,24 @@ local function applySpringHover(btn)
 end
 
 local function playSFX(soundType)
-    task.spawn(function()
-        pcall(function()
-            local s = Instance.new("Sound")
-            if soundType == "mention" or soundType == "dm" then
-                s.SoundId = "rbxassetid://9114223177"
-                s.Volume = 0.8
-            elseif soundType == "meme" then
-                s.SoundId = "rbxassetid://9069609268"
-                s.Volume = 0.6
-            elseif soundType == "swipe" then
-                s.SoundId = "rbxassetid://6553245465"
-                s.Volume = 0.3
-            else
-                s.SoundId = "rbxassetid://6518811702"
-                s.Volume = 0.4
-            end
-            s.Parent = SoundService
-            s:Play()
-            task.delay(1.5, function() pcall(function() s:Destroy() end) end)
-        end)
+    SafeThread("PlaySFX", function()
+        local s = Instance.new("Sound")
+        if soundType == "mention" or soundType == "dm" then
+            s.SoundId = "rbxassetid://9114223177"
+            s.Volume = 0.8
+        elseif soundType == "meme" then
+            s.SoundId = "rbxassetid://9069609268"
+            s.Volume = 0.6
+        elseif soundType == "swipe" then
+            s.SoundId = "rbxassetid://6553245465"
+            s.Volume = 0.3
+        else
+            s.SoundId = "rbxassetid://6518811702"
+            s.Volume = 0.4
+        end
+        s.Parent = SoundService
+        s:Play()
+        task.delay(1.5, function() pcall(function() s:Destroy() end) end)
     end)
 end
 
@@ -428,7 +459,7 @@ local followedUsers = {}
 local profileCache = {}
 
 -- ↩️ ACTIVE REPLY TARGET STATE
-local replyingToData = nil -- { user = string, dispName = string, snippet = string }
+local replyingToData = nil
 
 local globalTypers = {}
 local processedServerMessageMap = {}
@@ -445,7 +476,7 @@ if lp.UserId == MY_VIP_ID then
 end
 
 local function displayBubble(userName, msg)
-    pcall(function()
+    SafeThread("DisplayBubble", function()
         local speaker = Players:FindFirstChild(userName)
         if not speaker or not speaker.Character then return end
 
@@ -454,7 +485,7 @@ local function displayBubble(userName, msg)
             cleanMsg = "[Sticker / Meme]"
         end
 
-        if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+        if TextChatService and pcall(function() return TextChatService.ChatVersion end) and TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
             TextChatService:DisplayBubble(speaker.Character, cleanMsg)
         else
             local head = speaker.Character:FindFirstChild("Head")
@@ -554,7 +585,7 @@ gsGrad.Transparency = NumberSequence.new({
 gsGrad.Rotation = 90
 
 -- Matrix Rain Subsystem
-BootSubsystem("MatrixRain", function()
+SafeThread("MatrixRain", function()
     local matrixBox = Instance.new("Frame", mainFrame)
     matrixBox.Size = UDim2.fromScale(1, 1)
     matrixBox.BackgroundTransparency = 1
@@ -578,18 +609,16 @@ BootSubsystem("MatrixRain", function()
         table.insert(matrixColumns, col)
     end
 
-    task.spawn(function()
-        while _G.TXR_ChatInstanceID == currentExecutionID and gui.Parent do
-            for _, col in ipairs(matrixColumns) do
-                local str = ""
-                for j = 1, 14 do
-                    str = str .. matrixChars[math.random(1, #matrixChars)] .. "\n"
-                end
-                col.Text = str
+    while _G.TXR_ChatInstanceID == currentExecutionID and gui.Parent do
+        for _, col in ipairs(matrixColumns) do
+            local str = ""
+            for j = 1, 14 do
+                str = str .. matrixChars[math.random(1, #matrixChars)] .. "\n"
             end
-            task.wait(0.3)
+            col.Text = str
         end
-    end)
+        task.wait(0.35)
+    end
 end)
 
 -- =========================================================
@@ -820,7 +849,7 @@ local function closeFollowersModal()
 end
 flCloseBtn.MouseButton1Click:Connect(closeFollowersModal)
 
-local openProfileModal -- Forward reference
+local openProfileModal -- Forward definition
 
 local function showFollowersList(userId, username)
     for _, c in ipairs(flScroll:GetChildren()) do
@@ -841,7 +870,7 @@ local function showFollowersList(userId, username)
     loadingLbl.TextSize = 10.5
     loadingLbl.ZIndex = 143
 
-    task.spawn(function()
+    SafeThread("FetchFollowersList", function()
         local list = {}
         if req and userId and userId > 0 then
             pcall(function()
@@ -1110,7 +1139,7 @@ copyLinkBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ⚡ INSTANT PROFILE OPENER WITH ASYNC BACKGROUND CACHING (0% FREEZE / NO HANG)
+-- ⚡ INSTANT PROFILE OPENER WITH ASYNC BACKGROUND CACHING (0% FREEZE)
 local profileOpenDebounce = false
 openProfileModal = function(username)
     if profileOpenDebounce then return end
@@ -1158,7 +1187,7 @@ openProfileModal = function(username)
     SafeTween(pfScale, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1})
     playSFX("default")
 
-    task.spawn(function()
+    SafeThread("ProfileBackgroundResolver", function()
         local uId = cachedUid
         if not uId then
             pcall(function()
@@ -1200,56 +1229,50 @@ openProfileModal = function(username)
             local fBio = personalCustomBios[uId] or "No description provided."
 
             if req then
-                task.spawn(function()
-                    pcall(function()
-                        local r1 = req({
-                            Url = "https://friends.roblox.com/v1/users/" .. tostring(uId) .. "/followers/count",
-                            Method = "GET"
-                        })
-                        if r1 and r1.StatusCode == 200 then
-                            local d1 = HttpService:JSONDecode(r1.Body)
-                            if d1 and d1.count and currentProfileId == uId then 
-                                metricFollowers.Text = tostring(d1.count)
-                                if not profileCache[uId] then profileCache[uId] = {} end
-                                profileCache[uId].followers = tostring(d1.count)
-                            end
+                SafeThread("ReqFollowers", function()
+                    local r1 = req({
+                        Url = "https://friends.roblox.com/v1/users/" .. tostring(uId) .. "/followers/count",
+                        Method = "GET"
+                    })
+                    if r1 and r1.StatusCode == 200 then
+                        local d1 = HttpService:JSONDecode(r1.Body)
+                        if d1 and d1.count and currentProfileId == uId then 
+                            metricFollowers.Text = tostring(d1.count)
+                            if not profileCache[uId] then profileCache[uId] = {} end
+                            profileCache[uId].followers = tostring(d1.count)
                         end
-                    end)
+                    end
                 end)
 
-                task.spawn(function()
-                    pcall(function()
-                        local r2 = req({
-                            Url = "https://friends.roblox.com/v1/users/" .. tostring(uId) .. "/followings/count",
-                            Method = "GET"
-                        })
-                        if r2 and r2.StatusCode == 200 then
-                            local d2 = HttpService:JSONDecode(r2.Body)
-                            if d2 and d2.count and currentProfileId == uId then 
-                                metricFollowing.Text = tostring(d2.count)
-                                if not profileCache[uId] then profileCache[uId] = {} end
-                                profileCache[uId].following = tostring(d2.count)
-                            end
+                SafeThread("ReqFollowings", function()
+                    local r2 = req({
+                        Url = "https://friends.roblox.com/v1/users/" .. tostring(uId) .. "/followings/count",
+                        Method = "GET"
+                    })
+                    if r2 and r2.StatusCode == 200 then
+                        local d2 = HttpService:JSONDecode(r2.Body)
+                        if d2 and d2.count and currentProfileId == uId then 
+                            metricFollowing.Text = tostring(d2.count)
+                            if not profileCache[uId] then profileCache[uId] = {} end
+                            profileCache[uId].following = tostring(d2.count)
                         end
-                    end)
+                    end
                 end)
 
                 if not personalCustomBios[uId] then
-                    task.spawn(function()
-                        pcall(function()
-                            local r3 = req({
-                                Url = "https://users.roblox.com/v1/users/" .. tostring(uId),
-                                Method = "GET"
-                            })
-                            if r3 and r3.StatusCode == 200 then
-                                local d3 = HttpService:JSONDecode(r3.Body)
-                                if d3 and d3.description and #d3.description > 0 and currentProfileId == uId then
-                                    bioLabel.Text = d3.description
-                                    if not profileCache[uId] then profileCache[uId] = {} end
-                                    profileCache[uId].bio = d3.description
-                                end
+                    SafeThread("ReqBio", function()
+                        local r3 = req({
+                            Url = "https://users.roblox.com/v1/users/" .. tostring(uId),
+                            Method = "GET"
+                        })
+                        if r3 and r3.StatusCode == 200 then
+                            local d3 = HttpService:JSONDecode(r3.Body)
+                            if d3 and d3.description and #d3.description > 0 and currentProfileId == uId then
+                                bioLabel.Text = d3.description
+                                if not profileCache[uId] then profileCache[uId] = {} end
+                                profileCache[uId].bio = d3.description
                             end
-                        end)
+                        end
                     end)
                 else
                     bioLabel.Text = fBio
@@ -1532,7 +1555,7 @@ local function refreshRosterUI()
 end
 
 -- =========================================================
--- 🌟 HEADER BAR & BALANCED CONTROLS (CLEAN & CENTERED)
+-- 🌟 HEADER BAR & BALANCED CONTROLS
 -- =========================================================
 local header = Instance.new("Frame", mainFrame)
 header.Size = UDim2.new(1, 0, 0, 42)
@@ -1682,7 +1705,7 @@ end)
 
 local messageFeed
 
--- ⚡ TRUE ABSOLUTE SCROLL TO BOTTOM ENGINE (NO STALE CACHE GLITCH)
+-- ⚡ TRUE ABSOLUTE SCROLL TO BOTTOM ENGINE
 local function scrollToBottom()
     task.defer(function()
         pcall(function()
@@ -1945,7 +1968,7 @@ local badgeKeysOrder = {
     "LUCIFER", "SUPREME", "ROYAL", "DEMON"
 }
 
-BootSubsystem("BadgeSelectorModal", function()
+SafeThread("BadgeSelectorInit", function()
     for _, bKey in ipairs(badgeKeysOrder) do
         local bData = BadgePresets[bKey]
         local bBtn = Instance.new("TextButton", bsScroll)
@@ -2299,7 +2322,7 @@ local function addJoinNotice(username)
     end)
 end
 
--- ⚡ PRUNING: PRESERVES GLOBAL CHATS (ONLY PURGES EXCESS SERVER CHATS)
+-- ⚡ PRUNING: ONLY PURGES EXCESS SERVER CHATS (GLOBAL REMAINS LOADED)
 local function pruneOldMessages()
     local serverCount = 0
     for _, child in ipairs(messageFeed:GetChildren()) do
@@ -2427,7 +2450,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         end
     end)
 
-    task.spawn(function()
+    SafeThread("FetchAvatarHeadShot", function()
         local targetPlr = Players:FindFirstChild(actualUsername)
         local uId = targetPlr and targetPlr.UserId or userIdCache[actualUsername:lower()]
         if uId and avatarImg and avatarImg.Parent then
@@ -2446,7 +2469,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     ccLayout.SortOrder = Enum.SortOrder.LayoutOrder
     ccLayout.Padding = UDim.new(0, 3)
 
-    -- 🕒 TOP METADATA ROW: TIME & DM IDENTIFIER ABOVE NAME (FREES HORIZONTAL SPACE)
+    -- 🕒 TOP METADATA ROW: TIME & DM IDENTIFIER (FREES UP NAME ROW)
     local topMetaRow = Instance.new("Frame", cardContent)
     topMetaRow.Size = UDim2.new(1, 0, 0, 13)
     topMetaRow.BackgroundTransparency = 1
@@ -2483,7 +2506,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         crispText(dmLbl, 0.5)
     end
 
-    -- 🏷️ HEADER ROW: BADGE + DISPLAY NAME ONLY (NO @USERNAME SPAM)
+    -- 🏷️ HEADER ROW: DISPLAY NAME ONLY (NO @USERNAME SPAM)
     local headerRow = Instance.new("Frame", cardContent)
     headerRow.Size = UDim2.new(1, 0, 0, 18)
     headerRow.BackgroundTransparency = 1
@@ -2801,7 +2824,7 @@ chatInput:GetPropertyChangedSignal("Text"):Connect(function()
         typingIndicator.BackgroundTransparency = 0.2
         if tick() - lastTypingBroadcast > 4 then
             lastTypingBroadcast = tick()
-            task.spawn(function()
+            SafeThread("BroadcastTyping", function()
                 SafeRequest({
                     Url = SERVER_URL .. "/send", Method = "POST",
                     Headers = { ["Content-Type"] = "application/json" },
@@ -2915,21 +2938,18 @@ local emojiGrid = Instance.new("UIGridLayout", emojiScroll)
 emojiGrid.CellSize = UDim2.new(0, 26, 0, 26)
 emojiGrid.CellPadding = UDim2.new(0, 3, 0, 3)
 
-BootSubsystem("EmojiSystem", function()
-    local emojiRaw = "😃😁😆😂🤣😎🫡🔥💀❤️🖤✨💯👑⚡⚠️🔒💬🍜🍕🚀🎉"
-    if utf8 and utf8.graphemes then
-        for p, c in utf8.graphemes(emojiRaw) do
-            local em = string.sub(emojiRaw, p, c)
-            local btn = Instance.new("TextButton", emojiScroll)
-            btn.Text = em
-            btn.TextSize = 15
-            btn.BackgroundTransparency = 1
-            btn.ZIndex = 32
-            btn.MouseButton1Click:Connect(function()
-                chatInput.Text = chatInput.Text .. em
-                chatInput:CaptureFocus()
-            end)
-        end
+SafeThread("EmojiInit", function()
+    local emojis = {"😃","😁","😆","😂","🤣","😎","🫡","🔥","💀","❤️","🖤","✨","💯","👑","⚡","⚠️","🔒","💬","🍜","🍕","🚀","🎉"}
+    for _, em in ipairs(emojis) do
+        local btn = Instance.new("TextButton", emojiScroll)
+        btn.Text = em
+        btn.TextSize = 15
+        btn.BackgroundTransparency = 1
+        btn.ZIndex = 32
+        btn.MouseButton1Click:Connect(function()
+            chatInput.Text = chatInput.Text .. em
+            chatInput:CaptureFocus()
+        end)
     end
 end)
 
@@ -2981,7 +3001,7 @@ local memeGrid = Instance.new("UIGridLayout", memeScroll)
 memeGrid.CellSize = UDim2.new(0, 60, 0, 60)
 memeGrid.CellPadding = UDim2.new(0, 6, 0, 6)
 
-BootSubsystem("MemeLibrary", function()
+SafeThread("MemeInit", function()
     for _, mData in ipairs(MemeLibrary) do
         local mItem = Instance.new("ImageButton", memeScroll)
         mItem.BackgroundColor3 = Colors.Background
@@ -3179,7 +3199,6 @@ openBtn.MouseButton1Click:Connect(function()
     SafeTween(aura, tInfo3, {ImageTransparency = isGhostMode and 0.95 or 0.85})
     SafeTween(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.5 or 0.25})
 
-    -- Instantly jump to latest messages!
     scrollToBottom()
 end)
 
@@ -3211,9 +3230,9 @@ UserInputService.InputBegan:Connect(function(input, gp)
 end)
 
 -- =========================================================
--- ⚡ 60 FPS ULTRA-SMOOTH TAG GLOW & TYPING RENDERER
+-- ⚡ 60 FPS RENDERER (SHIELDED AGAINST RENDER CRASH)
 -- =========================================================
-task.spawn(function()
+SafeThread("MainRenderSteppedLoop", function()
     local t = 0
     local sonarTimer = 0
     local currentSpeedMod = 1
@@ -3478,7 +3497,7 @@ sendMessageFunc = function(overrideText)
     recentLocalSentMap[string.lower(payloadText)] = tick()
     recentLocalSentMap[string.lower(text)] = tick()
 
-    task.spawn(function()
+    SafeThread("SendToServer", function()
         SafeRequest({
             Url = SERVER_URL .. "/send",
             Method = "POST",
@@ -3498,10 +3517,11 @@ chatInput.FocusLost:Connect(function(enterPressed)
 end)
 
 -- =========================================================
--- 📥 HIGH-FREQUENCY POLLING ENGINE (FULL GLOBAL RETENTION)
+-- 📥 POLLING ENGINE (GLOBAL RETENTION + SHIELDED JSON PARSER)
 -- =========================================================
-task.spawn(function()
-    while _G.TXR_IsPolling and (_G.TXR_ChatInstanceID == currentExecutionID) and task.wait(0.4) do
+SafeThread("MessagePollingWorker", function()
+    while _G.TXR_IsPolling and (_G.TXR_ChatInstanceID == currentExecutionID) do
+        task.wait(0.4)
         local success, res = SafeRequest({
             Url = SERVER_URL .. "/messages?since=" .. tostring(lastSyncTime),
             Method = "GET",
@@ -3517,7 +3537,7 @@ task.spawn(function()
                 if isInitialSync then
                     isInitialSync = false
                     if #data > 0 then
-                        -- 🌟 FULL GLOBAL CHAT RETENTION: LOAD ALL HISTORICAL MESSAGES ON START
+                        -- 🌟 FULL GLOBAL RETENTION: LOADS ALL PAST MESSAGES AT STARTUP
                         for i = 1, #data do
                             local m = data[i]
                             if not m.hidden and m.msg ~= "Joined" and m.msg ~= "[TYPING]" and not tostring(m.msg):find("%[TYPING%]") then
@@ -3655,7 +3675,7 @@ task.spawn(function()
 end)
 
 -- Handshake
-task.spawn(function()
+SafeThread("HandshakeInit", function()
     SafeRequest({
         Url = SERVER_URL .. "/send", Method = "POST",
         Headers = { ["Content-Type"] = "application/json", ["User-Agent"] = "Roblox/WinInet" },
