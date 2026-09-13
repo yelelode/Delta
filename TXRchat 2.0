@@ -1,19 +1,20 @@
 -- =========================================================
--- 🌐 UNIVERSAL EXECUTOR & DEVICE COMPATIBILITY SHIM
+-- 🌐 UNIVERSAL EXECUTOR & DELTA MOBILE COMPATIBILITY SHIM
 -- =========================================================
 pcall(function()
     local g = (getgenv and getgenv()) or _G or shared
     if not g.gethui then
         g.gethui = function()
             local lp = game:GetService("Players").LocalPlayer
-            return (game:GetService("CoreGui")) or (lp and lp:FindFirstChild("PlayerGui")) or nil
+            return (lp and lp:FindFirstChild("PlayerGui")) or (game:GetService("CoreGui")) or nil
         end
     end
 end)
 
--- Wait for game to be loaded safely
+-- Delta Mobile Non-Blocking Game Load Check (Prevents Infinite Yield)
 if not game:IsLoaded() then
-    pcall(function() game.Loaded:Wait() end)
+    local startWait = tick()
+    repeat task.wait(0.1) until game:IsLoaded() or (tick() - startWait > 2)
 end
 
 -- =========================================================
@@ -37,7 +38,7 @@ local function SafeThread(moduleName, fn)
 end
 
 -- =========================================================
--- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (RESILIENT V6)
+-- 👑 TXR GLOBAL CHAT: CYBER-TITAN APEX (DELTA MOBILE OPTIMIZED)
 -- =========================================================
 
 local currentExecutionID = tick()
@@ -62,11 +63,11 @@ local TextChatService = game:GetService("TextChatService")
 local ChatService = game:GetService("Chat")
 local SoundService = game:GetService("SoundService")
 
--- Bulletproof LocalPlayer resolution
+-- Non-hanging LocalPlayer resolution for mobile
 local lp = Players.LocalPlayer
 if not lp then
-    local startWait = tick()
-    while not lp and (tick() - startWait < 5) do
+    local lpTimer = tick()
+    while not lp and (tick() - lpTimer < 3) do
         task.wait(0.05)
         lp = Players.LocalPlayer
     end
@@ -76,10 +77,10 @@ if not lp then
 end
 
 local Camera = workspace.CurrentCamera
-local setClip = setclipboard or toclipboard or function() end
-local req = (syn and syn.request) or (http and http.request) or http_request or request
+local setClip = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set) or function() end
+local req = (syn and syn.request) or (http and http.request) or http_request or request or (fluxus and fluxus.request)
 
--- 🛡️ FORWARD DECLARATIONS (PREVENTS SCOPE CRASHES)
+-- Forward Declarations
 local openProfileModal
 local showFollowersList
 local closeFollowersModal
@@ -112,42 +113,27 @@ local function SafeGetTextSize(text, size, font, bounds)
     return (ok and res) or Vector2.new(50, 18)
 end
 
--- 🛡️ GUARANTEED PARENT RESOLUTION WITH WRITE VERIFICATION
-local function getSafeGuiParent()
+-- 🛡️ DELTA MOBILE WRITE-SAFE PARENT RESOLUTION
+local function getDeltaSafeParent()
+    local pg = lp and (lp:FindFirstChildOfClass("PlayerGui") or lp:FindFirstChild("PlayerGui"))
+    if pg then return pg end
     if gethui then
         local ok, h = pcall(gethui)
-        if ok and h then
-            local test = Instance.new("Frame")
-            local canParent = pcall(function() test.Parent = h test:Destroy() end)
-            if canParent then return h end
-        end
-    end
-    local pGui = lp:FindFirstChildOfClass("PlayerGui") or lp:WaitForChild("PlayerGui", 3)
-    if pGui then
-        local test = Instance.new("Frame")
-        local canParent = pcall(function() test.Parent = pGui test:Destroy() end)
-        if canParent then return pGui end
+        if ok and h then return h end
     end
     local okCg, cg = pcall(function() return game:GetService("CoreGui") end)
-    if okCg and cg then
-        local test = Instance.new("Frame")
-        local canParent = pcall(function() test.Parent = cg test:Destroy() end)
-        if canParent then return cg end
-    end
-    return lp:WaitForChild("PlayerGui")
+    if okCg and cg then return cg end
+    return lp:WaitForChild("PlayerGui", 4)
 end
 
-local targetGuiParent = getSafeGuiParent()
+local targetGuiParent = getDeltaSafeParent()
 
--- 🛡️ SAFE CLEANUP OF PREVIOUS UI
+-- Safe cleanup of older versions
 SafeWrap("PurgeOldInstances", function()
     if targetGuiParent then
-        local ok, children = pcall(function() return targetGuiParent:GetChildren() end)
-        if ok and children then
-            for _, v in ipairs(children) do
-                if v and (v.Name:find("TXR_OnyxChat") or v.Name:find("HiddenChatUI")) then 
-                    pcall(function() v:Destroy() end)
-                end
+        for _, v in ipairs(targetGuiParent:GetChildren()) do
+            if v and (v.Name:find("TXR_OnyxChat") or v.Name:find("HiddenChatUI")) then 
+                pcall(function() v:Destroy() end)
             end
         end
     end
@@ -486,7 +472,7 @@ local personalCustomBios = {
     [lp.UserId] = "⚡ Cyber-Titan Apex Elite | System Architect"
 }
 
--- 🌟 INSTAGRAM-STYLE FOLLOW REGISTRY & PROFILE CACHE
+-- 🌟 FOLLOW REGISTRY & PROFILE CACHE
 local followedUsers = {}
 local profileCache = {}
 
@@ -544,7 +530,6 @@ gui.Name = "TXR_OnyxChat_" .. tostring(math.random(100000, 999999))
 gui.ResetOnSpawn = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- Immediate parent mount for zero delay
 pcall(function() gui.Parent = targetGuiParent end)
 
 local shadow = Instance.new("ImageLabel", gui)
@@ -2771,12 +2756,10 @@ addMessageToFeed = function(rawUserName, msg, privateUserTarget, isPrivateSender
             SafeTween(card, TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)})
 
             if finalDelta > 50 then
-                -- RIGHT DRAG: PRIVATE CHAT / DM
                 privateTarget = actualUsername
                 updateInputBar()
                 playSFX("dm")
             elseif finalDelta < -50 then
-                -- LEFT DRAG: OFFICIAL APP STYLE REPLY
                 setReplyTarget(actualUsername, dispName, effectiveMsgText)
                 chatInput:CaptureFocus()
             end
@@ -3577,7 +3560,6 @@ SafeThread("MessagePollingWorker", function()
                 if isInitialSync then
                     isInitialSync = false
                     if #data > 0 then
-                        -- 🌟 FULL GLOBAL RETENTION: LOADS ALL PAST MESSAGES AT STARTUP
                         for i = 1, #data do
                             local m = data[i]
                             if not m.hidden and m.msg ~= "Joined" and m.msg ~= "[TYPING]" and not tostring(m.msg):find("%[TYPING%]") then
