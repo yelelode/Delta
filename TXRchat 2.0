@@ -18,9 +18,11 @@ end)
 local currentExecutionID = tick()
 _G.TXR_ChatInstanceID = currentExecutionID
 
-if _G.TXR_ChatConnection then 
-    pcall(function() _G.TXR_ChatConnection:Disconnect() end)
-end
+pcall(function()
+    if _G.TXR_ChatConnection then 
+        _G.TXR_ChatConnection:Disconnect() 
+    end
+end)
 _G.TXR_IsPolling = false
 task.wait(0.05)
 _G.TXR_IsPolling = true
@@ -38,51 +40,51 @@ local SoundService = game:GetService("SoundService")
 local lp = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 local setClip = setclipboard or toclipboard or function() end
-
 local req = (syn and syn.request) or (http and http.request) or http_request or request
 
 -- =========================================================
--- 🛡️ ZERO-CRASH GUARD ENGINE (ISOLATED FAULT PROTECTION)
+-- 🛡️ MODULAR FAULT-ISOLATION SUBSYSTEM (ZERO-FREEZE)
 -- =========================================================
-local Safe = {}
-
-function Safe.Run(fn, ...)
-    local success, res = pcall(fn, ...)
-    if not success then
-        warn("[TXR Guard Error Caught]:", tostring(res))
+local function BootSubsystem(subsystemName, loaderFunc)
+    local ok, err = pcall(loaderFunc)
+    if not ok then
+        warn(string.format("[TXR Module Skipped]: %s encountered an error: %s", tostring(subsystemName), tostring(err)))
     end
-    return success, res
+    return ok
 end
 
-function Safe.Tween(obj, tweenInfo, props)
+local function SafeTween(obj, tweenInfo, props)
     if not obj or not obj.Parent then return end
     pcall(function()
         TweenService:Create(obj, tweenInfo, props):Play()
     end)
 end
 
-function Safe.Request(opts)
+local function SafeRequest(opts)
     if not req then return false, nil end
     return pcall(function()
         return req(opts)
     end)
 end
 
-function Safe.GetTextSize(text, size, font, bounds)
+local function SafeGetTextSize(text, size, font, bounds)
     local ok, res = pcall(function()
         return TextService:GetTextSize(text or "", size or 10, font or Enum.Font.SourceSans, bounds or Vector2.new(1000, 1000))
     end)
     return (ok and res) or Vector2.new(50, 18)
 end
 
-local targetGuiParent
-pcall(function() targetGuiParent = game:GetService("CoreGui") end)
-if gethui then pcall(function() targetGuiParent = gethui() end) end
-if not targetGuiParent then targetGuiParent = lp:WaitForChild("PlayerGui") end
+local targetGuiParent = nil
+pcall(function() targetGuiParent = (gethui and gethui()) or game:GetService("CoreGui") end)
+if not targetGuiParent then
+    pcall(function() targetGuiParent = lp:FindFirstChildOfClass("PlayerGui") or lp:WaitForChild("PlayerGui", 3) end)
+end
 
-for _, v in pairs(targetGuiParent:GetChildren()) do
-    if v.Name:find("TXR_OnyxChat") or v.Name:find("HiddenChatUI") then 
-        pcall(function() v:Destroy() end)
+if targetGuiParent then
+    for _, v in pairs(targetGuiParent:GetChildren()) do
+        if v.Name:find("TXR_OnyxChat") or v.Name:find("HiddenChatUI") then 
+            pcall(function() v:Destroy() end)
+        end
     end
 end
 
@@ -131,17 +133,17 @@ local Themes = {
 local currentThemeIdx = 1
 
 local Colors = {
-    Background    = Color3.fromRGB(2, 3, 5),       -- Pure Deep OLED Black
-    Surface       = Color3.fromRGB(10, 12, 16),     -- Very Dark Gray Surface
-    SurfaceHover  = Color3.fromRGB(16, 20, 26),     
-    ActiveTint    = Themes[1].ActiveTint,       
-    Primary       = Themes[1].Primary,         
-    PrimaryDark   = Themes[1].PrimaryDark,     
-    Danger        = Color3.fromRGB(255, 65, 90),          
-    Warning       = Color3.fromRGB(255, 200, 45),         
-    Purple        = Themes[1].Accent,         
-    Text          = Color3.fromRGB(255, 255, 255),          
-    SubText       = Color3.fromRGB(160, 170, 185),       
+    Background    = Color3.fromRGB(2, 3, 5),
+    Surface       = Color3.fromRGB(10, 12, 16),
+    SurfaceHover  = Color3.fromRGB(16, 20, 26),
+    ActiveTint    = Themes[1].ActiveTint,
+    Primary       = Themes[1].Primary,
+    PrimaryDark   = Themes[1].PrimaryDark,
+    Danger        = Color3.fromRGB(255, 65, 90),
+    Warning       = Color3.fromRGB(255, 200, 45),
+    Purple        = Themes[1].Accent,
+    Text          = Color3.fromRGB(255, 255, 255),
+    SubText       = Color3.fromRGB(160, 170, 185),
     TextDark      = Color3.fromRGB(4, 5, 8),
     MentionGold   = Color3.fromRGB(255, 225, 90),
     MentionBg     = Color3.fromRGB(30, 26, 12),
@@ -338,36 +340,39 @@ end
 
 local function crispText(element, overrideTransparency)
     if not element then return end
-    local stroke = element:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", element)
-    stroke.Color = Color3.new(0, 0, 0)
-    stroke.Transparency = overrideTransparency or 0.1 -- Maximum contrast
-    stroke.Thickness = 1.0 -- Clean sharp text
+    pcall(function()
+        local stroke = element:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", element)
+        stroke.Color = Color3.new(0, 0, 0)
+        stroke.Transparency = overrideTransparency or 0.1
+        stroke.Thickness = 1.0
+    end)
 end
 
--- ⚡ CINETMATIC APPLE-STYLE SPRING HOVER
 local function applySpringHover(btn)
     if not btn then return end
-    local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
-    local originalColor = btn.BackgroundColor3
-    local originalTransparency = btn.BackgroundTransparency
-    
-    btn.MouseEnter:Connect(function()
-        Safe.Tween(btnScale, TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1.03})
-        if btn.BackgroundTransparency < 1 then
-            Safe.Tween(btn, TweenInfo.new(0.2), {BackgroundColor3 = Colors.SurfaceHover, BackgroundTransparency = math.max(0, originalTransparency - 0.1)})
-        end
-    end)
-    btn.MouseLeave:Connect(function()
-        Safe.Tween(btnScale, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = 1})
-        if btn.BackgroundTransparency < 1 then
-            Safe.Tween(btn, TweenInfo.new(0.3), {BackgroundColor3 = originalColor, BackgroundTransparency = originalTransparency})
-        end
-    end)
-    btn.MouseButton1Down:Connect(function()
-        Safe.Tween(btnScale, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Scale = 0.95})
-    end)
-    btn.MouseButton1Up:Connect(function()
-        Safe.Tween(btnScale, TweenInfo.new(0.4, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1.03})
+    pcall(function()
+        local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
+        local originalColor = btn.BackgroundColor3
+        local originalTransparency = btn.BackgroundTransparency
+        
+        btn.MouseEnter:Connect(function()
+            SafeTween(btnScale, TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1.03})
+            if btn.BackgroundTransparency < 1 then
+                SafeTween(btn, TweenInfo.new(0.2), {BackgroundColor3 = Colors.SurfaceHover, BackgroundTransparency = math.max(0, originalTransparency - 0.1)})
+            end
+        end)
+        btn.MouseLeave:Connect(function()
+            SafeTween(btnScale, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = 1})
+            if btn.BackgroundTransparency < 1 then
+                SafeTween(btn, TweenInfo.new(0.3), {BackgroundColor3 = originalColor, BackgroundTransparency = originalTransparency})
+            end
+        end)
+        btn.MouseButton1Down:Connect(function()
+            SafeTween(btnScale, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Scale = 0.95})
+        end)
+        btn.MouseButton1Up:Connect(function()
+            SafeTween(btnScale, TweenInfo.new(0.4, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1.03})
+        end)
     end)
 end
 
@@ -412,15 +417,11 @@ local userIdCache = {}
 local activeBadgesList = {}
 local modalSelectionIndicators = {}
 
--- ⚡ PROFILE & USER BIO REGISTRY
 local personalCustomBios = {
     [lp.UserId] = "⚡ Cyber-Titan Apex Elite | System Architect"
 }
 
--- ⚡ LIVE TYPING STATE
 local globalTypers = {}
-
--- ⚡ DEDUPLICATION ENGINE CACHE
 local processedServerMessageMap = {}
 local recentLocalSentMap = {}
 
@@ -435,15 +436,15 @@ if lp.UserId == MY_VIP_ID then
 end
 
 local function displayBubble(userName, msg)
-    local speaker = Players:FindFirstChild(userName)
-    if not speaker or not speaker.Character then return end
-
-    local cleanMsg = msg
-    if cleanMsg:find("%[MEME:") then
-        cleanMsg = "[Sticker / Meme]"
-    end
-
     pcall(function()
+        local speaker = Players:FindFirstChild(userName)
+        if not speaker or not speaker.Character then return end
+
+        local cleanMsg = msg
+        if cleanMsg:find("%[MEME:") then
+            cleanMsg = "[Sticker / Meme]"
+        end
+
         if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
             TextChatService:DisplayBubble(speaker.Character, cleanMsg)
         else
@@ -458,10 +459,11 @@ end
 -- =========================================================
 -- 🏗️ ROOT GUI, MAIN ACRYLIC FRAME & AMBIENT AURA 
 -- =========================================================
-local gui = Instance.new("ScreenGui", targetGuiParent)
+local gui = Instance.new("ScreenGui")
 gui.Name = "TXR_OnyxChat_" .. tostring(math.random(100000, 999999))
 gui.ResetOnSpawn = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+pcall(function() gui.Parent = targetGuiParent end)
 
 local shadow = Instance.new("ImageLabel", gui)
 shadow.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -484,9 +486,7 @@ aura.ImageTransparency = 0.85
 aura.ZIndex = 2
 
 local auraScale = Instance.new("UIScale", aura)
-auraScale.Scale = 1
 local shadowScale = Instance.new("UIScale", shadow)
-shadowScale.Scale = 1
 
 local mainFrame = Instance.new("Frame", gui)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -498,8 +498,7 @@ mainFrame.ClipsDescendants = true
 mainFrame.Active = true
 mainFrame.ZIndex = 5
 
-local mainCorner = Instance.new("UICorner", mainFrame)
-mainCorner.CornerRadius = UDim.new(0, 16)
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 16)
 
 local mainStroke = Instance.new("UIStroke", mainFrame)
 mainStroke.Thickness = 1.0
@@ -545,47 +544,47 @@ gsGrad.Transparency = NumberSequence.new({
 })
 gsGrad.Rotation = 90
 
--- =========================================================
--- 🌧️ MATRIX CODE RAIN (ALMOST INVISIBLE ELEGANCE)
--- =========================================================
-local matrixBox = Instance.new("Frame", mainFrame)
-matrixBox.Size = UDim2.fromScale(1, 1)
-matrixBox.BackgroundTransparency = 1
-matrixBox.ZIndex = 6
-matrixBox.ClipsDescendants = true
+-- Matrix Rain
+BootSubsystem("MatrixRain", function()
+    local matrixBox = Instance.new("Frame", mainFrame)
+    matrixBox.Size = UDim2.fromScale(1, 1)
+    matrixBox.BackgroundTransparency = 1
+    matrixBox.ZIndex = 6
+    matrixBox.ClipsDescendants = true
 
-local matrixChars = {"0", "1", "X", "Z", "9", "A", "F", "TXR", "7", "3"}
-local matrixColumns = {}
-for i = 1, 16 do
-    local col = Instance.new("TextLabel", matrixBox)
-    col.Size = UDim2.new(0, 18, 1, 0)
-    col.Position = UDim2.new((i - 1) / 16, 4, 0, 0)
-    col.BackgroundTransparency = 1
-    col.Font = Enum.Font.Code
-    col.TextSize = 8 
-    col.TextColor3 = Colors.PrimaryDark
-    col.TextTransparency = 0.98
-    col.TextWrapped = true
-    col.TextYAlignment = Enum.TextYAlignment.Top
-    col.ZIndex = 6
-    table.insert(matrixColumns, col)
-end
-
-task.spawn(function()
-    while _G.TXR_ChatInstanceID == currentExecutionID and gui.Parent do
-        for _, col in ipairs(matrixColumns) do
-            local str = ""
-            for j = 1, 14 do
-                str = str .. matrixChars[math.random(1, #matrixChars)] .. "\n"
-            end
-            col.Text = str
-        end
-        task.wait(0.3)
+    local matrixChars = {"0", "1", "X", "Z", "9", "A", "F", "TXR", "7", "3"}
+    local matrixColumns = {}
+    for i = 1, 16 do
+        local col = Instance.new("TextLabel", matrixBox)
+        col.Size = UDim2.new(0, 18, 1, 0)
+        col.Position = UDim2.new((i - 1) / 16, 4, 0, 0)
+        col.BackgroundTransparency = 1
+        col.Font = Enum.Font.Code
+        col.TextSize = 8 
+        col.TextColor3 = Colors.PrimaryDark
+        col.TextTransparency = 0.98
+        col.TextWrapped = true
+        col.TextYAlignment = Enum.TextYAlignment.Top
+        col.ZIndex = 6
+        table.insert(matrixColumns, col)
     end
+
+    task.spawn(function()
+        while _G.TXR_ChatInstanceID == currentExecutionID and gui.Parent do
+            for _, col in ipairs(matrixColumns) do
+                local str = ""
+                for j = 1, 14 do
+                    str = str .. matrixChars[math.random(1, #matrixChars)] .. "\n"
+                end
+                col.Text = str
+            end
+            task.wait(0.3)
+        end
+    end)
 end)
 
 -- =========================================================
--- 🌐 PROFESSIONAL WEBSITE PROFILE MODAL (GLOBAL OBJECT)
+-- 🌐 PROFESSIONAL PROFILE MODAL (GLOBAL OBJECT & SAFE FETCH)
 -- =========================================================
 local profileOverlay = Instance.new("Frame", gui)
 profileOverlay.Size = UDim2.fromScale(1, 1)
@@ -838,7 +837,7 @@ local function createPfBtn(text, color, onClick)
     bs.Transparency = 0.4
     applySpringHover(b)
     b.MouseButton1Click:Connect(function()
-        Safe.Run(onClick)
+        pcall(onClick)
     end)
     return b
 end
@@ -847,8 +846,8 @@ local currentProfileUser = nil
 local currentProfileId = nil
 
 local function closeProfile()
-    Safe.Tween(pfScale, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0})
-    Safe.Tween(profileOverlay, TweenInfo.new(0.2), {BackgroundTransparency = 1})
+    SafeTween(pfScale, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0})
+    SafeTween(profileOverlay, TweenInfo.new(0.2), {BackgroundTransparency = 1})
     task.delay(0.25, function()
         profileOverlay.Visible = false
     end)
@@ -950,10 +949,11 @@ local function openProfileModal(username)
 
     pfScale.Scale = 0.6
     profileOverlay.BackgroundTransparency = 1
-    Safe.Tween(profileOverlay, TweenInfo.new(0.3), {BackgroundTransparency = 0.5})
-    Safe.Tween(pfScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1})
+    SafeTween(profileOverlay, TweenInfo.new(0.3), {BackgroundTransparency = 0.5})
+    SafeTween(pfScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1})
     playSFX("default")
 
+    -- Isolated Web Call Threading (One failing never blocks another)
     task.spawn(function()
         if not uId then 
             bioLabel.Text = "User offline or data unavailable."
@@ -962,54 +962,58 @@ local function openProfileModal(username)
 
         local fFollowers = "--"
         local fFollowing = "--"
-        local fBio = "No description provided."
-
-        if personalCustomBios[uId] then
-            fBio = personalCustomBios[uId]
-        end
+        local fBio = personalCustomBios[uId] or "No description provided."
 
         if req then
-            Safe.Run(function()
-                local r1 = req({
-                    Url = "https://friends.roblox.com/v1/users/" .. tostring(uId) .. "/followers/count",
-                    Method = "GET"
-                })
-                if r1 and r1.StatusCode == 200 then
-                    local d1 = HttpService:JSONDecode(r1.Body)
-                    if d1 and d1.count then fFollowers = tostring(d1.count) end
-                end
-            end)
-
-            Safe.Run(function()
-                local r2 = req({
-                    Url = "https://friends.roblox.com/v1/users/" .. tostring(uId) .. "/followings/count",
-                    Method = "GET"
-                })
-                if r2 and r2.StatusCode == 200 then
-                    local d2 = HttpService:JSONDecode(r2.Body)
-                    if d2 and d2.count then fFollowing = tostring(d2.count) end
-                end
-            end)
-
-            if not personalCustomBios[uId] then
-                Safe.Run(function()
-                    local r3 = req({
-                        Url = "https://users.roblox.com/v1/users/" .. tostring(uId),
+            task.spawn(function()
+                pcall(function()
+                    local r1 = req({
+                        Url = "https://friends.roblox.com/v1/users/" .. tostring(uId) .. "/followers/count",
                         Method = "GET"
                     })
-                    if r3 and r3.StatusCode == 200 then
-                        local d3 = HttpService:JSONDecode(r3.Body)
-                        if d3 and d3.description and #d3.description > 0 then
-                            fBio = d3.description
+                    if r1 and r1.StatusCode == 200 then
+                        local d1 = HttpService:JSONDecode(r1.Body)
+                        if d1 and d1.count and currentProfileId == uId then 
+                            metricFollowers.Text = tostring(d1.count) 
                         end
                     end
                 end)
-            end
-        end
+            end)
 
-        if currentProfileId == uId then
-            metricFollowers.Text = fFollowers
-            metricFollowing.Text = fFollowing
+            task.spawn(function()
+                pcall(function()
+                    local r2 = req({
+                        Url = "https://friends.roblox.com/v1/users/" .. tostring(uId) .. "/followings/count",
+                        Method = "GET"
+                    })
+                    if r2 and r2.StatusCode == 200 then
+                        local d2 = HttpService:JSONDecode(r2.Body)
+                        if d2 and d2.count and currentProfileId == uId then 
+                            metricFollowing.Text = tostring(d2.count) 
+                        end
+                    end
+                end)
+            end)
+
+            if not personalCustomBios[uId] then
+                task.spawn(function()
+                    pcall(function()
+                        local r3 = req({
+                            Url = "https://users.roblox.com/v1/users/" .. tostring(uId),
+                            Method = "GET"
+                        })
+                        if r3 and r3.StatusCode == 200 then
+                            local d3 = HttpService:JSONDecode(r3.Body)
+                            if d3 and d3.description and #d3.description > 0 and currentProfileId == uId then
+                                bioLabel.Text = d3.description
+                            end
+                        end
+                    end)
+                end)
+            else
+                bioLabel.Text = fBio
+            end
+        else
             bioLabel.Text = fBio
         end
     end)
@@ -1195,8 +1199,8 @@ local function spawnSonar(pulseColor)
     rs.Transparency = 0
     
     local pulseSpeed = 1.0
-    Safe.Tween(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(105, 105)})
-    Safe.Tween(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1})
+    SafeTween(ring, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(105, 105)})
+    SafeTween(rs, TweenInfo.new(pulseSpeed, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1})
     
     task.delay(pulseSpeed, function()
         pcall(function() ring:Destroy() end)
@@ -1352,7 +1356,7 @@ liveBadge.MouseButton1Click:Connect(function()
     rosterFrame.Visible = not rosterFrame.Visible
     if rosterFrame.Visible then
         rosterFrame.Position = UDim2.new(1, 10, 0, 42)
-        Safe.Tween(rosterFrame, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(1, -145, 0, 42)})
+        SafeTween(rosterFrame, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(1, -145, 0, 42)})
     end
 end)
 
@@ -1389,7 +1393,7 @@ local function createHeaderBtn(text, onClick)
 
     applySpringHover(b)
     b.MouseButton1Click:Connect(function()
-        Safe.Run(onClick)
+        pcall(onClick)
     end)
     return b
 end
@@ -1403,9 +1407,9 @@ if Admin[lp.Name:lower()] then
         local bsScale = badgeSelectorModal:FindFirstChildOfClass("UIScale")
         if isBadgeModalOpen then
             badgeSelectorModal.Visible = true
-            Safe.Tween(bsScale, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1})
+            SafeTween(bsScale, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1})
         else
-            Safe.Tween(bsScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0})
+            SafeTween(bsScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0})
             task.delay(0.2, function()
                 if not isBadgeModalOpen then badgeSelectorModal.Visible = false end
             end)
@@ -1442,10 +1446,10 @@ ghostBtn = createHeaderBtn("GST", function()
 
     isGhostMode = not isGhostMode
     if isGhostMode then
-        Safe.Tween(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.40})
-        Safe.Tween(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.95})
-        Safe.Tween(aura, TweenInfo.new(0.4), {ImageTransparency = 0.95})
-        Safe.Tween(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.5})
+        SafeTween(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.40})
+        SafeTween(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.95})
+        SafeTween(aura, TweenInfo.new(0.4), {ImageTransparency = 0.95})
+        SafeTween(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.5})
         ghostBtn.BackgroundColor3 = Colors.ActiveTint
         ghostBtn.TextColor3 = Colors.Primary
         mainStroke.Transparency = 0.1
@@ -1456,15 +1460,15 @@ ghostBtn = createHeaderBtn("GST", function()
             if cRoot:IsA("Frame") then
                 local card = cRoot:FindFirstChild("SwipeWrapper")
                 if card then
-                    Safe.Tween(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.40})
+                    SafeTween(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.40})
                 end
             end
         end
     else
-        Safe.Tween(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.02})
-        Safe.Tween(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.96})
-        Safe.Tween(aura, TweenInfo.new(0.4), {ImageTransparency = 0.85})
-        Safe.Tween(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.25})
+        SafeTween(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.02})
+        SafeTween(glassSheen, TweenInfo.new(0.4), {BackgroundTransparency = 0.96})
+        SafeTween(aura, TweenInfo.new(0.4), {ImageTransparency = 0.85})
+        SafeTween(shadow, TweenInfo.new(0.4), {ImageTransparency = 0.25})
         ghostBtn.BackgroundColor3 = Color3.fromRGB(15, 18, 22)
         ghostBtn.TextColor3 = Colors.Text
         mainStroke.Transparency = 0.2
@@ -1475,7 +1479,7 @@ ghostBtn = createHeaderBtn("GST", function()
             if cRoot:IsA("Frame") then
                 local card = cRoot:FindFirstChild("SwipeWrapper")
                 if card then
-                    Safe.Tween(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.05})
+                    SafeTween(card, TweenInfo.new(0.4), {BackgroundTransparency = 0.05})
                 end
             end
         end
@@ -1498,12 +1502,12 @@ createHeaderBtn("-", function()
     local tInfo1 = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In)
     local tInfo2 = TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
     
-    Safe.Tween(mainScale, tInfo1, {Scale = 0})
-    Safe.Tween(auraScale, tInfo1, {Scale = 0})
-    Safe.Tween(shadowScale, tInfo1, {Scale = 0})
-    Safe.Tween(mainFrame, tInfo2, {BackgroundTransparency = 1})
-    Safe.Tween(aura, tInfo2, {ImageTransparency = 1})
-    Safe.Tween(shadow, tInfo2, {ImageTransparency = 1})
+    SafeTween(mainScale, tInfo1, {Scale = 0})
+    SafeTween(auraScale, tInfo1, {Scale = 0})
+    SafeTween(shadowScale, tInfo1, {Scale = 0})
+    SafeTween(mainFrame, tInfo2, {BackgroundTransparency = 1})
+    SafeTween(aura, tInfo2, {ImageTransparency = 1})
+    SafeTween(shadow, tInfo2, {ImageTransparency = 1})
     
     task.wait(0.35)
     mainFrame.Visible = false
@@ -1513,7 +1517,7 @@ createHeaderBtn("-", function()
     openBtnScale.Scale = 0
     
     local tInfo3 = TweenInfo.new(0.6, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
-    Safe.Tween(openBtnScale, tInfo3, {Scale = 1})
+    SafeTween(openBtnScale, tInfo3, {Scale = 1})
 end)
 
 local closeBtn = createHeaderBtn("X", function()
@@ -1679,135 +1683,137 @@ local badgeKeysOrder = {
     "LUCIFER", "SUPREME", "ROYAL", "DEMON"
 }
 
-for _, bKey in ipairs(badgeKeysOrder) do
-    local bData = BadgePresets[bKey]
-    local bBtn = Instance.new("TextButton", bsScroll)
-    bBtn.Size = UDim2.new(0.95, 0, 0, 30)
-    bBtn.BackgroundColor3 = Colors.Surface
-    bBtn.BackgroundTransparency = 0.3
-    bBtn.Text = "" 
-    bBtn.AutoButtonColor = false
-    bBtn.ZIndex = 72
-    Instance.new("UICorner", bBtn).CornerRadius = UDim.new(0, 6)
-    
-    local btnStroke = Instance.new("UIStroke", bBtn)
-    btnStroke.Color = Colors.PrimaryDark
-    btnStroke.Thickness = 0.8
-    btnStroke.Transparency = 0.5
-    
-    local tagWidth = Safe.GetTextSize(bData.Title, 11, Enum.Font.GothamBlack, Vector2.new(1000, 20)).X + 4
-    
-    local badgeHost = Instance.new("Frame", bBtn)
-    badgeHost.Size = UDim2.fromOffset(tagWidth, 18)
-    badgeHost.AnchorPoint = Vector2.new(0, 0.5)
-    badgeHost.Position = UDim2.new(0, 12, 0.5, 0)
-    badgeHost.BackgroundTransparency = 1
-    badgeHost.BorderSizePixel = 0
-    badgeHost.ZIndex = 73
-
-    local badgeGlow = Instance.new("TextLabel", badgeHost)
-    badgeGlow.Size = UDim2.fromScale(1, 1)
-    badgeGlow.BackgroundTransparency = 1
-    badgeGlow.BorderSizePixel = 0
-    badgeGlow.Text = bData.Title
-    badgeGlow.TextColor3 = Color3.fromRGB(255, 255, 255)
-    badgeGlow.TextTransparency = 0.50
-    badgeGlow.Font = Enum.Font.GothamBlack
-    badgeGlow.TextSize = 11
-    badgeGlow.ZIndex = 73
-
-    local glowStroke = Instance.new("UIStroke", badgeGlow)
-    glowStroke.Thickness = 1.2
-    glowStroke.Transparency = 0.55
-    glowStroke.Color = Color3.fromRGB(255, 255, 255)
-
-    local badgeLabel = Instance.new("TextLabel", badgeHost)
-    badgeLabel.Size = UDim2.fromScale(1, 1)
-    badgeLabel.BackgroundTransparency = 1
-    badgeLabel.BorderSizePixel = 0
-    badgeLabel.Text = bData.Title
-    badgeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    badgeLabel.Font = Enum.Font.GothamBlack
-    badgeLabel.TextSize = 11
-    badgeLabel.ZIndex = 74
-
-    local bStroke = Instance.new("UIStroke", badgeLabel)
-    bStroke.Thickness = 0.8
-    bStroke.Color = Color3.fromRGB(0, 0, 0)
-    bStroke.Transparency = 0.3
-
-    local badgeShine = Instance.new("TextLabel", badgeHost)
-    badgeShine.Size = UDim2.fromScale(1, 1)
-    badgeShine.BackgroundTransparency = 1
-    badgeShine.BorderSizePixel = 0
-    badgeShine.Text = bData.Title
-    badgeShine.TextColor3 = Color3.fromRGB(255, 255, 255)
-    badgeShine.Font = Enum.Font.GothamBlack
-    badgeShine.TextSize = 11
-    badgeShine.ZIndex = 75
-
-    local shineGrad = Instance.new("UIGradient", badgeShine)
-    shineGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
-        ColorSequenceKeypoint.new(0.48, Color3.fromRGB(255, 255, 255)),
-        ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-        ColorSequenceKeypoint.new(0.52, Color3.fromRGB(255, 255, 255)),
-        ColorSequenceKeypoint.new(1.0, Color3.fromRGB(255, 255, 255))
-    })
-    shineGrad.Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0.0, 1),
-        NumberSequenceKeypoint.new(0.45, 1),
-        NumberSequenceKeypoint.new(0.5, 0.05),
-        NumberSequenceKeypoint.new(0.55, 1),
-        NumberSequenceKeypoint.new(1.0, 1)
-    })
-
-    local textGrad = Instance.new("UIGradient", badgeLabel)
-    textGrad.Color = ColorSequence.new(bData.Colors)
-
-    local glowGrad = Instance.new("UIGradient", badgeGlow)
-    glowGrad.Color = ColorSequence.new(bData.Colors)
-
-    local strokeGradGlow = Instance.new("UIGradient", glowStroke)
-    strokeGradGlow.Color = ColorSequence.new(bData.Colors)
-
-    table.insert(activeBadgesList, {
-        textGrad = textGrad, glowGrad = glowGrad, strokeGradGlow = strokeGradGlow,
-        shineGrad = shineGrad, badgeGlow = badgeGlow, glowStroke = glowStroke,
-        speed = bData.Speed or 1.15
-    })
-
-    local dotIndicator = Instance.new("Frame", bBtn)
-    dotIndicator.Size = UDim2.fromOffset(8, 8)
-    dotIndicator.AnchorPoint = Vector2.new(1, 0.5)
-    dotIndicator.Position = UDim2.new(1, -12, 0.5, 0)
-    dotIndicator.BackgroundColor3 = Color3.fromRGB(50, 255, 140)
-    dotIndicator.BackgroundTransparency = (currentOwnerBadge == bKey) and 0.1 or 1
-    dotIndicator.ZIndex = 74
-    Instance.new("UICorner", dotIndicator).CornerRadius = UDim.new(1, 0)
-    
-    local dStroke = Instance.new("UIStroke", dotIndicator)
-    dStroke.Color = Color3.fromRGB(0, 0, 0)
-    dStroke.Transparency = (currentOwnerBadge == bKey) and 0.4 or 1
-    
-    modalSelectionIndicators[bKey] = {dot = dotIndicator, stroke = dStroke}
-
-    applySpringHover(bBtn)
-    bBtn.MouseButton1Click:Connect(function()
-        currentOwnerBadge = bKey
-        for k, ind in pairs(modalSelectionIndicators) do
-            ind.dot.BackgroundTransparency = (k == currentOwnerBadge) and 0.1 or 1
-            ind.stroke.Transparency = (k == currentOwnerBadge) and 0.4 or 1
-        end
+BootSubsystem("BadgeSelectorModal", function()
+    for _, bKey in ipairs(badgeKeysOrder) do
+        local bData = BadgePresets[bKey]
+        local bBtn = Instance.new("TextButton", bsScroll)
+        bBtn.Size = UDim2.new(0.95, 0, 0, 30)
+        bBtn.BackgroundColor3 = Colors.Surface
+        bBtn.BackgroundTransparency = 0.3
+        bBtn.Text = "" 
+        bBtn.AutoButtonColor = false
+        bBtn.ZIndex = 72
+        Instance.new("UICorner", bBtn).CornerRadius = UDim.new(0, 6)
         
-        Safe.Tween(bsmScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0})
-        task.delay(0.2, function()
-            isBadgeModalOpen = false
-            badgeSelectorModal.Visible = false
+        local btnStroke = Instance.new("UIStroke", bBtn)
+        btnStroke.Color = Colors.PrimaryDark
+        btnStroke.Thickness = 0.8
+        btnStroke.Transparency = 0.5
+        
+        local tagWidth = SafeGetTextSize(bData.Title, 11, Enum.Font.GothamBlack, Vector2.new(1000, 20)).X + 4
+        
+        local badgeHost = Instance.new("Frame", bBtn)
+        badgeHost.Size = UDim2.fromOffset(tagWidth, 18)
+        badgeHost.AnchorPoint = Vector2.new(0, 0.5)
+        badgeHost.Position = UDim2.new(0, 12, 0.5, 0)
+        badgeHost.BackgroundTransparency = 1
+        badgeHost.BorderSizePixel = 0
+        badgeHost.ZIndex = 73
+
+        local badgeGlow = Instance.new("TextLabel", badgeHost)
+        badgeGlow.Size = UDim2.fromScale(1, 1)
+        badgeGlow.BackgroundTransparency = 1
+        badgeGlow.BorderSizePixel = 0
+        badgeGlow.Text = bData.Title
+        badgeGlow.TextColor3 = Color3.fromRGB(255, 255, 255)
+        badgeGlow.TextTransparency = 0.50
+        badgeGlow.Font = Enum.Font.GothamBlack
+        badgeGlow.TextSize = 11
+        badgeGlow.ZIndex = 73
+
+        local glowStroke = Instance.new("UIStroke", badgeGlow)
+        glowStroke.Thickness = 1.2
+        glowStroke.Transparency = 0.55
+        glowStroke.Color = Color3.fromRGB(255, 255, 255)
+
+        local badgeLabel = Instance.new("TextLabel", badgeHost)
+        badgeLabel.Size = UDim2.fromScale(1, 1)
+        badgeLabel.BackgroundTransparency = 1
+        badgeLabel.BorderSizePixel = 0
+        badgeLabel.Text = bData.Title
+        badgeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        badgeLabel.Font = Enum.Font.GothamBlack
+        badgeLabel.TextSize = 11
+        badgeLabel.ZIndex = 74
+
+        local bStroke = Instance.new("UIStroke", badgeLabel)
+        bStroke.Thickness = 0.8
+        bStroke.Color = Color3.fromRGB(0, 0, 0)
+        bStroke.Transparency = 0.3
+
+        local badgeShine = Instance.new("TextLabel", badgeHost)
+        badgeShine.Size = UDim2.fromScale(1, 1)
+        badgeShine.BackgroundTransparency = 1
+        badgeShine.BorderSizePixel = 0
+        badgeShine.Text = bData.Title
+        badgeShine.TextColor3 = Color3.fromRGB(255, 255, 255)
+        badgeShine.Font = Enum.Font.GothamBlack
+        badgeShine.TextSize = 11
+        badgeShine.ZIndex = 75
+
+        local shineGrad = Instance.new("UIGradient", badgeShine)
+        shineGrad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.48, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(0.52, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1.0, Color3.fromRGB(255, 255, 255))
+        })
+        shineGrad.Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0.0, 1),
+            NumberSequenceKeypoint.new(0.45, 1),
+            NumberSequenceKeypoint.new(0.5, 0.05),
+            NumberSequenceKeypoint.new(0.55, 1),
+            NumberSequenceKeypoint.new(1.0, 1)
+        })
+
+        local textGrad = Instance.new("UIGradient", badgeLabel)
+        textGrad.Color = ColorSequence.new(bData.Colors)
+
+        local glowGrad = Instance.new("UIGradient", badgeGlow)
+        glowGrad.Color = ColorSequence.new(bData.Colors)
+
+        local strokeGradGlow = Instance.new("UIGradient", glowStroke)
+        strokeGradGlow.Color = ColorSequence.new(bData.Colors)
+
+        table.insert(activeBadgesList, {
+            textGrad = textGrad, glowGrad = glowGrad, strokeGradGlow = strokeGradGlow,
+            shineGrad = shineGrad, badgeGlow = badgeGlow, glowStroke = glowStroke,
+            speed = bData.Speed or 1.15
+        })
+
+        local dotIndicator = Instance.new("Frame", bBtn)
+        dotIndicator.Size = UDim2.fromOffset(8, 8)
+        dotIndicator.AnchorPoint = Vector2.new(1, 0.5)
+        dotIndicator.Position = UDim2.new(1, -12, 0.5, 0)
+        dotIndicator.BackgroundColor3 = Color3.fromRGB(50, 255, 140)
+        dotIndicator.BackgroundTransparency = (currentOwnerBadge == bKey) and 0.1 or 1
+        dotIndicator.ZIndex = 74
+        Instance.new("UICorner", dotIndicator).CornerRadius = UDim.new(1, 0)
+        
+        local dStroke = Instance.new("UIStroke", dotIndicator)
+        dStroke.Color = Color3.fromRGB(0, 0, 0)
+        dStroke.Transparency = (currentOwnerBadge == bKey) and 0.4 or 1
+        
+        modalSelectionIndicators[bKey] = {dot = dotIndicator, stroke = dStroke}
+
+        applySpringHover(bBtn)
+        bBtn.MouseButton1Click:Connect(function()
+            currentOwnerBadge = bKey
+            for k, ind in pairs(modalSelectionIndicators) do
+                ind.dot.BackgroundTransparency = (k == currentOwnerBadge) and 0.1 or 1
+                ind.stroke.Transparency = (k == currentOwnerBadge) and 0.4 or 1
+            end
+            
+            SafeTween(bsmScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0})
+            task.delay(0.2, function()
+                isBadgeModalOpen = false
+                badgeSelectorModal.Visible = false
+            end)
+            playSFX("default")
         end)
-        playSFX("default")
-    end)
-end
+    end
+end)
 
 -- =========================================================
 -- 💬 CHAT FEED & AUTOSCROLL DOCK
@@ -1863,7 +1869,6 @@ messageFeed:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
     end
 end)
 
--- ⚡ GLOBAL TYPING UI INDICATOR BAR
 local globalTypingBar = Instance.new("Frame", mainFrame)
 globalTypingBar.Size = UDim2.new(1, -24, 0, 20)
 globalTypingBar.Position = UDim2.new(0, 12, 1, -74)
@@ -1883,7 +1888,6 @@ globalTypingText.TextTransparency = 0.1
 globalTypingText.ZIndex = 11
 crispText(globalTypingText, 0.5)
 
--- ⚡ UI PARTICLE SPAWNER
 local function spawnUIParticles(parentFrame, positionUDim2, color, count)
     for i = 1, (count or 5) do
         local p = Instance.new("Frame", parentFrame)
@@ -1897,7 +1901,7 @@ local function spawnUIParticles(parentFrame, positionUDim2, color, count)
         local rx = (math.random() - 0.5) * 60
         local ry = (math.random() - 0.5) * 60
         
-        Safe.Tween(p, TweenInfo.new(0.5 + math.random()*0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
+        SafeTween(p, TweenInfo.new(0.5 + math.random()*0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
             Position = UDim2.new(positionUDim2.X.Scale, positionUDim2.X.Offset + rx, positionUDim2.Y.Scale, positionUDim2.Y.Offset + ry),
             Size = UDim2.fromOffset(0, 0),
             BackgroundTransparency = 1
@@ -1939,7 +1943,7 @@ local function createActionBtn(text, color, onClick)
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 5)
     b.MouseButton1Click:Connect(function()
         actionMenu.Visible = false
-        Safe.Run(onClick)
+        pcall(onClick)
     end)
 end
 
@@ -1987,7 +1991,7 @@ local function addJoinNotice(username)
 
     local scale = Instance.new("UIScale", pill)
     scale.Scale = 0.5
-    Safe.Tween(scale, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1})
+    SafeTween(scale, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1})
 
     task.defer(function()
         local maxOffset = math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y)
@@ -2032,22 +2036,6 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     cardRoot:SetAttribute("ChatScope", scopeType or "global")
     cardRoot:SetAttribute("JobId", msgJobId or game.JobId)
 
-    local replyIcon = Instance.new("TextLabel", cardRoot)
-    replyIcon.Size = UDim2.fromOffset(40, 40)
-    replyIcon.Position = UDim2.new(1, -45, 0.5, -20)
-    replyIcon.BackgroundTransparency = 1
-    replyIcon.Text = "↩️"
-    replyIcon.TextSize = 18
-    replyIcon.ZIndex = 8
-    
-    local dmIcon = Instance.new("TextLabel", cardRoot)
-    dmIcon.Size = UDim2.fromOffset(40, 40)
-    dmIcon.Position = UDim2.new(0, 5, 0.5, -20)
-    dmIcon.BackgroundTransparency = 1
-    dmIcon.Text = "🔐"
-    dmIcon.TextSize = 18
-    dmIcon.ZIndex = 8
-
     local card = Instance.new("Frame", cardRoot)
     card.Name = "SwipeWrapper"
     card.Size = UDim2.new(1, 0, 0, 0)
@@ -2075,8 +2063,8 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     local cardScale = Instance.new("UIScale", cardRoot)
     cardScale.Scale = 0.85
     cardRoot.Position = UDim2.new(0, -20, 0, 0)
-    Safe.Tween(cardScale, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1})
-    Safe.Tween(cardRoot, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)})
+    SafeTween(cardScale, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Scale = 1})
+    SafeTween(cardRoot, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)})
 
     local accentStrip = Instance.new("Frame", card)
     accentStrip.Size = UDim2.new(0, 3, 1, -12)
@@ -2192,7 +2180,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     end
 
     if isAdminUser then
-        local tagWidth = Safe.GetTextSize(badgeProfile.Title, 11, Enum.Font.GothamBlack, Vector2.new(1000, 20)).X + 4
+        local tagWidth = SafeGetTextSize(badgeProfile.Title, 11, Enum.Font.GothamBlack, Vector2.new(1000, 20)).X + 4
         
         local badgeHost = Instance.new("Frame", headerRow)
         badgeHost.Size = UDim2.fromOffset(tagWidth, 18)
@@ -2368,7 +2356,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
             dragStart = input.Position.X
             isDragging = true
             hasTriggeredSwipe = false
-            Safe.Tween(cardScale, TweenInfo.new(0.1), {Scale = 0.98})
+            SafeTween(cardScale, TweenInfo.new(0.1), {Scale = 0.98})
         end
     end)
 
@@ -2393,10 +2381,10 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     card.InputEnded:Connect(function(input)
         if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and isDragging then
             isDragging = false
-            Safe.Tween(cardScale, TweenInfo.new(0.3, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1})
+            SafeTween(cardScale, TweenInfo.new(0.3, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1})
             
             local finalDelta = card.Position.X.Offset
-            Safe.Tween(card, TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)})
+            SafeTween(card, TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)})
 
             if finalDelta > 50 then
                 privateTarget = actualUsername
@@ -2517,7 +2505,7 @@ chatInput:GetPropertyChangedSignal("Text"):Connect(function()
         if tick() - lastTypingBroadcast > 4 then
             lastTypingBroadcast = tick()
             task.spawn(function()
-                Safe.Request({
+                SafeRequest({
                     Url = SERVER_URL .. "/send", Method = "POST",
                     Headers = { ["Content-Type"] = "application/json" },
                     Body = HttpService:JSONEncode({ 
@@ -2537,17 +2525,17 @@ task.defer(sanitizeChatInput)
 
 chatInput.Focused:Connect(function()
     sanitizeChatInput()
-    Safe.Tween(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Color = Colors.Primary, Transparency = 0.0, Thickness = 1.4})
+    SafeTween(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Color = Colors.Primary, Transparency = 0.0, Thickness = 1.4})
 end)
 chatInput.FocusLost:Connect(function()
     typingIndicator.BackgroundTransparency = 1
-    Safe.Tween(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Color = Colors.PrimaryDark, Transparency = 0.4, Thickness = 1.0})
+    SafeTween(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Color = Colors.PrimaryDark, Transparency = 0.4, Thickness = 1.0})
 end)
 
 updateInputBar = function()
     if privateTarget then
         dmBadge.Text = "@" .. privateTarget .. " X"
-        local w = Safe.GetTextSize(dmBadge.Text, 10, Enum.Font.GothamBlack, Vector2.new(1000, 30)).X + 16
+        local w = SafeGetTextSize(dmBadge.Text, 10, Enum.Font.GothamBlack, Vector2.new(1000, 30)).X + 16
         dmBadge.Size = UDim2.new(0, w, 1, -14)
         dmBadge.Visible = true
         chatInput.Position = UDim2.new(0, w + 16, 0, 0)
@@ -2630,21 +2618,23 @@ local emojiGrid = Instance.new("UIGridLayout", emojiScroll)
 emojiGrid.CellSize = UDim2.new(0, 26, 0, 26)
 emojiGrid.CellPadding = UDim2.new(0, 3, 0, 3)
 
-local emojiRaw = "😃😁😆😂🤣😎🫡🔥💀❤️🖤✨💯👑⚡⚠️🔒💬🍜🍕🚀🎉"
-if utf8 and utf8.graphemes then
-    for p, c in utf8.graphemes(emojiRaw) do
-        local em = string.sub(emojiRaw, p, c)
-        local btn = Instance.new("TextButton", emojiScroll)
-        btn.Text = em
-        btn.TextSize = 15
-        btn.BackgroundTransparency = 1
-        btn.ZIndex = 32
-        btn.MouseButton1Click:Connect(function()
-            chatInput.Text = chatInput.Text .. em
-            chatInput:CaptureFocus()
-        end)
+BootSubsystem("EmojiSystem", function()
+    local emojiRaw = "😃😁😆😂🤣😎🫡🔥💀❤️🖤✨💯👑⚡⚠️🔒💬🍜🍕🚀🎉"
+    if utf8 and utf8.graphemes then
+        for p, c in utf8.graphemes(emojiRaw) do
+            local em = string.sub(emojiRaw, p, c)
+            local btn = Instance.new("TextButton", emojiScroll)
+            btn.Text = em
+            btn.TextSize = 15
+            btn.BackgroundTransparency = 1
+            btn.ZIndex = 32
+            btn.MouseButton1Click:Connect(function()
+                chatInput.Text = chatInput.Text .. em
+                chatInput:CaptureFocus()
+            end)
+        end
     end
-end
+end)
 
 emojiBtn.MouseButton1Click:Connect(function()
     emojiFrame.Visible = not emojiFrame.Visible
@@ -2694,27 +2684,29 @@ local memeGrid = Instance.new("UIGridLayout", memeScroll)
 memeGrid.CellSize = UDim2.new(0, 60, 0, 60)
 memeGrid.CellPadding = UDim2.new(0, 6, 0, 6)
 
-for _, mData in ipairs(MemeLibrary) do
-    local mItem = Instance.new("ImageButton", memeScroll)
-    mItem.BackgroundColor3 = Colors.Background
-    mItem.Image = getAssetThumb(mData.id)
-    mItem.ScaleType = Enum.ScaleType.Fit
-    mItem.ZIndex = 32
-    Instance.new("UICorner", mItem).CornerRadius = UDim.new(0, 8)
-    
-    local is = Instance.new("UIStroke", mItem)
-    is.Color = Colors.PrimaryDark
-    is.Thickness = 1
-    is.Transparency = 0.6
-    
-    applySpringHover(mItem)
-    mItem.MouseButton1Click:Connect(function()
-        memeFrame.Visible = false
-        if sendMessageFunc then
-            sendMessageFunc(string.format("[MEME:%d]", mData.id))
-        end
-    end)
-end
+BootSubsystem("MemeLibrary", function()
+    for _, mData in ipairs(MemeLibrary) do
+        local mItem = Instance.new("ImageButton", memeScroll)
+        mItem.BackgroundColor3 = Colors.Background
+        mItem.Image = getAssetThumb(mData.id)
+        mItem.ScaleType = Enum.ScaleType.Fit
+        mItem.ZIndex = 32
+        Instance.new("UICorner", mItem).CornerRadius = UDim.new(0, 8)
+        
+        local is = Instance.new("UIStroke", mItem)
+        is.Color = Colors.PrimaryDark
+        is.Thickness = 1
+        is.Transparency = 0.6
+        
+        applySpringHover(mItem)
+        mItem.MouseButton1Click:Connect(function()
+            memeFrame.Visible = false
+            if sendMessageFunc then
+                sendMessageFunc(string.format("[MEME:%d]", mData.id))
+            end
+        end)
+    end
+end)
 
 memeBtn.MouseButton1Click:Connect(function()
     memeFrame.Visible = not memeFrame.Visible
@@ -2848,11 +2840,11 @@ makeDraggable(mainFrame, header, aura, false)
 makeDraggable(openBtnContainer, openBtn, nil, true)
 
 openBtn.MouseButton1Down:Connect(function()
-    Safe.Tween(openBtnScale, TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Scale = 0.85})
+    SafeTween(openBtnScale, TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Scale = 0.85})
 end)
 
 openBtn.MouseButton1Up:Connect(function()
-    Safe.Tween(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05})
+    SafeTween(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05})
 end)
 
 openBtn.MouseButton1Click:Connect(function()
@@ -2864,7 +2856,7 @@ openBtn.MouseButton1Click:Connect(function()
     ghostDebounce = true
     task.delay(0.5, function() ghostDebounce = false end)
     
-    Safe.Tween(openBtnScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0})
+    SafeTween(openBtnScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0})
     
     task.wait(0.25)
     
@@ -2882,12 +2874,12 @@ openBtn.MouseButton1Click:Connect(function()
     local tInfo2 = TweenInfo.new(0.7, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
     local tInfo3 = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
     
-    Safe.Tween(mainScale, tInfo2, {Scale = 1})
-    Safe.Tween(auraScale, tInfo2, {Scale = 1})
-    Safe.Tween(shadowScale, tInfo2, {Scale = 1})
-    Safe.Tween(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.40 or 0.02})
-    Safe.Tween(aura, tInfo3, {ImageTransparency = isGhostMode and 0.95 or 0.85})
-    Safe.Tween(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.5 or 0.25})
+    SafeTween(mainScale, tInfo2, {Scale = 1})
+    SafeTween(auraScale, tInfo2, {Scale = 1})
+    SafeTween(shadowScale, tInfo2, {Scale = 1})
+    SafeTween(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.40 or 0.02})
+    SafeTween(aura, tInfo3, {ImageTransparency = isGhostMode and 0.95 or 0.85})
+    SafeTween(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.5 or 0.25})
 end)
 
 UserInputService.InputBegan:Connect(function(input, gp)
@@ -2929,7 +2921,7 @@ task.spawn(function()
         if _G.TXR_ChatInstanceID ~= currentExecutionID or not gui.Parent then return end
         t = t + dt
 
-        Safe.Run(function()
+        pcall(function()
             local typingList = {}
             for user, typtime in pairs(globalTypers) do
                 if tick() - typtime < 4 then
@@ -2949,7 +2941,7 @@ task.spawn(function()
             end
         end)
 
-        Safe.Run(function()
+        pcall(function()
             if #activeBadgesList > 0 then
                 for i = #activeBadgesList, 1, -1 do
                     local item = activeBadgesList[i]
@@ -2988,7 +2980,7 @@ task.spawn(function()
             end
         end)
 
-        Safe.Run(function()
+        pcall(function()
             if mainFrame.Visible then
                 strokeGrad.Rotation = (t * 35) % 360
                 local breath = (math.sin(t * 2.5) + 1) / 2
@@ -3004,7 +2996,7 @@ task.spawn(function()
             end
         end)
 
-        Safe.Run(function()
+        pcall(function()
             if openBtnContainer.Visible then
                 local targetSpeed = 1
                 if orbHovered then targetSpeed = targetSpeed * 1.5 end
@@ -3178,7 +3170,7 @@ sendMessageFunc = function(overrideText)
     recentLocalSentMap[string.lower(text)] = tick()
 
     task.spawn(function()
-        Safe.Request({
+        SafeRequest({
             Url = SERVER_URL .. "/send",
             Method = "POST",
             Headers = { ["Content-Type"] = "application/json", ["User-Agent"] = "Roblox/WinInet" },
@@ -3197,11 +3189,11 @@ chatInput.FocusLost:Connect(function(enterPressed)
 end)
 
 -- =========================================================
--- 📥 HIGH-FREQUENCY POLLING ENGINE
+-- 📥 HIGH-FREQUENCY POLLING ENGINE (NON-BLOCKING ASYNC)
 -- =========================================================
 task.spawn(function()
     while _G.TXR_IsPolling and (_G.TXR_ChatInstanceID == currentExecutionID) and task.wait(0.4) do
-        local success, res = Safe.Request({
+        local success, res = SafeRequest({
             Url = SERVER_URL .. "/messages?since=" .. tostring(lastSyncTime),
             Method = "GET",
             Headers = { ["User-Agent"] = "Roblox/WinInet" }
@@ -3352,9 +3344,9 @@ task.spawn(function()
     end
 end)
 
--- Handshake
+-- Handshake (Non-blocking async)
 task.spawn(function()
-    Safe.Request({
+    SafeRequest({
         Url = SERVER_URL .. "/send", Method = "POST",
         Headers = { ["Content-Type"] = "application/json", ["User-Agent"] = "Roblox/WinInet" },
         Body = HttpService:JSONEncode({ 
