@@ -421,8 +421,9 @@ local personalCustomBios = {
     [lp.UserId] = "⚡ Cyber-Titan Apex Elite | System Architect"
 }
 
--- 🌟 FOLLOW REGISTRY SYSTEM
+-- 🌟 INSTAGRAM-STYLE FOLLOW REGISTRY & PROFILE CACHE
 local followedUsers = {}
+local profileCache = {}
 
 local globalTypers = {}
 local processedServerMessageMap = {}
@@ -547,7 +548,7 @@ gsGrad.Transparency = NumberSequence.new({
 })
 gsGrad.Rotation = 90
 
--- Matrix Rain
+-- Matrix Rain Subsystem
 BootSubsystem("MatrixRain", function()
     local matrixBox = Instance.new("Frame", mainFrame)
     matrixBox.Size = UDim2.fromScale(1, 1)
@@ -587,7 +588,7 @@ BootSubsystem("MatrixRain", function()
 end)
 
 -- =========================================================
--- 🌐 PROFESSIONAL PROFILE MODAL (GLOBAL OBJECT & SAFE FETCH)
+-- 🌐 INSTAGRAM-STYLE PROFILE MODAL (NO UID, CLEAN ACTION)
 -- =========================================================
 local profileOverlay = Instance.new("Frame", gui)
 profileOverlay.Size = UDim2.fromScale(1, 1)
@@ -682,8 +683,9 @@ pfHandle.TextSize = 10.5
 pfHandle.TextXAlignment = Enum.TextXAlignment.Left
 pfHandle.ZIndex = 125
 
+-- ⚡ STATS GRID: EXACTLY 2 COLUMNS (FOLLOWERS & FOLLOWING) - UID REMOVED
 local statsGrid = Instance.new("Frame", profileFrame)
-statsGrid.Size = UDim2.new(1, -40, 0, 48)
+statsGrid.Size = UDim2.new(1, -40, 0, 46)
 statsGrid.Position = UDim2.fromOffset(20, 134)
 statsGrid.BackgroundColor3 = Color3.fromRGB(12, 15, 20)
 statsGrid.BackgroundTransparency = 0.15
@@ -695,25 +697,25 @@ sgStroke.Thickness = 1.0
 
 local function createStatMetric(titleText, valueDefault, xOffsetScale)
     local box = Instance.new("Frame", statsGrid)
-    box.Size = UDim2.new(0.333, 0, 1, 0)
+    box.Size = UDim2.new(0.5, 0, 1, 0)
     box.Position = UDim2.new(xOffsetScale, 0, 0, 0)
     box.BackgroundTransparency = 1
     box.ZIndex = 126
 
     local valLbl = Instance.new("TextLabel", box)
     valLbl.Size = UDim2.new(1, 0, 0, 20)
-    valLbl.Position = UDim2.fromOffset(0, 6)
+    valLbl.Position = UDim2.fromOffset(0, 5)
     valLbl.BackgroundTransparency = 1
     valLbl.Text = valueDefault
     valLbl.TextColor3 = Colors.Primary
     valLbl.Font = Enum.Font.GothamBlack
-    valLbl.TextSize = 12
+    valLbl.TextSize = 13
     valLbl.ZIndex = 127
     crispText(valLbl, 0.4)
 
     local subLbl = Instance.new("TextLabel", box)
     subLbl.Size = UDim2.new(1, 0, 0, 14)
-    subLbl.Position = UDim2.fromOffset(0, 26)
+    subLbl.Position = UDim2.fromOffset(0, 25)
     subLbl.BackgroundTransparency = 1
     subLbl.Text = titleText
     subLbl.TextColor3 = Colors.SubText
@@ -725,17 +727,56 @@ local function createStatMetric(titleText, valueDefault, xOffsetScale)
 end
 
 local metricFollowers = createStatMetric("FOLLOWERS", "--", 0)
-local metricFollowing = createStatMetric("FOLLOWING", "--", 0.333)
-local metricUserID    = createStatMetric("ACCOUNT ID", "--", 0.666)
+local metricFollowing = createStatMetric("FOLLOWING", "--", 0.5)
 
+-- 🌟 INSTAGRAM-STYLE ACTION ROW (DIRECTLY UNDER FOLLOWERS/FOLLOWING)
+local instaActionRow = Instance.new("Frame", profileFrame)
+instaActionRow.Size = UDim2.new(1, -40, 0, 30)
+instaActionRow.Position = UDim2.fromOffset(20, 186)
+instaActionRow.BackgroundTransparency = 1
+instaActionRow.ZIndex = 126
+
+local instaActionLayout = Instance.new("UIListLayout", instaActionRow)
+instaActionLayout.FillDirection = Enum.FillDirection.Horizontal
+instaActionLayout.Padding = UDim.new(0, 8)
+instaActionLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+local followBtn = Instance.new("TextButton", instaActionRow)
+followBtn.Size = UDim2.new(0.72, 0, 1, 0)
+followBtn.BackgroundColor3 = Colors.Primary
+followBtn.Text = "Follow"
+followBtn.TextColor3 = Color3.fromRGB(5, 7, 10)
+followBtn.Font = Enum.Font.GothamBlack
+followBtn.TextSize = 10.5
+followBtn.AutoButtonColor = false
+followBtn.ZIndex = 127
+Instance.new("UICorner", followBtn).CornerRadius = UDim.new(0, 7)
+applySpringHover(followBtn)
+
+local copyLinkBtn = Instance.new("TextButton", instaActionRow)
+copyLinkBtn.Size = UDim2.new(0.24, 0, 1, 0)
+copyLinkBtn.BackgroundColor3 = Color3.fromRGB(16, 20, 26)
+copyLinkBtn.Text = "Share"
+copyLinkBtn.TextColor3 = Colors.Text
+copyLinkBtn.Font = Enum.Font.GothamBold
+copyLinkBtn.TextSize = 10
+copyLinkBtn.AutoButtonColor = false
+copyLinkBtn.ZIndex = 127
+Instance.new("UICorner", copyLinkBtn).CornerRadius = UDim.new(0, 7)
+local clStroke = Instance.new("UIStroke", copyLinkBtn)
+clStroke.Color = Colors.SurfaceHover
+clStroke.Thickness = 1.0
+applySpringHover(copyLinkBtn)
+
+-- BIO SECTION
 local bioHeaderRow = Instance.new("Frame", profileFrame)
-bioHeaderRow.Size = UDim2.new(1, -40, 0, 18)
-bioHeaderRow.Position = UDim2.fromOffset(20, 192)
+bioHeaderRow.Size = UDim2.new(1, -40, 0, 16)
+bioHeaderRow.Position = UDim2.fromOffset(20, 224)
 bioHeaderRow.BackgroundTransparency = 1
 bioHeaderRow.ZIndex = 125
 
 local bioTitle = Instance.new("TextLabel", bioHeaderRow)
-bioTitle.Size = UDim2.new(0.5, 0, 1, 0)
+bioTitle.Size = UDim2.new(1, 0, 1, 0)
 bioTitle.BackgroundTransparency = 1
 bioTitle.Text = "ABOUT & BIO"
 bioTitle.TextColor3 = Colors.SubText
@@ -744,26 +785,9 @@ bioTitle.TextSize = 9
 bioTitle.TextXAlignment = Enum.TextXAlignment.Left
 bioTitle.ZIndex = 126
 
-local editBioBtn = Instance.new("TextButton", bioHeaderRow)
-editBioBtn.Size = UDim2.new(0, 70, 1, 0)
-editBioBtn.AnchorPoint = Vector2.new(1, 0)
-editBioBtn.Position = UDim2.new(1, 0, 0, 0)
-editBioBtn.BackgroundColor3 = Color3.fromRGB(20, 24, 32)
-editBioBtn.BackgroundTransparency = 0.2
-editBioBtn.Text = "EDIT BIO"
-editBioBtn.TextColor3 = Colors.Primary
-editBioBtn.Font = Enum.Font.GothamBlack
-editBioBtn.TextSize = 8
-editBioBtn.Visible = false
-editBioBtn.ZIndex = 126
-Instance.new("UICorner", editBioBtn).CornerRadius = UDim.new(0, 4)
-local ebStroke = Instance.new("UIStroke", editBioBtn)
-ebStroke.Color = Colors.PrimaryDark
-ebStroke.Thickness = 0.8
-
 local bioCard = Instance.new("Frame", profileFrame)
-bioCard.Size = UDim2.new(1, -40, 0, 85)
-bioCard.Position = UDim2.fromOffset(20, 214)
+bioCard.Size = UDim2.new(1, -40, 0, 100)
+bioCard.Position = UDim2.fromOffset(20, 244)
 bioCard.BackgroundColor3 = Color3.fromRGB(12, 14, 18)
 bioCard.BackgroundTransparency = 0.1
 bioCard.ZIndex = 125
@@ -786,7 +810,7 @@ local bioLabel = Instance.new("TextLabel", bioScroll)
 bioLabel.Size = UDim2.new(1, 0, 0, 0)
 bioLabel.AutomaticSize = Enum.AutomaticSize.Y
 bioLabel.BackgroundTransparency = 1
-bioLabel.Text = "Retrieving network bio..."
+bioLabel.Text = "Loading bio..."
 bioLabel.TextColor3 = Color3.fromRGB(230, 235, 245)
 bioLabel.Font = Enum.Font.GothamMedium
 bioLabel.TextSize = 10.5
@@ -811,130 +835,80 @@ bioInputBox.ClearTextOnFocus = false
 bioInputBox.Visible = false
 bioInputBox.ZIndex = 128
 
-local pfActionsRow = Instance.new("Frame", profileFrame)
-pfActionsRow.Size = UDim2.new(1, -40, 0, 28)
-pfActionsRow.Position = UDim2.fromOffset(20, 312)
-pfActionsRow.BackgroundTransparency = 1
-pfActionsRow.ZIndex = 125
-
-local pfaLayout = Instance.new("UIListLayout", pfActionsRow)
-pfaLayout.FillDirection = Enum.FillDirection.Horizontal
-pfaLayout.Padding = UDim.new(0, 6)
-pfaLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-
-local function createPfBtn(text, color, onClick)
-    local b = Instance.new("TextButton", pfActionsRow)
-    b.Size = UDim2.new(0.23, 0, 1, 0)
-    b.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
-    b.BackgroundTransparency = 0.2
-    b.Text = text
-    b.TextColor3 = color
-    b.Font = Enum.Font.GothamBlack
-    b.TextSize = 8
-    b.AutoButtonColor = false
-    b.ZIndex = 127
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
-    local bs = Instance.new("UIStroke", b)
-    bs.Color = color
-    bs.Thickness = 0.8
-    bs.Transparency = 0.4
-    applySpringHover(b)
-    b.MouseButton1Click:Connect(function()
-        pcall(onClick)
-    end)
-    return b, bs
-end
-
 local currentProfileUser = nil
 local currentProfileId = nil
+local isEditingBio = false
 
 local function closeProfile()
-    SafeTween(pfScale, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0})
-    SafeTween(profileOverlay, TweenInfo.new(0.2), {BackgroundTransparency = 1})
-    task.delay(0.25, function()
+    SafeTween(pfScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0})
+    SafeTween(profileOverlay, TweenInfo.new(0.18), {BackgroundTransparency = 1})
+    task.delay(0.2, function()
         profileOverlay.Visible = false
     end)
 end
 
 pfCloseBtn.MouseButton1Click:Connect(closeProfile)
 
-local updateInputBar
-
--- 🌟 FOLLOW BUTTON WITH DYNAMIC TOGGLE
-local followBtn, followStroke = createPfBtn("+ FOLLOW", Color3.fromRGB(50, 255, 140), function()
+followBtn.MouseButton1Click:Connect(function()
     if not currentProfileId or currentProfileId == 0 then return end
     
+    if currentProfileId == lp.UserId then
+        isEditingBio = not isEditingBio
+        if isEditingBio then
+            followBtn.Text = "Save Bio"
+            followBtn.BackgroundColor3 = Color3.fromRGB(50, 255, 140)
+            bioScroll.Visible = false
+            bioInputBox.Visible = true
+            bioInputBox.Text = personalCustomBios[lp.UserId] or bioLabel.Text
+            bioInputBox:CaptureFocus()
+        else
+            followBtn.Text = "Edit Bio"
+            followBtn.BackgroundColor3 = Colors.Primary
+            personalCustomBios[lp.UserId] = bioInputBox.Text
+            bioLabel.Text = bioInputBox.Text
+            bioScroll.Visible = true
+            bioInputBox.Visible = false
+            playSFX("default")
+        end
+        return
+    end
+
     local isNowFollowed = not (followedUsers[currentProfileId] == true)
     followedUsers[currentProfileId] = isNowFollowed
     
     if isNowFollowed then
-        followBtn.Text = "✓ FOLLOWING"
+        followBtn.Text = "Following"
+        followBtn.BackgroundColor3 = Color3.fromRGB(22, 28, 38)
         followBtn.TextColor3 = Color3.fromRGB(50, 255, 140)
-        followStroke.Color = Color3.fromRGB(50, 255, 140)
         playSFX("mention")
         local curCount = tonumber(metricFollowers.Text)
         if curCount then metricFollowers.Text = tostring(curCount + 1) end
     else
-        followBtn.Text = "+ FOLLOW"
-        followBtn.TextColor3 = Colors.Primary
-        followStroke.Color = Colors.Primary
+        followBtn.Text = "Follow"
+        followBtn.BackgroundColor3 = Colors.Primary
+        followBtn.TextColor3 = Color3.fromRGB(5, 7, 10)
         playSFX("default")
         local curCount = tonumber(metricFollowers.Text)
         if curCount and curCount > 0 then metricFollowers.Text = tostring(curCount - 1) end
     end
 end)
 
-local dmProfileBtn = createPfBtn("DM", Colors.Purple, function()
-    if currentProfileUser then
-        privateTarget = currentProfileUser
-        if updateInputBar then updateInputBar() end
-        playSFX("dm")
-        closeProfile()
-    end
-end)
-
-local copyLinkBtn = createPfBtn("LINK", Colors.Primary, function()
-    if currentProfileId then
+copyLinkBtn.MouseButton1Click:Connect(function()
+    if currentProfileId and currentProfileId > 0 then
         setClip("https://www.roblox.com/users/" .. tostring(currentProfileId) .. "/profile")
         playSFX("default")
-        copyLinkBtn.Text = "COPIED!"
-        task.delay(1.5, function() copyLinkBtn.Text = "LINK" end)
+        copyLinkBtn.Text = "Copied!"
+        task.delay(1.5, function() copyLinkBtn.Text = "Share" end)
     end
 end)
 
-local tpProfileBtn = createPfBtn("TELEPORT", Colors.MentionGold, function()
-    if currentProfileUser then
-        local targetPlr = Players:FindFirstChild(currentProfileUser)
-        if targetPlr and targetPlr.Character and targetPlr.Character:FindFirstChild("HumanoidRootPart") and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
-            lp.Character.HumanoidRootPart.CFrame = targetPlr.Character.HumanoidRootPart.CFrame
-            playSFX("default")
-        end
-    end
-end)
-
-local isEditingBio = false
-editBioBtn.MouseButton1Click:Connect(function()
-    isEditingBio = not isEditingBio
-    if isEditingBio then
-        editBioBtn.Text = "SAVE BIO"
-        editBioBtn.TextColor3 = Color3.fromRGB(50, 255, 140)
-        bioScroll.Visible = false
-        bioInputBox.Visible = true
-        bioInputBox.Text = personalCustomBios[lp.UserId] or bioLabel.Text
-        bioInputBox:CaptureFocus()
-    else
-        editBioBtn.Text = "EDIT BIO"
-        editBioBtn.TextColor3 = Colors.Primary
-        personalCustomBios[lp.UserId] = bioInputBox.Text
-        bioLabel.Text = bioInputBox.Text
-        bioScroll.Visible = true
-        bioInputBox.Visible = false
-        playSFX("default")
-    end
-end)
-
--- ⚡ 100% NON-BLOCKING ASYNC PROFILE OPENER (NEVER FREEZES UI)
+-- ⚡ INSTANT PROFILE OPENER WITH DEBOUNCE (0% FREEZE / NO HANG)
+local profileOpenDebounce = false
 local function openProfileModal(username)
+    if profileOpenDebounce then return end
+    profileOpenDebounce = true
+    task.delay(0.35, function() profileOpenDebounce = false end)
+
     local rawName = username:match("^(.-)::") or username
     currentProfileUser = rawName
     currentProfileId = nil
@@ -943,21 +917,18 @@ local function openProfileModal(username)
     bioInputBox.Visible = false
     bioScroll.Visible = true
     isEditingBio = false
-    editBioBtn.Text = "EDIT BIO"
-    editBioBtn.TextColor3 = Colors.Primary
 
     pfDisplayName.Text = rawName
     pfHandle.Text = "@" .. rawName
-    metricUserID.Text = "..."
     metricFollowers.Text = "..."
     metricFollowing.Text = "..."
-    bioLabel.Text = "Fetching live network bio..."
+    bioLabel.Text = "Loading network bio..."
     pfAvatar.Image = ""
 
     pfScale.Scale = 0.6
     profileOverlay.BackgroundTransparency = 1
-    SafeTween(profileOverlay, TweenInfo.new(0.25), {BackgroundTransparency = 0.5})
-    SafeTween(pfScale, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1})
+    SafeTween(profileOverlay, TweenInfo.new(0.2), {BackgroundTransparency = 0.5})
+    SafeTween(pfScale, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1})
     playSFX("default")
 
     task.spawn(function()
@@ -976,27 +947,35 @@ local function openProfileModal(username)
         currentProfileId = uId or 0
 
         if uId and uId > 0 then
-            metricUserID.Text = tostring(uId)
             pfAvatar.Image = string.format("rbxthumb://type=AvatarHeadShot&id=%d&w=150&h=150", uId)
-            editBioBtn.Visible = (uId == lp.UserId)
 
-            if followedUsers[uId] then
-                followBtn.Text = "✓ FOLLOWING"
+            if uId == lp.UserId then
+                followBtn.Text = "Edit Bio"
+                followBtn.BackgroundColor3 = Colors.Primary
+                followBtn.TextColor3 = Color3.fromRGB(5, 7, 10)
+            elseif followedUsers[uId] then
+                followBtn.Text = "Following"
+                followBtn.BackgroundColor3 = Color3.fromRGB(22, 28, 38)
                 followBtn.TextColor3 = Color3.fromRGB(50, 255, 140)
-                followStroke.Color = Color3.fromRGB(50, 255, 140)
             else
-                followBtn.Text = "+ FOLLOW"
-                followBtn.TextColor3 = Colors.Primary
-                followStroke.Color = Colors.Primary
+                followBtn.Text = "Follow"
+                followBtn.BackgroundColor3 = Colors.Primary
+                followBtn.TextColor3 = Color3.fromRGB(5, 7, 10)
             end
         else
-            metricUserID.Text = "--"
             bioLabel.Text = "User offline or data unavailable."
             return 
         end
 
         if targetPlr then
             pfDisplayName.Text = targetPlr.DisplayName
+        end
+
+        if profileCache[uId] then
+            metricFollowers.Text = profileCache[uId].followers
+            metricFollowing.Text = profileCache[uId].following
+            bioLabel.Text = personalCustomBios[uId] or profileCache[uId].bio
+            return
         end
 
         local fBio = personalCustomBios[uId] or "No description provided."
@@ -1011,7 +990,9 @@ local function openProfileModal(username)
                     if r1 and r1.StatusCode == 200 then
                         local d1 = HttpService:JSONDecode(r1.Body)
                         if d1 and d1.count and currentProfileId == uId then 
-                            metricFollowers.Text = tostring(d1.count) 
+                            metricFollowers.Text = tostring(d1.count)
+                            if not profileCache[uId] then profileCache[uId] = {} end
+                            profileCache[uId].followers = tostring(d1.count)
                         end
                     end
                 end)
@@ -1026,7 +1007,9 @@ local function openProfileModal(username)
                     if r2 and r2.StatusCode == 200 then
                         local d2 = HttpService:JSONDecode(r2.Body)
                         if d2 and d2.count and currentProfileId == uId then 
-                            metricFollowing.Text = tostring(d2.count) 
+                            metricFollowing.Text = tostring(d2.count)
+                            if not profileCache[uId] then profileCache[uId] = {} end
+                            profileCache[uId].following = tostring(d2.count)
                         end
                     end
                 end)
@@ -1043,6 +1026,8 @@ local function openProfileModal(username)
                             local d3 = HttpService:JSONDecode(r3.Body)
                             if d3 and d3.description and #d3.description > 0 and currentProfileId == uId then
                                 bioLabel.Text = d3.description
+                                if not profileCache[uId] then profileCache[uId] = {} end
+                                profileCache[uId].bio = d3.description
                             end
                         end
                     end)
@@ -1475,6 +1460,20 @@ end)
 
 local messageFeed
 
+-- ⚡ SCROLL TO BOTTOM ENGINE (FIXES REOPEN SCROLL GLITCH)
+local function scrollToBottom()
+    task.defer(function()
+        pcall(function()
+            messageFeed.CanvasPosition = Vector2.new(0, math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y + 250))
+        end)
+    end)
+    task.delay(0.08, function()
+        pcall(function()
+            messageFeed.CanvasPosition = Vector2.new(0, math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y + 250))
+        end)
+    end)
+end
+
 local ghostBtn
 ghostBtn = createHeaderBtn("GST", function()
     if ghostDebounce then return end
@@ -1646,6 +1645,7 @@ local function filterFeedMode()
             end
         end
     end
+    scrollToBottom()
 end
 
 serverBtn.MouseButton1Click:Connect(function()
@@ -1894,7 +1894,7 @@ applySpringHover(jumpBottomBtn)
 
 jumpBottomBtn.MouseButton1Click:Connect(function()
     jumpBottomBtn.Visible = false
-    messageFeed.CanvasPosition = Vector2.new(0, math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y))
+    scrollToBottom()
 end)
 
 messageFeed:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
@@ -1904,7 +1904,7 @@ messageFeed:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
     end
 end)
 
--- ⚡ CLEAN DEDICATED TYPING BAR (ONLY APPEARS DIRECTLY ABOVE INPUT)
+-- ⚡ CLEAN DEDICATED TYPING BAR (ONLY DIRECTLY ABOVE INPUT)
 local globalTypingBar = Instance.new("Frame", mainFrame)
 globalTypingBar.Size = UDim2.new(1, -24, 0, 18)
 globalTypingBar.Position = UDim2.new(0, 14, 1, -72)
@@ -2005,7 +2005,6 @@ end
 
 local MAX_MESSAGES = 60
 local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSender, msgJobId, scopeType)
-    -- STRICT BLOCK: Typing text can never enter feed
     if msg == "[TYPING]" or msg:find("%[TYPING%]") then return end
 
     local memeIdMatch = msg:match("%[MEME:(%d+)%]")
@@ -2114,7 +2113,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         avGrad.Rotation = 45
     end
 
-    -- Direct Profile Click (No Freeze)
+    -- 🌟 ONLY AVATAR OR USERNAME OPENS PROFILE
     avatarImg.InputBegan:Connect(function(input)
         if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and actualUsername ~= "System" then
             openProfileModal(actualUsername)
@@ -2280,7 +2279,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     nameLbl.ZIndex = 12
     crispText(nameLbl)
 
-    -- Direct Profile Click (No Freeze)
+    -- 🌟 ONLY AVATAR OR USERNAME OPENS PROFILE
     nameLbl.InputBegan:Connect(function(input)
         if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and actualUsername ~= "System" then
             openProfileModal(actualUsername)
@@ -2401,7 +2400,6 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
                 chatInput.Text = "@" .. actualUsername .. " "
                 chatInput:CaptureFocus()
             end
-            -- ⚡ REMOVED: Action menu popup (PROFILE, COPY, TP, VIEW) completely disabled on tap as requested!
         end
     end)
 
@@ -2829,6 +2827,7 @@ openBtn.MouseButton1Up:Connect(function()
     SafeTween(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05})
 end)
 
+-- ⚡ REOPEN BUTTON CLICK: AUTO-SCROLLS TO BOTTOM INSTANTLY
 openBtn.MouseButton1Click:Connect(function()
     if dragThresholdMet then 
         dragThresholdMet = false 
@@ -2862,6 +2861,9 @@ openBtn.MouseButton1Click:Connect(function()
     SafeTween(mainFrame, tInfo3, {BackgroundTransparency = isGhostMode and 0.40 or 0.02})
     SafeTween(aura, tInfo3, {ImageTransparency = isGhostMode and 0.95 or 0.85})
     SafeTween(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.5 or 0.25})
+
+    -- Instantly jump to latest messages!
+    scrollToBottom()
 end)
 
 UserInputService.InputBegan:Connect(function(input, gp)
@@ -2884,6 +2886,7 @@ UserInputService.InputBegan:Connect(function(input, gp)
             mainFrame.BackgroundTransparency = isGhostMode and 0.40 or 0.02
             aura.ImageTransparency = isGhostMode and 0.95 or 0.85
             shadow.ImageTransparency = isGhostMode and 0.5 or 0.25
+            scrollToBottom()
         end
     elseif input.KeyCode == Enum.KeyCode.Semicolon or input.KeyCode == Enum.KeyCode.Slash then
         task.delay(0.05, function() chatInput:CaptureFocus() end)
@@ -3193,7 +3196,6 @@ task.spawn(function()
                         local startIndex = math.max(1, #data - 6)
                         for i = startIndex, #data do
                             local m = data[i]
-                            -- STRICTLY FILTER OUT ANY TYPING MESSAGES FROM CHAT FEED
                             if not m.hidden and m.msg ~= "Joined" and m.msg ~= "[TYPING]" and not tostring(m.msg):find("%[TYPING%]") then
                                 local initKey = (m.id and tostring(m.id)) or (m.user .. "_" .. tostring(m.time) .. "_" .. m.msg)
                                 processedServerMessageMap[initKey] = true
@@ -3220,6 +3222,7 @@ task.spawn(function()
                             end
                         end
                         lastSyncTime = data[#data].time
+                        scrollToBottom()
                     end
                     continue
                 end
@@ -3245,7 +3248,6 @@ task.spawn(function()
                             continue
                         end
 
-                        -- ⚡ TYPING PACKET INTERCEPT: NEVER ENTERS FEED, ONLY UPDATES TYPING BAR
                         if m.hidden or m.msg == "[TYPING]" or tostring(m.msg):find("%[TYPING%]") then 
                             processedServerMessageMap[uniqueMsgKey] = true
                             if rawUsernameOnly:lower() ~= lp.Name:lower() then
@@ -3341,4 +3343,5 @@ task.spawn(function()
         })
     })
     addMessageToFeed("System::System", "TXR Cyber-Titan Online! Tap TAG to switch custom live badges.", nil, false, game.JobId, "global")
+    scrollToBottom()
 end)
