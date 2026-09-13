@@ -77,9 +77,7 @@ end
 local targetGuiParent = nil
 pcall(function() targetGuiParent = (gethui and gethui()) or game:GetService("CoreGui") end)
 if not targetGuiParent then
-    pcall(function() 
-        targetGuiParent = lp:FindFirstChildOfClass("PlayerGui") or lp:WaitForChild("PlayerGui", 5) 
-    end)
+    pcall(function() targetGuiParent = lp:FindFirstChildOfClass("PlayerGui") or lp:WaitForChild("PlayerGui", 3) end)
 end
 
 if targetGuiParent then
@@ -424,13 +422,10 @@ local personalCustomBios = {
     [lp.UserId] = "⚡ Cyber-Titan Apex Elite | System Architect"
 }
 
--- 🌟 GLOBAL SESSION PERSISTENT FOLLOW REGISTRY
-local gEnv = (getgenv and getgenv()) or _G or shared
-if not gEnv.TXR_FollowedUsers then
-    gEnv.TXR_FollowedUsers = {}
-end
-local followedUsers = gEnv.TXR_FollowedUsers
+-- 🌟 INSTAGRAM-STYLE FOLLOW REGISTRY & PROFILE CACHE
+local followedUsers = {}
 local profileCache = {}
+local followersListCache = {}
 
 local globalTypers = {}
 local processedServerMessageMap = {}
@@ -738,6 +733,59 @@ end
 local metricFollowers, metricFollowersBtn = createStatMetric("FOLLOWERS", "--", 0)
 local metricFollowing, _ = createStatMetric("FOLLOWING", "--", 0.5)
 
+-- 🌟 FOLLOWERS LIST MODAL (INSTA STYLE DRILL-DOWN DRAWER)
+local followersListModal = Instance.new("Frame", profileFrame)
+followersListModal.Size = UDim2.new(1, 0, 1, 0)
+followersListModal.Position = UDim2.new(0, 0, 1, 0)
+followersListModal.BackgroundColor3 = Colors.Background
+followersListModal.BackgroundTransparency = 0.02
+followersListModal.ZIndex = 140
+Instance.new("UICorner", followersListModal).CornerRadius = UDim.new(0, 16)
+
+local flmHeader = Instance.new("Frame", followersListModal)
+flmHeader.Size = UDim2.new(1, 0, 0, 40)
+flmHeader.BackgroundTransparency = 1
+flmHeader.ZIndex = 141
+
+local flmBackBtn = Instance.new("TextButton", flmHeader)
+flmBackBtn.Size = UDim2.fromOffset(30, 30)
+flmBackBtn.Position = UDim2.fromOffset(10, 5)
+flmBackBtn.BackgroundTransparency = 1
+flmBackBtn.Text = "←"
+flmBackBtn.TextColor3 = Colors.Primary
+flmBackBtn.Font = Enum.Font.GothamBlack
+flmBackBtn.TextSize = 14
+flmBackBtn.ZIndex = 142
+
+local flmTitle = Instance.new("TextLabel", flmHeader)
+flmTitle.Size = UDim2.new(1, -80, 1, 0)
+flmTitle.Position = UDim2.fromOffset(40, 0)
+flmTitle.BackgroundTransparency = 1
+flmTitle.Text = "FOLLOWERS"
+flmTitle.TextColor3 = Colors.Text
+flmTitle.Font = Enum.Font.GothamBlack
+flmTitle.TextSize = 11
+flmTitle.TextXAlignment = Enum.TextXAlignment.Left
+flmTitle.ZIndex = 142
+
+local flmScroll = Instance.new("ScrollingFrame", followersListModal)
+flmScroll.Size = UDim2.new(1, -20, 1, -50)
+flmScroll.Position = UDim2.fromOffset(10, 44)
+flmScroll.BackgroundTransparency = 1
+flmScroll.ScrollBarThickness = 2
+flmScroll.ScrollBarImageColor3 = Colors.Primary
+flmScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+flmScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+flmScroll.ZIndex = 142
+
+local flmLayout = Instance.new("UIListLayout", flmScroll)
+flmLayout.Padding = UDim.new(0, 6)
+
+local function closeFollowersModal()
+    SafeTween(followersListModal, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Position = UDim2.new(0, 0, 1, 0)})
+end
+flmBackBtn.MouseButton1Click:Connect(closeFollowersModal)
+
 -- 🌟 INSTAGRAM-STYLE ACTION ROW
 local instaActionRow = Instance.new("Frame", profileFrame)
 instaActionRow.Size = UDim2.new(1, -40, 0, 30)
@@ -849,6 +897,7 @@ local currentProfileId = nil
 local isEditingBio = false
 
 local function closeProfile()
+    closeFollowersModal()
     SafeTween(pfScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0})
     SafeTween(profileOverlay, TweenInfo.new(0.18), {BackgroundTransparency = 1})
     task.delay(0.2, function()
@@ -891,24 +940,14 @@ followBtn.MouseButton1Click:Connect(function()
         followBtn.TextColor3 = Color3.fromRGB(50, 255, 140)
         playSFX("mention")
         local curCount = tonumber(metricFollowers.Text)
-        if curCount then 
-            metricFollowers.Text = tostring(curCount + 1)
-            if profileCache[currentProfileId] then
-                profileCache[currentProfileId].followers = tostring(curCount + 1)
-            end
-        end
+        if curCount then metricFollowers.Text = tostring(curCount + 1) end
     else
         followBtn.Text = "Follow"
         followBtn.BackgroundColor3 = Colors.Primary
         followBtn.TextColor3 = Color3.fromRGB(5, 7, 10)
         playSFX("default")
         local curCount = tonumber(metricFollowers.Text)
-        if curCount and curCount > 0 then 
-            metricFollowers.Text = tostring(curCount - 1)
-            if profileCache[currentProfileId] then
-                profileCache[currentProfileId].followers = tostring(curCount - 1)
-            end
-        end
+        if curCount and curCount > 0 then metricFollowers.Text = tostring(curCount - 1) end
     end
 end)
 
@@ -921,48 +960,9 @@ copyLinkBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 🌟 ROBUST EXTERNAL LOADER (ABSOLUTE CRASH RESISTANT)
-metricFollowersBtn.MouseButton1Click:Connect(function()
-    if not currentProfileId or currentProfileId == 0 then return end
-    task.spawn(function()
-        local success, result = pcall(function()
-            local getCode = (syn and syn.request) or (http and http.request) or http_request or request
-            local rawCode = nil
-            if getCode then
-                local res = getCode({Url = "https://raw.githubusercontent.com/yelelode/TXR-chat-/refs/heads/main/Profile", Method = "GET"})
-                if res and res.StatusCode == 200 then rawCode = res.Body end
-            end
-            if not rawCode then
-                rawCode = game:HttpGet("https://raw.githubusercontent.com/yelelode/TXR-chat-/refs/heads/main/Profile")
-            end
-            return loadstring(rawCode)()
-        end)
-        
-        if success and type(result) == "function" then
-            pcall(function()
-                result({
-                    ProfileFrame = profileFrame,
-                    UserId = currentProfileId,
-                    Count = metricFollowers.Text,
-                    Colors = Colors,
-                    OnUserSelected = function(targetUsername)
-                        pcall(function()
-                            if _G.TXR_OpenProfile then
-                                _G.TXR_OpenProfile(targetUsername)
-                            end
-                        end)
-                    end
-                })
-            end)
-        else
-            warn("[TXR External Module Failed Safely]:", tostring(result))
-        end
-    end)
-end)
-
--- ⚡ ASYNC NON-BLOCKING PROFILE MODAL ENGINE
+-- ⚡ ASYNC NON-BLOCKING PROFILE MODAL (NO FIRST-TIME FREEZE)
 local profileOpenDebounce = false
-local function handleOpenProfile(username)
+local function openProfileModal(username)
     if profileOpenDebounce then return end
     profileOpenDebounce = true
     task.delay(0.3, function() profileOpenDebounce = false end)
@@ -972,6 +972,7 @@ local function handleOpenProfile(username)
     currentProfileId = nil
 
     profileOverlay.Visible = true
+    followersListModal.Position = UDim2.new(0, 0, 1, 0)
     bioInputBox.Visible = false
     bioScroll.Visible = true
     isEditingBio = false
@@ -1010,7 +1011,7 @@ local function handleOpenProfile(username)
                 followBtn.Text = "Edit Bio"
                 followBtn.BackgroundColor3 = Colors.Primary
                 followBtn.TextColor3 = Color3.fromRGB(5, 7, 10)
-            elseif followedUsers[uId] == true then
+            elseif followedUsers[uId] then
                 followBtn.Text = "Following"
                 followBtn.BackgroundColor3 = Color3.fromRGB(22, 28, 38)
                 followBtn.TextColor3 = Color3.fromRGB(50, 255, 140)
@@ -1047,10 +1048,9 @@ local function handleOpenProfile(username)
                     if r1 and r1.StatusCode == 200 then
                         local d1 = HttpService:JSONDecode(r1.Body)
                         if d1 and d1.count and currentProfileId == uId then 
-                            local countVal = tostring(d1.count)
-                            metricFollowers.Text = countVal
+                            metricFollowers.Text = tostring(d1.count)
                             if not profileCache[uId] then profileCache[uId] = {} end
-                            profileCache[uId].followers = countVal
+                            profileCache[uId].followers = tostring(d1.count)
                         end
                     end
                 end)
@@ -1065,10 +1065,9 @@ local function handleOpenProfile(username)
                     if r2 and r2.StatusCode == 200 then
                         local d2 = HttpService:JSONDecode(r2.Body)
                         if d2 and d2.count and currentProfileId == uId then 
-                            local countVal = tostring(d2.count)
-                            metricFollowing.Text = countVal
+                            metricFollowing.Text = tostring(d2.count)
                             if not profileCache[uId] then profileCache[uId] = {} end
-                            profileCache[uId].following = countVal
+                            profileCache[uId].following = tostring(d2.count)
                         end
                     end
                 end)
@@ -1100,7 +1099,88 @@ local function handleOpenProfile(username)
     end)
 end
 
-_G.TXR_OpenProfile = handleOpenProfile
+metricFollowersBtn.MouseButton1Click:Connect(function()
+    if not currentProfileId or currentProfileId == 0 then return end
+    for _, c in ipairs(flmScroll:GetChildren()) do
+        if c:IsA("GuiObject") and c.Name ~= "UIListLayout" then c:Destroy() end
+    end
+    flmTitle.Text = "FOLLOWERS (" .. tostring(metricFollowers.Text) .. ")"
+    SafeTween(followersListModal, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)})
+
+    task.spawn(function()
+        local cached = followersListCache[currentProfileId]
+        if cached then
+            for _, fUser in ipairs(cached) do
+                local row = Instance.new("Frame", flmScroll)
+                row.Size = UDim2.new(1, 0, 0, 32)
+                row.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
+                row.BackgroundTransparency = 0.2
+                row.ZIndex = 143
+                Instance.new("UICorner", row).CornerRadius = UDim.new(0, 6)
+
+                local rAvatar = Instance.new("ImageLabel", row)
+                rAvatar.Size = UDim2.fromOffset(24, 24)
+                rAvatar.Position = UDim2.fromOffset(4, 4)
+                rAvatar.BackgroundTransparency = 1
+                rAvatar.Image = string.format("rbxthumb://type=AvatarHeadShot&id=%d&w=48&h=48", fUser.id)
+                rAvatar.ZIndex = 144
+                Instance.new("UICorner", rAvatar).CornerRadius = UDim.new(1, 0)
+
+                local rName = Instance.new("TextLabel", row)
+                rName.Size = UDim2.new(1, -38, 1, 0)
+                rName.Position = UDim2.fromOffset(34, 0)
+                rName.BackgroundTransparency = 1
+                rName.Text = fUser.displayName .. " (@" .. fUser.name .. ")"
+                rName.TextColor3 = Colors.Text
+                rName.Font = Enum.Font.GothamBold
+                rName.TextSize = 10
+                rName.TextXAlignment = Enum.TextXAlignment.Left
+                rName.ZIndex = 144
+            end
+            return
+        end
+
+        if req then
+            local r = req({
+                Url = "https://friends.roblox.com/v1/users/" .. tostring(currentProfileId) .. "/followers?limit=15&sortOrder=Desc",
+                Method = "GET"
+            })
+            if r and r.StatusCode == 200 then
+                local res = HttpService:JSONDecode(r.Body)
+                if res and res.data then
+                    followersListCache[currentProfileId] = res.data
+                    for _, fUser in ipairs(res.data) do
+                        local row = Instance.new("Frame", flmScroll)
+                        row.Size = UDim2.new(1, 0, 0, 32)
+                        row.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
+                        row.BackgroundTransparency = 0.2
+                        row.ZIndex = 143
+                        Instance.new("UICorner", row).CornerRadius = UDim.new(0, 6)
+
+                        local rAvatar = Instance.new("ImageLabel", row)
+                        rAvatar.Size = UDim2.fromOffset(24, 24)
+                        rAvatar.Position = UDim2.fromOffset(4, 4)
+                        rAvatar.BackgroundTransparency = 1
+                        rAvatar.Image = string.format("rbxthumb://type=AvatarHeadShot&id=%d&w=48&h=48", fUser.id)
+                        rAvatar.ZIndex = 144
+                        Instance.new("UICorner", rAvatar).CornerRadius = UDim.new(1, 0)
+
+                        local rName = Instance.new("TextLabel", row)
+                        rName.Size = UDim2.new(1, -38, 1, 0)
+                        rName.Position = UDim2.fromOffset(34, 0)
+                        rName.BackgroundTransparency = 1
+                        rName.Text = fUser.displayName .. " (@" .. fUser.name .. ")"
+                        rName.TextColor3 = Colors.Text
+                        rName.Font = Enum.Font.GothamBold
+                        rName.TextSize = 10
+                        rName.TextXAlignment = Enum.TextXAlignment.Left
+                        rName.ZIndex = 144
+                    end
+                end
+            end
+        end
+    end)
+end)
 
 -- =========================================================
 -- 🛸 REOPEN ORB ENGINE
@@ -1364,9 +1444,7 @@ local function refreshRosterUI()
         
         applySpringHover(uBtn)
         uBtn.MouseButton1Click:Connect(function()
-            if _G.TXR_OpenProfile then
-                _G.TXR_OpenProfile(u)
-            end
+            openProfileModal(u)
             rosterFrame.Visible = false
         end)
     end
@@ -1523,7 +1601,7 @@ end)
 
 local messageFeed
 
--- ⚡ SCROLL TO BOTTOM ENGINE
+-- ⚡ SCROLL TO BOTTOM ENGINE (REAL ABSOLUTE CLAMP FIXES REOPEN FOR ALL PLAYERS)
 local function scrollToBottom()
     task.defer(function()
         pcall(function()
@@ -1972,7 +2050,7 @@ messageFeed:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
     end
 end)
 
--- ⚡ CLEAN DEDICATED TYPING BAR
+-- ⚡ CLEAN DEDICATED TYPING BAR (ONLY DIRECTLY ABOVE INPUT)
 local globalTypingBar = Instance.new("Frame", mainFrame)
 globalTypingBar.Size = UDim2.new(1, -24, 0, 18)
 globalTypingBar.Position = UDim2.new(0, 14, 1, -72)
@@ -2074,7 +2152,8 @@ local function addJoinNotice(username)
     end)
 end
 
-local MAX_MESSAGES = 100
+-- 🌟 EXPANDED GLOBAL CHAT MESSAGE RETENTION (300 MESSAGES)
+local MAX_MESSAGES = 300
 local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSender, msgJobId, scopeType)
     if msg == "[TYPING]" or msg:find("%[TYPING%]") then return end
 
@@ -2164,7 +2243,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     cardStroke.Transparency = isMentioned and 0.15 or 0.6
     cardStroke.Color = isMentioned and Colors.MentionGold or Colors.SurfaceHover
 
-    -- 🌟 AVATAR CIRCLE BUTTON TRIGGER (CLICK TO OPEN PROFILE)
+    -- 🌟 AVATAR CIRCLE BUTTON TRIGGER (ONLY CLICKING THIS OPENS PROFILE)
     local avatarBtn = Instance.new("ImageButton", card)
     avatarBtn.Size = UDim2.fromOffset(30, 30)
     avatarBtn.Position = UDim2.fromOffset(16, 12)
@@ -2189,8 +2268,8 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     end
 
     avatarBtn.MouseButton1Click:Connect(function()
-        if actualUsername ~= "System" and _G.TXR_OpenProfile then
-            _G.TXR_OpenProfile(actualUsername)
+        if actualUsername ~= "System" then
+            openProfileModal(actualUsername)
         end
     end)
 
@@ -2237,7 +2316,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     timeLbl.ZIndex = 12
     crispText(timeLbl, 0.7)
 
-    -- 🌟 LIGHTLY QUOTED REPLY PREVIEW
+    -- 🌟 LIGHTLY QUOTED REPLY PREVIEW (OFFICIAL DISCORD / APP STYLE)
     if replyAuthor and replySnippet then
         local replyPill = Instance.new("Frame", cardContent)
         replyPill.Size = UDim2.new(1, -10, 0, 18)
@@ -2376,7 +2455,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         })
     end
 
-    -- 🌟 DISPLAY NAME ONLY
+    -- 🌟 DISPLAY NAME ONLY (NO @USERNAME NEXT TO DISPLAY NAME)
     local nameLbl = Instance.new("TextLabel", headerRow)
     nameLbl.AutomaticSize = Enum.AutomaticSize.X
     nameLbl.Size = UDim2.new(0, 0, 1, 0)
@@ -2523,6 +2602,7 @@ inputStroke.Thickness = 1.0
 inputStroke.Color = Colors.PrimaryDark
 inputStroke.Transparency = 0.4
 
+-- 🌟 LIGHT APP STYLE REPLY PREVIEW BAR (DOCKED ABOVE INPUT)
 replyPreviewFrame = Instance.new("Frame", mainFrame)
 replyPreviewFrame.Size = UDim2.new(1, -30, 0, 24)
 replyPreviewFrame.Position = UDim2.new(0, 15, 1, -78)
@@ -2966,7 +3046,7 @@ openBtn.MouseButton1Up:Connect(function()
     SafeTween(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05})
 end)
 
--- ⚡ REOPEN BUTTON CLICK
+-- ⚡ REOPEN BUTTON CLICK: AUTO-SCROLLS TO BOTTOM INSTANTLY (ALL PLAYERS INCLUDED)
 openBtn.MouseButton1Click:Connect(function()
     if dragThresholdMet then 
         dragThresholdMet = false 
@@ -3001,6 +3081,7 @@ openBtn.MouseButton1Click:Connect(function()
     SafeTween(aura, tInfo3, {ImageTransparency = isGhostMode and 0.95 or 0.85})
     SafeTween(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.5 or 0.25})
 
+    -- Instantly jump to latest messages!
     scrollToBottom()
 end)
 
@@ -3338,7 +3419,7 @@ task.spawn(function()
                 if isInitialSync then
                     isInitialSync = false
                     if #data > 0 then
-                        local startIndex = math.max(1, #data - 30)
+                        local startIndex = math.max(1, #data - 60)
                         for i = startIndex, #data do
                             local m = data[i]
                             if not m.hidden and m.msg ~= "Joined" and m.msg ~= "[TYPING]" and not tostring(m.msg):find("%[TYPING%]") then
