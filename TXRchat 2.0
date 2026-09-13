@@ -683,7 +683,7 @@ pfHandle.TextSize = 10.5
 pfHandle.TextXAlignment = Enum.TextXAlignment.Left
 pfHandle.ZIndex = 125
 
--- ⚡ STATS GRID: EXACTLY 2 COLUMNS (FOLLOWERS & FOLLOWING) - UID REMOVED
+-- ⚡ STATS GRID: EXACTLY 2 COLUMNS (FOLLOWERS & FOLLOWING)
 local statsGrid = Instance.new("Frame", profileFrame)
 statsGrid.Size = UDim2.new(1, -40, 0, 46)
 statsGrid.Position = UDim2.fromOffset(20, 134)
@@ -729,7 +729,7 @@ end
 local metricFollowers = createStatMetric("FOLLOWERS", "--", 0)
 local metricFollowing = createStatMetric("FOLLOWING", "--", 0.5)
 
--- 🌟 INSTAGRAM-STYLE ACTION ROW (DIRECTLY UNDER FOLLOWERS/FOLLOWING)
+-- 🌟 INSTAGRAM-STYLE ACTION ROW
 local instaActionRow = Instance.new("Frame", profileFrame)
 instaActionRow.Size = UDim2.new(1, -40, 0, 30)
 instaActionRow.Position = UDim2.fromOffset(20, 186)
@@ -902,12 +902,12 @@ copyLinkBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ⚡ INSTANT PROFILE OPENER WITH DEBOUNCE (0% FREEZE / NO HANG)
+-- ⚡ ASYNC NON-BLOCKING PROFILE MODAL (NO FIRST-TIME FREEZE)
 local profileOpenDebounce = false
 local function openProfileModal(username)
     if profileOpenDebounce then return end
     profileOpenDebounce = true
-    task.delay(0.35, function() profileOpenDebounce = false end)
+    task.delay(0.3, function() profileOpenDebounce = false end)
 
     local rawName = username:match("^(.-)::") or username
     currentProfileUser = rawName
@@ -922,7 +922,7 @@ local function openProfileModal(username)
     pfHandle.Text = "@" .. rawName
     metricFollowers.Text = "..."
     metricFollowing.Text = "..."
-    bioLabel.Text = "Loading network bio..."
+    bioLabel.Text = "Loading bio..."
     pfAvatar.Image = ""
 
     pfScale.Scale = 0.6
@@ -943,7 +943,6 @@ local function openProfileModal(username)
         end
 
         if currentProfileUser ~= rawName then return end
-
         currentProfileId = uId or 0
 
         if uId and uId > 0 then
@@ -1310,7 +1309,7 @@ local function refreshRosterUI()
 end
 
 -- =========================================================
--- 🌟 HEADER BAR & BALANCED CONTROLS (CLEAN & CENTERED)
+-- 🌟 HEADER BAR & BALANCED CONTROLS
 -- =========================================================
 local header = Instance.new("Frame", mainFrame)
 header.Size = UDim2.new(1, 0, 0, 42)
@@ -1460,16 +1459,21 @@ end)
 
 local messageFeed
 
--- ⚡ SCROLL TO BOTTOM ENGINE (FIXES REOPEN SCROLL GLITCH)
+-- ⚡ SCROLL TO BOTTOM ENGINE (REAL ABSOLUTE CLAMP FIXES REOPEN FOR ALL PLAYERS)
 local function scrollToBottom()
     task.defer(function()
         pcall(function()
-            messageFeed.CanvasPosition = Vector2.new(0, math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y + 250))
+            messageFeed.CanvasPosition = Vector2.new(0, 99999999)
         end)
     end)
-    task.delay(0.08, function()
+    task.delay(0.04, function()
         pcall(function()
-            messageFeed.CanvasPosition = Vector2.new(0, math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y + 250))
+            messageFeed.CanvasPosition = Vector2.new(0, 99999999)
+        end)
+    end)
+    task.delay(0.12, function()
+        pcall(function()
+            messageFeed.CanvasPosition = Vector2.new(0, 99999999)
         end)
     end)
 end
@@ -2052,7 +2056,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
 
     local padFix = Instance.new("UIPadding", card)
     padFix.PaddingBottom = UDim.new(0, 10)
-    padFix.PaddingTop = UDim.new(0, 2)
+    padFix.PaddingTop = UDim.new(0, 4)
 
     if chatMode == "server" then
         if scopeType == "global" or (msgJobId and msgJobId ~= "" and msgJobId ~= game.JobId) then
@@ -2090,10 +2094,10 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     cardStroke.Transparency = isMentioned and 0.15 or 0.6
     cardStroke.Color = isMentioned and Colors.MentionGold or Colors.SurfaceHover
 
-    -- 🌟 AVATAR CLICK ONLY TO OPEN PROFILE (CIRCULAR BUTTON TRIGGER)
+    -- 🌟 AVATAR CIRCLE BUTTON TRIGGER (ONLY CLICKING THIS OPENS PROFILE)
     local avatarBtn = Instance.new("ImageButton", card)
     avatarBtn.Size = UDim2.fromOffset(30, 30)
-    avatarBtn.Position = UDim2.fromOffset(16, 10)
+    avatarBtn.Position = UDim2.fromOffset(16, 12)
     avatarBtn.BackgroundColor3 = Colors.Background
     avatarBtn.BackgroundTransparency = 0.5
     avatarBtn.AutoButtonColor = false
@@ -2136,19 +2140,37 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
 
     local cardContent = Instance.new("Frame", card)
     cardContent.Size = UDim2.new(1, -56, 0, 0)
-    cardContent.Position = UDim2.fromOffset(56, 10)
+    cardContent.Position = UDim2.fromOffset(56, 4)
     cardContent.AutomaticSize = Enum.AutomaticSize.Y
     cardContent.BackgroundTransparency = 1
     cardContent.ZIndex = 11
 
     local ccLayout = Instance.new("UIListLayout", cardContent)
     ccLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    ccLayout.Padding = UDim.new(0, 4)
+    ccLayout.Padding = UDim.new(0, 3)
+
+    -- 🌟 TIME STAMP MOVED TO THE TOP ROW (CLEARS SPACE)
+    local topRow = Instance.new("Frame", cardContent)
+    topRow.Size = UDim2.new(1, 0, 0, 12)
+    topRow.BackgroundTransparency = 1
+    topRow.LayoutOrder = 1
+    topRow.ZIndex = 11
+
+    local timeLbl = Instance.new("TextLabel", topRow)
+    timeLbl.Size = UDim2.new(1, 0, 1, 0)
+    timeLbl.BackgroundTransparency = 1
+    timeLbl.Text = os.date("%H:%M")
+    timeLbl.TextColor3 = Color3.fromRGB(110, 125, 145)
+    timeLbl.Font = Enum.Font.GothamBold
+    timeLbl.TextSize = 8.5
+    timeLbl.TextXAlignment = Enum.TextXAlignment.Left
+    timeLbl.ZIndex = 12
+    crispText(timeLbl, 0.7)
 
     local headerRow = Instance.new("Frame", cardContent)
     headerRow.Size = UDim2.new(1, 0, 0, 18)
     headerRow.BackgroundTransparency = 1
-    headerRow.LayoutOrder = 1
+    headerRow.LayoutOrder = 2
     headerRow.ZIndex = 11
 
     local hLayout = Instance.new("UIListLayout", headerRow)
@@ -2156,18 +2178,6 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     hLayout.VerticalAlignment = Enum.VerticalAlignment.Center
     hLayout.Padding = UDim.new(0, 6)
     hLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-    local timeLbl = Instance.new("TextLabel", headerRow)
-    timeLbl.AutomaticSize = Enum.AutomaticSize.X
-    timeLbl.Size = UDim2.new(0, 0, 1, 0)
-    timeLbl.BackgroundTransparency = 1
-    timeLbl.Text = string.format("[%s]", os.date("%H:%M"))
-    timeLbl.TextColor3 = Color3.fromRGB(110, 125, 145)
-    timeLbl.Font = Enum.Font.GothamBold
-    timeLbl.TextSize = 10.5
-    timeLbl.LayoutOrder = 1
-    timeLbl.ZIndex = 12
-    crispText(timeLbl, 0.6)
 
     if privateUserTarget then
         local dmLbl = Instance.new("TextLabel", headerRow)
@@ -2179,7 +2189,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         dmLbl.TextColor3 = Colors.Purple
         dmLbl.Font = Enum.Font.GothamBold
         dmLbl.TextSize = 10.5
-        dmLbl.LayoutOrder = 2
+        dmLbl.LayoutOrder = 1
         dmLbl.ZIndex = 12
         crispText(dmLbl, 0.5)
     end
@@ -2191,7 +2201,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         badgeHost.Size = UDim2.fromOffset(tagWidth, 18)
         badgeHost.BackgroundTransparency = 1
         badgeHost.BorderSizePixel = 0
-        badgeHost.LayoutOrder = 3
+        badgeHost.LayoutOrder = 2
         badgeHost.ZIndex = 13
 
         local badgeGlow = Instance.new("TextLabel", badgeHost)
@@ -2265,42 +2275,26 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         })
     end
 
+    -- 🌟 DISPLAY NAME ONLY (NO @USERNAME NEXT TO DISPLAY NAME)
     local nameLbl = Instance.new("TextLabel", headerRow)
     nameLbl.AutomaticSize = Enum.AutomaticSize.X
     nameLbl.Size = UDim2.new(0, 0, 1, 0)
     nameLbl.BackgroundTransparency = 1
     nameLbl.RichText = true
-    nameLbl.Text = sanitizeXml(dispName)
+    nameLbl.Text = sanitizeXml(dispName or actualUsername) .. ":"
     nameLbl.TextColor3 = (currentThemeIdx == 2 and Color3.fromRGB(255, 45, 85) or Colors.Primary)
     nameLbl.Font = Enum.Font.GothamBlack
     nameLbl.TextSize = 12
-    nameLbl.LayoutOrder = 4
+    nameLbl.LayoutOrder = 3
     nameLbl.Active = false
     nameLbl.ZIndex = 12
     crispText(nameLbl)
-
-    if actualUsername ~= dispName and actualUsername ~= "System" then
-        local handleLbl = Instance.new("TextLabel", headerRow)
-        handleLbl.AutomaticSize = Enum.AutomaticSize.X
-        handleLbl.Size = UDim2.new(0, 0, 1, 0)
-        handleLbl.BackgroundTransparency = 1
-        handleLbl.Text = "@" .. sanitizeXml(actualUsername) .. ":"
-        handleLbl.TextColor3 = Colors.SubText
-        handleLbl.Font = Enum.Font.GothamMedium
-        handleLbl.TextSize = 10
-        handleLbl.LayoutOrder = 5
-        handleLbl.Active = false
-        handleLbl.ZIndex = 12
-        crispText(handleLbl, 0.6)
-    else
-        nameLbl.Text = sanitizeXml(dispName) .. ":"
-    end
 
     if memeIdMatch then
         local memeHolder = Instance.new("Frame", cardContent)
         memeHolder.Size = UDim2.new(1, 0, 0, 94)
         memeHolder.BackgroundTransparency = 1
-        memeHolder.LayoutOrder = 2
+        memeHolder.LayoutOrder = 3
         memeHolder.ZIndex = 12
 
         local memeImg = Instance.new("ImageLabel", memeHolder)
@@ -2327,7 +2321,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         bodyTxt.TextWrapped = true
         bodyTxt.TextXAlignment = Enum.TextXAlignment.Left
         bodyTxt.RichText = true
-        bodyTxt.LayoutOrder = 2
+        bodyTxt.LayoutOrder = 3
         bodyTxt.ZIndex = 12
         bodyTxt.Text = sanitizeXml(msg)
         crispText(bodyTxt)
@@ -2814,7 +2808,7 @@ openBtn.MouseButton1Up:Connect(function()
     SafeTween(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05})
 end)
 
--- ⚡ REOPEN BUTTON CLICK: AUTO-SCROLLS TO BOTTOM INSTANTLY
+-- ⚡ REOPEN BUTTON CLICK: AUTO-SCROLLS TO BOTTOM INSTANTLY (ALL PLAYERS INCLUDED)
 openBtn.MouseButton1Click:Connect(function()
     if dragThresholdMet then 
         dragThresholdMet = false 
