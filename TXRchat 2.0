@@ -11,6 +11,11 @@ pcall(function()
     end
 end)
 
+-- Wait for game to be loaded safely
+if not game:IsLoaded() then
+    pcall(function() game.Loaded:Wait() end)
+end
+
 -- =========================================================
 -- 🛡️ ULTRA-FAST FAULT-ISOLATED CORE ENGINE
 -- =========================================================
@@ -57,10 +62,34 @@ local TextChatService = game:GetService("TextChatService")
 local ChatService = game:GetService("Chat")
 local SoundService = game:GetService("SoundService")
 
-local lp = Players.LocalPlayer or Players:GetPropertyChangedSignal("LocalPlayer"):Wait() or Players.LocalPlayer
+-- Bulletproof LocalPlayer resolution
+local lp = Players.LocalPlayer
+if not lp then
+    local startWait = tick()
+    while not lp and (tick() - startWait < 5) do
+        task.wait(0.05)
+        lp = Players.LocalPlayer
+    end
+end
+if not lp then
+    lp = Players.PlayerAdded:Wait()
+end
+
 local Camera = workspace.CurrentCamera
 local setClip = setclipboard or toclipboard or function() end
 local req = (syn and syn.request) or (http and http.request) or http_request or request
+
+-- 🛡️ FORWARD DECLARATIONS (PREVENTS SCOPE CRASHES)
+local openProfileModal
+local showFollowersList
+local closeFollowersModal
+local closeProfile
+local setReplyTarget
+local cancelReply
+local scrollToBottom
+local updateInputBar
+local sendMessageFunc
+local addMessageToFeed
 
 local function SafeTween(obj, tweenInfo, props)
     if not obj or not obj.Parent then return end
@@ -83,29 +112,32 @@ local function SafeGetTextSize(text, size, font, bounds)
     return (ok and res) or Vector2.new(50, 18)
 end
 
--- 🛡️ GUARANTEED PARENT RESOLUTION (NO CRASH ON CORE-GUI SECURITY)
-local targetGuiParent = nil
-SafeWrap("ResolveGuiParent", function()
+-- 🛡️ GUARANTEED PARENT RESOLUTION WITH WRITE VERIFICATION
+local function getSafeGuiParent()
     if gethui then
         local ok, h = pcall(gethui)
-        if ok and h then targetGuiParent = h end
-    end
-    if not targetGuiParent then
-        local ok, cg = pcall(function() return game:GetService("CoreGui") end)
-        if ok and cg then
-            local testOk = pcall(function() return cg:GetChildren() end)
-            if testOk then targetGuiParent = cg end
+        if ok and h then
+            local test = Instance.new("Frame")
+            local canParent = pcall(function() test.Parent = h test:Destroy() end)
+            if canParent then return h end
         end
     end
-    if not targetGuiParent and lp then
-        local ok, pg = pcall(function() return lp:FindFirstChildOfClass("PlayerGui") or lp:WaitForChild("PlayerGui", 3) end)
-        if ok and pg then targetGuiParent = pg end
+    local pGui = lp:FindFirstChildOfClass("PlayerGui") or lp:WaitForChild("PlayerGui", 3)
+    if pGui then
+        local test = Instance.new("Frame")
+        local canParent = pcall(function() test.Parent = pGui test:Destroy() end)
+        if canParent then return pGui end
     end
-end)
-
-if not targetGuiParent then
-    targetGuiParent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+    local okCg, cg = pcall(function() return game:GetService("CoreGui") end)
+    if okCg and cg then
+        local test = Instance.new("Frame")
+        local canParent = pcall(function() test.Parent = cg test:Destroy() end)
+        if canParent then return cg end
+    end
+    return lp:WaitForChild("PlayerGui")
 end
+
+local targetGuiParent = getSafeGuiParent()
 
 -- 🛡️ SAFE CLEANUP OF PREVIOUS UI
 SafeWrap("PurgeOldInstances", function()
@@ -485,13 +517,21 @@ local function displayBubble(userName, msg)
             cleanMsg = "[Sticker / Meme]"
         end
 
-        if TextChatService and pcall(function() return TextChatService.ChatVersion end) and TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-            TextChatService:DisplayBubble(speaker.Character, cleanMsg)
-        else
-            local head = speaker.Character:FindFirstChild("Head")
-            if head then
-                ChatService:Chat(head, cleanMsg, Enum.ChatColor.White)
+        local okTextChat = pcall(function()
+            if TextChatService and TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+                TextChatService:DisplayBubble(speaker.Character, cleanMsg)
+                return true
             end
+            return false
+        end)
+
+        if not okTextChat then
+            pcall(function()
+                local head = speaker.Character:FindFirstChild("Head")
+                if head then
+                    ChatService:Chat(head, cleanMsg, Enum.ChatColor.White)
+                end
+            end)
         end
     end)
 end
@@ -503,6 +543,8 @@ local gui = Instance.new("ScreenGui")
 gui.Name = "TXR_OnyxChat_" .. tostring(math.random(100000, 999999))
 gui.ResetOnSpawn = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- Immediate parent mount for zero delay
 pcall(function() gui.Parent = targetGuiParent end)
 
 local shadow = Instance.new("ImageLabel", gui)
@@ -536,6 +578,7 @@ mainFrame.BackgroundColor3 = Colors.Background
 mainFrame.BackgroundTransparency = 0.02
 mainFrame.ClipsDescendants = true
 mainFrame.Active = true
+mainFrame.Visible = true
 mainFrame.ZIndex = 5
 
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 16)
@@ -840,7 +883,7 @@ local flListLayout = Instance.new("UIListLayout", flScroll)
 flListLayout.Padding = UDim.new(0, 6)
 flListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
-local function closeFollowersModal()
+closeFollowersModal = function()
     SafeTween(flScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0})
     SafeTween(followersOverlay, TweenInfo.new(0.2), {BackgroundTransparency = 1})
     task.delay(0.2, function()
@@ -849,9 +892,7 @@ local function closeFollowersModal()
 end
 flCloseBtn.MouseButton1Click:Connect(closeFollowersModal)
 
-local openProfileModal -- Forward definition
-
-local function showFollowersList(userId, username)
+showFollowersList = function(userId, username)
     for _, c in ipairs(flScroll:GetChildren()) do
         if c:IsA("GuiObject") and c.Name ~= "UIListLayout" then c:Destroy() end
     end
@@ -1063,7 +1104,7 @@ local currentProfileUser = nil
 local currentProfileId = nil
 local isEditingBio = false
 
-local function closeProfile()
+closeProfile = function()
     SafeTween(pfScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = 0})
     SafeTween(profileOverlay, TweenInfo.new(0.18), {BackgroundTransparency = 1})
     task.delay(0.2, function()
@@ -1139,7 +1180,7 @@ copyLinkBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ⚡ INSTANT PROFILE OPENER WITH ASYNC BACKGROUND CACHING (0% FREEZE)
+-- ⚡ INSTANT PROFILE OPENER WITH ASYNC BACKGROUND CACHING
 local profileOpenDebounce = false
 openProfileModal = function(username)
     if profileOpenDebounce then return end
@@ -1706,7 +1747,7 @@ end)
 local messageFeed
 
 -- ⚡ TRUE ABSOLUTE SCROLL TO BOTTOM ENGINE
-local function scrollToBottom()
+scrollToBottom = function()
     task.defer(function()
         pcall(function()
             messageFeed.CanvasPosition = Vector2.new(0, 9999999)
@@ -2222,7 +2263,7 @@ rpbCloseBtn.TextSize = 8.5
 rpbCloseBtn.ZIndex = 16
 Instance.new("UICorner", rpbCloseBtn).CornerRadius = UDim.new(1, 0)
 
-local function setReplyTarget(rawUsername, dispName, msgSnippet)
+setReplyTarget = function(rawUsername, dispName, msgSnippet)
     local cleanSnippet = msgSnippet:gsub("%[REPLY:.-%]", ""):gsub("%[MEME:%d+%]", "[Sticker]")
     if #cleanSnippet > 35 then
         cleanSnippet = string.sub(cleanSnippet, 1, 32) .. "..."
@@ -2237,7 +2278,7 @@ local function setReplyTarget(rawUsername, dispName, msgSnippet)
     playSFX("swipe")
 end
 
-local function cancelReply()
+cancelReply = function()
     replyingToData = nil
     replyPreviewBar.Visible = false
 end
@@ -2265,7 +2306,6 @@ local function spawnUIParticles(parentFrame, positionUDim2, color, count)
     end
 end
 
-local sendMessageFunc
 local chatInput
 
 -- =========================================================
@@ -2322,7 +2362,7 @@ local function addJoinNotice(username)
     end)
 end
 
--- ⚡ PRUNING: ONLY PURGES EXCESS SERVER CHATS (GLOBAL REMAINS LOADED)
+-- ⚡ PRUNING: PRESERVES GLOBAL CHATS (ONLY PURGES EXCESS SERVER CHATS)
 local function pruneOldMessages()
     local serverCount = 0
     for _, child in ipairs(messageFeed:GetChildren()) do
@@ -2342,7 +2382,7 @@ local function pruneOldMessages()
     end
 end
 
-local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSender, msgJobId, scopeType)
+addMessageToFeed = function(rawUserName, msg, privateUserTarget, isPrivateSender, msgJobId, scopeType)
     if msg == "[TYPING]" or msg:find("%[TYPING%]") then return end
 
     local replyTargetDisp, replySnippet, cleanMsgBody = msg:match("^%[REPLY:(.-):(.-)%]%s*(.*)$")
