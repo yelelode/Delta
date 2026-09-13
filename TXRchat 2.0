@@ -421,6 +421,9 @@ local personalCustomBios = {
     [lp.UserId] = "⚡ Cyber-Titan Apex Elite | System Architect"
 }
 
+-- 🌟 FOLLOW REGISTRY SYSTEM
+local followedUsers = {}
+
 local globalTypers = {}
 local processedServerMessageMap = {}
 local recentLocalSentMap = {}
@@ -816,18 +819,18 @@ pfActionsRow.ZIndex = 125
 
 local pfaLayout = Instance.new("UIListLayout", pfActionsRow)
 pfaLayout.FillDirection = Enum.FillDirection.Horizontal
-pfaLayout.Padding = UDim.new(0, 8)
+pfaLayout.Padding = UDim.new(0, 6)
 pfaLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 local function createPfBtn(text, color, onClick)
     local b = Instance.new("TextButton", pfActionsRow)
-    b.Size = UDim2.new(0.31, 0, 1, 0)
+    b.Size = UDim2.new(0.23, 0, 1, 0)
     b.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
     b.BackgroundTransparency = 0.2
     b.Text = text
     b.TextColor3 = color
     b.Font = Enum.Font.GothamBlack
-    b.TextSize = 9
+    b.TextSize = 8
     b.AutoButtonColor = false
     b.ZIndex = 127
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
@@ -839,7 +842,7 @@ local function createPfBtn(text, color, onClick)
     b.MouseButton1Click:Connect(function()
         pcall(onClick)
     end)
-    return b
+    return b, bs
 end
 
 local currentProfileUser = nil
@@ -857,7 +860,31 @@ pfCloseBtn.MouseButton1Click:Connect(closeProfile)
 
 local updateInputBar
 
-local dmProfileBtn = createPfBtn("DIRECT MSG", Colors.Purple, function()
+-- 🌟 FOLLOW BUTTON WITH DYNAMIC TOGGLE
+local followBtn, followStroke = createPfBtn("+ FOLLOW", Color3.fromRGB(50, 255, 140), function()
+    if not currentProfileId or currentProfileId == 0 then return end
+    
+    local isNowFollowed = not (followedUsers[currentProfileId] == true)
+    followedUsers[currentProfileId] = isNowFollowed
+    
+    if isNowFollowed then
+        followBtn.Text = "✓ FOLLOWING"
+        followBtn.TextColor3 = Color3.fromRGB(50, 255, 140)
+        followStroke.Color = Color3.fromRGB(50, 255, 140)
+        playSFX("mention")
+        local curCount = tonumber(metricFollowers.Text)
+        if curCount then metricFollowers.Text = tostring(curCount + 1) end
+    else
+        followBtn.Text = "+ FOLLOW"
+        followBtn.TextColor3 = Colors.Primary
+        followStroke.Color = Colors.Primary
+        playSFX("default")
+        local curCount = tonumber(metricFollowers.Text)
+        if curCount and curCount > 0 then metricFollowers.Text = tostring(curCount - 1) end
+    end
+end)
+
+local dmProfileBtn = createPfBtn("DM", Colors.Purple, function()
     if currentProfileUser then
         privateTarget = currentProfileUser
         if updateInputBar then updateInputBar() end
@@ -866,12 +893,12 @@ local dmProfileBtn = createPfBtn("DIRECT MSG", Colors.Purple, function()
     end
 end)
 
-local copyLinkBtn = createPfBtn("COPY LINK", Colors.Primary, function()
+local copyLinkBtn = createPfBtn("LINK", Colors.Primary, function()
     if currentProfileId then
         setClip("https://www.roblox.com/users/" .. tostring(currentProfileId) .. "/profile")
         playSFX("default")
         copyLinkBtn.Text = "COPIED!"
-        task.delay(1.5, function() copyLinkBtn.Text = "COPY LINK" end)
+        task.delay(1.5, function() copyLinkBtn.Text = "LINK" end)
     end
 end)
 
@@ -906,9 +933,12 @@ editBioBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+-- ⚡ 100% NON-BLOCKING ASYNC PROFILE OPENER (NEVER FREEZES UI)
 local function openProfileModal(username)
     local rawName = username:match("^(.-)::") or username
     currentProfileUser = rawName
+    currentProfileId = nil
+
     profileOverlay.Visible = true
     bioInputBox.Visible = false
     bioScroll.Visible = true
@@ -916,52 +946,59 @@ local function openProfileModal(username)
     editBioBtn.Text = "EDIT BIO"
     editBioBtn.TextColor3 = Colors.Primary
 
-    local targetPlr = Players:FindFirstChild(rawName)
-    local uId = targetPlr and targetPlr.UserId or userIdCache[rawName:lower()]
-
-    if not uId then
-        pcall(function()
-            uId = Players:GetUserIdFromNameAsync(rawName)
-            userIdCache[rawName:lower()] = uId
-        end)
-    end
-
-    currentProfileId = uId or 0
-
-    pfDisplayName.Text = targetPlr and targetPlr.DisplayName or rawName
+    pfDisplayName.Text = rawName
     pfHandle.Text = "@" .. rawName
-    metricUserID.Text = uId and tostring(uId) or "--"
+    metricUserID.Text = "..."
     metricFollowers.Text = "..."
     metricFollowing.Text = "..."
     bioLabel.Text = "Fetching live network bio..."
-
-    if uId then
-        pfAvatar.Image = string.format("rbxthumb://type=AvatarHeadShot&id=%d&w=150&h=150", uId)
-    else
-        pfAvatar.Image = ""
-    end
-
-    if uId == lp.UserId then
-        editBioBtn.Visible = true
-    else
-        editBioBtn.Visible = false
-    end
+    pfAvatar.Image = ""
 
     pfScale.Scale = 0.6
     profileOverlay.BackgroundTransparency = 1
-    SafeTween(profileOverlay, TweenInfo.new(0.3), {BackgroundTransparency = 0.5})
-    SafeTween(pfScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1})
+    SafeTween(profileOverlay, TweenInfo.new(0.25), {BackgroundTransparency = 0.5})
+    SafeTween(pfScale, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1})
     playSFX("default")
 
-    -- Isolated Web Call Threading (One failing never blocks another)
     task.spawn(function()
-        if not uId then 
+        local targetPlr = Players:FindFirstChild(rawName)
+        local uId = (targetPlr and targetPlr.UserId) or userIdCache[rawName:lower()]
+
+        if not uId then
+            pcall(function()
+                uId = Players:GetUserIdFromNameAsync(rawName)
+                if uId then userIdCache[rawName:lower()] = uId end
+            end)
+        end
+
+        if currentProfileUser ~= rawName then return end
+
+        currentProfileId = uId or 0
+
+        if uId and uId > 0 then
+            metricUserID.Text = tostring(uId)
+            pfAvatar.Image = string.format("rbxthumb://type=AvatarHeadShot&id=%d&w=150&h=150", uId)
+            editBioBtn.Visible = (uId == lp.UserId)
+
+            if followedUsers[uId] then
+                followBtn.Text = "✓ FOLLOWING"
+                followBtn.TextColor3 = Color3.fromRGB(50, 255, 140)
+                followStroke.Color = Color3.fromRGB(50, 255, 140)
+            else
+                followBtn.Text = "+ FOLLOW"
+                followBtn.TextColor3 = Colors.Primary
+                followStroke.Color = Colors.Primary
+            end
+        else
+            metricUserID.Text = "--"
             bioLabel.Text = "User offline or data unavailable."
             return 
         end
 
-        local fFollowers = "--"
-        local fFollowing = "--"
+        if targetPlr then
+            pfDisplayName.Text = targetPlr.DisplayName
+        end
+
         local fBio = personalCustomBios[uId] or "No description provided."
 
         if req then
@@ -1486,11 +1523,9 @@ ghostBtn = createHeaderBtn("GST", function()
     end
 end)
 
-local actionMenu
 local memeFrame
 
 createHeaderBtn("-", function()
-    if actionMenu then actionMenu.Visible = false end
     if rosterFrame then rosterFrame.Visible = false end
     if memeFrame then memeFrame.Visible = false end
     if badgeSelectorModal then 
@@ -1869,9 +1904,10 @@ messageFeed:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
     end
 end)
 
+-- ⚡ CLEAN DEDICATED TYPING BAR (ONLY APPEARS DIRECTLY ABOVE INPUT)
 local globalTypingBar = Instance.new("Frame", mainFrame)
-globalTypingBar.Size = UDim2.new(1, -24, 0, 20)
-globalTypingBar.Position = UDim2.new(0, 12, 1, -74)
+globalTypingBar.Size = UDim2.new(1, -24, 0, 18)
+globalTypingBar.Position = UDim2.new(0, 14, 1, -72)
 globalTypingBar.BackgroundTransparency = 1
 globalTypingBar.Visible = false
 globalTypingBar.ZIndex = 11
@@ -1881,8 +1917,8 @@ globalTypingText.Size = UDim2.new(1, 0, 1, 0)
 globalTypingText.BackgroundTransparency = 1
 globalTypingText.Text = ""
 globalTypingText.TextColor3 = Colors.Primary
-globalTypingText.Font = Enum.Font.GothamMedium
-globalTypingText.TextSize = 10.5
+globalTypingText.Font = Enum.Font.GothamBold
+globalTypingText.TextSize = 10
 globalTypingText.TextXAlignment = Enum.TextXAlignment.Left
 globalTypingText.TextTransparency = 0.1
 globalTypingText.ZIndex = 11
@@ -1912,40 +1948,6 @@ end
 
 local sendMessageFunc
 local chatInput
-
-actionMenu = Instance.new("Frame", mainFrame)
-actionMenu.Size = UDim2.fromOffset(275, 32)
-actionMenu.BackgroundColor3 = Colors.Surface
-actionMenu.Visible = false
-actionMenu.ZIndex = 50
-Instance.new("UICorner", actionMenu).CornerRadius = UDim.new(0, 8)
-local amStroke = Instance.new("UIStroke", actionMenu)
-amStroke.Color = Colors.Primary
-amStroke.Thickness = 1.0
-amStroke.Transparency = 0.2
-
-local amLayout = Instance.new("UIListLayout", actionMenu)
-amLayout.FillDirection = Enum.FillDirection.Horizontal
-amLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-amLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-amLayout.Padding = UDim.new(0, 4)
-
-local function createActionBtn(text, color, onClick)
-    local b = Instance.new("TextButton", actionMenu)
-    b.Size = UDim2.new(0, 48, 0, 22)
-    b.BackgroundColor3 = Colors.Background
-    b.Text = text
-    b.TextColor3 = color
-    b.Font = Enum.Font.GothamBlack
-    b.TextSize = 8.5
-    b.AutoButtonColor = false
-    b.ZIndex = 51
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 5)
-    b.MouseButton1Click:Connect(function()
-        actionMenu.Visible = false
-        pcall(onClick)
-    end)
-end
 
 -- =========================================================
 -- 💬 MESSAGE PIPELINE
@@ -2003,6 +2005,9 @@ end
 
 local MAX_MESSAGES = 60
 local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSender, msgJobId, scopeType)
+    -- STRICT BLOCK: Typing text can never enter feed
+    if msg == "[TYPING]" or msg:find("%[TYPING%]") then return end
+
     local memeIdMatch = msg:match("%[MEME:(%d+)%]")
 
     local actualUsername, dispName = rawUserName:match("^(.-)::(.*)$")
@@ -2109,6 +2114,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         avGrad.Rotation = 45
     end
 
+    -- Direct Profile Click (No Freeze)
     avatarImg.InputBegan:Connect(function(input)
         if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and actualUsername ~= "System" then
             openProfileModal(actualUsername)
@@ -2274,6 +2280,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     nameLbl.ZIndex = 12
     crispText(nameLbl)
 
+    -- Direct Profile Click (No Freeze)
     nameLbl.InputBegan:Connect(function(input)
         if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and actualUsername ~= "System" then
             openProfileModal(actualUsername)
@@ -2393,33 +2400,8 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
             elseif finalDelta < -50 then
                 chatInput.Text = "@" .. actualUsername .. " "
                 chatInput:CaptureFocus()
-            elseif math.abs(finalDelta) < 5 then
-                for _, c in ipairs(actionMenu:GetChildren()) do
-                    if c:IsA("TextButton") then c:Destroy() end
-                end
-                createActionBtn("PROFILE", Colors.Primary, function()
-                    openProfileModal(actualUsername)
-                end)
-                createActionBtn("COPY", Colors.Text, function()
-                    pcall(function() setClip(memeIdMatch and ("ID: " .. memeIdMatch) or msg) end)
-                    spawnUIParticles(cardRoot, UDim2.new(0.5, 0, 0.5, 0), Colors.Primary, 10)
-                end)
-                createActionBtn("TP", Colors.MentionGold, function()
-                    local targetPlr = Players:FindFirstChild(actualUsername)
-                    if targetPlr and targetPlr.Character and targetPlr.Character:FindFirstChild("HumanoidRootPart") and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
-                        lp.Character.HumanoidRootPart.CFrame = targetPlr.Character.HumanoidRootPart.CFrame
-                    end
-                end)
-                createActionBtn("VIEW", Colors.PrimaryDark, function()
-                    local targetPlr = Players:FindFirstChild(actualUsername)
-                    if targetPlr and targetPlr.Character and targetPlr.Character:FindFirstChild("Humanoid") then
-                        Camera.CameraSubject = targetPlr.Character.Humanoid
-                    end
-                end)
-                local cardPos = card.AbsolutePosition - mainFrame.AbsolutePosition
-                actionMenu.Position = UDim2.fromOffset(math.clamp(cardPos.X + 15, 10, 160), math.clamp(cardPos.Y - 24, 30, 280))
-                actionMenu.Visible = true
             end
+            -- ⚡ REMOVED: Action menu popup (PROFILE, COPY, TP, VIEW) completely disabled on tap as requested!
         end
     end)
 
@@ -3189,7 +3171,7 @@ chatInput.FocusLost:Connect(function(enterPressed)
 end)
 
 -- =========================================================
--- 📥 HIGH-FREQUENCY POLLING ENGINE (NON-BLOCKING ASYNC)
+-- 📥 HIGH-FREQUENCY POLLING ENGINE (ZERO-LEAK TYPING FILTER)
 -- =========================================================
 task.spawn(function()
     while _G.TXR_IsPolling and (_G.TXR_ChatInstanceID == currentExecutionID) and task.wait(0.4) do
@@ -3211,7 +3193,8 @@ task.spawn(function()
                         local startIndex = math.max(1, #data - 6)
                         for i = startIndex, #data do
                             local m = data[i]
-                            if not m.hidden and m.msg ~= "Joined" then
+                            -- STRICTLY FILTER OUT ANY TYPING MESSAGES FROM CHAT FEED
+                            if not m.hidden and m.msg ~= "Joined" and m.msg ~= "[TYPING]" and not tostring(m.msg):find("%[TYPING%]") then
                                 local initKey = (m.id and tostring(m.id)) or (m.user .. "_" .. tostring(m.time) .. "_" .. m.msg)
                                 processedServerMessageMap[initKey] = true
                                 
@@ -3262,9 +3245,10 @@ task.spawn(function()
                             continue
                         end
 
-                        if m.hidden then 
+                        -- ⚡ TYPING PACKET INTERCEPT: NEVER ENTERS FEED, ONLY UPDATES TYPING BAR
+                        if m.hidden or m.msg == "[TYPING]" or tostring(m.msg):find("%[TYPING%]") then 
                             processedServerMessageMap[uniqueMsgKey] = true
-                            if m.msg == "[TYPING]" and rawUsernameOnly ~= lp.Name then
+                            if rawUsernameOnly:lower() ~= lp.Name:lower() then
                                 globalTypers[rawUsernameOnly] = tick()
                             end
                             continue 
@@ -3344,7 +3328,7 @@ task.spawn(function()
     end
 end)
 
--- Handshake (Non-blocking async)
+-- Handshake
 task.spawn(function()
     SafeRequest({
         Url = SERVER_URL .. "/send", Method = "POST",
