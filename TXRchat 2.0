@@ -413,9 +413,7 @@ local activeUsersTable = {}
 local unreadCount = 0
 local isGhostMode = false
 local ghostDebounce = false
-local userIdCache = {
-    [lp.Name:lower()] = lp.UserId
-}
+local userIdCache = {}
 local activeBadgesList = {}
 local modalSelectionIndicators = {}
 
@@ -590,7 +588,7 @@ BootSubsystem("MatrixRain", function()
 end)
 
 -- =========================================================
--- 🌐 INSTAGRAM-STYLE PROFILE MODAL (NO UID, ZERO-FREEZE)
+-- 🌐 INSTAGRAM-STYLE PROFILE MODAL (NO UID, CLEAN ACTION)
 -- =========================================================
 local profileOverlay = Instance.new("Frame", gui)
 profileOverlay.Size = UDim2.fromScale(1, 1)
@@ -685,6 +683,7 @@ pfHandle.TextSize = 10.5
 pfHandle.TextXAlignment = Enum.TextXAlignment.Left
 pfHandle.ZIndex = 125
 
+-- ⚡ STATS GRID: EXACTLY 2 COLUMNS (FOLLOWERS & FOLLOWING) - UID REMOVED
 local statsGrid = Instance.new("Frame", profileFrame)
 statsGrid.Size = UDim2.new(1, -40, 0, 46)
 statsGrid.Position = UDim2.fromOffset(20, 134)
@@ -730,6 +729,7 @@ end
 local metricFollowers = createStatMetric("FOLLOWERS", "--", 0)
 local metricFollowing = createStatMetric("FOLLOWING", "--", 0.5)
 
+-- 🌟 INSTAGRAM-STYLE ACTION ROW (DIRECTLY UNDER FOLLOWERS/FOLLOWING)
 local instaActionRow = Instance.new("Frame", profileFrame)
 instaActionRow.Size = UDim2.new(1, -40, 0, 30)
 instaActionRow.Position = UDim2.fromOffset(20, 186)
@@ -893,21 +893,12 @@ followBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-copyLinkBtn.MouseButton1Click:Connect(function()
-    if currentProfileId and currentProfileId > 0 then
-        setClip("https://www.roblox.com/users/" .. tostring(currentProfileId) .. "/profile")
-        playSFX("default")
-        copyLinkBtn.Text = "Copied!"
-        task.delay(1.5, function() copyLinkBtn.Text = "Share" end)
-    end
-end)
-
--- ⚡ ULTRA-SMOOTH PROFILE OPENER (ZERO-HANG GUARANTEED)
+-- ⚡ INSTANT PROFILE OPENER WITH DEBOUNCE (0% FREEZE / NO HANG)
 local profileOpenDebounce = false
 local function openProfileModal(username)
     if profileOpenDebounce then return end
     profileOpenDebounce = true
-    task.delay(0.25, function() profileOpenDebounce = false end)
+    task.delay(0.35, function() profileOpenDebounce = false end)
 
     local rawName = username:match("^(.-)::") or username
     currentProfileUser = rawName
@@ -922,10 +913,10 @@ local function openProfileModal(username)
     pfHandle.Text = "@" .. rawName
     metricFollowers.Text = "..."
     metricFollowing.Text = "..."
-    bioLabel.Text = "Loading bio..."
+    bioLabel.Text = "Loading network bio..."
     pfAvatar.Image = ""
 
-    pfScale.Scale = 0.7
+    pfScale.Scale = 0.6
     profileOverlay.BackgroundTransparency = 1
     SafeTween(profileOverlay, TweenInfo.new(0.2), {BackgroundTransparency = 0.5})
     SafeTween(pfScale, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1})
@@ -963,7 +954,7 @@ local function openProfileModal(username)
                 followBtn.TextColor3 = Color3.fromRGB(5, 7, 10)
             end
         else
-            bioLabel.Text = "Profile data offline or unavailable."
+            bioLabel.Text = "User offline or data unavailable."
             return 
         end
 
@@ -972,14 +963,13 @@ local function openProfileModal(username)
         end
 
         if profileCache[uId] then
-            metricFollowers.Text = profileCache[uId].followers or "--"
-            metricFollowing.Text = profileCache[uId].following or "--"
-            bioLabel.Text = personalCustomBios[uId] or profileCache[uId].bio or "Active Titan operative."
+            metricFollowers.Text = profileCache[uId].followers
+            metricFollowing.Text = profileCache[uId].following
+            bioLabel.Text = personalCustomBios[uId] or profileCache[uId].bio
             return
         end
 
-        local fBio = personalCustomBios[uId] or "Active Titan operative."
-        bioLabel.Text = fBio
+        local fBio = personalCustomBios[uId] or "No description provided."
 
         if req then
             task.spawn(function()
@@ -1033,7 +1023,11 @@ local function openProfileModal(username)
                         end
                     end)
                 end)
+            else
+                bioLabel.Text = fBio
             end
+        else
+            bioLabel.Text = fBio
         end
     end)
 end
@@ -1307,7 +1301,7 @@ local function refreshRosterUI()
 end
 
 -- =========================================================
--- 🌟 HEADER BAR & BALANCED CONTROLS
+-- 🌟 HEADER BAR & BALANCED CONTROLS (CLEAN & CENTERED)
 -- =========================================================
 local header = Instance.new("Frame", mainFrame)
 header.Size = UDim2.new(1, 0, 0, 42)
@@ -1457,13 +1451,13 @@ end)
 
 local messageFeed
 
--- ⚡ SCROLL TO BOTTOM ENGINE (CLEAN & MULTI-STAGE FOR REOPEN)
+-- ⚡ SCROLL TO BOTTOM ENGINE (FIXES REOPEN SCROLL GLITCH)
 local function scrollToBottom()
-    for _, delayTime in ipairs({0, 0.05, 0.15, 0.3}) do
+    for _, delayTime in ipairs({0, 0.05, 0.15}) do
         task.delay(delayTime, function()
             pcall(function()
                 if messageFeed and messageFeed.Parent then
-                    local maxOffset = math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y + 260)
+                    local maxOffset = math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y + 500)
                     messageFeed.CanvasPosition = Vector2.new(0, maxOffset)
                 end
             end)
@@ -1901,7 +1895,7 @@ messageFeed:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
     end
 end)
 
--- ⚡ CLEAN DEDICATED TYPING BAR
+-- ⚡ CLEAN DEDICATED TYPING BAR (ONLY DIRECTLY ABOVE INPUT)
 local globalTypingBar = Instance.new("Frame", mainFrame)
 globalTypingBar.Size = UDim2.new(1, -24, 0, 18)
 globalTypingBar.Position = UDim2.new(0, 14, 1, -72)
@@ -1945,7 +1939,6 @@ end
 
 local sendMessageFunc
 local chatInput
-local updateInputBar
 
 -- =========================================================
 -- 💬 MESSAGE PIPELINE
@@ -2050,7 +2043,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
 
     local padFix = Instance.new("UIPadding", card)
     padFix.PaddingBottom = UDim.new(0, 10)
-    padFix.PaddingTop = UDim.new(0, 4)
+    padFix.PaddingTop = UDim.new(0, 2)
 
     if chatMode == "server" then
         if scopeType == "global" or (msgJobId and msgJobId ~= "" and msgJobId ~= game.JobId) then
@@ -2090,7 +2083,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
 
     local avatarImg = Instance.new("ImageLabel", card)
     avatarImg.Size = UDim2.fromOffset(30, 30)
-    avatarImg.Position = UDim2.fromOffset(16, 12)
+    avatarImg.Position = UDim2.fromOffset(16, 10)
     avatarImg.BackgroundColor3 = Colors.Background
     avatarImg.BackgroundTransparency = 0.5
     avatarImg.Active = true
@@ -2111,7 +2104,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         avGrad.Rotation = 45
     end
 
-    -- 🌟 ONLY AVATAR CIRCLE OPENS PROFILE MODAL
+    -- 🌟 ONLY AVATAR OPENS PROFILE
     avatarImg.InputBegan:Connect(function(input)
         if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and actualUsername ~= "System" then
             openProfileModal(actualUsername)
@@ -2134,38 +2127,19 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
 
     local cardContent = Instance.new("Frame", card)
     cardContent.Size = UDim2.new(1, -56, 0, 0)
-    cardContent.Position = UDim2.fromOffset(56, 4)
+    cardContent.Position = UDim2.fromOffset(56, 10)
     cardContent.AutomaticSize = Enum.AutomaticSize.Y
     cardContent.BackgroundTransparency = 1
     cardContent.ZIndex = 11
 
     local ccLayout = Instance.new("UIListLayout", cardContent)
     ccLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    ccLayout.Padding = UDim.new(0, 2)
+    ccLayout.Padding = UDim.new(0, 4)
 
-    -- ⏰ COMPACT TOP ROW: TIMESTAMP PLACED ABOVE NAME
-    local topRow = Instance.new("Frame", cardContent)
-    topRow.Size = UDim2.new(1, 0, 0, 13)
-    topRow.BackgroundTransparency = 1
-    topRow.LayoutOrder = 1
-    topRow.ZIndex = 11
-
-    local timeLbl = Instance.new("TextLabel", topRow)
-    timeLbl.AutomaticSize = Enum.AutomaticSize.X
-    timeLbl.Size = UDim2.new(0, 0, 1, 0)
-    timeLbl.BackgroundTransparency = 1
-    timeLbl.Text = string.format("[%s]", os.date("%H:%M"))
-    timeLbl.TextColor3 = Color3.fromRGB(110, 125, 145)
-    timeLbl.Font = Enum.Font.GothamMedium
-    timeLbl.TextSize = 9.5
-    timeLbl.ZIndex = 12
-    crispText(timeLbl, 0.6)
-
-    -- 🏷️ MAIN HEADER ROW: BADGES & CLEAN DISPLAY NAME ONLY (NO @USERNAME)
     local headerRow = Instance.new("Frame", cardContent)
     headerRow.Size = UDim2.new(1, 0, 0, 18)
     headerRow.BackgroundTransparency = 1
-    headerRow.LayoutOrder = 2
+    headerRow.LayoutOrder = 1
     headerRow.ZIndex = 11
 
     local hLayout = Instance.new("UIListLayout", headerRow)
@@ -2173,6 +2147,18 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     hLayout.VerticalAlignment = Enum.VerticalAlignment.Center
     hLayout.Padding = UDim.new(0, 6)
     hLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+    local timeLbl = Instance.new("TextLabel", headerRow)
+    timeLbl.AutomaticSize = Enum.AutomaticSize.X
+    timeLbl.Size = UDim2.new(0, 0, 1, 0)
+    timeLbl.BackgroundTransparency = 1
+    timeLbl.Text = string.format("[%s]", os.date("%H:%M"))
+    timeLbl.TextColor3 = Color3.fromRGB(110, 125, 145)
+    timeLbl.Font = Enum.Font.GothamBold
+    timeLbl.TextSize = 10.5
+    timeLbl.LayoutOrder = 1
+    timeLbl.ZIndex = 12
+    crispText(timeLbl, 0.6)
 
     if privateUserTarget then
         local dmLbl = Instance.new("TextLabel", headerRow)
@@ -2184,7 +2170,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         dmLbl.TextColor3 = Colors.Purple
         dmLbl.Font = Enum.Font.GothamBold
         dmLbl.TextSize = 10.5
-        dmLbl.LayoutOrder = 1
+        dmLbl.LayoutOrder = 2
         dmLbl.ZIndex = 12
         crispText(dmLbl, 0.5)
     end
@@ -2196,7 +2182,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         badgeHost.Size = UDim2.fromOffset(tagWidth, 18)
         badgeHost.BackgroundTransparency = 1
         badgeHost.BorderSizePixel = 0
-        badgeHost.LayoutOrder = 2
+        badgeHost.LayoutOrder = 3
         badgeHost.ZIndex = 13
 
         local badgeGlow = Instance.new("TextLabel", badgeHost)
@@ -2279,7 +2265,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     nameLbl.TextColor3 = (currentThemeIdx == 2 and Color3.fromRGB(255, 45, 85) or Colors.Primary)
     nameLbl.Font = Enum.Font.GothamBlack
     nameLbl.TextSize = 12
-    nameLbl.LayoutOrder = 3
+    nameLbl.LayoutOrder = 4
     nameLbl.Active = false
     nameLbl.ZIndex = 12
     crispText(nameLbl)
@@ -2288,7 +2274,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         local memeHolder = Instance.new("Frame", cardContent)
         memeHolder.Size = UDim2.new(1, 0, 0, 94)
         memeHolder.BackgroundTransparency = 1
-        memeHolder.LayoutOrder = 3
+        memeHolder.LayoutOrder = 2
         memeHolder.ZIndex = 12
 
         local memeImg = Instance.new("ImageLabel", memeHolder)
@@ -2315,7 +2301,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         bodyTxt.TextWrapped = true
         bodyTxt.TextXAlignment = Enum.TextXAlignment.Left
         bodyTxt.RichText = true
-        bodyTxt.LayoutOrder = 3
+        bodyTxt.LayoutOrder = 2
         bodyTxt.ZIndex = 12
         bodyTxt.Text = sanitizeXml(msg)
         crispText(bodyTxt)
@@ -2369,7 +2355,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
 
             if finalDelta > 50 then
                 privateTarget = actualUsername
-                if updateInputBar then updateInputBar() end
+                updateInputBar()
                 playSFX("dm")
             elseif finalDelta < -50 then
                 chatInput.Text = "@" .. actualUsername .. " "
@@ -2837,6 +2823,7 @@ openBtn.MouseButton1Click:Connect(function()
     SafeTween(aura, tInfo3, {ImageTransparency = isGhostMode and 0.95 or 0.85})
     SafeTween(shadow, tInfo3, {ImageTransparency = isGhostMode and 0.5 or 0.25})
 
+    -- Instantly jump to latest messages!
     scrollToBottom()
 end)
 
@@ -3093,7 +3080,7 @@ sendMessageFunc = function(overrideText)
     if pMatch then
         chatInput.Text = ""
         privateTarget = pMatch
-        if updateInputBar then updateInputBar() end
+        updateInputBar()
         addMessageToFeed("System::System", "DM mode locked with @" .. pMatch, nil, false, game.JobId, "global")
         return
     end
