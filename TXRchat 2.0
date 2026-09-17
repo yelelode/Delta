@@ -413,12 +413,11 @@ local activeUsersTable = {}
 local unreadCount = 0
 local isGhostMode = false
 local ghostDebounce = false
-local userIdCache = {}
+local userIdCache = {
+    [lp.Name:lower()] = lp.UserId
+}
 local activeBadgesList = {}
 local modalSelectionIndicators = {}
-
--- Pre-fill cache with local player
-userIdCache[lp.Name:lower()] = lp.UserId
 
 local personalCustomBios = {
     [lp.UserId] = "⚡ Cyber-Titan Apex Elite | System Architect"
@@ -937,13 +936,10 @@ local function openProfileModal(username)
         local uId = (targetPlr and targetPlr.UserId) or userIdCache[rawName:lower()]
 
         if not uId then
-            local ok, idRes = pcall(function()
-                return Players:GetUserIdFromNameAsync(rawName)
+            pcall(function()
+                uId = Players:GetUserIdFromNameAsync(rawName)
+                if uId then userIdCache[rawName:lower()] = uId end
             end)
-            if ok and idRes then
-                uId = idRes
-                userIdCache[rawName:lower()] = uId
-            end
         end
 
         if currentProfileUser ~= rawName then return end
@@ -967,7 +963,7 @@ local function openProfileModal(username)
                 followBtn.TextColor3 = Color3.fromRGB(5, 7, 10)
             end
         else
-            bioLabel.Text = "Profile data offline or bot account."
+            bioLabel.Text = "Profile data offline or unavailable."
             return 
         end
 
@@ -1461,13 +1457,13 @@ end)
 
 local messageFeed
 
--- ⚡ SCROLL TO BOTTOM ENGINE (COMPLETELY FIXES REOPEN SCROLL TO LATEST MSG)
+-- ⚡ SCROLL TO BOTTOM ENGINE (CLEAN & MULTI-STAGE FOR REOPEN)
 local function scrollToBottom()
-    for _, delayTime in ipairs({0, 0.05, 0.12, 0.25, 0.45}) do
+    for _, delayTime in ipairs({0, 0.05, 0.15, 0.3}) do
         task.delay(delayTime, function()
             pcall(function()
                 if messageFeed and messageFeed.Parent then
-                    local maxOffset = math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y + 300)
+                    local maxOffset = math.max(0, messageFeed.AbsoluteCanvasSize.Y - messageFeed.AbsoluteWindowSize.Y + 260)
                     messageFeed.CanvasPosition = Vector2.new(0, maxOffset)
                 end
             end)
@@ -1947,61 +1943,6 @@ local function spawnUIParticles(parentFrame, positionUDim2, color, count)
     end
 end
 
--- =========================================================
--- 🔄 DRAG-TO-REPLY PREVIEW SYSTEM
--- =========================================================
-local replyPreviewBar = Instance.new("Frame", mainFrame)
-replyPreviewBar.Size = UDim2.new(1, -24, 0, 26)
-replyPreviewBar.Position = UDim2.new(0, 12, 1, -80)
-replyPreviewBar.BackgroundColor3 = Color3.fromRGB(12, 15, 20)
-replyPreviewBar.BackgroundTransparency = 0.1
-replyPreviewBar.Visible = false
-replyPreviewBar.ZIndex = 11
-Instance.new("UICorner", replyPreviewBar).CornerRadius = UDim.new(0, 6)
-local rpbStroke = Instance.new("UIStroke", replyPreviewBar)
-rpbStroke.Color = Colors.PrimaryDark
-rpbStroke.Thickness = 1.0
-
-local replyLine = Instance.new("Frame", replyPreviewBar)
-replyLine.Size = UDim2.new(0, 3, 1, -6)
-replyLine.Position = UDim2.new(0, 4, 0, 3)
-replyLine.BackgroundColor3 = Colors.Primary
-replyLine.BorderSizePixel = 0
-replyLine.ZIndex = 12
-Instance.new("UICorner", replyLine).CornerRadius = UDim.new(1, 0)
-
-local replyUserTxt = Instance.new("TextLabel", replyPreviewBar)
-replyUserTxt.Size = UDim2.new(1, -40, 1, 0)
-replyUserTxt.Position = UDim2.new(0, 12, 0, 0)
-replyUserTxt.BackgroundTransparency = 1
-replyUserTxt.Font = Enum.Font.GothamMedium
-replyUserTxt.TextSize = 10
-replyUserTxt.TextColor3 = Colors.SubText
-replyUserTxt.TextXAlignment = Enum.TextXAlignment.Left
-replyUserTxt.RichText = true
-replyUserTxt.TextTruncate = Enum.TextTruncate.AtEnd
-replyUserTxt.ZIndex = 12
-
-local replyCancelBtn = Instance.new("TextButton", replyPreviewBar)
-replyCancelBtn.Size = UDim2.fromOffset(20, 20)
-replyCancelBtn.AnchorPoint = Vector2.new(1, 0.5)
-replyCancelBtn.Position = UDim2.new(1, -4, 0.5, 0)
-replyCancelBtn.BackgroundTransparency = 1
-replyCancelBtn.Text = "✕"
-replyCancelBtn.TextColor3 = Colors.Danger
-replyCancelBtn.Font = Enum.Font.GothamBold
-replyCancelBtn.TextSize = 11
-replyCancelBtn.ZIndex = 13
-
-local activeReplyTarget = nil
-
-local function clearReplyMode()
-    activeReplyTarget = nil
-    replyPreviewBar.Visible = false
-end
-
-replyCancelBtn.MouseButton1Click:Connect(clearReplyMode)
-
 local sendMessageFunc
 local chatInput
 local updateInputBar
@@ -2064,10 +2005,7 @@ local MAX_MESSAGES = 60
 local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSender, msgJobId, scopeType)
     if msg == "[TYPING]" or msg:find("%[TYPING%]") then return end
 
-    local quotedUser, quotedSnippet, remainingMsg = msg:match("^%[REPLY:(.-)|(.-)%]%s*(.*)$")
-    local effectiveBody = remainingMsg or msg
-
-    local memeIdMatch = effectiveBody:match("%[MEME:(%d+)%]")
+    local memeIdMatch = msg:match("%[MEME:(%d+)%]")
 
     local actualUsername, dispName = rawUserName:match("^(.-)::(.*)$")
     if not actualUsername then
@@ -2076,7 +2014,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         dispName = targetPlr and targetPlr.DisplayName or rawUserName
     end
 
-    local isMentioned = string.find(string.lower(effectiveBody), string.lower(lp.Name), 1, true) or string.find(string.lower(effectiveBody), string.lower(lp.DisplayName), 1, true)
+    local isMentioned = string.find(string.lower(msg), string.lower(lp.Name), 1, true) or string.find(string.lower(msg), string.lower(lp.DisplayName), 1, true)
     local isAdminUser = Admin[actualUsername:lower()] == true
     local badgeProfile = BadgePresets[currentOwnerBadge] or BadgePresets["OWNER"]
 
@@ -2173,18 +2111,14 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         avGrad.Rotation = 45
     end
 
-    -- 🌟 AVATAR CLICK ONLY OPENS PROFILE MODAL
+    -- 🌟 ONLY AVATAR CIRCLE OPENS PROFILE MODAL
     avatarImg.InputBegan:Connect(function(input)
-        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and actualUsername ~= "System" and actualUsername ~= "TXR_AI" then
+        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and actualUsername ~= "System" then
             openProfileModal(actualUsername)
         end
     end)
 
     task.spawn(function()
-        if actualUsername == "TXR_AI" then
-            avatarImg.Image = "rbxassetid://864877007"
-            return
-        end
         local targetPlr = Players:FindFirstChild(actualUsername)
         local uId = targetPlr and targetPlr.UserId or userIdCache[actualUsername:lower()]
         if not uId then
@@ -2207,16 +2141,16 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
 
     local ccLayout = Instance.new("UIListLayout", cardContent)
     ccLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    ccLayout.Padding = UDim.new(0, 3)
+    ccLayout.Padding = UDim.new(0, 2)
 
-    -- ⏰ COMPACT TOP METADATA ROW: TIMESTAMP SIT ABOVE
-    local topMetaRow = Instance.new("Frame", cardContent)
-    topMetaRow.Size = UDim2.new(1, 0, 0, 14)
-    topMetaRow.BackgroundTransparency = 1
-    topMetaRow.LayoutOrder = 1
-    topMetaRow.ZIndex = 11
+    -- ⏰ COMPACT TOP ROW: TIMESTAMP PLACED ABOVE NAME
+    local topRow = Instance.new("Frame", cardContent)
+    topRow.Size = UDim2.new(1, 0, 0, 13)
+    topRow.BackgroundTransparency = 1
+    topRow.LayoutOrder = 1
+    topRow.ZIndex = 11
 
-    local timeLbl = Instance.new("TextLabel", topMetaRow)
+    local timeLbl = Instance.new("TextLabel", topRow)
     timeLbl.AutomaticSize = Enum.AutomaticSize.X
     timeLbl.Size = UDim2.new(0, 0, 1, 0)
     timeLbl.BackgroundTransparency = 1
@@ -2227,7 +2161,7 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     timeLbl.ZIndex = 12
     crispText(timeLbl, 0.6)
 
-    -- 🏷️ MAIN HEADER ROW: BADGE + DISPLAY NAME ONLY (NO @USERNAME)
+    -- 🏷️ MAIN HEADER ROW: BADGES & CLEAN DISPLAY NAME ONLY (NO @USERNAME)
     local headerRow = Instance.new("Frame", cardContent)
     headerRow.Size = UDim2.new(1, 0, 0, 18)
     headerRow.BackgroundTransparency = 1
@@ -2350,43 +2284,11 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
     nameLbl.ZIndex = 12
     crispText(nameLbl)
 
-    -- 🌟 LIGHTLY QUOTED REPLY CARD (IF MESSAGE IS A REPLY)
-    if quotedUser and quotedSnippet then
-        local quoteCard = Instance.new("Frame", cardContent)
-        quoteCard.Size = UDim2.new(1, -6, 0, 20)
-        quoteCard.BackgroundColor3 = Color3.fromRGB(16, 20, 28)
-        quoteCard.BackgroundTransparency = 0.2
-        quoteCard.LayoutOrder = 3
-        quoteCard.ZIndex = 11
-        Instance.new("UICorner", quoteCard).CornerRadius = UDim.new(0, 4)
-
-        local qBar = Instance.new("Frame", quoteCard)
-        qBar.Size = UDim2.new(0, 2, 1, -4)
-        qBar.Position = UDim2.new(0, 3, 0, 2)
-        qBar.BackgroundColor3 = Colors.Primary
-        qBar.BorderSizePixel = 0
-        qBar.ZIndex = 12
-        Instance.new("UICorner", qBar).CornerRadius = UDim.new(1, 0)
-
-        local qTxt = Instance.new("TextLabel", quoteCard)
-        qTxt.Size = UDim2.new(1, -12, 1, 0)
-        qTxt.Position = UDim2.new(0, 10, 0, 0)
-        qTxt.BackgroundTransparency = 1
-        qTxt.Font = Enum.Font.GothamMedium
-        qTxt.TextSize = 9.5
-        qTxt.TextColor3 = Color3.fromRGB(175, 190, 210)
-        qTxt.TextTruncate = Enum.TextTruncate.AtEnd
-        qTxt.TextXAlignment = Enum.TextXAlignment.Left
-        qTxt.RichText = true
-        qTxt.Text = string.format("↩ <b>%s</b>: %s", sanitizeXml(quotedUser), sanitizeXml(quotedSnippet))
-        qTxt.ZIndex = 12
-    end
-
     if memeIdMatch then
         local memeHolder = Instance.new("Frame", cardContent)
         memeHolder.Size = UDim2.new(1, 0, 0, 94)
         memeHolder.BackgroundTransparency = 1
-        memeHolder.LayoutOrder = 4
+        memeHolder.LayoutOrder = 3
         memeHolder.ZIndex = 12
 
         local memeImg = Instance.new("ImageLabel", memeHolder)
@@ -2413,9 +2315,9 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         bodyTxt.TextWrapped = true
         bodyTxt.TextXAlignment = Enum.TextXAlignment.Left
         bodyTxt.RichText = true
-        bodyTxt.LayoutOrder = 4
+        bodyTxt.LayoutOrder = 3
         bodyTxt.ZIndex = 12
-        bodyTxt.Text = sanitizeXml(effectiveBody)
+        bodyTxt.Text = sanitizeXml(msg)
         crispText(bodyTxt)
     end
 
@@ -2425,7 +2327,6 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
         playSFX("meme")
     end
 
-    -- 🌟 DRAG TO REPLY (LEFT) & DRAG TO PRIVATE CHAT (RIGHT)
     local dragStart = nil
     local isDragging = false
     local hasTriggeredSwipe = false
@@ -2467,23 +2368,12 @@ local function addMessageToFeed(rawUserName, msg, privateUserTarget, isPrivateSe
             SafeTween(card, TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)})
 
             if finalDelta > 50 then
-                -- RIGHT SWIPE: PRIVATE CHAT (DM)
                 privateTarget = actualUsername
-                updateInputBar()
+                if updateInputBar then updateInputBar() end
                 playSFX("dm")
             elseif finalDelta < -50 then
-                -- LEFT SWIPE: REPLY TO MESSAGE
-                local snippet = effectiveBody:sub(1, 35)
-                if #effectiveBody > 35 then snippet = snippet .. "..." end
-                activeReplyTarget = {
-                    author = dispName,
-                    rawUser = actualUsername,
-                    snippet = snippet
-                }
-                replyUserTxt.Text = string.format("Replying to <font color='#00FFDC'><b>@%s</b></font>: %s", sanitizeXml(dispName), sanitizeXml(snippet))
-                replyPreviewBar.Visible = true
+                chatInput.Text = "@" .. actualUsername .. " "
                 chatInput:CaptureFocus()
-                playSFX("swipe")
             end
         end
     end)
@@ -2546,7 +2436,7 @@ chatInput.Text = ""
 chatInput.Size = UDim2.new(1, -125, 1, 0)
 chatInput.Position = UDim2.new(0, 16, 0, 0)
 chatInput.BackgroundTransparency = 1
-chatInput.PlaceholderText = "Type message... (Drag -> DM | <- Reply)"
+chatInput.PlaceholderText = "Type message... (Swipe card -> to DM)"
 chatInput.PlaceholderColor3 = Colors.SubText
 chatInput.TextColor3 = Colors.Text
 chatInput.Font = Enum.Font.GothamSemibold
@@ -2912,7 +2802,7 @@ openBtn.MouseButton1Up:Connect(function()
     SafeTween(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05})
 end)
 
--- ⚡ REOPEN BUTTON CLICK: AUTO-SCROLLS TO TRUE BOTTOM INSTANTLY
+-- ⚡ REOPEN BUTTON CLICK: AUTO-SCROLLS TO BOTTOM INSTANTLY
 openBtn.MouseButton1Click:Connect(function()
     if dragThresholdMet then 
         dragThresholdMet = false 
@@ -3185,53 +3075,6 @@ task.spawn(function()
 end)
 
 -- =========================================================
--- 🤖 TXR AI ASSISTANT SUBSYSTEM (5-MIN BROADCAST & SMART REPLY)
--- =========================================================
-local function triggerAIResponse(triggerMsg, senderName)
-    task.spawn(function()
-        task.wait(math.random(15, 25) / 10)
-        
-        local cleanLower = string.lower(triggerMsg)
-        local reply = ""
-
-        if cleanLower:find("discord") or cleanLower:find("link") then
-            reply = "Join our official Discord community: discord.gg/txrhub - for script keys, updates & direct developer support! 🚀"
-        elseif cleanLower:find("update") or cleanLower:find("version") then
-            reply = "You are running TXRchat v2.0 Apex OLED Edition! Next update features ultra-fast cross-server voice bridge & custom badges."
-        elseif cleanLower:find("help") or cleanLower:find("cmd") then
-            reply = "TXR Features: Drag Left to Reply, Drag Right to DM, tap CLR for RGB themes, GST for Ghost Mode, and TAG to switch animated titles!"
-        elseif cleanLower:find("lag") or cleanLower:find("fps") then
-            reply = "If you encounter FPS drops, tap [GST] in the top header to activate Ghost Acrylic Mode for max performance."
-        elseif cleanLower:find("hi") or cleanLower:find("hello") or cleanLower:find("hey") or cleanLower:find("kaisa") then
-            reply = "Hey @" .. senderName .. "! TXR AI Assistant is online and operational. How can I boost your session?"
-        elseif cleanLower:find("owner") or cleanLower:find("dev") or cleanLower:find("creator") then
-            reply = "TXRchat 2.0 was developed and designed exclusively by the TXR Engineering Core. Cyber-Titan Apex verified."
-        else
-            local responses = {
-                "System telemetry is running at 100% capacity. Need script support or Discord community help? Check discord.gg/txrhub!",
-                "Roger that @" .. senderName .. "! Titan mainframe monitored. Let me know if you need any TXR assistance.",
-                "Affirmative! Keep chatting or check our official Discord channel for future custom scripts & releases."
-            }
-            reply = responses[math.random(1, #responses)]
-        end
-
-        addMessageToFeed("TXR_AI::TXR AI Assistant 🤖", reply, nil, false, game.JobId, chatMode)
-        playSFX("mention")
-    end)
-end
-
-task.spawn(function()
-    while _G.TXR_ChatInstanceID == currentExecutionID and gui.Parent do
-        task.wait(300)
-        addMessageToFeed(
-            "TXR_AI::TXR AI Assistant 🤖", 
-            "🚀 Join our official Discord channel for future updates, announcements & script drops! 🔗 discord.gg/txrhub", 
-            nil, false, game.JobId, "global"
-        )
-    end
-end)
-
--- =========================================================
 -- 📡 SEND MESSAGE (SCOPE-LOCKED ZERO-LEAK ENGINE)
 -- =========================================================
 local lastSendTick = 0
@@ -3250,7 +3093,7 @@ sendMessageFunc = function(overrideText)
     if pMatch then
         chatInput.Text = ""
         privateTarget = pMatch
-        updateInputBar()
+        if updateInputBar then updateInputBar() end
         addMessageToFeed("System::System", "DM mode locked with @" .. pMatch, nil, false, game.JobId, "global")
         return
     end
@@ -3258,25 +3101,13 @@ sendMessageFunc = function(overrideText)
     local finalMsg = text
     local currentScope = chatMode
 
-    -- Pack reply if reply mode was active
-    if activeReplyTarget then
-        finalMsg = string.format("[REPLY:%s|%s] %s", activeReplyTarget.author, activeReplyTarget.snippet, text)
-        local repliedToAI = (activeReplyTarget.rawUser == "TXR_AI")
-        clearReplyMode()
-        if repliedToAI then
-            triggerAIResponse(text, lp.DisplayName)
-        end
-    elseif text:lower():find("@txr_ai") or text:lower():find("@txr ai") then
-        triggerAIResponse(text, lp.DisplayName)
-    end
-
     if privateTarget then
-        finalMsg = "( 🔐 " .. lp.Name .. " Private " .. privateTarget .. ") " .. finalMsg
+        finalMsg = "( 🔐 " .. lp.Name .. " Private " .. privateTarget .. ") " .. text
     else
         if currentScope == "server" then
-            finalMsg = "[SRV:" .. tostring(game.JobId) .. "] " .. finalMsg
+            finalMsg = "[SRV:" .. tostring(game.JobId) .. "] " .. text
         else
-            finalMsg = "[GLB] " .. finalMsg
+            finalMsg = "[GLB] " .. text
         end
     end
 
@@ -3285,9 +3116,9 @@ sendMessageFunc = function(overrideText)
     local encodedUserTag = lp.Name .. "::" .. lp.DisplayName
 
     if privateTarget then
-        addMessageToFeed(encodedUserTag, finalMsg:gsub("^%( 🔐 .- Private .-%)%s*", ""), privateTarget, true, game.JobId, currentScope)
+        addMessageToFeed(encodedUserTag, text, privateTarget, true, game.JobId, currentScope)
     else
-        addMessageToFeed(encodedUserTag, finalMsg, nil, false, game.JobId, currentScope)
+        addMessageToFeed(encodedUserTag, text, nil, false, game.JobId, currentScope)
     end
     displayBubble(lp.Name, text)
     
