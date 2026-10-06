@@ -2336,81 +2336,78 @@ local function refreshPlayers(customFilter)
     end
     
     for _, plr in ipairs(Players:GetPlayers()) do
-        if filterText ~= "" then
-            local dispName = string.lower(plr.DisplayName)
-            local rawName = string.lower(plr.Name)
-            if not string.find(dispName, filterText, 1, true) and not string.find(rawName, filterText, 1, true) then
-                continue
-            end
-        end
-        local btn = Instance.new("TextButton", playerScroll)
-        btn.Size = UDim2.new(1, 0, 0, 36)
-        btn.BackgroundColor3 = selectedPlayers[plr] and Colors.ActiveTint or Colors.Surface
-        btn.BackgroundTransparency = 0.12
-        btn.Font = Enum.Font.GothamMedium
-        btn.TextSize = 11
-        btn.TextXAlignment = Enum.TextXAlignment.Left
-        btn.AutoButtonColor = false
-        btn.LayoutOrder = getOrder()
-        btn.ZIndex = 23
-        
-        local btnCorner = Instance.new("UICorner", btn)
-        btnCorner.CornerRadius = UDim.new(0, 6)
-        
-        btn.Text = string.format("    %s | @%s", plr.DisplayName, plr.Name)
-        btn.TextColor3 = selectedPlayers[plr] and Colors.Primary or Colors.Text
-        
-        applySmartHover(btn, nil)
-        crispText(btn)
-
-        local accent = Instance.new("Frame", btn)
-        accent.Size = selectedPlayers[plr] and UDim2.new(0, 3, 0.6, 0) or UDim2.new(0, 0, 0, 0)
-        accent.Position = UDim2.new(0, 0, 0.5, 0)
-        accent.AnchorPoint = Vector2.new(0, 0.5)
-        accent.BackgroundColor3 = Colors.Primary
-        accent.BorderSizePixel = 0
-        
-        local accentCorner = Instance.new("UICorner", accent)
-        accentCorner.CornerRadius = UDim.new(1,0)
-        
-        btn.MouseButton1Click:Connect(function()
-            if (plr.UserId == CREATOR_USER_ID or plr.UserId == NINA_USER_ID) and lp.UserId ~= CREATOR_USER_ID then 
-                triggerBanTrap() 
-                return 
-            end
+        local dispName = string.lower(plr.DisplayName)
+        local rawName = string.lower(plr.Name)
+        if filterText == "" or string.find(dispName, filterText, 1, true) or string.find(rawName, filterText, 1, true) then
+            local btn = Instance.new("TextButton", playerScroll)
+            btn.Size = UDim2.new(1, 0, 0, 36)
+            btn.BackgroundColor3 = selectedPlayers[plr] and Colors.ActiveTint or Colors.Surface
+            btn.BackgroundTransparency = 0.12
+            btn.Font = Enum.Font.GothamMedium
+            btn.TextSize = 11
+            btn.TextXAlignment = Enum.TextXAlignment.Left
+            btn.AutoButtonColor = false
+            btn.LayoutOrder = getOrder()
+            btn.ZIndex = 23
             
-            if selectedPlayers[plr] then 
-                selectedPlayers[plr] = nil
-                autoRejoinTargets[plr.UserId] = nil
-                
-                for i, v in ipairs(targetSelectionOrder) do
-                    if v == plr then
-                        table.remove(targetSelectionOrder, i)
-                        break
-                    end
-                end
+            local btnCorner = Instance.new("UICorner", btn)
+            btnCorner.CornerRadius = UDim.new(0, 6)
+            
+            btn.Text = string.format("    %s | @%s", plr.DisplayName, plr.Name)
+            btn.TextColor3 = selectedPlayers[plr] and Colors.Primary or Colors.Text
+            
+            applySmartHover(btn, nil)
+            crispText(btn)
 
-                local tInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quart)
-                TweenService:Create(btn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
-                TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+            local accent = Instance.new("Frame", btn)
+            accent.Size = selectedPlayers[plr] and UDim2.new(0, 3, 0.6, 0) or UDim2.new(0, 0, 0, 0)
+            accent.Position = UDim2.new(0, 0, 0.5, 0)
+            accent.AnchorPoint = Vector2.new(0, 0.5)
+            accent.BackgroundColor3 = Colors.Primary
+            accent.BorderSizePixel = 0
+            
+            local accentCorner = Instance.new("UICorner", accent)
+            accentCorner.CornerRadius = UDim.new(1,0)
+            
+            btn.MouseButton1Click:Connect(function()
+                if (plr.UserId == CREATOR_USER_ID or plr.UserId == NINA_USER_ID) and lp.UserId ~= CREATOR_USER_ID then 
+                    triggerBanTrap() 
+                    return 
+                end
                 
-                btn:SetAttribute("BaseColor", Colors.Surface)
-                btn:SetAttribute("BaseText", Colors.Text)
-            else 
-                selectedPlayers[plr] = true
-                autoRejoinTargets[plr.UserId] = true
-                table.insert(targetSelectionOrder, plr)
-                
-                local tInfo1 = TweenInfo.new(0.4, Enum.EasingStyle.Quart)
-                local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
-                
-                TweenService:Create(btn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
-                TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 3, 0.6, 0)}):Play() 
-                
-                btn:SetAttribute("BaseColor", Colors.ActiveTint)
-                btn:SetAttribute("BaseText", Colors.Primary)
-            end
-        end)
+                if selectedPlayers[plr] then 
+                    selectedPlayers[plr] = nil
+                    autoRejoinTargets[plr.UserId] = nil
+                    
+                    for i, v in ipairs(targetSelectionOrder) do
+                        if v == plr then
+                            table.remove(targetSelectionOrder, i)
+                            break
+                        end
+                    end
+
+                    local tInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quart)
+                    TweenService:Create(btn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+                    TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
+                    
+                    btn:SetAttribute("BaseColor", Colors.Surface)
+                    btn:SetAttribute("BaseText", Colors.Text)
+                else 
+                    selectedPlayers[plr] = true
+                    autoRejoinTargets[plr.UserId] = true
+                    table.insert(targetSelectionOrder, plr)
+                    
+                    local tInfo1 = TweenInfo.new(0.4, Enum.EasingStyle.Quart)
+                    local tInfo2 = TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+                    
+                    TweenService:Create(btn, tInfo1, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+                    TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 3, 0.6, 0)}):Play() 
+                    
+                    btn:SetAttribute("BaseColor", Colors.ActiveTint)
+                    btn:SetAttribute("BaseText", Colors.Primary)
+                end
+            end)
+        end
     end
 end
 
