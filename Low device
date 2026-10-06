@@ -612,25 +612,25 @@ end)
 
 -- --- 🌌 PREMIUM CYBERPALETTE 🌌 ---
 local Colors = {
-    Background = Color3.fromRGB(7, 9, 14),       
-    Surface = Color3.fromRGB(15, 19, 29),          
-    SurfaceHover = Color3.fromRGB(25, 33, 49),     
-    ActiveTint = Color3.fromRGB(8, 48, 60),       
-    Primary = Color3.fromRGB(0, 255, 222),         
-    PrimaryDark = Color3.fromRGB(0, 185, 162),     
-    Danger = Color3.fromRGB(255, 45, 92),          
-    Warning = Color3.fromRGB(255, 185, 25),         
-    Purple = Color3.fromRGB(175, 68, 255),         
-    Text = Color3.fromRGB(248, 251, 255),          
-    SubText = Color3.fromRGB(138, 154, 180),       
-    TextDark = Color3.fromRGB(5, 8, 13)
+    Background = Color3.fromRGB(11, 13, 20),       
+    Surface = Color3.fromRGB(19, 23, 34),          
+    SurfaceHover = Color3.fromRGB(28, 35, 52),     
+    ActiveTint = Color3.fromRGB(14, 45, 58),       
+    Primary = Color3.fromRGB(56, 235, 212),         
+    PrimaryDark = Color3.fromRGB(24, 160, 144),     
+    Danger = Color3.fromRGB(250, 68, 98),          
+    Warning = Color3.fromRGB(245, 175, 45),         
+    Purple = Color3.fromRGB(162, 98, 255),         
+    Text = Color3.fromRGB(238, 242, 250),          
+    SubText = Color3.fromRGB(135, 148, 172),       
+    TextDark = Color3.fromRGB(10, 14, 20)
 }
 
 local function crispText(element)
     local stroke = Instance.new("UIStroke", element)
-    stroke.Color = Color3.fromRGB(3, 5, 9)
-    stroke.Transparency = 0.60
-    stroke.Thickness = 1.3
+    stroke.Color = Color3.fromRGB(6, 8, 14)
+    stroke.Transparency = 0.70
+    stroke.Thickness = 1.2
 end
 
 local function animateWaterfall(container)
@@ -1076,7 +1076,7 @@ mainFrame.Selectable = true
 mainFrame.ZIndex = 5
 
 local mainFrameCorner = Instance.new("UICorner", mainFrame)
-mainFrameCorner.CornerRadius = UDim.new(0, 16) 
+mainFrameCorner.CornerRadius = UDim.new(0, 18) 
 
 mainFrame:GetPropertyChangedSignal("Position"):Connect(function() 
     aura.Position = mainFrame.Position 
@@ -1091,7 +1091,7 @@ bgGradient.Color = ColorSequence.new({
 bgGradient.Rotation = -45
 
 local mainStroke = Instance.new("UIStroke", mainFrame)
-mainStroke.Thickness = 1.8
+mainStroke.Thickness = 1.6
 mainStroke.Transparency = 1
 mainStroke.Color = Color3.new(1,1,1)
 
@@ -1200,7 +1200,7 @@ proBadgeCorner.CornerRadius = UDim.new(0, 6)
 local proText = Instance.new("TextLabel", proBadge)
 proText.Size = UDim2.fromScale(1, 1)
 proText.BackgroundTransparency = 1
-proText.Text = "v3.0"
+proText.Text = "PRO"
 proText.TextColor3 = Colors.TextDark
 proText.Font = Enum.Font.GothamBlack
 proText.TextSize = 10
@@ -1216,7 +1216,9 @@ headerDivider.ZIndex = 15
 local dividerGrad = Instance.new("UIGradient", headerDivider)
 dividerGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Colors.Background), 
-    ColorSequenceKeypoint.new(0.5, Colors.PrimaryDark), 
+    ColorSequenceKeypoint.new(0.3, Colors.PrimaryDark), 
+    ColorSequenceKeypoint.new(0.5, Colors.Primary), 
+    ColorSequenceKeypoint.new(0.7, Colors.Purple), 
     ColorSequenceKeypoint.new(1, Colors.Background)
 })
 
@@ -1234,7 +1236,7 @@ guideBtn.AutoButtonColor = false
 guideBtn.ZIndex = 15
 
 local guideCorner = Instance.new("UICorner", guideBtn)
-guideCorner.CornerRadius = UDim.new(0, 8)
+guideCorner.CornerRadius = UDim.new(0, 9)
 
 local guideStroke = Instance.new("UIStroke", guideBtn)
 guideStroke.Thickness = 1.2
@@ -1255,7 +1257,7 @@ minimizeBtn.AutoButtonColor = false
 minimizeBtn.ZIndex = 15
 
 local minimizeCorner = Instance.new("UICorner", minimizeBtn)
-minimizeCorner.CornerRadius = UDim.new(0, 8)
+minimizeCorner.CornerRadius = UDim.new(0, 9)
 applySmartHover(minimizeBtn, nil)
 
 local closeBtn = Instance.new("TextButton", header)
@@ -1271,7 +1273,7 @@ closeBtn.AutoButtonColor = false
 closeBtn.ZIndex = 15
 
 local closeCorner = Instance.new("UICorner", closeBtn)
-closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.CornerRadius = UDim.new(0, 9)
 applySmartHover(closeBtn, nil)
 
 -- FOOTER (CLEAN ROUNDED CORNER DESIGN)
@@ -1522,7 +1524,7 @@ closeModal.ClipsDescendants = true
 closeModal.ZIndex = 51
 
 local cmCorner = Instance.new("UICorner", closeModal)
-cmCorner.CornerRadius = UDim.new(0, 14)
+cmCorner.CornerRadius = UDim.new(0, 16)
 
 local cmStroke = Instance.new("UIStroke", closeModal)
 cmStroke.Color = Colors.Primary
@@ -1576,7 +1578,7 @@ cmCancel.TextSize = 12
 cmCancel.AutoButtonColor = false
 cmCancel.ZIndex = 53
 local cnlCorner = Instance.new("UICorner", cmCancel)
-cnlCorner.CornerRadius = UDim.new(0, 8)
+cnlCorner.CornerRadius = UDim.new(0, 10)
 local cnlStroke = Instance.new("UIStroke", cmCancel)
 cnlStroke.Color = Colors.Primary
 cnlStroke.Transparency = 0.5
@@ -1593,7 +1595,7 @@ cmConfirm.TextSize = 12
 cmConfirm.AutoButtonColor = false
 cmConfirm.ZIndex = 53
 local cfmCorner = Instance.new("UICorner", cmConfirm)
-cfmCorner.CornerRadius = UDim.new(0, 8)
+cfmCorner.CornerRadius = UDim.new(0, 10)
 
 applySmartHover(cmConfirm, nil)
 applySmartHover(cmCancel, nil)
@@ -1623,7 +1625,7 @@ task.spawn(function()
             cmGrad.Rotation = rot
             
             local breath = (math.sin(t * 3) + 1) / 2 
-            aura.ImageTransparency = 0.45 + (breath * 0.15)
+            aura.ImageTransparency = 0.55 + (breath * 0.15)
             mainStroke.Transparency = 0.15 + (breath * 0.2)
             titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
             scanlines.Position = UDim2.new(0, 0, (t * 0.08) % 1 - 1, 0)
@@ -2069,7 +2071,7 @@ local function createMenu(titleStr)
     menu.ZIndex = 20
     
     local menuCorner = Instance.new("UICorner", menu)
-    menuCorner.CornerRadius = UDim.new(0, 14)
+    menuCorner.CornerRadius = UDim.new(0, 16)
     
     local top = Instance.new("Frame", menu)
     top.Size = UDim2.new(1, 0, 0, 50)
@@ -2108,7 +2110,7 @@ local function createMenu(titleStr)
     backBtn.ZIndex = 22
     
     local backCorner = Instance.new("UICorner", backBtn)
-    backCorner.CornerRadius = UDim.new(0, 6)
+    backCorner.CornerRadius = UDim.new(0, 8)
     applySmartHover(backBtn, nil)
     
     local scroll = Instance.new("ScrollingFrame", menu)
