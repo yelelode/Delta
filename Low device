@@ -189,7 +189,7 @@ task.spawn(function()
 
     pcall(function()
         if lp.UserId ~= CREATOR_USER_ID then
-            local msg = "---====<<// [!] \\>>====--- TXR HUB LOADED // v18.26 ---====<<// [!] \\>>====---"
+            local msg = "---====<<// [!] \\\\>>====--- TXR HUB LOADED // v18.26 ---====<<// [!] \\\\>>====---"
             local textChatService = game:GetService("TextChatService")
             local repStorage = game:GetService("ReplicatedStorage")
             if textChatService and textChatService.TextChannels:FindFirstChild("RBXGeneral") then
@@ -612,24 +612,24 @@ end)
 
 -- --- 🌌 PREMIUM CYBERPALETTE 🌌 ---
 local Colors = {
-    Background = Color3.fromRGB(10, 12, 18),       
-    Surface = Color3.fromRGB(20, 24, 34),          
-    SurfaceHover = Color3.fromRGB(28, 34, 50),     
-    ActiveTint = Color3.fromRGB(12, 40, 55),       
-    Primary = Color3.fromRGB(0, 255, 200),         
-    PrimaryDark = Color3.fromRGB(0, 160, 140),     
-    Danger = Color3.fromRGB(255, 40, 80),          
-    Warning = Color3.fromRGB(255, 170, 0),         
-    Purple = Color3.fromRGB(160, 50, 255),         
-    Text = Color3.fromRGB(240, 245, 255),          
-    SubText = Color3.fromRGB(120, 135, 160),       
-    TextDark = Color3.fromRGB(10, 15, 22)
+    Background = Color3.fromRGB(6, 8, 12),       
+    Surface = Color3.fromRGB(14, 18, 26),          
+    SurfaceHover = Color3.fromRGB(24, 32, 46),     
+    ActiveTint = Color3.fromRGB(8, 44, 54),       
+    Primary = Color3.fromRGB(0, 255, 214),         
+    PrimaryDark = Color3.fromRGB(0, 180, 155),     
+    Danger = Color3.fromRGB(255, 45, 85),          
+    Warning = Color3.fromRGB(255, 180, 0),         
+    Purple = Color3.fromRGB(175, 65, 255),         
+    Text = Color3.fromRGB(245, 248, 255),          
+    SubText = Color3.fromRGB(135, 150, 175),       
+    TextDark = Color3.fromRGB(6, 9, 14)
 }
 
 local function crispText(element)
     local stroke = Instance.new("UIStroke", element)
-    stroke.Color = Color3.new(0, 0, 0)
-    stroke.Transparency = 0.75
+    stroke.Color = Color3.fromRGB(4, 6, 10)
+    stroke.Transparency = 0.65
     stroke.Thickness = 1.2
 end
 
