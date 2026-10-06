@@ -612,25 +612,25 @@ end)
 
 -- --- 🌌 PREMIUM CYBERPALETTE 🌌 ---
 local Colors = {
-    Background = Color3.fromRGB(7, 9, 14),       
-    Surface = Color3.fromRGB(15, 19, 29),          
-    SurfaceHover = Color3.fromRGB(25, 33, 49),     
-    ActiveTint = Color3.fromRGB(8, 48, 60),       
-    Primary = Color3.fromRGB(0, 255, 222),         
-    PrimaryDark = Color3.fromRGB(0, 185, 162),     
-    Danger = Color3.fromRGB(255, 45, 92),          
-    Warning = Color3.fromRGB(255, 185, 25),         
-    Purple = Color3.fromRGB(175, 68, 255),         
-    Text = Color3.fromRGB(248, 251, 255),          
-    SubText = Color3.fromRGB(138, 154, 180),       
-    TextDark = Color3.fromRGB(5, 8, 13)
+    Background = Color3.fromRGB(8, 10, 16),       
+    Surface = Color3.fromRGB(18, 22, 34),          
+    SurfaceHover = Color3.fromRGB(30, 38, 58),     
+    ActiveTint = Color3.fromRGB(10, 52, 68),       
+    Primary = Color3.fromRGB(0, 255, 235),         
+    PrimaryDark = Color3.fromRGB(0, 195, 175),     
+    Danger = Color3.fromRGB(255, 48, 88),          
+    Warning = Color3.fromRGB(255, 190, 30),         
+    Purple = Color3.fromRGB(175, 85, 255),         
+    Text = Color3.fromRGB(255, 255, 255),          
+    SubText = Color3.fromRGB(210, 224, 245),       
+    TextDark = Color3.fromRGB(4, 6, 10)
 }
 
 local function crispText(element)
     local stroke = Instance.new("UIStroke", element)
-    stroke.Color = Color3.fromRGB(3, 5, 9)
-    stroke.Transparency = 0.60
-    stroke.Thickness = 1.3
+    stroke.Color = Color3.fromRGB(0, 0, 0)
+    stroke.Transparency = 0.05
+    stroke.Thickness = 1.5
 end
 
 local function animateWaterfall(container)
@@ -1076,7 +1076,7 @@ mainFrame.Selectable = true
 mainFrame.ZIndex = 5
 
 local mainFrameCorner = Instance.new("UICorner", mainFrame)
-mainFrameCorner.CornerRadius = UDim.new(0, 16) 
+mainFrameCorner.CornerRadius = UDim.new(0, 18) 
 
 mainFrame:GetPropertyChangedSignal("Position"):Connect(function() 
     aura.Position = mainFrame.Position 
@@ -1091,7 +1091,7 @@ bgGradient.Color = ColorSequence.new({
 bgGradient.Rotation = -45
 
 local mainStroke = Instance.new("UIStroke", mainFrame)
-mainStroke.Thickness = 1.8
+mainStroke.Thickness = 1.6
 mainStroke.Transparency = 1
 mainStroke.Color = Color3.new(1,1,1)
 
@@ -1216,7 +1216,9 @@ headerDivider.ZIndex = 15
 local dividerGrad = Instance.new("UIGradient", headerDivider)
 dividerGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Colors.Background), 
-    ColorSequenceKeypoint.new(0.5, Colors.PrimaryDark), 
+    ColorSequenceKeypoint.new(0.3, Colors.PrimaryDark), 
+    ColorSequenceKeypoint.new(0.5, Colors.Primary), 
+    ColorSequenceKeypoint.new(0.7, Colors.Purple), 
     ColorSequenceKeypoint.new(1, Colors.Background)
 })
 
@@ -1234,7 +1236,7 @@ guideBtn.AutoButtonColor = false
 guideBtn.ZIndex = 15
 
 local guideCorner = Instance.new("UICorner", guideBtn)
-guideCorner.CornerRadius = UDim.new(0, 8)
+guideCorner.CornerRadius = UDim.new(0, 9)
 
 local guideStroke = Instance.new("UIStroke", guideBtn)
 guideStroke.Thickness = 1.2
@@ -1255,7 +1257,7 @@ minimizeBtn.AutoButtonColor = false
 minimizeBtn.ZIndex = 15
 
 local minimizeCorner = Instance.new("UICorner", minimizeBtn)
-minimizeCorner.CornerRadius = UDim.new(0, 8)
+minimizeCorner.CornerRadius = UDim.new(0, 9)
 applySmartHover(minimizeBtn, nil)
 
 local closeBtn = Instance.new("TextButton", header)
@@ -1271,7 +1273,7 @@ closeBtn.AutoButtonColor = false
 closeBtn.ZIndex = 15
 
 local closeCorner = Instance.new("UICorner", closeBtn)
-closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.CornerRadius = UDim.new(0, 9)
 applySmartHover(closeBtn, nil)
 
 -- FOOTER (CLEAN ROUNDED CORNER DESIGN)
@@ -1522,7 +1524,7 @@ closeModal.ClipsDescendants = true
 closeModal.ZIndex = 51
 
 local cmCorner = Instance.new("UICorner", closeModal)
-cmCorner.CornerRadius = UDim.new(0, 14)
+cmCorner.CornerRadius = UDim.new(0, 16)
 
 local cmStroke = Instance.new("UIStroke", closeModal)
 cmStroke.Color = Colors.Primary
@@ -1576,7 +1578,7 @@ cmCancel.TextSize = 12
 cmCancel.AutoButtonColor = false
 cmCancel.ZIndex = 53
 local cnlCorner = Instance.new("UICorner", cmCancel)
-cnlCorner.CornerRadius = UDim.new(0, 8)
+cnlCorner.CornerRadius = UDim.new(0, 10)
 local cnlStroke = Instance.new("UIStroke", cmCancel)
 cnlStroke.Color = Colors.Primary
 cnlStroke.Transparency = 0.5
@@ -1593,7 +1595,7 @@ cmConfirm.TextSize = 12
 cmConfirm.AutoButtonColor = false
 cmConfirm.ZIndex = 53
 local cfmCorner = Instance.new("UICorner", cmConfirm)
-cfmCorner.CornerRadius = UDim.new(0, 8)
+cfmCorner.CornerRadius = UDim.new(0, 10)
 
 applySmartHover(cmConfirm, nil)
 applySmartHover(cmCancel, nil)
@@ -1623,7 +1625,7 @@ task.spawn(function()
             cmGrad.Rotation = rot
             
             local breath = (math.sin(t * 3) + 1) / 2 
-            aura.ImageTransparency = 0.45 + (breath * 0.15)
+            aura.ImageTransparency = 0.55 + (breath * 0.15)
             mainStroke.Transparency = 0.15 + (breath * 0.2)
             titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
             scanlines.Position = UDim2.new(0, 0, (t * 0.08) % 1 - 1, 0)
@@ -2069,7 +2071,7 @@ local function createMenu(titleStr)
     menu.ZIndex = 20
     
     local menuCorner = Instance.new("UICorner", menu)
-    menuCorner.CornerRadius = UDim.new(0, 14)
+    menuCorner.CornerRadius = UDim.new(0, 16)
     
     local top = Instance.new("Frame", menu)
     top.Size = UDim2.new(1, 0, 0, 50)
@@ -2108,7 +2110,7 @@ local function createMenu(titleStr)
     backBtn.ZIndex = 22
     
     local backCorner = Instance.new("UICorner", backBtn)
-    backCorner.CornerRadius = UDim.new(0, 6)
+    backCorner.CornerRadius = UDim.new(0, 8)
     applySmartHover(backBtn, nil)
     
     local scroll = Instance.new("ScrollingFrame", menu)
@@ -2157,6 +2159,47 @@ local function createMenu(titleStr)
 end
 
 local playerMenu, playerScroll = createMenu("👥 MATRIX TARGETS")
+playerScroll.Position = UDim2.fromOffset(12, 94)
+playerScroll.Size = UDim2.new(1, -24, 1, -104)
+
+local targetSearchFrame = Instance.new("Frame", playerMenu)
+targetSearchFrame.Size = UDim2.new(1, -24, 0, 32)
+targetSearchFrame.Position = UDim2.fromOffset(12, 54)
+targetSearchFrame.BackgroundColor3 = Colors.Surface
+targetSearchFrame.BackgroundTransparency = 0.15
+targetSearchFrame.ZIndex = 23
+
+local targetSearchCorner = Instance.new("UICorner", targetSearchFrame)
+targetSearchCorner.CornerRadius = UDim.new(0, 8)
+
+local targetSearchStroke = Instance.new("UIStroke", targetSearchFrame)
+targetSearchStroke.Color = Colors.PrimaryDark
+targetSearchStroke.Thickness = 1
+targetSearchStroke.Transparency = 0.3
+
+local targetSearchIcon = Instance.new("TextLabel", targetSearchFrame)
+targetSearchIcon.Size = UDim2.new(0, 24, 1, 0)
+targetSearchIcon.Position = UDim2.fromOffset(6, 0)
+targetSearchIcon.BackgroundTransparency = 1
+targetSearchIcon.Text = "🔍"
+targetSearchIcon.TextSize = 13
+targetSearchIcon.ZIndex = 24
+
+local targetSearchBox = Instance.new("TextBox", targetSearchFrame)
+targetSearchBox.Size = UDim2.new(1, -34, 1, 0)
+targetSearchBox.Position = UDim2.fromOffset(30, 0)
+targetSearchBox.BackgroundTransparency = 1
+targetSearchBox.PlaceholderText = "Search target name or @user..."
+targetSearchBox.PlaceholderColor3 = Colors.SubText
+targetSearchBox.Text = ""
+targetSearchBox.TextColor3 = Colors.Text
+targetSearchBox.Font = Enum.Font.GothamMedium
+targetSearchBox.TextSize = 11
+targetSearchBox.TextXAlignment = Enum.TextXAlignment.Left
+targetSearchBox.ClearTextOnFocus = false
+targetSearchBox.ZIndex = 24
+crispText(targetSearchBox)
+
 local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
 
 -- 📖 SLICK MINI GUIDE SUBMENU (COMPACT & SCROLLABLE)
@@ -2224,7 +2267,7 @@ for _, item in ipairs(guideStepsData) do
     local card = Instance.new("Frame", guideScroll)
     card.Size = UDim2.new(1, 0, 0, 72)
     card.BackgroundColor3 = Colors.Surface
-    card.BackgroundTransparency = 0.4
+    card.BackgroundTransparency = 0.15
     card.LayoutOrder = getOrder()
     card.ZIndex = 23
 
@@ -2284,7 +2327,8 @@ local function getFirstValidTarget()
     return nil
 end
 
-local function refreshPlayers()
+local function refreshPlayers(customFilter)
+    local filterText = string.lower(customFilter or (targetSearchBox and targetSearchBox.Text) or "")
     for _, child in ipairs(playerScroll:GetChildren()) do 
         if child:IsA("TextButton") then 
             child:Destroy() 
@@ -2292,10 +2336,17 @@ local function refreshPlayers()
     end
     
     for _, plr in ipairs(Players:GetPlayers()) do
+        if filterText ~= "" then
+            local dispName = string.lower(plr.DisplayName)
+            local rawName = string.lower(plr.Name)
+            if not string.find(dispName, filterText, 1, true) and not string.find(rawName, filterText, 1, true) then
+                continue
+            end
+        end
         local btn = Instance.new("TextButton", playerScroll)
         btn.Size = UDim2.new(1, 0, 0, 36)
         btn.BackgroundColor3 = selectedPlayers[plr] and Colors.ActiveTint or Colors.Surface
-        btn.BackgroundTransparency = 0.4
+        btn.BackgroundTransparency = 0.12
         btn.Font = Enum.Font.GothamMedium
         btn.TextSize = 11
         btn.TextXAlignment = Enum.TextXAlignment.Left
@@ -2405,6 +2456,12 @@ end)
 
 refreshPlayers()
 
+if targetSearchBox then
+    targetSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+        refreshPlayers(targetSearchBox.Text)
+    end)
+end
+
 local geometries = {
     "Normal Orbit",
     "Standard Orbit", 
@@ -2434,7 +2491,7 @@ for _, geo in ipairs(geometries) do
     local btn = Instance.new("TextButton", geoScroll)
     btn.Size = UDim2.new(1, 0, 0, 36)
     btn.BackgroundColor3 = Colors.Surface
-    btn.BackgroundTransparency = 0.4
+    btn.BackgroundTransparency = 0.12
     btn.Text = "   ⚡ " .. geo
     btn.TextColor3 = Colors.Text
     btn.Font = Enum.Font.GothamMedium
@@ -2466,11 +2523,11 @@ local function createMainBtn(text, modeKey, isMenuOpener, bioBadgeText)
     local btn = Instance.new("TextButton", mainList)
     btn.Size = UDim2.new(1, 0, 0, 42)
     btn.BackgroundColor3 = Colors.Surface
-    btn.BackgroundTransparency = 0.4
+    btn.BackgroundTransparency = 0.12
     btn.Text = "   " .. text
     btn.TextColor3 = Colors.Text
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 11
+    btn.TextSize = 12
     btn.TextXAlignment = Enum.TextXAlignment.Left
     btn.AutoButtonColor = false
     btn.LayoutOrder = getOrder()
@@ -2553,7 +2610,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     titleLabel.Text = name
     titleLabel.TextColor3 = Colors.SubText
     titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextSize = 10
+    titleLabel.TextSize = 11
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.ZIndex = 8
     crispText(titleLabel)
@@ -2563,7 +2620,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     valBadge.AnchorPoint = Vector2.new(1, 0)
     valBadge.Position = UDim2.new(1, -6, 0, -1)
     valBadge.BackgroundColor3 = Colors.Primary
-    valBadge.BackgroundTransparency = 0.85
+    valBadge.BackgroundTransparency = 0.35
     valBadge.ZIndex = 8
     
     local badgeCorner = Instance.new("UICorner", valBadge)
@@ -2571,7 +2628,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     
     local valStroke = Instance.new("UIStroke", valBadge)
     valStroke.Color = Colors.Primary
-    valStroke.Transparency = 0.5
+    valStroke.Transparency = 0.15
     valStroke.Thickness = 1
     
     local valLabel = Instance.new("TextLabel", valBadge)
