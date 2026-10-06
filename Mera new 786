@@ -1,1 +1,137 @@
-.
+-- =========================================================
+-- 🔍 TXR HUB: MODULAR MATRIX TARGET SEARCH ENGINE (STANDALONE)
+-- [Repo Ready / Universal Lua 5.1 & Mobile Executor Safe]
+-- =========================================================
+
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer
+
+local coreGui = game:GetService("CoreGui")
+local playerGui = lp:WaitForChild("PlayerGui", 5)
+
+local function attachSearchEngine()
+    local mainFrame = nil
+    
+    -- Dynamically search for TXR mainFrame
+    for _, g in ipairs({coreGui, playerGui}) do
+        if g then
+            for _, child in ipairs(g:GetChildren()) do
+                if string.sub(child.Name, 1, 4) == "TXR_" and child:IsA("ScreenGui") then
+                    mainFrame = child:FindFirstChildWhichIsA("Frame")
+                    break
+                end
+            end
+        end
+        if mainFrame then break end
+    end
+
+    if not mainFrame then
+        warn("[TXR SEARCH]: Main TXR Hub GUI not found. Please execute TXR HUB first!")
+        return false
+    end
+
+    -- Locate playerMenu & playerScroll inside TXR mainFrame
+    local playerMenu = nil
+    for _, child in ipairs(mainFrame:GetChildren()) do
+        if child:IsA("Frame") and child:FindFirstChildWhichIsA("ScrollingFrame") then
+            local titleLabel = child:FindFirstChildWhichIsA("Frame") and child:FindFirstChildWhichIsA("Frame"):FindFirstChildWhichIsA("TextLabel")
+            if titleLabel and string.find(string.lower(titleLabel.Text), "target") then
+                playerMenu = child
+                break
+            end
+        end
+    end
+
+    if not playerMenu then
+        warn("[TXR SEARCH]: Matrix Targets menu container not found!")
+        return false
+    end
+
+    local playerScroll = playerMenu:FindFirstChildWhichIsA("ScrollingFrame")
+    if not playerScroll then
+        warn("[TXR SEARCH]: Targets ScrollingFrame not found!")
+        return false
+    end
+
+    if playerMenu:FindFirstChild("TXR_TargetSearchFrame") then
+        playerMenu.TXR_TargetSearchFrame:Destroy()
+    end
+
+    -- Scroll area adjust
+    playerScroll.Position = UDim2.fromOffset(12, 94)
+    playerScroll.Size = UDim2.new(1, -24, 1, -104)
+
+    -- Create Styled Search Frame
+    local searchFrame = Instance.new("Frame", playerMenu)
+    searchFrame.Name = "TXR_TargetSearchFrame"
+    searchFrame.Size = UDim2.new(1, -24, 0, 32)
+    searchFrame.Position = UDim2.fromOffset(12, 54)
+    searchFrame.BackgroundColor3 = Color3.fromRGB(18, 22, 34)
+    searchFrame.BackgroundTransparency = 0.15
+    searchFrame.ZIndex = 25
+
+    local sCorner = Instance.new("UICorner", searchFrame)
+    sCorner.CornerRadius = UDim.new(0, 8)
+
+    local sStroke = Instance.new("UIStroke", searchFrame)
+    sStroke.Color = Color3.fromRGB(0, 195, 175)
+    sStroke.Thickness = 1
+    sStroke.Transparency = 0.25
+
+    local sIcon = Instance.new("TextLabel", searchFrame)
+    sIcon.Size = UDim2.new(0, 24, 1, 0)
+    sIcon.Position = UDim2.fromOffset(6, 0)
+    sIcon.BackgroundTransparency = 1
+    sIcon.Text = "🔍"
+    sIcon.TextSize = 13
+    sIcon.ZIndex = 26
+
+    local searchBox = Instance.new("TextBox", searchFrame)
+    searchBox.Name = "SearchInput"
+    searchBox.Size = UDim2.new(1, -34, 1, 0)
+    searchBox.Position = UDim2.fromOffset(30, 0)
+    searchBox.BackgroundTransparency = 1
+    searchBox.PlaceholderText = "Search target name or @user..."
+    searchBox.PlaceholderColor3 = Color3.fromRGB(135, 150, 175)
+    searchBox.Text = ""
+    searchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    searchBox.Font = Enum.Font.GothamMedium
+    searchBox.TextSize = 11
+    searchBox.TextXAlignment = Enum.TextXAlignment.Left
+    searchBox.ClearTextOnFocus = false
+    searchBox.ZIndex = 26
+
+    local boxStroke = Instance.new("UIStroke", searchBox)
+    boxStroke.Color = Color3.fromRGB(0, 0, 0)
+    boxStroke.Transparency = 0.05
+    boxStroke.Thickness = 1.2
+
+    -- Live Filter Logic (Zero 'continue' keyword - 100% Executor Safe)
+    local function filterTargets(query)
+        local q = string.lower(query or "")
+        for _, btn in ipairs(playerScroll:GetChildren()) do
+            if btn:IsA("TextButton") then
+                local btnText = string.lower(btn.Text)
+                if q == "" or string.find(btnText, q, 1, true) then
+                    btn.Visible = true
+                else
+                    btn.Visible = false
+                end
+            end
+        end
+    end
+
+    searchBox:GetPropertyChangedSignal("Text"):Connect(function()
+        filterTargets(searchBox.Text)
+    end)
+
+    print("✅ [TXR SEARCH]: Search Engine Successfully Hooked to Matrix Targets!")
+    return true
+end
+
+task.spawn(function()
+    for i = 1, 15 do
+        if attachSearchEngine() then break end
+        task.wait(0.5)
+    end
+end)
