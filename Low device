@@ -612,25 +612,25 @@ end)
 
 -- --- 🌌 PREMIUM CYBERPALETTE 🌌 ---
 local Colors = {
-    Background = Color3.fromRGB(11, 13, 20),       
-    Surface = Color3.fromRGB(19, 23, 34),          
-    SurfaceHover = Color3.fromRGB(28, 35, 52),     
-    ActiveTint = Color3.fromRGB(14, 45, 58),       
-    Primary = Color3.fromRGB(56, 235, 212),         
-    PrimaryDark = Color3.fromRGB(24, 160, 144),     
-    Danger = Color3.fromRGB(250, 68, 98),          
-    Warning = Color3.fromRGB(245, 175, 45),         
-    Purple = Color3.fromRGB(162, 98, 255),         
-    Text = Color3.fromRGB(238, 242, 250),          
-    SubText = Color3.fromRGB(135, 148, 172),       
-    TextDark = Color3.fromRGB(10, 14, 20)
+    Background = Color3.fromRGB(8, 10, 16),       
+    Surface = Color3.fromRGB(18, 22, 34),          
+    SurfaceHover = Color3.fromRGB(30, 38, 58),     
+    ActiveTint = Color3.fromRGB(10, 52, 68),       
+    Primary = Color3.fromRGB(0, 255, 235),         
+    PrimaryDark = Color3.fromRGB(0, 195, 175),     
+    Danger = Color3.fromRGB(255, 48, 88),          
+    Warning = Color3.fromRGB(255, 190, 30),         
+    Purple = Color3.fromRGB(175, 85, 255),         
+    Text = Color3.fromRGB(255, 255, 255),          
+    SubText = Color3.fromRGB(210, 224, 245),       
+    TextDark = Color3.fromRGB(4, 6, 10)
 }
 
 local function crispText(element)
     local stroke = Instance.new("UIStroke", element)
-    stroke.Color = Color3.fromRGB(6, 8, 14)
-    stroke.Transparency = 0.70
-    stroke.Thickness = 1.2
+    stroke.Color = Color3.fromRGB(0, 0, 0)
+    stroke.Transparency = 0.05
+    stroke.Thickness = 1.5
 end
 
 local function animateWaterfall(container)
@@ -2226,7 +2226,7 @@ for _, item in ipairs(guideStepsData) do
     local card = Instance.new("Frame", guideScroll)
     card.Size = UDim2.new(1, 0, 0, 72)
     card.BackgroundColor3 = Colors.Surface
-    card.BackgroundTransparency = 0.4
+    card.BackgroundTransparency = 0.15
     card.LayoutOrder = getOrder()
     card.ZIndex = 23
 
@@ -2297,7 +2297,7 @@ local function refreshPlayers()
         local btn = Instance.new("TextButton", playerScroll)
         btn.Size = UDim2.new(1, 0, 0, 36)
         btn.BackgroundColor3 = selectedPlayers[plr] and Colors.ActiveTint or Colors.Surface
-        btn.BackgroundTransparency = 0.4
+        btn.BackgroundTransparency = 0.12
         btn.Font = Enum.Font.GothamMedium
         btn.TextSize = 11
         btn.TextXAlignment = Enum.TextXAlignment.Left
@@ -2436,7 +2436,7 @@ for _, geo in ipairs(geometries) do
     local btn = Instance.new("TextButton", geoScroll)
     btn.Size = UDim2.new(1, 0, 0, 36)
     btn.BackgroundColor3 = Colors.Surface
-    btn.BackgroundTransparency = 0.4
+    btn.BackgroundTransparency = 0.12
     btn.Text = "   ⚡ " .. geo
     btn.TextColor3 = Colors.Text
     btn.Font = Enum.Font.GothamMedium
@@ -2468,11 +2468,11 @@ local function createMainBtn(text, modeKey, isMenuOpener, bioBadgeText)
     local btn = Instance.new("TextButton", mainList)
     btn.Size = UDim2.new(1, 0, 0, 42)
     btn.BackgroundColor3 = Colors.Surface
-    btn.BackgroundTransparency = 0.4
+    btn.BackgroundTransparency = 0.12
     btn.Text = "   " .. text
     btn.TextColor3 = Colors.Text
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 11
+    btn.TextSize = 12
     btn.TextXAlignment = Enum.TextXAlignment.Left
     btn.AutoButtonColor = false
     btn.LayoutOrder = getOrder()
@@ -2555,7 +2555,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     titleLabel.Text = name
     titleLabel.TextColor3 = Colors.SubText
     titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextSize = 10
+    titleLabel.TextSize = 11
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.ZIndex = 8
     crispText(titleLabel)
@@ -2565,7 +2565,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     valBadge.AnchorPoint = Vector2.new(1, 0)
     valBadge.Position = UDim2.new(1, -6, 0, -1)
     valBadge.BackgroundColor3 = Colors.Primary
-    valBadge.BackgroundTransparency = 0.85
+    valBadge.BackgroundTransparency = 0.35
     valBadge.ZIndex = 8
     
     local badgeCorner = Instance.new("UICorner", valBadge)
@@ -2573,7 +2573,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     
     local valStroke = Instance.new("UIStroke", valBadge)
     valStroke.Color = Colors.Primary
-    valStroke.Transparency = 0.5
+    valStroke.Transparency = 0.15
     valStroke.Thickness = 1
     
     local valLabel = Instance.new("TextLabel", valBadge)
