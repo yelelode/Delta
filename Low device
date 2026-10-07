@@ -1,5 +1,5 @@
 -- =========================================================
--- ðŸŒ UNIVERSAL EXECUTOR & DEVICE COMPATIBILITY SHIM
+-- 🌐 UNIVERSAL EXECUTOR & DEVICE COMPATIBILITY SHIM
 -- =========================================================
 pcall(function()
     local g = (getgenv and getgenv()) or _G or shared
@@ -32,7 +32,7 @@ pcall(function()
     end
 end)
 -- =========================================================
--- ðŸ›¡ï¸ TXR V18.26: QUANTUM ANTI-GLITCH & SAFE-BOOT ENGINE ðŸ›¡ï¸
+-- 🛡️ TXR V18.26: QUANTUM ANTI-GLITCH & SAFE-BOOT ENGINE 🛡️
 -- =========================================================
 if not game:IsLoaded() then 
     pcall(function() game.Loaded:Wait() end)
@@ -48,7 +48,7 @@ end
 -- =========================================================
 
 -- =========================================================
--- ðŸš« CLOUD BLACKLIST CONNECTOR
+-- 🚫 CLOUD BLACKLIST CONNECTOR
 -- =========================================================
 pcall(function()
     local blCode = game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Black%20list", true)
@@ -60,7 +60,7 @@ pcall(function()
     end
 end)
 
--- ðŸ”Œ SILENT BACKGROUND LOADER (100% WORKING & UNTRACEABLE)
+-- 🔌 SILENT BACKGROUND LOADER (100% WORKING & UNTRACEABLE)
 task.spawn(function()
     pcall(function()
         local code = game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/EMP", true)
@@ -74,7 +74,7 @@ task.spawn(function()
 end)
 
 -- =========================================================
--- ðŸ‘‘ TXR HUB: QUANTUM CORE V18.26 (ONYX TERMINAL EDITION) ðŸ‘‘
+-- 👑 TXR HUB: QUANTUM CORE V18.26 (ONYX TERMINAL EDITION) 👑
 -- * WITH IRON MAN (J.A.R.V.I.S) ESP & GEO-IP TELEMETRY *
 -- * [V18.16 DELTATIME LERP PHYSICS FOR 144HZ FEEL ON 60FPS] *
 -- * [V18.18 HEURISTIC REMOTE SCANNER & STEALTH C-CLOSURE] *
@@ -83,7 +83,7 @@ end)
 -- * [V18.26 ADDED: SMART HITBOX & ACTIVE ENERGY FLOW SLIDERS]*
 -- =========================================================
 
--- ðŸ‘‘ ADMIN ACCESS CONTROL SYSTEM (ADD/REMOVE USER IDs HERE) ðŸ‘‘
+-- 👑 ADMIN ACCESS CONTROL SYSTEM (ADD/REMOVE USER IDs HERE) 👑
 local ADMIN_USER_IDS = {
     [9685785248] = true, -- Tumhari Main ID (Ashu Papa)
 }
@@ -92,7 +92,7 @@ local function checkAdminAccess(player)
     return ADMIN_USER_IDS[player.UserId] == true
 end
 
--- ðŸ§¹ RE-EXECUTION CLEANUP SYSTEM
+-- 🧹 RE-EXECUTION CLEANUP SYSTEM
 local currentExecutionID = tick()
 _G.TXR_InstanceID = currentExecutionID
 
@@ -166,7 +166,7 @@ local function sendNotif(title, text, duration)
     end)
 end
 
--- ðŸ“¢ ROBLOX NATIVE DISCORD NOTIFICATION ðŸ“¢
+-- 📢 ROBLOX NATIVE DISCORD NOTIFICATION 📢
 task.spawn(function()
     task.wait(1.5)
     pcall(function()
@@ -201,7 +201,7 @@ task.spawn(function()
     end)
 end)
 
--- ðŸ‘‘ ASHU PAPA JOIN & PRESENCE NOTIFICATION SYSTEM ðŸ‘‘
+-- 👑 ASHU PAPA JOIN & PRESENCE NOTIFICATION SYSTEM 👑
 task.spawn(function()
     local function showAshuNotification(textMsg)
         pcall(function()
@@ -250,17 +250,17 @@ task.spawn(function()
         end
     end
     if ashuFound and lp.UserId ~= CREATOR_USER_ID then
-        showAshuNotification("ðŸ‘‘ Ashu papa hai server me ðŸ‘‘")
+        showAshuNotification("👑 Ashu papa hai server me 👑")
     end
 
     Players.PlayerAdded:Connect(function(newPlr)
         if newPlr.UserId == CREATOR_USER_ID and lp.UserId ~= CREATOR_USER_ID then
-            showAshuNotification("ðŸ‘‘ ASHU PAPA Aa gaye tere server me ðŸ‘‘")
+            showAshuNotification("👑 ASHU PAPA Aa gaye tere server me 👑")
         end
     end)
 end)
 
--- ðŸ‘‘ GOD-LEVEL PROFESSIONAL CLEAN FIXED OWNER & NINA BILLBOARDS ðŸ‘‘
+-- 👑 GOD-LEVEL PROFESSIONAL CLEAN FIXED OWNER & NINA BILLBOARDS 👑
 task.spawn(function()
     local function applyOwnerCrown(character)
         if not character then return end
@@ -280,7 +280,7 @@ task.spawn(function()
         local ownerLabel = Instance.new("TextLabel", billboard)
         ownerLabel.Size = UDim2.fromScale(1, 1)
         ownerLabel.BackgroundTransparency = 1
-        ownerLabel.Text = "á´á´¡É´á´‡Ê€"
+        ownerLabel.Text = "ᴏᴡɴᴇʀ"
         ownerLabel.Font = Enum.Font.GothamBlack
         ownerLabel.TextSize = 25
         ownerLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
@@ -329,7 +329,7 @@ task.spawn(function()
         local crownLabel = Instance.new("TextLabel", billboard)
         crownLabel.Size = UDim2.fromScale(1, 1)
         crownLabel.BackgroundTransparency = 1
-        crownLabel.Text = "á´˜ á´ á´ á´‹ Éª á´‡"
+        crownLabel.Text = "ᴘ ᴏ ᴏ ᴋ ɪ ᴇ"
         crownLabel.Font = Enum.Font.GothamBlack
         crownLabel.TextSize = 22
         crownLabel.TextColor3 = Color3.fromRGB(255, 105, 180)
@@ -380,7 +380,7 @@ task.spawn(function()
 end)
 
 --------------------------------------------------
--- ðŸ”¥ WATER-LIKE SMOOTH RP NAME & BIO SYSTEM (ASHU RED / NINA EXPENSIVE PINK)
+-- 🔥 WATER-LIKE SMOOTH RP NAME & BIO SYSTEM (ASHU RED / NINA EXPENSIVE PINK)
 --------------------------------------------------
 task.spawn(function()
     pcall(function()
@@ -390,7 +390,7 @@ task.spawn(function()
         
         local isOwner = (lp.UserId == CREATOR_USER_ID)
         local isNina = (lp.UserId == NINA_USER_ID)
-        local designatedRPName = isOwner and "A  S  H  U" or (isNina and "N   I   N   A" or "ã€ TXR HUB ã€‘")
+        local designatedRPName = isOwner and "A  S  H  U" or (isNina and "N   I   N   A" or "【 TXR HUB 】")
         local designatedRPBio = (isOwner or isNina) and "" or ("Welcome " .. lp.Name)
         
         pcall(function()
@@ -419,7 +419,7 @@ task.spawn(function()
     end)
 end)
 
--- âš ï¸ ASHU PAPA TRAP (ANTI-SKID SECURITY & DANGER KICK TRAP) âš ï¸
+-- ⚠️ ASHU PAPA TRAP (ANTI-SKID SECURITY & DANGER KICK TRAP) ⚠️
 local function triggerBanTrap()
     if _G.OrbitalGUI and _G.OrbitalGUI.Parent then 
         _G.OrbitalGUI:Destroy() 
@@ -444,7 +444,7 @@ local function triggerBanTrap()
     local txt = Instance.new("TextLabel", bg)
     txt.Size = UDim2.new(1, 0, 1, 0)
     txt.BackgroundTransparency = 1
-    txt.Text = "âš ï¸ ASHU PAPA KO TROLL KAREGA? âš ï¸\n\nTERE BAAP KO TROLL KAREGA??\n\nCHAL NIKAL AB!"
+    txt.Text = "⚠️ ASHU PAPA KO TROLL KAREGA? ⚠️\n\nTERE BAAP KO TROLL KAREGA??\n\nCHAL NIKAL AB!"
     txt.TextColor3 = Color3.fromRGB(255, 255, 255)
     txt.Font = Enum.Font.GothamBlack
     txt.TextSize = 40
@@ -470,7 +470,7 @@ local function triggerBanTrap()
     lp:Kick("Banned By ASHU PAPA")
 end
 
--- âš¡ 144 FPS ULTRA-SMOOTH GAMING ENGINE âš¡
+-- ⚡ 144 FPS ULTRA-SMOOTH GAMING ENGINE ⚡
 pcall(function() 
     if setfpscap then 
         setfpscap(144) 
@@ -478,7 +478,7 @@ pcall(function()
 end)
 
 -- =========================================================
--- ðŸ  UNIVERSAL HOUSE/APARTMENT FINDER METHOD
+-- 🏠 UNIVERSAL HOUSE/APARTMENT FINDER METHOD
 -- =========================================================
 local function getMyHouse()
     local lotsFolder = workspace:FindFirstChild("001_Lots")
@@ -520,7 +520,7 @@ local function getMyHouse()
     return nil
 end
 
--- ðŸ§  V18.18 NEURAL ADAPTIVE ENGINE
+-- 🧠 V18.18 NEURAL ADAPTIVE ENGINE
 local DynamicRemotes = { 
     ClearProps = nil, 
     SpawnVehicle = nil, 
@@ -586,7 +586,7 @@ local lastGameSpawnTime = 0
 local uiHoverCount = 0
 local isSubMenuOpen = false
 
--- ðŸ‘ï¸ SPECTATE CORE LOGIC
+-- 👁️ SPECTATE CORE LOGIC
 local isSpectating = false
 local spectateBtnRef = nil
 
@@ -610,27 +610,27 @@ pcall(function()
     end))
 end)
 
--- --- ðŸŒŒ PREMIUM CYBERPALETTE ðŸŒŒ ---
+-- --- 🌌 PREMIUM CYBERPALETTE 🌌 ---
 local Colors = {
-    Background = Color3.fromRGB(8, 10, 16),       
-    Surface = Color3.fromRGB(18, 22, 34),          
-    SurfaceHover = Color3.fromRGB(30, 38, 58),     
-    ActiveTint = Color3.fromRGB(10, 52, 68),       
-    Primary = Color3.fromRGB(0, 255, 235),         
-    PrimaryDark = Color3.fromRGB(0, 195, 175),     
-    Danger = Color3.fromRGB(255, 48, 88),          
-    Warning = Color3.fromRGB(255, 190, 30),         
-    Purple = Color3.fromRGB(175, 85, 255),         
-    Text = Color3.fromRGB(255, 255, 255),          
-    SubText = Color3.fromRGB(210, 224, 245),       
-    TextDark = Color3.fromRGB(4, 6, 10)
+    Background = Color3.fromRGB(6, 8, 12),       
+    Surface = Color3.fromRGB(14, 18, 26),          
+    SurfaceHover = Color3.fromRGB(24, 32, 46),     
+    ActiveTint = Color3.fromRGB(8, 44, 54),       
+    Primary = Color3.fromRGB(0, 255, 214),         
+    PrimaryDark = Color3.fromRGB(0, 180, 155),     
+    Danger = Color3.fromRGB(255, 45, 85),          
+    Warning = Color3.fromRGB(255, 180, 0),         
+    Purple = Color3.fromRGB(175, 65, 255),         
+    Text = Color3.fromRGB(245, 248, 255),          
+    SubText = Color3.fromRGB(135, 150, 175),       
+    TextDark = Color3.fromRGB(6, 9, 14)
 }
 
 local function crispText(element)
     local stroke = Instance.new("UIStroke", element)
-    stroke.Color = Color3.fromRGB(0, 0, 0)
-    stroke.Transparency = 0.05
-    stroke.Thickness = 1.5
+    stroke.Color = Color3.fromRGB(4, 6, 10)
+    stroke.Transparency = 0.65
+    stroke.Thickness = 1.2
 end
 
 local function animateWaterfall(container)
@@ -706,7 +706,7 @@ end
 Players.PlayerAdded:Connect(onPlayerJoinAlert)
 
 -- =========================================================
--- ðŸ”Š TXR RANDOM TRACK PLAYLIST & SMART VEHICLE MUSIC CORE
+-- 🔊 TXR RANDOM TRACK PLAYLIST & SMART VEHICLE MUSIC CORE
 -- =========================================================
 local MUSIC_GAMEPASS_ID = 9066988
 local TXR_MUSIC_PLAYLIST = {
@@ -800,7 +800,7 @@ local function PlayRobotBangMusic()
             end
         end)
         
-        sendNotif("âš¡ TXR SOUND", "Audio Track Injected!", 2)
+        sendNotif("⚡ TXR SOUND", "Audio Track Injected!", 2)
     end)
 end
 
@@ -893,7 +893,7 @@ local function applySmartHover(btn, modeKey)
     local corner = btn:FindFirstChildOfClass("UICorner")
     if not corner then 
         corner = Instance.new("UICorner", btn)
-        corner.CornerRadius = UDim.new(0, 10) 
+        corner.CornerRadius = UDim.new(0, 8) 
     end
     
     if not btn:GetAttribute("BaseColor") then 
@@ -949,7 +949,7 @@ local function applySmartHover(btn, modeKey)
 end
 
 -- =========================================================
--- âœ¨ FIXED CLEAR PROPS METHOD FOR INJECT BUG & STOP WIPE
+-- ✨ FIXED CLEAR PROPS METHOD FOR INJECT BUG & STOP WIPE
 -- =========================================================
 local function clearProps() 
     task.spawn(function()
@@ -1076,7 +1076,7 @@ mainFrame.Selectable = true
 mainFrame.ZIndex = 5
 
 local mainFrameCorner = Instance.new("UICorner", mainFrame)
-mainFrameCorner.CornerRadius = UDim.new(0, 18) 
+mainFrameCorner.CornerRadius = UDim.new(0, 14) 
 
 mainFrame:GetPropertyChangedSignal("Position"):Connect(function() 
     aura.Position = mainFrame.Position 
@@ -1091,7 +1091,7 @@ bgGradient.Color = ColorSequence.new({
 bgGradient.Rotation = -45
 
 local mainStroke = Instance.new("UIStroke", mainFrame)
-mainStroke.Thickness = 1.6
+mainStroke.Thickness = 1.5
 mainStroke.Transparency = 1
 mainStroke.Color = Color3.new(1,1,1)
 
@@ -1105,7 +1105,7 @@ strokeGrad.Color = ColorSequence.new({
 local mainScale = Instance.new("UIScale", mainFrame)
 mainScale.Scale = 0.85
 
--- âœ¨ MATRIX RAIN
+-- ✨ MATRIX RAIN
 local matrixContainer = Instance.new("Frame", mainFrame)
 matrixContainer.Size = UDim2.fromScale(1, 1)
 matrixContainer.BackgroundTransparency = 1
@@ -1113,7 +1113,7 @@ matrixContainer.ZIndex = 2
 matrixContainer.ClipsDescendants = true
 
 local matrixDrops = {}
-local matrixChars = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "Z", "X", "V", "ã‚¢", "à¤‡", "à¤‰", "à¤", "à¤“", "à¤•", "à¤•à¤¿", "à¤•à¥", "à¤•à¥‡", "à¤•à¥‹", "à¤¸", "à¤¶à¤¿", "à¤¸à¥", "à¤¸à¥‡", "à¤¸à¥‹"}
+local matrixChars = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "Z", "X", "V", "ア", "इ", "उ", "ए", "ओ", "क", "कि", "कु", "के", "को", "स", "शि", "सु", "से", "सो"}
 
 for i = 1, 55 do
     local drop = Instance.new("TextLabel", matrixContainer)
@@ -1216,13 +1216,11 @@ headerDivider.ZIndex = 15
 local dividerGrad = Instance.new("UIGradient", headerDivider)
 dividerGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Colors.Background), 
-    ColorSequenceKeypoint.new(0.3, Colors.PrimaryDark), 
-    ColorSequenceKeypoint.new(0.5, Colors.Primary), 
-    ColorSequenceKeypoint.new(0.7, Colors.Purple), 
+    ColorSequenceKeypoint.new(0.5, Colors.PrimaryDark), 
     ColorSequenceKeypoint.new(1, Colors.Background)
 })
 
--- ðŸ’¡ PREMIUM MINI GUIDE (?) BUTTON
+-- 💡 PREMIUM MINI GUIDE (?) BUTTON
 local guideBtn = Instance.new("TextButton", header)
 guideBtn.Size = UDim2.fromOffset(28, 28)
 guideBtn.Position = UDim2.new(1, -104, 0.5, -14)
@@ -1236,7 +1234,7 @@ guideBtn.AutoButtonColor = false
 guideBtn.ZIndex = 15
 
 local guideCorner = Instance.new("UICorner", guideBtn)
-guideCorner.CornerRadius = UDim.new(0, 9)
+guideCorner.CornerRadius = UDim.new(0, 8)
 
 local guideStroke = Instance.new("UIStroke", guideBtn)
 guideStroke.Thickness = 1.2
@@ -1250,14 +1248,14 @@ minimizeBtn.Size = UDim2.fromOffset(28, 28)
 minimizeBtn.Position = UDim2.new(1, -70, 0.5, -14)
 minimizeBtn.BackgroundColor3 = Colors.Surface
 minimizeBtn.BackgroundTransparency = 0.5
-minimizeBtn.Text = "â€“"
+minimizeBtn.Text = "–"
 minimizeBtn.TextColor3 = Colors.Text
 minimizeBtn.Font = Enum.Font.GothamBold
 minimizeBtn.AutoButtonColor = false
 minimizeBtn.ZIndex = 15
 
 local minimizeCorner = Instance.new("UICorner", minimizeBtn)
-minimizeCorner.CornerRadius = UDim.new(0, 9)
+minimizeCorner.CornerRadius = UDim.new(0, 8)
 applySmartHover(minimizeBtn, nil)
 
 local closeBtn = Instance.new("TextButton", header)
@@ -1265,7 +1263,7 @@ closeBtn.Size = UDim2.fromOffset(28, 28)
 closeBtn.Position = UDim2.new(1, -36, 0.5, -14)
 closeBtn.BackgroundColor3 = Colors.Surface
 closeBtn.BackgroundTransparency = 0.5
-closeBtn.Text = "Ã—"
+closeBtn.Text = "×"
 closeBtn.TextColor3 = Colors.Danger
 closeBtn.Font = Enum.Font.GothamBold
 closeBtn.TextSize = 16
@@ -1273,7 +1271,7 @@ closeBtn.AutoButtonColor = false
 closeBtn.ZIndex = 15
 
 local closeCorner = Instance.new("UICorner", closeBtn)
-closeCorner.CornerRadius = UDim.new(0, 9)
+closeCorner.CornerRadius = UDim.new(0, 8)
 applySmartHover(closeBtn, nil)
 
 -- FOOTER (CLEAN ROUNDED CORNER DESIGN)
@@ -1300,7 +1298,7 @@ discordBtn.MouseButton1Click:Connect(function()
         copyToClip("not_ashu.") 
     end)
     sendNotif("TXR System", "Discord Tag (@not_ashu.) Copied!", 2)
-    discordBtn.Text = "âš¡ Copied Discord!"
+    discordBtn.Text = "⚡ Copied Discord!"
     discordBtn.TextColor3 = Colors.PrimaryDark
     task.delay(1.5, function() 
         if discordBtn then 
@@ -1506,7 +1504,7 @@ local function spawnSonar(pulseColor)
     end)
 end
 
--- âœ¨ ðŸ›‘ ONYX EXIT MODAL ðŸ›‘ âœ¨
+-- ✨ 🛑 ONYX EXIT MODAL 🛑 ✨
 local closeOverlay = Instance.new("Frame", mainFrame)
 closeOverlay.Size = UDim2.fromScale(1, 1)
 closeOverlay.BackgroundColor3 = Color3.new(0, 0, 0)
@@ -1524,7 +1522,7 @@ closeModal.ClipsDescendants = true
 closeModal.ZIndex = 51
 
 local cmCorner = Instance.new("UICorner", closeModal)
-cmCorner.CornerRadius = UDim.new(0, 16)
+cmCorner.CornerRadius = UDim.new(0, 14)
 
 local cmStroke = Instance.new("UIStroke", closeModal)
 cmStroke.Color = Colors.Primary
@@ -1578,7 +1576,7 @@ cmCancel.TextSize = 12
 cmCancel.AutoButtonColor = false
 cmCancel.ZIndex = 53
 local cnlCorner = Instance.new("UICorner", cmCancel)
-cnlCorner.CornerRadius = UDim.new(0, 10)
+cnlCorner.CornerRadius = UDim.new(0, 8)
 local cnlStroke = Instance.new("UIStroke", cmCancel)
 cnlStroke.Color = Colors.Primary
 cnlStroke.Transparency = 0.5
@@ -1595,7 +1593,7 @@ cmConfirm.TextSize = 12
 cmConfirm.AutoButtonColor = false
 cmConfirm.ZIndex = 53
 local cfmCorner = Instance.new("UICorner", cmConfirm)
-cfmCorner.CornerRadius = UDim.new(0, 10)
+cfmCorner.CornerRadius = UDim.new(0, 8)
 
 applySmartHover(cmConfirm, nil)
 applySmartHover(cmCancel, nil)
@@ -1625,7 +1623,7 @@ task.spawn(function()
             cmGrad.Rotation = rot
             
             local breath = (math.sin(t * 3) + 1) / 2 
-            aura.ImageTransparency = 0.55 + (breath * 0.15)
+            aura.ImageTransparency = 0.45 + (breath * 0.15)
             mainStroke.Transparency = 0.15 + (breath * 0.2)
             titleGrad.Offset = Vector2.new(math.sin(t * 2) * 0.3, 0)
             scanlines.Position = UDim2.new(0, 0, (t * 0.08) % 1 - 1, 0)
@@ -1809,7 +1807,7 @@ openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function()
     end 
 end)
 
--- ðŸš€ ULTRA-PRECISE 20% BOUNDARY & 100% ORB CLAMPING DRAG ENGINE ðŸš€
+-- 🚀 ULTRA-PRECISE 20% BOUNDARY & 100% ORB CLAMPING DRAG ENGINE 🚀
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart = nil
@@ -2032,7 +2030,7 @@ openBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- âœ¨ MAIN LIST ADJUSTED HEIGHT TO PREVENT ANY BOTTOM OVERLAP
+-- ✨ MAIN LIST ADJUSTED HEIGHT TO PREVENT ANY BOTTOM OVERLAP
 local mainList = Instance.new("ScrollingFrame", mainFrame)
 mainList.Size = UDim2.new(1, -24, 1, -136)
 mainList.Position = UDim2.fromOffset(12, 56)
@@ -2071,7 +2069,7 @@ local function createMenu(titleStr)
     menu.ZIndex = 20
     
     local menuCorner = Instance.new("UICorner", menu)
-    menuCorner.CornerRadius = UDim.new(0, 16)
+    menuCorner.CornerRadius = UDim.new(0, 14)
     
     local top = Instance.new("Frame", menu)
     top.Size = UDim2.new(1, 0, 0, 50)
@@ -2102,7 +2100,7 @@ local function createMenu(titleStr)
     backBtn.Position = UDim2.new(1, -50, 0.5, -13)
     backBtn.BackgroundColor3 = Colors.Surface
     backBtn.BackgroundTransparency = 0.5
-    backBtn.Text = "â†"
+    backBtn.Text = "←"
     backBtn.TextColor3 = Colors.Primary
     backBtn.Font = Enum.Font.GothamBold
     backBtn.TextSize = 15
@@ -2110,7 +2108,7 @@ local function createMenu(titleStr)
     backBtn.ZIndex = 22
     
     local backCorner = Instance.new("UICorner", backBtn)
-    backCorner.CornerRadius = UDim.new(0, 8)
+    backCorner.CornerRadius = UDim.new(0, 6)
     applySmartHover(backBtn, nil)
     
     local scroll = Instance.new("ScrollingFrame", menu)
@@ -2158,11 +2156,11 @@ local function createMenu(titleStr)
     return menu, scroll
 end
 
-local playerMenu, playerScroll = createMenu("ðŸ‘¥ MATRIX TARGETS")
-local geoMenu, geoScroll = createMenu("ðŸ“ GEOM CORE")
+local playerMenu, playerScroll = createMenu("👥 MATRIX TARGETS")
+local geoMenu, geoScroll = createMenu("📐 GEOM CORE")
 
--- ðŸ“– SLICK MINI GUIDE SUBMENU (COMPACT & SCROLLABLE)
-local guideMenu, guideScroll = createMenu("ðŸ“– MINI GUIDE")
+-- 📖 SLICK MINI GUIDE SUBMENU (COMPACT & SCROLLABLE)
+local guideMenu, guideScroll = createMenu("📖 MINI GUIDE")
 guideMenu.Name = "GuideMenuContainer"
 
 local guideMenuScale = Instance.new("UIScale", guideMenu)
@@ -2174,7 +2172,7 @@ guideBtn.MouseButton1Click:Connect(function()
     mainList.Visible = false
     isSubMenuOpen = true
     guideMenu.Visible = true
-    sendNotif("ðŸ“– TXR GUIDE", "Opening Quick Operational Manual...", 2)
+    sendNotif("📖 TXR GUIDE", "Opening Quick Operational Manual...", 2)
 
     guideBtn.Rotation = 0
     TweenService:Create(guideBtn, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Rotation = 360}):Play()
@@ -2202,8 +2200,8 @@ local guideStepsData = {
     },
     {
         Step = "STEP 02",
-        Title = "PRESS 'â–¶ START' BUTTON FIRST",
-        Description = "After locking onto your target and selecting your mode, press the 'â–¶ START' button first. This activates the core engine and prepares the system to capture props."
+        Title = "PRESS '▶ START' BUTTON FIRST",
+        Description = "After locking onto your target and selecting your mode, press the '▶ START' button first. This activates the core engine and prepares the system to capture props."
     },
     {
         Step = "STEP 03",
@@ -2213,7 +2211,7 @@ local guideStepsData = {
     {
         Step = "STEP 04",
         Title = "STOP AND CLEAR",
-        Description = "Press 'â¹ STOP' whenever you want to halt the operation. This will automatically clean up and wipe all active attack props from the session."
+        Description = "Press '⏹ STOP' whenever you want to halt the operation. This will automatically clean up and wipe all active attack props from the session."
     },
     {
         Step = "STEP 05",
@@ -2226,7 +2224,7 @@ for _, item in ipairs(guideStepsData) do
     local card = Instance.new("Frame", guideScroll)
     card.Size = UDim2.new(1, 0, 0, 72)
     card.BackgroundColor3 = Colors.Surface
-    card.BackgroundTransparency = 0.15
+    card.BackgroundTransparency = 0.4
     card.LayoutOrder = getOrder()
     card.ZIndex = 23
 
@@ -2297,7 +2295,7 @@ local function refreshPlayers()
         local btn = Instance.new("TextButton", playerScroll)
         btn.Size = UDim2.new(1, 0, 0, 36)
         btn.BackgroundColor3 = selectedPlayers[plr] and Colors.ActiveTint or Colors.Surface
-        btn.BackgroundTransparency = 0.12
+        btn.BackgroundTransparency = 0.4
         btn.Font = Enum.Font.GothamMedium
         btn.TextSize = 11
         btn.TextXAlignment = Enum.TextXAlignment.Left
@@ -2436,8 +2434,8 @@ for _, geo in ipairs(geometries) do
     local btn = Instance.new("TextButton", geoScroll)
     btn.Size = UDim2.new(1, 0, 0, 36)
     btn.BackgroundColor3 = Colors.Surface
-    btn.BackgroundTransparency = 0.12
-    btn.Text = "   âš¡ " .. geo
+    btn.BackgroundTransparency = 0.4
+    btn.Text = "   ⚡ " .. geo
     btn.TextColor3 = Colors.Text
     btn.Font = Enum.Font.GothamMedium
     btn.TextSize = 11
@@ -2455,7 +2453,7 @@ for _, geo in ipairs(geometries) do
     btn.MouseButton1Click:Connect(function() 
         activeGeometry = geo
         isSubMenuOpen = false
-        sendNotif("ðŸ“ GEOMETRY CORE", "Lock: " .. geo, 2)
+        sendNotif("📐 GEOMETRY CORE", "Lock: " .. geo, 2)
         
         local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
         TweenService:Create(geoMenu, tInfo, {Position = UDim2.fromScale(1.2, 0)}):Play()
@@ -2468,18 +2466,18 @@ local function createMainBtn(text, modeKey, isMenuOpener, bioBadgeText)
     local btn = Instance.new("TextButton", mainList)
     btn.Size = UDim2.new(1, 0, 0, 42)
     btn.BackgroundColor3 = Colors.Surface
-    btn.BackgroundTransparency = 0.12
+    btn.BackgroundTransparency = 0.4
     btn.Text = "   " .. text
     btn.TextColor3 = Colors.Text
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 12
+    btn.TextSize = 11
     btn.TextXAlignment = Enum.TextXAlignment.Left
     btn.AutoButtonColor = false
     btn.LayoutOrder = getOrder()
     btn.ZIndex = 7
     
     local btnCorner = Instance.new("UICorner", btn)
-    btnCorner.CornerRadius = UDim.new(0, 10)
+    btnCorner.CornerRadius = UDim.new(0, 8)
     crispText(btn)
 
     local accent = Instance.new("Frame", btn)
@@ -2555,7 +2553,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     titleLabel.Text = name
     titleLabel.TextColor3 = Colors.SubText
     titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextSize = 11
+    titleLabel.TextSize = 10
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.ZIndex = 8
     crispText(titleLabel)
@@ -2565,7 +2563,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     valBadge.AnchorPoint = Vector2.new(1, 0)
     valBadge.Position = UDim2.new(1, -6, 0, -1)
     valBadge.BackgroundColor3 = Colors.Primary
-    valBadge.BackgroundTransparency = 0.35
+    valBadge.BackgroundTransparency = 0.85
     valBadge.ZIndex = 8
     
     local badgeCorner = Instance.new("UICorner", valBadge)
@@ -2573,7 +2571,7 @@ local function createSlider(name, min, max, defaultVal, suffix)
     
     local valStroke = Instance.new("UIStroke", valBadge)
     valStroke.Color = Colors.Primary
-    valStroke.Transparency = 0.15
+    valStroke.Transparency = 0.5
     valStroke.Thickness = 1
     
     local valLabel = Instance.new("TextLabel", valBadge)
@@ -2699,35 +2697,35 @@ local function createSlider(name, min, max, defaultVal, suffix)
     end
 end
 
-local getRadius = createSlider("ðŸª ORBIT RADIUS", 2, 100, 15, "")
-local getSpeedMs = createSlider("âš¡ ENGINE YIELD", 10, 300, 50, " %") 
+local getRadius = createSlider("🪐 ORBIT RADIUS", 2, 100, 15, "")
+local getSpeedMs = createSlider("⚡ ENGINE YIELD", 10, 300, 50, " %") 
 
-local openTargetBtn = createMainBtn("ðŸ‘¥ LOCK ON TARGETS", nil, true, nil)
+local openTargetBtn = createMainBtn("👥 LOCK ON TARGETS", nil, true, nil)
 openTargetBtn.MouseButton1Click:Connect(function() 
     mainList.Visible = false
     isSubMenuOpen = true
-    sendNotif("ðŸ‘¥ TARGETS", "Opening Matrix Targets Menu.", 2)
+    sendNotif("👥 TARGETS", "Opening Matrix Targets Menu.", 2)
     local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     TweenService:Create(playerMenu, tInfo, {Position = UDim2.fromScale(0, 0)}):Play() 
     animateWaterfall(playerScroll)
 end)
 
-local openGeoBtn = createMainBtn("ðŸ“ GEOMETRY CORE", nil, true, nil)
+local openGeoBtn = createMainBtn("📐 GEOMETRY CORE", nil, true, nil)
 openGeoBtn.MouseButton1Click:Connect(function() 
     mainList.Visible = false
     isSubMenuOpen = true
-    sendNotif("ðŸ“ GEOMETRY", "Opening Geometry Core Menu.", 2)
+    sendNotif("📐 GEOMETRY", "Opening Geometry Core Menu.", 2)
     local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     TweenService:Create(geoMenu, tInfo, {Position = UDim2.fromScale(0, 0)}):Play() 
     animateWaterfall(geoScroll)
 end)
 
-local orbitBtn = createMainBtn("ðŸª QUANTUM ORBIT", "Orbit", false, nil)
-local robotBtn = createMainBtn("ðŸ¤– RADIAL SURROUND", "Robot", false, "4x")
-local multiBtn = createMainBtn("ðŸ¤– DUAL SYSTEM", "MultiRobot", false, "2x")
-local ringBtn = createMainBtn("â­• ACCELERATOR RING", "Ring", false, "MULTIPLE")
-local headBtn = createMainBtn("ðŸ§  CRANIAL FORCE", "HeadBang", false, "HeAd BaNG")
-local chairBtn = createMainBtn("ðŸ›ï¸ SMART VOID CHAIR", "Chair", false, "FLinG")
+local orbitBtn = createMainBtn("🪐 QUANTUM ORBIT", "Orbit", false, nil)
+local robotBtn = createMainBtn("🤖 RADIAL SURROUND", "Robot", false, "4x")
+local multiBtn = createMainBtn("🤖 DUAL SYSTEM", "MultiRobot", false, "2x")
+local ringBtn = createMainBtn("⭕ ACCELERATOR RING", "Ring", false, "MULTIPLE")
+local headBtn = createMainBtn("🧠 CRANIAL FORCE", "HeadBang", false, "HeAd BaNG")
+local chairBtn = createMainBtn("🛏️ SMART VOID CHAIR", "Chair", false, "FLinG")
 
 local modeBtns = { 
     ["Orbit"] = {btn = orbitBtn}, 
@@ -2767,11 +2765,11 @@ for key, data in pairs(modeBtns) do
         -- Global sync for loadstring module
         _G.TXR_ActiveModes = activeModes
         
-        sendNotif("âš™ï¸ ENGINE MODE", key .. " mode " .. (activeModes[key] and "Activated" or "Deactivated"), 2)
+        sendNotif("⚙️ ENGINE MODE", key .. " mode " .. (activeModes[key] and "Activated" or "Deactivated"), 2)
     end)
 end
 
-local espBtn = createMainBtn("ðŸ‘ï¸ TACTICAL ESP (HUD)", "ESP", false, nil)
+local espBtn = createMainBtn("👁️ TACTICAL ESP (HUD)", "ESP", false, nil)
 espBtn.MouseButton1Click:Connect(function() 
     activeModes["ESP"] = not activeModes["ESP"] 
     local accent = espBtn:FindFirstChild("Accent")
@@ -2784,18 +2782,18 @@ espBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
-        sendNotif("ðŸ‘ï¸ ESP CORE", "Tactical ESP Activated.", 2)
+        sendNotif("👁️ ESP CORE", "Tactical ESP Activated.", 2)
     else 
         TweenService:Create(espBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
-        sendNotif("ðŸ‘ï¸ ESP CORE", "Tactical ESP Deactivated.", 2)
+        sendNotif("👁️ ESP CORE", "Tactical ESP Deactivated.", 2)
     end
 end)
 
--- ðŸ‘ï¸ NATIVE FIFO ORDERED TARGET SPECTATE BUTTON
-local spectateBtn = createMainBtn("ðŸ‘ï¸ TARGET SPECTATE", "Spectate", false, nil)
+-- 👁️ NATIVE FIFO ORDERED TARGET SPECTATE BUTTON
+local spectateBtn = createMainBtn("👁️ TARGET SPECTATE", "Spectate", false, nil)
 spectateBtnRef = spectateBtn
 
 spectateBtn.MouseButton1Click:Connect(function()
@@ -2811,7 +2809,7 @@ spectateBtn.MouseButton1Click:Connect(function()
         local accent = spectateBtn:FindFirstChild("Accent")
         TweenService:Create(spectateBtn, TweenInfo.new(0.4), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then TweenService:Create(accent, TweenInfo.new(0.4), {Size = UDim2.new(0, 0, 0, 0)}):Play() end
-        sendNotif("ðŸ‘ï¸ SPECTATE", "Spectate Deactivated. Returned to Local Player.", 2)
+        sendNotif("👁️ SPECTATE", "Spectate Deactivated. Returned to Local Player.", 2)
     else
         local targetPlr = getFirstValidTarget()
         if targetPlr and targetPlr.Character then
@@ -2824,12 +2822,12 @@ spectateBtn.MouseButton1Click:Connect(function()
                 local accent = spectateBtn:FindFirstChild("Accent")
                 TweenService:Create(spectateBtn, TweenInfo.new(0.4), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
                 if accent then TweenService:Create(accent, TweenInfo.new(0.4), {Size = UDim2.new(0, 4, 0.7, 0)}):Play() end
-                sendNotif("ðŸ‘ï¸ SPECTATE", "Spectating: " .. targetPlr.DisplayName, 2)
+                sendNotif("👁️ SPECTATE", "Spectating: " .. targetPlr.DisplayName, 2)
             else
-                sendNotif("âš ï¸ SPECTATE", "Target humanoid not found!", 2)
+                sendNotif("⚠️ SPECTATE", "Target humanoid not found!", 2)
             end
         else
-            sendNotif("âš ï¸ SPECTATE", "No target selected in Matrix Targets!", 2)
+            sendNotif("⚠️ SPECTATE", "No target selected in Matrix Targets!", 2)
         end
     end
 end)
@@ -2857,12 +2855,12 @@ RunService.RenderStepped:Connect(function()
                 TweenService:Create(spectateBtnRef, TweenInfo.new(0.4), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
                 if accent then TweenService:Create(accent, TweenInfo.new(0.4), {Size = UDim2.new(0, 0, 0, 0)}):Play() end
             end
-            sendNotif("ðŸ‘ï¸ SPECTATE", "All targets unavailable. Spectate Reset.", 2)
+            sendNotif("👁️ SPECTATE", "All targets unavailable. Spectate Reset.", 2)
         end
     end
 end)
 
-local rainbowBtn = createMainBtn("ðŸŒˆ NEON PULSE GLOW", "Rainbow", false, nil)
+local rainbowBtn = createMainBtn("🌈 NEON PULSE GLOW", "Rainbow", false, nil)
 rainbowBtn.MouseButton1Click:Connect(function() 
     isRainbowEnabled = not isRainbowEnabled
     activeModes["Rainbow"] = isRainbowEnabled
@@ -2877,18 +2875,18 @@ rainbowBtn.MouseButton1Click:Connect(function()
             accent.BackgroundColor3 = Colors.Purple
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
-        sendNotif("ðŸŒˆ NEON GLOW", "Neon Pulse Glow Activated.", 2)
+        sendNotif("🌈 NEON GLOW", "Neon Pulse Glow Activated.", 2)
     else 
         TweenService:Create(rainbowBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             accent.BackgroundColor3 = Colors.Primary
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
-        sendNotif("ðŸŒˆ NEON GLOW", "Neon Pulse Glow Deactivated.", 2)
+        sendNotif("🌈 NEON GLOW", "Neon Pulse Glow Deactivated.", 2)
     end
 end)
 
-local soundBtn = createMainBtn("ðŸ”Š DYNAMIC AUDIO HOOK ( Multi-Track Random )", "Sound", false, nil)
+local soundBtn = createMainBtn("🔊 DYNAMIC AUDIO HOOK ( Multi-Track Random )", "Sound", false, nil)
 soundBtn.MouseButton1Click:Connect(function() 
     isSoundEnabled = not isSoundEnabled
     activeModes["Sound"] = isSoundEnabled
@@ -2902,19 +2900,19 @@ soundBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
-        sendNotif("ðŸ”Š AUDIO HOOK", "Dynamic Audio Hook Activated.", 2)
+        sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Activated.", 2)
         task.spawn(PlayRobotBangMusic)
     else 
         TweenService:Create(soundBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
-        sendNotif("ðŸ”Š AUDIO HOOK", "Dynamic Audio Hook Deactivated.", 2)
+        sendNotif("🔊 AUDIO HOOK", "Dynamic Audio Hook Deactivated.", 2)
         task.spawn(StopRobotBangMusic) 
     end
 end)
 
-local shieldBtn = createMainBtn("ðŸ›¡ï¸ ANTI SIT", "Shield", false, nil)
+local shieldBtn = createMainBtn("🛡️ ANTI SIT", "Shield", false, nil)
 shieldBtn.MouseButton1Click:Connect(function() 
     isGodShieldEnabled = not isGodShieldEnabled
     activeModes["Shield"] = isGodShieldEnabled
@@ -2928,13 +2926,13 @@ shieldBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
-        sendNotif("ðŸ›¡ï¸ SECURITY", "Anti-Sit Activated.", 2)
+        sendNotif("🛡️ SECURITY", "Anti-Sit Activated.", 2)
     else 
         TweenService:Create(shieldBtn, tInfo1, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
-        sendNotif("ðŸ›¡ï¸ SECURITY", "Anti-Sit Deactivated.", 2)
+        sendNotif("🛡️ SECURITY", "Anti-Sit Deactivated.", 2)
         
         if lp.Character then
             local hum = lp.Character:FindFirstChildOfClass("Humanoid")
@@ -2952,9 +2950,9 @@ shieldBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- âš¡ AUTO PROPS SPAWN (LOADSTRING INTEGRATION)
+-- ⚡ AUTO PROPS SPAWN (LOADSTRING INTEGRATION)
 -- =========================================================
-local autoSpawnBtn = createMainBtn("âš¡ AUTO PROPS SPAWN", "AutoSpawn", false, nil)
+local autoSpawnBtn = createMainBtn("⚡ AUTO PROPS SPAWN", "AutoSpawn", false, nil)
 local isAutoSpawnEnabled = false
 
 autoSpawnBtn.BackgroundColor3 = Colors.Surface
@@ -2980,7 +2978,7 @@ autoSpawnBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
-        sendNotif("âš¡ AUTO SPAWN", "Executing Loadstring Module...", 2)
+        sendNotif("⚡ AUTO SPAWN", "Executing Loadstring Module...", 2)
         
         -- Load your loadstring module securely
         pcall(function()
@@ -2991,7 +2989,7 @@ autoSpawnBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
-        sendNotif("âš¡ AUTO SPAWN", "Auto Spawn Module Halted.", 2)
+        sendNotif("⚡ AUTO SPAWN", "Auto Spawn Module Halted.", 2)
         
         -- Toggle off external loop if handled via global flag
         _G.TXR_AutoSpawnActive = false
@@ -3004,7 +3002,7 @@ end)
 
 local isVisualZoneEnabled = false
 activeModes["VisualZone"] = false
-local visualZoneBtn = createMainBtn("ðŸ›‘ SHOW BAN ZONES ( Use If Target Enables Prop Ban )", "VisualZone", false, nil)
+local visualZoneBtn = createMainBtn("🛑 SHOW BAN ZONES ( Use If Target Enables Prop Ban )", "VisualZone", false, nil)
 visualZoneBtn.TextSize = 9.5
 visualZoneBtn.BackgroundColor3 = Colors.Surface
 visualZoneBtn.TextColor3 = Colors.Text
@@ -3024,7 +3022,7 @@ visualZoneBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo2, {Size = UDim2.new(0, 4, 0.7, 0)}):Play() 
         end
-        sendNotif("ðŸ›‘ TSUKUYOMI", "Domain Expansion: Clear Anime Genjutsu Active.", 3)
+        sendNotif("🛑 TSUKUYOMI", "Domain Expansion: Clear Anime Genjutsu Active.", 3)
         
         task.spawn(function()
             local sound = Instance.new("Sound")
@@ -3122,7 +3120,7 @@ visualZoneBtn.MouseButton1Click:Connect(function()
         if accent then 
             TweenService:Create(accent, tInfo1, {Size = UDim2.new(0, 0, 0, 0)}):Play() 
         end 
-        sendNotif("ðŸ›‘ ZONES", "Genjutsu Released Smoothly.", 2)
+        sendNotif("🛑 ZONES", "Genjutsu Released Smoothly.", 2)
         
         local lighting = game:GetService("Lighting")
         local ccTweenInfo = TweenInfo.new(2.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
@@ -3171,16 +3169,16 @@ visualZoneBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- ðŸ›¡ï¸ ANTI ROBOTS (UNLOCKED - VOID LOCK INTEGRATION)
+-- 🛡️ ANTI ROBOTS (UNLOCKED - VOID LOCK INTEGRATION)
 -- =========================================================
 local isAntiRobotsActive = false
-local escapeBtn = createMainBtn("âš¡ ANTI ROBOTS", "AntiRobots", false, nil)
+local escapeBtn = createMainBtn("⚡ ANTI ROBOTS", "AntiRobots", false, nil)
 escapeBtn.BackgroundColor3 = Colors.Surface
 escapeBtn.TextColor3 = Colors.Text
 
 escapeBtn.MouseButton1Click:Connect(function()
     if not checkAdminAccess(lp) then
-        sendNotif("ðŸ”’ ACCESS DENIED", "Need admin access", 2.5)
+        sendNotif("🔒 ACCESS DENIED", "Need admin access", 2.5)
         return
     end
 
@@ -3231,9 +3229,9 @@ escapeBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- ðŸš« ANTI BANG (LIVE COUNTDOWN & SUCCESS/FAIL NOTIFICATION)
+-- 🚫 ANTI BANG (LIVE COUNTDOWN & SUCCESS/FAIL NOTIFICATION)
 -- =========================================================
-local banTrapBtn = createMainBtn("ðŸ›¡ï¸ ANTI BANG ( House Spawn Required )", nil, false, nil)
+local banTrapBtn = createMainBtn("🛡️ ANTI BANG ( House Spawn Required )", nil, false, nil)
 banTrapBtn.BackgroundColor3 = Color3.fromRGB(130, 0, 200)
 banTrapBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 banTrapBtn:SetAttribute("BaseColor", Color3.fromRGB(130, 0, 200))
@@ -3244,7 +3242,7 @@ local banTrapDebounce = false
 banTrapBtn.MouseButton1Click:Connect(function()
     local houseData = getMyHouse()
     if not houseData then
-        sendNotif("âš ï¸ HOUSE REQUIRED", "Spawn House First! Pehle apna house spawn karein.", 3)
+        sendNotif("⚠️ HOUSE REQUIRED", "Spawn House First! Pehle apna house spawn karein.", 3)
         return
     end
 
@@ -3349,7 +3347,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
             local safePos = houseData.Lot.WorldPivot.Position + Vector3.new(0, 3, 0)
             hrp.CFrame = CFrame.new(safePos) 
             
-            sendNotif("ðŸ›¡ï¸ ANTI BANG", "Scanning Attacker (2.0s...)", 2)
+            sendNotif("🛡️ ANTI BANG", "Scanning Attacker (2.0s...)", 2)
             
             local maxWait = 0
             local attackerArrived = false
@@ -3416,9 +3414,9 @@ banTrapBtn.MouseButton1Click:Connect(function()
             end
 
             if hasBannedSomeone or attackerArrived then
-                sendNotif("âœ… SUCCESS", "Hacker Banned & Safe!", 3)
+                sendNotif("✅ SUCCESS", "Hacker Banned & Safe!", 3)
             else
-                sendNotif("âš ï¸ NO TARGET FOUND", "No attacking props detected.", 2)
+                sendNotif("⚠️ NO TARGET FOUND", "No attacking props detected.", 2)
             end
 
             task.spawn(function()
@@ -3444,7 +3442,7 @@ banTrapBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- âš¡ START / STOP ENGINE CONTROLS (PERMANENTLY FIXED AT BOTTOM)
+-- ⚡ START / STOP ENGINE CONTROLS (PERMANENTLY FIXED AT BOTTOM)
 -- =========================================================
 local toggleRow = Instance.new("Frame", mainFrame)
 toggleRow.Size = UDim2.new(1, -24, 0, 42)
@@ -3455,7 +3453,7 @@ toggleRow.ZIndex = 15
 local startBtn = Instance.new("TextButton", toggleRow)
 startBtn.Size = UDim2.new(0.48, 0, 1, 0)
 startBtn.BackgroundColor3 = Colors.Primary
-startBtn.Text = "â–¶ START"
+startBtn.Text = "▶ START"
 startBtn.TextColor3 = Colors.TextDark
 startBtn.Font = Enum.Font.GothamBlack
 startBtn.TextSize = 11
@@ -3463,7 +3461,7 @@ startBtn.AutoButtonColor = false
 startBtn.ZIndex = 16
 
 local startCorner = Instance.new("UICorner", startBtn)
-startCorner.CornerRadius = UDim.new(0, 10)
+startCorner.CornerRadius = UDim.new(0, 8)
 applySmartHover(startBtn, nil)
 
 local stopBtn = Instance.new("TextButton", toggleRow)
@@ -3471,7 +3469,7 @@ stopBtn.Size = UDim2.new(0.48, 0, 1, 0)
 stopBtn.Position = UDim2.new(0.52, 0, 0, 0)
 stopBtn.BackgroundColor3 = Colors.Surface
 stopBtn.BackgroundTransparency = 0.5
-stopBtn.Text = "â¹ STOP"
+stopBtn.Text = "⏹ STOP"
 stopBtn.TextColor3 = Colors.Danger
 stopBtn.Font = Enum.Font.GothamBold
 stopBtn.TextSize = 11
@@ -3479,7 +3477,7 @@ stopBtn.AutoButtonColor = false
 stopBtn.ZIndex = 16
 
 local stopCorner = Instance.new("UICorner", stopBtn)
-stopCorner.CornerRadius = UDim.new(0, 10)
+stopCorner.CornerRadius = UDim.new(0, 8)
 applySmartHover(stopBtn, nil)
 
 local stopStroke = Instance.new("UIStroke", stopBtn)
@@ -3540,7 +3538,7 @@ stopBtn.MouseButton1Click:Connect(function()
     isSystemActive = false
     table.clear(assignedRemotes)
     
-    -- ðŸ›‘ Auto Spawn Freeze on STOP
+    -- 🛑 Auto Spawn Freeze on STOP
     _G.TXR_AutoSpawnActive = false
     if _G.TXR_AutoSpawnConnection then
         pcall(function() _G.TXR_AutoSpawnConnection:Disconnect() end)
@@ -3556,7 +3554,7 @@ stopBtn.MouseButton1Click:Connect(function()
         end
     end
 
-    -- ðŸ›‘ Anti-Robots Auto Reset on STOP
+    -- 🛑 Anti-Robots Auto Reset on STOP
     if _G.TXR_VoidLock_Active then
         pcall(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/yelelode/Delta/refs/heads/main/Testing%203"))()
@@ -3599,7 +3597,7 @@ end)
 local lastRemoteScan = 0
 local cachedRemotes = {}
 
--- âš¡ 0MS INSTANT REACTIVE EVENT SCANNER (Hooks WorkspaceCom in Real-Time)
+-- ⚡ 0MS INSTANT REACTIVE EVENT SCANNER (Hooks WorkspaceCom in Real-Time)
 local function bindInstantPropScanner()
     local com = workspace:FindFirstChild("WorkspaceCom")
     if not com then return end
@@ -3737,7 +3735,7 @@ RunService.Stepped:Connect(function()
             end
         end)
 
-        -- âš¡ FLY-STYLE INFINITE FORCE IMMUNITY ANCHOR
+        -- ⚡ FLY-STYLE INFINITE FORCE IMMUNITY ANCHOR
         local bv = root:FindFirstChild("TXR_ShieldVelocity")
         if not bv then
             bv = Instance.new("BodyVelocity")
@@ -4244,7 +4242,7 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
--- ðŸŒˆ HIGH-SPEED ZERO-PING NEON RGB LOOP ENGINE (SMART THROTTLE)
+-- 🌈 HIGH-SPEED ZERO-PING NEON RGB LOOP ENGINE (SMART THROTTLE)
 task.spawn(function()
     local RE = game:GetService("ReplicatedStorage"):WaitForChild("RE", 10)
     local toolColorRemote = RE and RE:FindFirstChild("ToolColor")
@@ -4289,7 +4287,7 @@ task.spawn(function()
 end)
 
 -- =================================================================
--- ðŸ‘ï¸ TACTICAL ESP RENDER ENGINE (IP - NEED ADMIN ACCESS)
+-- 👁️ TACTICAL ESP RENDER ENGINE (IP - NEED ADMIN ACCESS)
 -- =================================================================
 local espGuiParent = game:GetService("CoreGui")
 pcall(function() if not espGuiParent then espGuiParent = lp:WaitForChild("PlayerGui", 5) end end)
@@ -4429,7 +4427,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 end)
 
 -- =================================================================
--- ðŸš¨ RGB THREAT RADAR ENGINE
+-- 🚨 RGB THREAT RADAR ENGINE
 -- =========================================================
 local threatGuiParent = game:GetService("CoreGui")
 pcall(function() if not threatGuiParent then threatGuiParent = lp:WaitForChild("PlayerGui", 5) end end)
@@ -4459,7 +4457,7 @@ local function getThreatESPContainer(plr)
         titleLabel.Size = UDim2.new(1, 0, 0, 20)
         titleLabel.Position = UDim2.new(0, 0, 0, -40)
         titleLabel.BackgroundTransparency = 1
-        titleLabel.Text = "âš ï¸ TARGET LOCKED âš ï¸"
+        titleLabel.Text = "⚠️ TARGET LOCKED ⚠️"
         titleLabel.Font = Enum.Font.GothamBlack
         titleLabel.TextSize = 14
         crispText(titleLabel)
@@ -4594,7 +4592,7 @@ RunService.RenderStepped:Connect(function(dt)
                         if pOnScreen then
                             pLabel.Visible = true
                             pLabel.Position = UDim2.new(0, pScreen.X, 0, pScreen.Y)
-                            pLabel.Text = "âš ï¸ " .. plr.Name .. "'s Prop"
+                            pLabel.Text = "⚠️ " .. plr.Name .. "'s Prop"
                             pLabel.TextColor3 = rgbColor
                         else
                             pLabel.Visible = false
@@ -4629,7 +4627,7 @@ Players.PlayerRemoving:Connect(function(plr)
 end)
 
 -- =================================================================
--- ðŸš€ SMART PROP-BANG REMOVER (F5 KEYBIND & PIGGYBACK SAFE) ðŸš€
+-- 🚀 SMART PROP-BANG REMOVER (F5 KEYBIND & PIGGYBACK SAFE) 🚀
 -- =========================================================
 local isSmartClearing = false
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
@@ -4776,7 +4774,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                     sendNotif("SMART CLEAR", "Bang Props Banned & Cleared!", 2)
                 else
                     if not houseData then
-                        sendNotif("âš ï¸ HOUSE REQUIRED", "Spawn House First! Pehle apna house spawn karein.", 3)
+                        sendNotif("⚠️ HOUSE REQUIRED", "Spawn House First! Pehle apna house spawn karein.", 3)
                     end
                 end
             end)
