@@ -3504,14 +3504,35 @@ startBtn.MouseButton1Click:Connect(function()
     table.clear(voidedPlayers)
     table.clear(targetVelocities)
     
-    -- ⚡ AUTO EQUIP PROP MAKER (FIX ADDED HERE) ⚡
+    -- ⚡ 100% WORKING AUTO SPAWN & FORCE EQUIP TOOL ⚡
     task.spawn(function()
         pcall(function()
-            game:GetService("ReplicatedStorage").RE["1Too1l"]:InvokeServer(table.unpack({
-                [1] = "PickingTools",
-                [2] = "PropMaker",
-            }))
+            local rep = game:GetService("ReplicatedStorage")
+            local reFolder = rep:WaitForChild("RE", 3)
+            local toolRemote = reFolder and (reFolder:FindFirstChild("1Too1l") or reFolder:FindFirstChild("PlayerToolEvent"))
+            
+            if toolRemote and toolRemote:IsA("RemoteFunction") then
+                toolRemote:InvokeServer("PickingTools", "PropMaker")
+            elseif toolRemote and toolRemote:IsA("RemoteEvent") then
+                toolRemote:FireServer("PickingTools", "PropMaker")
+            end
         end)
+        
+        -- Backpack se direct haath me pakdane (equip) ka loop
+        local char = lp.Character or lp.CharacterAdded:Wait()
+        local humanoid = char:WaitForChild("Humanoid", 3)
+        local backpack = lp:WaitForChild("Backpack", 3)
+        
+        for i = 1, 15 do
+            local tool = backpack:FindFirstChild("PropMaker") or backpack:FindFirstChildWhichIsA("Tool")
+            if tool and (string.find(string.lower(tool.Name), "prop") or string.find(string.lower(tool.Name), "box") or tool.Name == "PropMaker") then
+                if humanoid then
+                    humanoid:EquipTool(tool)
+                    break
+                end
+            end
+            task.wait(0.08)
+        end
     end)
     
     local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
