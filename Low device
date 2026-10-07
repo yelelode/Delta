@@ -3504,6 +3504,16 @@ startBtn.MouseButton1Click:Connect(function()
     table.clear(voidedPlayers)
     table.clear(targetVelocities)
     
+    -- ⚡ AUTO EQUIP PROP MAKER (FIX ADDED HERE) ⚡
+    task.spawn(function()
+        pcall(function()
+            game:GetService("ReplicatedStorage").RE["1Too1l"]:InvokeServer(table.unpack({
+                [1] = "PickingTools",
+                [2] = "PropMaker",
+            }))
+        end)
+    end)
+    
     local tInfo = TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     TweenService:Create(startBtn, tInfo, {BackgroundColor3 = Colors.PrimaryDark, TextColor3 = Colors.Text}):Play()
     TweenService:Create(stopBtn, tInfo, {BackgroundColor3 = Colors.Danger, TextColor3 = Colors.TextDark}):Play()
