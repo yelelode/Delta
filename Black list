@@ -20,7 +20,7 @@ end
 local BLACKLISTED_USERS = {
     10097226859, -- [Slot 01] Active Target
     11542536882, -- [Slot 02] Active Target
-    0,           -- [Slot 03] Khali Slot (Yahan ID paste karein)
+    11552333914, -- [Slot 03] Khali Slot (Yahan ID paste karein)
     0,           -- [Slot 04] Khali Slot
     0,           -- [Slot 05] Khali Slot
     0,           -- [Slot 06] Khali Slot
