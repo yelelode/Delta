@@ -84,12 +84,12 @@ end
 local targetGuiParent = (gethui and gethui()) or game:GetService("CoreGui") or LP:WaitForChild("PlayerGui", 5)
 
 -- =========================================================
--- 🎨 GOD-TIER CYBERPALETTE & FX
+-- 🎨 GOD-TIER CYBERPALETTE
 -- =========================================================
 local Colors = {
-    Background = Color3.fromRGB(10, 14, 20),       
-    Surface = Color3.fromRGB(20, 26, 38),          
-    SurfaceHover = Color3.fromRGB(28, 36, 52),     
+    Background = Color3.fromRGB(12, 15, 22),       
+    Surface = Color3.fromRGB(22, 28, 40),          
+    SurfaceHover = Color3.fromRGB(30, 38, 55),     
     ActiveTint = Color3.fromRGB(16, 42, 60),       
     Primary = Color3.fromRGB(0, 255, 210),         
     PrimaryDark = Color3.fromRGB(0, 170, 150),     
@@ -97,7 +97,7 @@ local Colors = {
     Purple = Color3.fromRGB(175, 70, 255),         
     Text = Color3.fromRGB(250, 252, 255),          
     SubText = Color3.fromRGB(140, 155, 180),       
-    TextDark = Color3.fromRGB(8, 12, 18)
+    TextDark = Color3.fromRGB(10, 14, 20)
 }
 
 local function crispText(element, transparency)
@@ -107,24 +107,25 @@ local function crispText(element, transparency)
     stroke.Thickness = 1.2
 end
 
--- 🔥 NEW: LIQUID RIPPLE EFFECT SYSTEM 🔥
-local function createRipple(btn, inputPos)
-    local ripple = Instance.new("Frame", btn)
-    ripple.BackgroundColor3 = Colors.Primary
-    ripple.BackgroundTransparency = 0.6
-    ripple.BorderSizePixel = 0
-    ripple.AnchorPoint = Vector2.new(0.5, 0.5)
-    ripple.Position = UDim2.new(0, inputPos.X - btn.AbsolutePosition.X, 0, inputPos.Y - btn.AbsolutePosition.Y)
-    ripple.Size = UDim2.new(0, 0, 0, 0)
-    ripple.ZIndex = btn.ZIndex + 1
-    Instance.new("UICorner", ripple).CornerRadius = UDim.new(1, 0)
+-- 🔥 NEW: PREMIUM CLICK FLASH (SATISFYING TACTILE FEEDBACK) 🔥
+local function clickFlash(btn)
+    local flash = Instance.new("Frame", btn)
+    flash.Size = UDim2.fromScale(1, 1)
+    flash.BackgroundColor3 = Color3.new(1, 1, 1)
+    flash.BackgroundTransparency = 0.4
+    flash.BorderSizePixel = 0
+    flash.ZIndex = btn.ZIndex + 1
     
-    local maxSize = math.max(btn.AbsoluteSize.X, btn.AbsoluteSize.Y) * 2.5
-    TweenService:Create(ripple, TweenInfo.new(0.6, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, maxSize, 0, maxSize),
+    local corner = btn:FindFirstChildOfClass("UICorner")
+    if corner then
+        local fc = Instance.new("UICorner", flash)
+        fc.CornerRadius = corner.CornerRadius
+    end
+    
+    TweenService:Create(flash, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
         BackgroundTransparency = 1
     }):Play()
-    Debris:AddItem(ripple, 0.6)
+    Debris:AddItem(flash, 0.4)
 end
 
 -- =========================================================
@@ -293,7 +294,7 @@ startBang = function(mode)
         local leadFactor = (targetVel.Magnitude > 0.5) and 2.4 or 1.0
         local pingOffset = targetVel * (dt * leadFactor)
 
-        -- EXACT MATRIX MATH FOR 100% STRAIGHT LOCK (DO NOT TOUCH)
+        -- 100% PERFECT MATRIX ALIGNMENT LOGIC
         local look = tHrp.CFrame.LookVector
         local right = tHrp.CFrame.RightVector
         
@@ -361,7 +362,6 @@ mainFrame.ZIndex = 5
 local mainFrameCorner = Instance.new("UICorner", mainFrame)
 mainFrameCorner.CornerRadius = UDim.new(0, 14) 
 
--- 🔥 NEW: HOLOGRAPHIC GLASS REFLECTION 🔥
 local glassReflection = Instance.new("Frame", mainFrame)
 glassReflection.Size = UDim2.fromScale(1.5, 1.5)
 glassReflection.Position = UDim2.fromScale(-1, -0.5)
@@ -372,7 +372,7 @@ glassReflection.BorderSizePixel = 0
 glassReflection.ZIndex = 19
 local glassGrad = Instance.new("UIGradient", glassReflection)
 glassGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(1,1,1)), ColorSequenceKeypoint.new(0.5, Color3.new(1,1,1)), ColorSequenceKeypoint.new(1, Color3.new(1,1,1))})
-glassGrad.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0.85), NumberSequenceKeypoint.new(1, 1)})
+glassGrad.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0.9), NumberSequenceKeypoint.new(1, 1)})
 
 mainFrame:GetPropertyChangedSignal("Position"):Connect(function() aura.Position = mainFrame.Position end)
 
@@ -385,7 +385,7 @@ bgGradient.Color = ColorSequence.new({
 bgGradient.Rotation = -45
 
 local mainStroke = Instance.new("UIStroke", mainFrame)
-mainStroke.Thickness = 1.5
+mainStroke.Thickness = 1.2
 mainStroke.Transparency = 1
 mainStroke.Color = Color3.new(1,1,1)
 
@@ -472,7 +472,7 @@ dividerGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, Colors.Background)
 })
 
--- LIQUID HOVER ANIMATOR (WITH RIPPLE)
+-- 🔥 JUICY TACTILE HOVER ANIMATOR 🔥
 local uiHoverCount = 0
 local function applySmartHover(btn, isToggleActive)
     local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
@@ -488,20 +488,20 @@ local function applySmartHover(btn, isToggleActive)
         btn:SetAttribute("BaseText", btn.TextColor3) 
     end
 
-    btn.ClipsDescendants = true -- Required for ripple effect
+    btn.ClipsDescendants = true 
 
     local isHovered = false
-    local hoverInInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local hoverInInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     local hoverOutInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
     local pressInfo = TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-    local releaseInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    local releaseInfo = TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
 
     btn.MouseEnter:Connect(function()
         isHovered = true
         uiHoverCount = uiHoverCount + 1 
-        TweenService:Create(btnScale, hoverInInfo, {Scale = 1.03}):Play()
+        TweenService:Create(btnScale, hoverInInfo, {Scale = 1.02}):Play()
         if not isToggleActive or type(isToggleActive) ~= "function" or not isToggleActive() then 
-            TweenService:Create(btn, hoverInInfo, { BackgroundColor3 = Colors.SurfaceHover, BackgroundTransparency = 0.1, TextColor3 = Colors.Primary }):Play() 
+            TweenService:Create(btn, hoverInInfo, { BackgroundColor3 = Colors.SurfaceHover, BackgroundTransparency = 0.1 }):Play() 
         end
     end)
     btn.MouseLeave:Connect(function()
@@ -509,20 +509,20 @@ local function applySmartHover(btn, isToggleActive)
         uiHoverCount = math.max(0, uiHoverCount - 1) 
         TweenService:Create(btnScale, hoverOutInfo, {Scale = 1}):Play()
         if not isToggleActive or type(isToggleActive) ~= "function" or not isToggleActive() then 
-            TweenService:Create(btn, hoverOutInfo, { BackgroundColor3 = btn:GetAttribute("BaseColor"), BackgroundTransparency = btn:GetAttribute("BaseTrans"), TextColor3 = btn:GetAttribute("BaseText") }):Play() 
+            TweenService:Create(btn, hoverOutInfo, { BackgroundColor3 = btn:GetAttribute("BaseColor"), BackgroundTransparency = btn:GetAttribute("BaseTrans") }):Play() 
         end
     end)
     
     btn.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            TweenService:Create(btnScale, pressInfo, {Scale = 0.94}):Play()
-            createRipple(btn, input.Position) -- 🔥 Trigger Liquid Ripple
+            TweenService:Create(btnScale, pressInfo, {Scale = 0.94}):Play() -- Sinks in
         end
     end)
     
     btn.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            TweenService:Create(btnScale, releaseInfo, {Scale = isHovered and 1.03 or 1}):Play()
+            TweenService:Create(btnScale, releaseInfo, {Scale = isHovered and 1.02 or 1}):Play() -- Springy pop out
+            clickFlash(btn) -- Satisfying white flash
         end
     end)
 end
@@ -609,9 +609,6 @@ openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function()
     if openBtnContainer.Visible then openPulseScale:Play() else openPulseScale:Cancel(); openBtnScale.Scale = 1 end 
 end)
 
-openBtn.MouseEnter:Connect(function() orbHovered = true end)
-openBtn.MouseLeave:Connect(function() orbHovered = false end)
-
 -- WATERFALL ANIMATION 
 local function animateWaterfall(container)
     local currentID = (container:GetAttribute("WaterfallID") or 0) + 1
@@ -624,6 +621,8 @@ local function animateWaterfall(container)
                 local scale = child:FindFirstChildOfClass("UIScale")
                 if not scale then scale = Instance.new("UIScale", child) end
                 scale.Scale = 0
+                -- Extra juice: start slightly lower and slide up
+                child.Position = UDim2.new(0, 0, 0, 15) 
             end
         end
         table.sort(items, function(a, b) return (a.LayoutOrder or 0) < (b.LayoutOrder or 0) end)
@@ -632,7 +631,8 @@ local function animateWaterfall(container)
             local scale = child:FindFirstChildOfClass("UIScale")
             if scale then
                 TweenService:Create(scale, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
-                task.wait(0.02)
+                TweenService:Create(child, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
+                task.wait(0.03)
             end
         end
     end)
@@ -643,7 +643,7 @@ end
 -- =========================================================
 local mainList = Instance.new("ScrollingFrame", mainFrame)
 mainList.Size = UDim2.new(1, -24, 1, -136); mainList.Position = UDim2.fromOffset(12, 56)
-mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 2; mainList.ScrollBarImageColor3 = Colors.Primary; mainList.ScrollBarImageTransparency = 0.7; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ZIndex = 6
+mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 1.5; mainList.ScrollBarImageColor3 = Colors.Primary; mainList.ScrollBarImageTransparency = 0.8; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ZIndex = 6
 
 local listLayout = Instance.new("UIListLayout", mainList)
 listLayout.Padding = UDim.new(0, 8); listLayout.SortOrder = Enum.SortOrder.LayoutOrder; listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
@@ -748,7 +748,7 @@ targetMenuBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- ⚡ EMOTE SELECTOR
+-- ⚡ EMOTE SELECTOR (ELASTIC SNAP PHYSICS)
 -- =========================================================
 local swipeContainer = Instance.new("Frame", mainList)
 swipeContainer.Size = UDim2.new(1, 0, 0, 42); swipeContainer.BackgroundColor3 = Colors.Surface; swipeContainer.BackgroundTransparency = 0.4
@@ -779,9 +779,8 @@ swipeBtn.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         draggingSwipe = true
         swipeStartX = input.Position.X
-        TweenService:Create(swipeScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 0.95}):Play()
+        TweenService:Create(swipeScale, TweenInfo.new(0.2, Enum.EasingStyle.Sine), {Scale = 0.96}):Play()
         TweenService:Create(swipeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Colors.PrimaryDark, TextColor3 = Color3.new(1,1,1)}):Play()
-        createRipple(swipeBtn, input.Position)
     end
 end)
 
@@ -826,7 +825,7 @@ swipeBtn.InputEnded:Connect(function(input)
 
         leftArrow.TextColor3 = Colors.SubText; rightArrow.TextColor3 = Colors.SubText
         TweenService:Create(swipeBtn, TweenInfo.new(0.65, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0.5, 0.5)}):Play()
-        TweenService:Create(swipeScale, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+        TweenService:Create(swipeScale, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
         TweenService:Create(swipeBtn, TweenInfo.new(0.3), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
     end
 end)
@@ -842,17 +841,17 @@ local function createToggle(name, callback)
 
     btn.MouseButton1Click:Connect(function()
         state = not state
-        local tInfo = TweenInfo.new(0.35, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+        local tInfo = TweenInfo.new(0.4, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
         if state then
             btn:SetAttribute("BaseColor", Colors.ActiveTint)
             TweenService:Create(btn, tInfo, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
-            TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 4, 0.6, 0)}):Play()
-            TweenService:Create(glow, tInfo, {Transparency = 0.35}):Play()
+            TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 3, 0.6, 0)}):Play()
+            TweenService:Create(glow, TweenInfo.new(0.3), {Transparency = 0.35}):Play()
         else
             btn:SetAttribute("BaseColor", Colors.Surface)
             TweenService:Create(btn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
             TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play()
-            TweenService:Create(glow, tInfo, {Transparency = 1}):Play()
+            TweenService:Create(glow, TweenInfo.new(0.3), {Transparency = 1}):Play()
         end
         callback(state, btn)
     end)
@@ -871,7 +870,7 @@ createToggle("👁️ Spectate Camera", function(v)
 end)
 
 -- =========================================================
--- 🎚️ EXACT SLIDERS (WITH DECIMAL PRECISION)
+-- 🎚️ EXACT SLIDERS (JUICY PHYSICS)
 -- =========================================================
 local function createSlider(name, min, max, defaultVal, callback)
     local container = Instance.new("Frame", mainList)
@@ -905,44 +904,42 @@ local function createSlider(name, min, max, defaultVal, callback)
     Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
     
     local knob = Instance.new("Frame", fill)
-    knob.Size = UDim2.new(0, 14, 0, 14); knob.AnchorPoint = Vector2.new(0.5, 0.5); knob.Position = UDim2.new(1, 0, 0.5, 0)
+    knob.Size = UDim2.new(0, 12, 0, 12); knob.AnchorPoint = Vector2.new(0.5, 0.5); knob.Position = UDim2.new(1, 0, 0.5, 0)
     knob.BackgroundColor3 = Colors.Text; knob.ZIndex = 11; Instance.new("UICorner", knob).CornerRadius = UDim.new(1,0)
     
     local knobDot = Instance.new("Frame", knob)
-    knobDot.Size = UDim2.new(0, 6, 0, 6); knobDot.AnchorPoint = Vector2.new(0.5, 0.5); knobDot.Position = UDim2.fromScale(0.5, 0.5)
+    knobDot.Size = UDim2.new(0, 4, 0, 4); knobDot.AnchorPoint = Vector2.new(0.5, 0.5); knobDot.Position = UDim2.fromScale(0.5, 0.5)
     knobDot.BackgroundColor3 = Colors.Primary; knobDot.BorderSizePixel = 0; knobDot.ZIndex = 12; Instance.new("UICorner", knobDot).CornerRadius = UDim.new(1,0)
     local knobStroke = Instance.new("UIStroke", knob); knobStroke.Color = Colors.Primary; knobStroke.Transparency = 0.8; knobStroke.Thickness = 2
 
     local dragging = false
     local function update(input) 
         local rawPos = input.Position.X; local relativeX = math.clamp(rawPos - bg.AbsolutePosition.X, 0, bg.AbsoluteSize.X); local pos = relativeX / bg.AbsoluteSize.X
-        TweenService:Create(fill, TweenInfo.new(0.05, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.new(pos, 0, 1, 0)}):Play()
+        TweenService:Create(fill, TweenInfo.new(0.08, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.new(pos, 0, 1, 0)}):Play()
         local val = math.floor((min + (pos * (max - min))) * 10) / 10; valLabel.Text = tostring(val); callback(val)
     end
     
     hitbox.InputBegan:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
             dragging = true; uiHoverCount = uiHoverCount + 1
-            local tInfo1 = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out); local tInfo2 = TweenInfo.new(0.2, Enum.EasingStyle.Sine)
-            TweenService:Create(knob, tInfo1, {Size = UDim2.new(0, 18, 0, 18)}):Play()
-            TweenService:Create(knobDot, tInfo2, {Size = UDim2.new(0, 8, 0, 8)}):Play()
-            TweenService:Create(knobStroke, tInfo2, {Transparency = 0.2, Thickness = 3}):Play()
-            TweenService:Create(valBadge, tInfo2, {BackgroundTransparency = 0.2}):Play()
-            TweenService:Create(valStroke, tInfo2, {Transparency = 0}):Play()
-            TweenService:Create(fill, tInfo2, {BackgroundColor3 = Color3.fromRGB(150, 255, 240)}):Play()
+            TweenService:Create(knob, TweenInfo.new(0.2, Enum.EasingStyle.Back), {Size = UDim2.new(0, 18, 0, 18)}):Play()
+            TweenService:Create(knobDot, TweenInfo.new(0.2, Enum.EasingStyle.Back), {Size = UDim2.new(0, 8, 0, 8)}):Play()
+            TweenService:Create(knobStroke, TweenInfo.new(0.2), {Transparency = 0.2, Thickness = 3}):Play()
+            TweenService:Create(valBadge, TweenInfo.new(0.2), {BackgroundTransparency = 0.2}):Play()
+            TweenService:Create(valStroke, TweenInfo.new(0.2), {Transparency = 0}):Play()
+            TweenService:Create(fill, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(150, 255, 240)}):Play()
             update(input) 
         end 
     end)
     hitbox.InputEnded:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
             dragging = false; uiHoverCount = math.max(0, uiHoverCount - 1)
-            local tInfo1 = TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out); local tInfo2 = TweenInfo.new(0.3, Enum.EasingStyle.Sine)
-            TweenService:Create(knob, tInfo1, {Size = UDim2.new(0, 14, 0, 14)}):Play()
-            TweenService:Create(knobDot, tInfo2, {Size = UDim2.new(0, 6, 0, 6)}):Play()
-            TweenService:Create(knobStroke, tInfo2, {Transparency = 0.8, Thickness = 2}):Play()
-            TweenService:Create(valBadge, tInfo2, {BackgroundTransparency = 0.85}):Play()
-            TweenService:Create(valStroke, tInfo2, {Transparency = 0.5}):Play()
-            TweenService:Create(fill, tInfo2, {BackgroundColor3 = Colors.PrimaryDark}):Play()
+            TweenService:Create(knob, TweenInfo.new(0.5, Enum.EasingStyle.Elastic), {Size = UDim2.new(0, 12, 0, 12)}):Play()
+            TweenService:Create(knobDot, TweenInfo.new(0.5, Enum.EasingStyle.Elastic), {Size = UDim2.new(0, 4, 0, 4)}):Play()
+            TweenService:Create(knobStroke, TweenInfo.new(0.3), {Transparency = 0.8, Thickness = 2}):Play()
+            TweenService:Create(valBadge, TweenInfo.new(0.3), {BackgroundTransparency = 0.85}):Play()
+            TweenService:Create(valStroke, TweenInfo.new(0.3), {Transparency = 0.5}):Play()
+            TweenService:Create(fill, TweenInfo.new(0.3), {BackgroundColor3 = Colors.PrimaryDark}):Play()
         end 
     end)
     UserInputService.InputChanged:Connect(function(input) if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then update(input) end end)
@@ -1018,7 +1015,7 @@ local function makeDraggable(frame, handle, ghostAura, isOrb, applyTilt)
                 if dragging then
                     frame.Position = frame.Position:Lerp(targetPos, math.clamp(dt * 25, 0, 1))
                     if applyTilt then
-                        local tiltAngle = math.clamp(velocity.X * 0.08, -3, 3)
+                        local tiltAngle = math.clamp(velocity.X * 0.1, -4, 4)
                         TweenService:Create(frame, TweenInfo.new(0.2, Enum.EasingStyle.Sine), {Rotation = tiltAngle}):Play()
                     end
                 else
@@ -1048,13 +1045,12 @@ local function makeDraggable(frame, handle, ghostAura, isOrb, applyTilt)
                     mainFrame.Visible = true
                     aura.Visible = true
                     
-                    -- Cinematic unfold
                     mainScale.Scale = 0.8
                     auraScale.Scale = 0.8
                     TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
                     TweenService:Create(auraScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
                     TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.12}):Play()
-                    TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.6}):Play()
+                    TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
                     animateWaterfall(mainList)
                 end
             end
@@ -1086,14 +1082,12 @@ RunService.RenderStepped:Connect(function(dt)
         strokeGrad.Rotation = (tTime * 40) % 360
         bgGradient.Rotation = ((tTime * 40)/2) - 45
         local breath = (math.sin(tTime * 3) + 1) / 2 
-        -- 🔥 BREATHING NEON AURA 🔥
         aura.ImageTransparency = 0.5 + (breath * 0.1)
         auraScale.Scale = 0.85 + (breath * 0.02)
         mainStroke.Transparency = 0.15 + (breath * 0.2)
         titleGrad.Offset = Vector2.new(math.sin(tTime * 2) * 0.3, 0)
         scanlines.Position = UDim2.new(0, 0, (tTime * 0.05) % 1 - 1, 0)
         
-        -- Animate Glass Reflection
         if glassGrad then
             glassGrad.Offset = Vector2.new(0, math.sin(tTime * 1.5) * 0.8)
         end
@@ -1185,4 +1179,4 @@ end)
 closeBtn.MouseButton1Click:Connect(function() stopBang(); gui:Destroy() end)
 
 animateWaterfall(mainList)
-sendNotif("👑 TXR 0(40).2", "Ultimate Masterpiece Loaded!", 3)
+sendNotif("👑 TXR 0(40).2", "Ultimate Tactile Experience Loaded!", 3)
