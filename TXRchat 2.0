@@ -617,7 +617,7 @@ local innerGlassStroke = Instance.new("UIStroke", mainFrame)
 innerGlassStroke.Color = Color3.new(1, 1, 1)
 innerGlassStroke.Transparency = 0.85
 innerGlassStroke.Thickness = 1.2
-innerGlassStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+innerGlassStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
 -- 🔥 3D DROP SHADOW 🔥
 local dropShadow = Instance.new("ImageLabel", mainFrame)
