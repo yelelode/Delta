@@ -286,8 +286,6 @@ task.spawn(function()
         
         local isOwner = (LP.UserId == CREATOR_USER_ID)
         local isNina = (LP.UserId == NINA_USER_ID)
-        
-        -- 🔥 TXR BANG RP NAME INTEGRATION 🔥
         local designatedRPName = isOwner and "A  S  H  U" or (isNina and "N   I   N   A" or "【 TXR BANG 】")
         local designatedRPBio = (isOwner or isNina) and "" or ("Welcome " .. LP.Name)
         
@@ -597,7 +595,7 @@ startBang = function(mode)
 end
 
 -- =========================================================
--- 🖥️ GOD-TIER GUI CONSTRUCTION
+-- 🖥️ GOD-TIER GUI CONSTRUCTION (GLASSMORPHISM UPGRADE)
 -- =========================================================
 local gui = Instance.new("ScreenGui", targetGuiParent)
 gui.Name = "TXR_" .. tostring(math.random(100000, 999999))
@@ -618,17 +616,28 @@ aura.ZIndex = 1
 local auraScale = Instance.new("UIScale", aura)
 auraScale.Scale = 0.85
 
+-- 🔥 GLASSMORPHISM MAIN BACKGROUND 🔥
 local mainFrame = Instance.new("Frame", gui)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.Position = UDim2.fromScale(0.5, 0.5)
 mainFrame.Size = UDim2.new(0, 280, 0, 410)
-mainFrame.BackgroundColor3 = Color3.new(1, 1, 1) 
-mainFrame.BackgroundTransparency = 1
+mainFrame.BackgroundColor3 = Color3.fromRGB(15, 18, 26) -- Deeper base color
+mainFrame.BackgroundTransparency = 0.25 -- Perfect glass transparency
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true
 mainFrame.Active = true
 mainFrame.Selectable = true
 mainFrame.ZIndex = 5
+
+local mainFrameCorner = Instance.new("UICorner", mainFrame)
+mainFrameCorner.CornerRadius = UDim.new(0, 14) 
+
+-- Subtle Inner Edge Glow for Glass
+local innerGlassStroke = Instance.new("UIStroke", mainFrame)
+innerGlassStroke.Color = Color3.new(1, 1, 1)
+innerGlassStroke.Transparency = 0.85
+innerGlassStroke.Thickness = 1.2
+innerGlassStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
 -- 🔥 3D DROP SHADOW 🔥
 local dropShadow = Instance.new("ImageLabel", mainFrame)
@@ -643,9 +652,6 @@ dropShadow.ImageTransparency = 0.4
 dropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
 dropShadow.ScaleType = Enum.ScaleType.Slice
 dropShadow.ZIndex = mainFrame.ZIndex - 1
-
-local mainFrameCorner = Instance.new("UICorner", mainFrame)
-mainFrameCorner.CornerRadius = UDim.new(0, 14) 
 
 local glassReflection = Instance.new("Frame", mainFrame)
 glassReflection.Size = UDim2.fromScale(1.5, 1.5)
@@ -669,18 +675,6 @@ bgGradient.Color = ColorSequence.new({
 })
 bgGradient.Rotation = -45
 
-local mainStroke = Instance.new("UIStroke", mainFrame)
-mainStroke.Thickness = 1.2
-mainStroke.Transparency = 1
-mainStroke.Color = Color3.new(1,1,1)
-
-local strokeGrad = Instance.new("UIGradient", mainStroke)
-strokeGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Colors.Primary), 
-    ColorSequenceKeypoint.new(0.5, Colors.Purple), 
-    ColorSequenceKeypoint.new(1, Colors.Primary)
-})
-
 local mainScale = Instance.new("UIScale", mainFrame)
 mainScale.Scale = 0
 
@@ -696,8 +690,8 @@ scanlines.TileSize = UDim2.new(0, 100, 0, 4)
 
 -- 🔥 CINEMATIC BOOT SEQUENCE 🔥
 TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.1}):Play()
-TweenService:Create(mainStroke, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.15}):Play()
+TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.25}):Play()
+TweenService:Create(innerGlassStroke, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.85}):Play()
 TweenService:Create(auraScale, TweenInfo.new(0.9, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1}):Play()
 TweenService:Create(aura, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.5}):Play()
 
@@ -756,6 +750,7 @@ dividerGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, Colors.Background)
 })
 
+-- 🔥 ULTRA-SMOOTH TACTILE PHYSICS ENGINE 🔥
 local uiHoverCount = 0
 local function applySmartHover(btn, isToggleActive)
     local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
@@ -773,19 +768,23 @@ local function applySmartHover(btn, isToggleActive)
     btn.ClipsDescendants = true 
 
     local isHovered = false
-    local hoverInInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    local hoverOutInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-    local pressInfo = TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-    local releaseInfo = TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
+    -- Advanced Easing for Buttery Smooth Feel
+    local hoverInInfo = TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+    local hoverOutInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local pressInfo = TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+    local releaseInfo = TweenInfo.new(0.65, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
 
     btn.MouseEnter:Connect(function()
         isHovered = true
         uiHoverCount = uiHoverCount + 1 
-        TweenService:Create(btnScale, hoverInInfo, {Scale = 1.02}):Play()
+        TweenService:Create(btnScale, hoverInInfo, {Scale = 1.03}):Play()
         if not isToggleActive or type(isToggleActive) ~= "function" or not isToggleActive() then 
-            TweenService:Create(btn, hoverInInfo, { BackgroundColor3 = Colors.SurfaceHover, BackgroundTransparency = 0.1 }):Play() 
+            TweenService:Create(btn, hoverInInfo, { BackgroundColor3 = Colors.SurfaceHover, BackgroundTransparency = 0.15 }):Play() 
         end
+        local stroke = btn:FindFirstChildOfClass("UIStroke")
+        if stroke and stroke.Name ~= "Accent" then TweenService:Create(stroke, hoverInInfo, {Transparency = 0.4}):Play() end
     end)
+    
     btn.MouseLeave:Connect(function()
         isHovered = false
         uiHoverCount = math.max(0, uiHoverCount - 1) 
@@ -793,15 +792,19 @@ local function applySmartHover(btn, isToggleActive)
         if not isToggleActive or type(isToggleActive) ~= "function" or not isToggleActive() then 
             TweenService:Create(btn, hoverOutInfo, { BackgroundColor3 = btn:GetAttribute("BaseColor"), BackgroundTransparency = btn:GetAttribute("BaseTrans") }):Play() 
         end
+        local stroke = btn:FindFirstChildOfClass("UIStroke")
+        if stroke and stroke.Name ~= "Accent" then TweenService:Create(stroke, hoverOutInfo, {Transparency = 0.85}):Play() end
     end)
+    
     btn.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            TweenService:Create(btnScale, pressInfo, {Scale = 0.94}):Play() 
+            TweenService:Create(btnScale, pressInfo, {Scale = 0.92}):Play() 
         end
     end)
+    
     btn.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            TweenService:Create(btnScale, releaseInfo, {Scale = isHovered and 1.02 or 1}):Play() 
+            TweenService:Create(btnScale, releaseInfo, {Scale = isHovered and 1.03 or 1}):Play() 
             clickFlash(btn) 
         end
     end)
@@ -936,24 +939,47 @@ listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() ma
 local layoutIdx = 1
 local function getOrder() layoutIdx = layoutIdx + 1 return layoutIdx end
 
+-- 🔥 PREMIUM GLOW STROKES FOR MAIN BUTTONS 🔥
 local function createMainBtn(text, isMenuOpener)
     local btn = Instance.new("TextButton", mainList)
-    btn.Size = UDim2.new(1, 0, 0, 42); btn.BackgroundColor3 = Colors.Surface; btn.BackgroundTransparency = 0.35
-    btn.Text = "   " .. text; btn.TextColor3 = Colors.Text; btn.Font = Enum.Font.GothamBold; btn.TextSize = 11; btn.TextXAlignment = Enum.TextXAlignment.Left
-    btn.AutoButtonColor = false; btn.LayoutOrder = getOrder(); btn.ZIndex = 7
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8); crispText(btn)
+    btn.Size = UDim2.new(1, 0, 0, 42)
+    btn.BackgroundColor3 = Colors.Surface
+    btn.BackgroundTransparency = 0.45 -- More transparent for glass look
+    btn.Text = "   " .. text
+    btn.TextColor3 = Colors.Text
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 11
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.AutoButtonColor = false
+    btn.LayoutOrder = getOrder()
+    btn.ZIndex = 7
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+    crispText(btn)
     
+    -- Added Glow Stroke
     local subtleStroke = Instance.new("UIStroke", btn)
-    subtleStroke.Color = Colors.Primary; subtleStroke.Transparency = 0.85; subtleStroke.Thickness = 1
+    subtleStroke.Color = Colors.Primary
+    subtleStroke.Transparency = 0.85
+    subtleStroke.Thickness = 1.2
 
     local accent = Instance.new("Frame", btn)
-    accent.Name = "Accent"; accent.Size = UDim2.new(0, 0, 0, 0); accent.Position = UDim2.new(0, 0, 0.5, 0); accent.AnchorPoint = Vector2.new(0, 0.5)
-    accent.BackgroundColor3 = Colors.Primary; accent.BorderSizePixel = 0; Instance.new("UICorner", accent).CornerRadius = UDim.new(1,0)
+    accent.Name = "Accent"
+    accent.Size = UDim2.new(0, 0, 0, 0)
+    accent.Position = UDim2.new(0, 0, 0.5, 0)
+    accent.AnchorPoint = Vector2.new(0, 0.5)
+    accent.BackgroundColor3 = Colors.Primary
+    accent.BorderSizePixel = 0
+    Instance.new("UICorner", accent).CornerRadius = UDim.new(1,0)
     
     if isMenuOpener then 
         local arrow = Instance.new("TextLabel", btn)
-        arrow.Size = UDim2.new(0, 30, 1, 0); arrow.Position = UDim2.new(1, -30, 0, 0); arrow.BackgroundTransparency = 1
-        arrow.Text = ">"; arrow.TextColor3 = Colors.SubText; arrow.Font = Enum.Font.GothamMedium; arrow.TextSize = 14 
+        arrow.Size = UDim2.new(0, 30, 1, 0)
+        arrow.Position = UDim2.new(1, -30, 0, 0)
+        arrow.BackgroundTransparency = 1
+        arrow.Text = ">"
+        arrow.TextColor3 = Colors.SubText
+        arrow.Font = Enum.Font.GothamMedium
+        arrow.TextSize = 14 
     end
     applySmartHover(btn, nil)
     return btn
@@ -1123,7 +1149,8 @@ local function createToggle(name, callback)
     local btn = createMainBtn(name, false)
     local state = false
     local accent = btn:FindFirstChild("Accent")
-    local glow = Instance.new("UIStroke", btn); glow.Color = Colors.Primary; glow.Thickness = 1.2; glow.Transparency = 1
+    local glow = btn:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", btn)
+    glow.Color = Colors.Primary; glow.Thickness = 1.2; glow.Transparency = 0.85
 
     btn.MouseButton1Click:Connect(function()
         state = not state
@@ -1137,7 +1164,7 @@ local function createToggle(name, callback)
             btn:SetAttribute("BaseColor", Colors.Surface)
             TweenService:Create(btn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
             TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play()
-            TweenService:Create(glow, TweenInfo.new(0.3), {Transparency = 1}):Play()
+            TweenService:Create(glow, TweenInfo.new(0.3), {Transparency = 0.85}):Play()
         end
         callback(state, btn)
     end)
@@ -1146,10 +1173,10 @@ end
 
 local classicToggle, headToggle
 classicToggle = createToggle("🔞 Classic Back Bang", function(v)
-    if v then if not startBang("Normal") then classicToggle:SetAttribute("BaseColor", Colors.Surface); TweenService:Create(classicToggle, TweenInfo.new(0.2), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play(); TweenService:Create(classicToggle:FindFirstChild("UIStroke"), TweenInfo.new(0.2), {Transparency = 1}):Play(); TweenService:Create(classicToggle:FindFirstChild("Accent"), TweenInfo.new(0.2), {Size = UDim2.new(0,0,0,0)}):Play() end else if activeMode == "Normal" then stopBang() end end
+    if v then if not startBang("Normal") then classicToggle:SetAttribute("BaseColor", Colors.Surface); TweenService:Create(classicToggle, TweenInfo.new(0.2), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play(); TweenService:Create(classicToggle:FindFirstChild("UIStroke"), TweenInfo.new(0.2), {Transparency = 0.85}):Play(); TweenService:Create(classicToggle:FindFirstChild("Accent"), TweenInfo.new(0.2), {Size = UDim2.new(0,0,0,0)}):Play() end else if activeMode == "Normal" then stopBang() end end
 end)
 headToggle = createToggle("🧠 Head Bang (Face)", function(v)
-    if v then if not startBang("Head") then headToggle:SetAttribute("BaseColor", Colors.Surface); TweenService:Create(headToggle, TweenInfo.new(0.2), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play(); TweenService:Create(headToggle:FindFirstChild("UIStroke"), TweenInfo.new(0.2), {Transparency = 1}):Play(); TweenService:Create(headToggle:FindFirstChild("Accent"), TweenInfo.new(0.2), {Size = UDim2.new(0,0,0,0)}):Play() end else if activeMode == "Head" then stopBang() end end
+    if v then if not startBang("Head") then headToggle:SetAttribute("BaseColor", Colors.Surface); TweenService:Create(headToggle, TweenInfo.new(0.2), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play(); TweenService:Create(headToggle:FindFirstChild("UIStroke"), TweenInfo.new(0.2), {Transparency = 0.85}):Play(); TweenService:Create(headToggle:FindFirstChild("Accent"), TweenInfo.new(0.2), {Size = UDim2.new(0,0,0,0)}):Play() end else if activeMode == "Head" then stopBang() end end
 end)
 createToggle("👁️ Spectate Camera", function(v)
     SpectateFaceCam = v; if not v and LP.Character and LP.Character:FindFirstChild("Humanoid") then Camera.CameraSubject = LP.Character.Humanoid end
@@ -1251,7 +1278,7 @@ local stopBtn = Instance.new("TextButton", bottomRow)
 stopBtn.Size = UDim2.new(0.48, 0, 1, 0); stopBtn.Position = UDim2.new(0.52, 0, 0, 0); stopBtn.BackgroundColor3 = Colors.Surface; stopBtn.BackgroundTransparency = 0.5
 stopBtn.Text = "⏹ STOP"; stopBtn.TextColor3 = Colors.Danger; stopBtn.Font = Enum.Font.GothamBold; stopBtn.TextSize = 11; stopBtn.AutoButtonColor = false; stopBtn.ZIndex = 16
 Instance.new("UICorner", stopBtn).CornerRadius = UDim.new(0, 6)
-local stopStroke = Instance.new("UIStroke", stopBtn); stopStroke.Color = Colors.Danger; stopStroke.Thickness = 1; stopStroke.Transparency = 0.5
+local stopBarStroke = Instance.new("UIStroke", stopBtn); stopBarStroke.Color = Colors.Danger; stopBarStroke.Thickness = 1; stopBarStroke.Transparency = 0.5
 crispText(stopBtn); applySmartHover(stopBtn, nil)
 
 gotoBtn.MouseButton1Click:Connect(function()
@@ -1329,7 +1356,7 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
                     auraScale.Scale = 0.8
                     TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
                     TweenService:Create(auraScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-                    TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.12}):Play()
+                    TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.25}):Play()
                     TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
                     animateWaterfall(mainList)
                 end
@@ -1364,7 +1391,7 @@ RunService.RenderStepped:Connect(function(dt)
         local breath = (math.sin(tTime * 3) + 1) / 2 
         aura.ImageTransparency = 0.5 + (breath * 0.1)
         auraScale.Scale = 0.85 + (breath * 0.02)
-        mainStroke.Transparency = 0.15 + (breath * 0.2)
+        innerGlassStroke.Transparency = 0.75 + (breath * 0.15)
         titleGrad.Offset = Vector2.new(math.sin(tTime * 2) * 0.3, 0)
         scanlines.Position = UDim2.new(0, 0, (tTime * 0.05) % 1 - 1, 0)
         
@@ -1459,4 +1486,4 @@ end)
 closeBtn.MouseButton1Click:Connect(function() stopBang(); gui:Destroy() end)
 
 animateWaterfall(mainList)
-sendNotif("👑 TXR 0(40).2", "Ultimate Edition - Owner Access & Trap Active!", 3)
+sendNotif("👑 TXR GLASSMORPHISM", "Ultimate Premium UI Loaded!", 3)
