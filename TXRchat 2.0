@@ -337,7 +337,7 @@ end
 -- 🎨 GOD-TIER CYBERPALETTE
 -- =========================================================
 local Colors = {
-    Background = Color3.fromRGB(12, 15, 22),       
+    Background = Color3.fromRGB(8, 12, 18),       
     Surface = Color3.fromRGB(22, 28, 40),          
     SurfaceHover = Color3.fromRGB(30, 38, 55),     
     ActiveTint = Color3.fromRGB(16, 42, 60),       
@@ -586,21 +586,23 @@ gui.ResetOnSpawn = false
 _G.TXR_BangGUI = gui
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
 
--- 🔥 1. AURA LAYER (FIXED SIZE, NO STRETCHING OUTSIDE) 🔥
+-- 🔥 1. AURA LAYER (FIXED & TIGHT - NO OVERGLOW) 🔥
 local aura = Instance.new("ImageLabel", gui)
 aura.AnchorPoint = Vector2.new(0.5, 0.5)
 aura.Position = UDim2.fromScale(0.5, 0.5)
-aura.Size = UDim2.new(0, 330, 0, 460) -- Exact original fixed size (NO UDim2 scale bugs)
+aura.Size = UDim2.new(0, 310, 0, 440) 
 aura.BackgroundTransparency = 1
-aura.Image = "rbxassetid://1316045217"
+aura.Image = "rbxassetid://6014261993"
 aura.ImageColor3 = Colors.Primary
-aura.ImageTransparency = 1 -- Controlled strictly by RenderStepped now
+aura.SliceCenter = Rect.new(49, 49, 450, 450)
+aura.ScaleType = Enum.ScaleType.Slice
+aura.ImageTransparency = 1 
 aura.ZIndex = 1
 
 local auraScale = Instance.new("UIScale", aura)
 auraScale.Scale = 0
 
--- 🔥 2. SHADOW LAYER (SEPARATE SO MAIN FRAME CLIPS CONTENT SAFELY) 🔥
+-- 🔥 2. SHADOW LAYER 🔥
 local shadowContainer = Instance.new("Frame", gui)
 shadowContainer.Name = "ShadowContainer"
 shadowContainer.Size = UDim2.new(0, 280, 0, 410)
@@ -623,43 +625,49 @@ dropShadow.ImageTransparency = 0.3
 dropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
 dropShadow.ScaleType = Enum.ScaleType.Slice
 
--- 🔥 3. MAIN GLASS FRAME (CLIPS CONTENT) 🔥
+-- 🔥 3. MAIN GLASS FRAME (MORE POLISHED & GLASSY) 🔥
 local mainFrame = Instance.new("Frame", gui)
 mainFrame.Size = UDim2.new(0, 280, 0, 410)
 mainFrame.Position = UDim2.fromScale(0.5, 0.5)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-mainFrame.BackgroundColor3 = Color3.fromRGB(15, 20, 30) -- Premium Frosted Glass Tint
-mainFrame.BackgroundTransparency = 0.25 
+mainFrame.BackgroundColor3 = Color3.fromRGB(10, 15, 25) -- Darker base for better glass contrast
+mainFrame.BackgroundTransparency = 0.35 -- More transparent
 mainFrame.BorderSizePixel = 0
-mainFrame.ClipsDescendants = true -- Perfectly clips all scrolling contents inside!
+mainFrame.ClipsDescendants = true 
 mainFrame.Active = true
 mainFrame.Selectable = true
 mainFrame.ZIndex = 5
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14) 
 
--- Polished White Edge Glass Light 
+-- Sharper White Edge Glass Light 
 local glassStroke = Instance.new("UIStroke", mainFrame)
 glassStroke.Color = Color3.new(1, 1, 1)
-glassStroke.Transparency = 0.65
+glassStroke.Transparency = 0.4
 glassStroke.Thickness = 1.5
 glassStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 local strokeGrad = Instance.new("UIGradient", glassStroke)
 strokeGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
-    ColorSequenceKeypoint.new(0.5, Color3.new(0.4, 0.4, 0.4)),
+    ColorSequenceKeypoint.new(0.3, Color3.new(1, 1, 1)),
+    ColorSequenceKeypoint.new(0.5, Color3.new(0.2, 0.2, 0.2)),
+    ColorSequenceKeypoint.new(0.7, Color3.new(1, 1, 1)),
     ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1))
 })
+strokeGrad.Transparency = NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 0),
+    NumberSequenceKeypoint.new(0.5, 0.85),
+    NumberSequenceKeypoint.new(1, 0)
+})
 
--- Ambient Inner Glow for Depth
+-- Ambient Inner Glow
 local bgGradient = Instance.new("UIGradient", mainFrame)
 bgGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(28, 35, 48)), 
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 45, 60)), 
     ColorSequenceKeypoint.new(0.5, Colors.Background), 
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(28, 35, 48))
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 45, 60))
 })
 bgGradient.Rotation = -45
 
--- THE MAGICAL FIX: Stick Aura & Shadow to the MainFrame perfectly when dragged
 mainFrame:GetPropertyChangedSignal("Position"):Connect(function()
     aura.Position = mainFrame.Position
     shadowContainer.Position = mainFrame.Position
@@ -668,20 +676,25 @@ end)
 local mainScale = Instance.new("UIScale", mainFrame)
 mainScale.Scale = 0
 
--- 🔥 RESTORED SWEEPING GLASS REFLECTION 🔥
+-- 🔥 ENHANCED SWEEPING GLASS REFLECTION 🔥
 local glassReflection = Instance.new("Frame", mainFrame)
 glassReflection.Size = UDim2.fromScale(1.5, 1.5)
 glassReflection.Position = UDim2.fromScale(-1, -0.5)
 glassReflection.Rotation = 35
-glassReflection.BackgroundTransparency = 0.75 
+glassReflection.BackgroundTransparency = 0.5 -- More visible shine
 glassReflection.BackgroundColor3 = Color3.new(1, 1, 1)
 glassReflection.BorderSizePixel = 0
-glassReflection.ZIndex = 19 -- Overlays content nicely for that sheer glass look
+glassReflection.ZIndex = 19 
 local glassGrad = Instance.new("UIGradient", glassReflection)
 glassGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(1,1,1)), ColorSequenceKeypoint.new(0.5, Color3.new(1,1,1)), ColorSequenceKeypoint.new(1, Color3.new(1,1,1))})
-glassGrad.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0.85), NumberSequenceKeypoint.new(1, 1)})
+glassGrad.Transparency = NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 1), 
+    NumberSequenceKeypoint.new(0.4, 0.75), 
+    NumberSequenceKeypoint.new(0.6, 0.75), 
+    NumberSequenceKeypoint.new(1, 1)
+})
 
--- Original Scanlines Effect
+-- Scanlines Effect
 local scanlines = Instance.new("ImageLabel", mainFrame)
 scanlines.Size = UDim2.new(1, 0, 2, 0) 
 scanlines.Position = UDim2.fromScale(0, -1)
@@ -692,7 +705,6 @@ scanlines.ImageTransparency = 0.95
 scanlines.ZIndex = 6
 scanlines.TileSize = UDim2.new(0, 100, 0, 4)
 
--- ONLY Tween these. Aura scales dynamically in RenderStepped to avoid conflicts!
 TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
 TweenService:Create(shadowScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
 
@@ -1349,7 +1361,6 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
                     aura.Visible = true
                     shadowContainer.Visible = true
                     
-                    -- Only tween the main scale now. Aura scale smoothly mimics it dynamically.
                     TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
                     TweenService:Create(shadowScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
                     animateWaterfall(mainList)
@@ -1384,9 +1395,9 @@ RunService.RenderStepped:Connect(function(dt)
         if bgGradient then bgGradient.Rotation = ((tTime * 40)/2) - 45 end
         local breath = (math.sin(tTime * 3) + 1) / 2 
         
-        -- Smooth glow bound strictly to main UI's current scale! Fixes the 1-second fight glitch entirely!
-        aura.ImageTransparency = 0.4 + (breath * 0.15)
-        auraScale.Scale = (0.85 + (breath * 0.05)) * mainScale.Scale
+        -- Fixed tight glow without overscaling
+        aura.ImageTransparency = 0.55 + (breath * 0.15)
+        auraScale.Scale = mainScale.Scale
         
         -- Dynamic glass edges
         strokeGrad.Rotation = (tTime * 50) % 360
