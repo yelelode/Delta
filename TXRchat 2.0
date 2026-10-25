@@ -530,6 +530,7 @@ startBang = function(mode)
 
         spoofNetwork(currentHRP)
 
+        -- 🔥 SPECTATE FIX HERE 🔥
         if SpectateFaceCam and tHead then
             if Camera.CameraSubject ~= tHead then 
                 Camera.CameraSubject = tHead 
@@ -585,14 +586,12 @@ gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 local aura = Instance.new("ImageLabel", gui)
 aura.AnchorPoint = Vector2.new(0.5, 0.5)
 aura.Position = UDim2.fromScale(0.5, 0.5)
-aura.Size = UDim2.new(0, 310, 0, 440)
+aura.Size = UDim2.new(0, 330, 0, 460)
 aura.BackgroundTransparency = 1
 aura.Image = "rbxassetid://1316045217"
 aura.ImageColor3 = Colors.Primary
 aura.ImageTransparency = 1
 aura.ZIndex = 1
--- Fixed corner bleeding on the glowing aura
-Instance.new("UICorner", aura).CornerRadius = UDim.new(0, 16)
 
 local auraScale = Instance.new("UIScale", aura)
 auraScale.Scale = 0.85
@@ -602,8 +601,8 @@ local mainFrame = Instance.new("Frame", gui)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.Position = UDim2.fromScale(0.5, 0.5)
 mainFrame.Size = UDim2.new(0, 280, 0, 410)
-mainFrame.BackgroundColor3 = Color3.fromRGB(12, 16, 25) -- Deep tint for heavy glass depth
-mainFrame.BackgroundTransparency = 0.35 -- Smooth blur illusion transparency
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 25, 35) -- Brighter base for glass
+mainFrame.BackgroundTransparency = 0.35 -- Perfect frosted transparency
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true
 mainFrame.Active = true
@@ -616,9 +615,9 @@ mainFrameCorner.CornerRadius = UDim.new(0, 14)
 -- Subtle Inner Edge Glow for Glass
 local innerGlassStroke = Instance.new("UIStroke", mainFrame)
 innerGlassStroke.Color = Color3.new(1, 1, 1)
-innerGlassStroke.Transparency = 0.75
+innerGlassStroke.Transparency = 0.85
 innerGlassStroke.Thickness = 1.2
-innerGlassStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+innerGlassStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
 
 -- 🔥 3D DROP SHADOW 🔥
 local dropShadow = Instance.new("ImageLabel", mainFrame)
@@ -633,30 +632,18 @@ dropShadow.ImageTransparency = 0.4
 dropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
 dropShadow.ScaleType = Enum.ScaleType.Slice
 dropShadow.ZIndex = mainFrame.ZIndex - 1
-Instance.new("UICorner", dropShadow).CornerRadius = UDim.new(0, 14)
 
 local glassReflection = Instance.new("Frame", mainFrame)
 glassReflection.Size = UDim2.fromScale(1.5, 1.5)
 glassReflection.Position = UDim2.fromScale(-1, -0.5)
 glassReflection.Rotation = 35
-glassReflection.BackgroundTransparency = 0.6 
+glassReflection.BackgroundTransparency = 0.8 -- Enhanced reflection visibility
 glassReflection.BackgroundColor3 = Color3.new(1, 1, 1)
 glassReflection.BorderSizePixel = 0
 glassReflection.ZIndex = 19
 local glassGrad = Instance.new("UIGradient", glassReflection)
-glassGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.new(1,1,1)), 
-    ColorSequenceKeypoint.new(0.4, Color3.new(1,1,1)), 
-    ColorSequenceKeypoint.new(0.5, Color3.new(1,1,1)), 
-    ColorSequenceKeypoint.new(1, Color3.new(1,1,1))
-})
-glassGrad.Transparency = NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 1), 
-    NumberSequenceKeypoint.new(0.4, 0.95), 
-    NumberSequenceKeypoint.new(0.45, 0.8), 
-    NumberSequenceKeypoint.new(0.5, 0.95), 
-    NumberSequenceKeypoint.new(1, 1)
-})
+glassGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(1,1,1)), ColorSequenceKeypoint.new(0.5, Color3.new(1,1,1)), ColorSequenceKeypoint.new(1, Color3.new(1,1,1))})
+glassGrad.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0.9), NumberSequenceKeypoint.new(1, 1)})
 
 mainFrame:GetPropertyChangedSignal("Position"):Connect(function() aura.Position = mainFrame.Position end)
 
@@ -683,7 +670,7 @@ scanlines.TileSize = UDim2.new(0, 100, 0, 4)
 
 TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
 TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.35}):Play()
-TweenService:Create(innerGlassStroke, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.75}):Play()
+TweenService:Create(innerGlassStroke, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.85}):Play()
 TweenService:Create(auraScale, TweenInfo.new(0.9, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1}):Play()
 TweenService:Create(aura, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.5}):Play()
 
@@ -975,7 +962,6 @@ Instance.new("UICorner", targetMenu).CornerRadius = UDim.new(0, 12)
 
 local tTop = Instance.new("Frame", targetMenu)
 tTop.Size = UDim2.new(1, 0, 0, 50); tTop.BackgroundTransparency = 1; tTop.ZIndex = 21
-
 local tLabel = Instance.new("TextLabel", tTop)
 tLabel.Size = UDim2.new(1, -60, 1, 0); tLabel.Position = UDim2.fromOffset(16, 0); tLabel.BackgroundTransparency = 1
 tLabel.Text = "TARGET SELECTION"; tLabel.TextColor3 = Colors.Text; tLabel.Font = Enum.Font.GothamBlack; tLabel.TextSize = 13; tLabel.TextXAlignment = Enum.TextXAlignment.Left; tLabel.ZIndex = 22
@@ -1475,4 +1461,4 @@ end)
 closeBtn.MouseButton1Click:Connect(function() stopBang(); gui:Destroy() end)
 
 animateWaterfall(mainList)
-sendNotif("👑 TXR GLASSMORPHISM", "Perfect UI Edges Loaded!", 3)
+sendNotif("👑 TXR GLASSMORPHISM", "Ultimate Premium UI Loaded!", 3)
