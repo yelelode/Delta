@@ -42,7 +42,7 @@ pcall(function()
         pcall(function() sethiddenproperty(Lighting, "Technology", Enum.Technology.Compatibility) end)
     end
     
-    for _, v in ipairs(Workspace:GetDescendants()) do
+    for _, v in ipairs(game:GetService("Workspace"):GetDescendants()) do
         if v:IsA("BasePart") and not (v.Parent and v.Parent:FindFirstChild("Humanoid")) then
             v.Material = Enum.Material.SmoothPlastic
             v.Reflectance = 0
@@ -54,7 +54,7 @@ pcall(function()
 end)
 
 -- =========================================================
--- 👑 TXR CORE CLEANUP SYSTEM
+-- 👑 TXR CORE CLEANUP SYSTEM & VARIABLES
 -- =========================================================
 local currentExecutionID = tick()
 _G.TXR_BangInstance = currentExecutionID
@@ -72,6 +72,11 @@ local Workspace = game:GetService("Workspace")
 local Camera = Workspace.CurrentCamera
 local LP = Players.LocalPlayer
 local Debris = game:GetService("Debris")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TextChatService = game:GetService("TextChatService")
+
+local CREATOR_USER_ID = 9685785248
+local NINA_USER_ID = 9444732069
 
 pcall(function()
     if sethiddenproperty then
@@ -108,6 +113,246 @@ local function sendNotif(title, text, duration)
 end
 
 local targetGuiParent = (gethui and gethui()) or game:GetService("CoreGui") or LP:WaitForChild("PlayerGui", 5)
+
+-- =========================================================
+-- 👑 OWNER & VIP SYSTEMS (NOTIFICATIONS, CROWNS, RP NAME)
+-- =========================================================
+task.spawn(function()
+    local function showAshuNotification(textMsg)
+        pcall(function()
+            local alertGui = Instance.new("ScreenGui")
+            alertGui.Name = "AshuPapaGlobalAlert"
+            alertGui.IgnoreGuiInset = true
+            pcall(function() alertGui.Parent = game:GetService("CoreGui") end)
+            if not alertGui.Parent then alertGui.Parent = LP:WaitForChild("PlayerGui", 5) end
+            
+            local bg = Instance.new("Frame", alertGui)
+            bg.Size = UDim2.new(1, 0, 1, 0)
+            bg.BackgroundColor3 = Color3.new(0, 0, 0)
+            bg.BackgroundTransparency = 0.4
+            bg.ZIndex = 99999
+            
+            local txt = Instance.new("TextLabel", bg)
+            txt.Size = UDim2.new(1, 0, 1, 0)
+            txt.BackgroundTransparency = 1
+            txt.Text = textMsg
+            txt.TextColor3 = Color3.fromRGB(255, 215, 0)
+            txt.Font = Enum.Font.GothamBlack
+            txt.TextSize = 45
+            txt.TextWrapped = true
+            txt.ZIndex = 100000
+            
+            local stroke = Instance.new("UIStroke", txt)
+            stroke.Thickness = 3
+            stroke.Color = Color3.new(0, 0, 0)
+            
+            task.delay(4, function()
+                TweenService:Create(bg, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
+                TweenService:Create(txt, TweenInfo.new(1.5), {TextTransparency = 1}):Play()
+                TweenService:Create(stroke, TweenInfo.new(1.5), {Transparency = 1}):Play()
+                task.wait(1.5)
+                alertGui:Destroy()
+            end)
+        end)
+    end
+
+    local ashuFound = false
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p.UserId == CREATOR_USER_ID then
+            ashuFound = true
+            break
+        end
+    end
+    if ashuFound and LP.UserId ~= CREATOR_USER_ID then
+        showAshuNotification("👑 Ashu papa hai server me 👑")
+    end
+
+    Players.PlayerAdded:Connect(function(newPlr)
+        if newPlr.UserId == CREATOR_USER_ID and LP.UserId ~= CREATOR_USER_ID then
+            showAshuNotification("👑 ASHU PAPA Aa gaye tere server me 👑")
+        end
+    end)
+end)
+
+task.spawn(function()
+    local function applyOwnerCrown(character)
+        if not character then return end
+        local head = character:WaitForChild("Head", 5)
+        if not head or head:FindFirstChild("AshuOwnerCrown") then return end
+
+        local billboard = Instance.new("BillboardGui", head)
+        billboard.Name = "AshuOwnerCrown"
+        billboard.Size = UDim2.new(0, 120, 0, 38)
+        billboard.StudsOffset = Vector3.new(0, 2.7, 0)
+        billboard.AlwaysOnTop = true
+        billboard.MaxDistance = 250
+
+        local ownerLabel = Instance.new("TextLabel", billboard)
+        ownerLabel.Size = UDim2.fromScale(1, 1)
+        ownerLabel.BackgroundTransparency = 1
+        ownerLabel.Text = "ᴏᴡɴᴇʀ"
+        ownerLabel.Font = Enum.Font.GothamBlack
+        ownerLabel.TextSize = 25
+        ownerLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+        
+        local oStroke = Instance.new("UIStroke", ownerLabel)
+        oStroke.Thickness = 2.5
+        
+        local oGrad = Instance.new("UIGradient", ownerLabel)
+        oGrad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 120, 0)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 120, 0))
+        })
+
+        task.spawn(function()
+            local t = 0
+            while billboard and billboard.Parent and _G.TXR_BangInstance == currentExecutionID do
+                t = t + 0.05
+                local pulse = (math.sin(t * 3.5) + 1) / 2
+                ownerLabel.TextColor3 = Color3.fromRGB(255, math.floor(190 + pulse * 65), math.floor(50 + pulse * 80))
+                oGrad.Offset = Vector2.new(math.sin(t * 2.5) * 1.5, 0)
+                task.wait(0.04)
+            end
+        end)
+    end
+
+    local function applyNinaCrown(character)
+        if not character then return end
+        local head = character:WaitForChild("Head", 5)
+        if not head or head:FindFirstChild("NinaCleanCrown") then return end
+
+        local billboard = Instance.new("BillboardGui", head)
+        billboard.Name = "NinaCleanCrown"
+        billboard.Size = UDim2.new(0, 160, 0, 36)
+        billboard.StudsOffset = Vector3.new(0, 3.4, 0)
+        billboard.AlwaysOnTop = true
+        billboard.MaxDistance = 250
+
+        local crownLabel = Instance.new("TextLabel", billboard)
+        crownLabel.Size = UDim2.fromScale(1, 1)
+        crownLabel.BackgroundTransparency = 1
+        crownLabel.Text = "ᴘ ᴏ ᴏ ᴋ ɪ ᴇ"
+        crownLabel.Font = Enum.Font.GothamBlack
+        crownLabel.TextSize = 22
+        crownLabel.TextColor3 = Color3.fromRGB(255, 105, 180)
+        
+        local cStroke = Instance.new("UIStroke", crownLabel)
+        cStroke.Thickness = 1.8
+        
+        local cGrad = Instance.new("UIGradient", crownLabel)
+        cGrad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 20, 147)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 105, 180))
+        })
+
+        task.spawn(function()
+            local t = 0
+            while billboard and billboard.Parent and _G.TXR_BangInstance == currentExecutionID do
+                t = t + 0.05
+                local pulse = (math.sin(t * 3.5) + 1) / 2
+                crownLabel.TextColor3 = Color3.fromRGB(255, math.floor(80 + pulse * 100), math.floor(170 + pulse * 60))
+                cGrad.Offset = Vector2.new(math.sin(t * 2.5) * 1.5, 0)
+                task.wait(0.04)
+            end
+        end)
+    end
+
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p.UserId == CREATOR_USER_ID then
+            if p.Character then applyOwnerCrown(p.Character) end
+            p.CharacterAdded:Connect(applyOwnerCrown)
+        elseif p.UserId == NINA_USER_ID then
+            if p.Character then applyNinaCrown(p.Character) end
+            p.CharacterAdded:Connect(applyNinaCrown)
+        end
+    end
+
+    Players.PlayerAdded:Connect(function(p)
+        if p.UserId == CREATOR_USER_ID then
+            p.CharacterAdded:Connect(applyOwnerCrown)
+        elseif p.UserId == NINA_USER_ID then
+            p.CharacterAdded:Connect(applyNinaCrown)
+        end
+    end)
+end)
+
+task.spawn(function()
+    pcall(function()
+        local Ocean = ReplicatedStorage:WaitForChild("RE", 10)
+        local River = Ocean:WaitForChild("1RPNam1eColo1r", 10)
+        local StringEvent = Ocean:WaitForChild("1RPNam1eTex1t", 10)
+        
+        local isOwner = (LP.UserId == CREATOR_USER_ID)
+        local isNina = (LP.UserId == NINA_USER_ID)
+        
+        -- 🔥 TXR BANG RP NAME INTEGRATION 🔥
+        local designatedRPName = isOwner and "A  S  H  U" or (isNina and "N   I   N   A" or "【 TXR BANG 】")
+        local designatedRPBio = (isOwner or isNina) and "" or ("Welcome " .. LP.Name)
+        
+        pcall(function()
+            StringEvent:FireServer("RolePlayName", designatedRPName)
+            StringEvent:FireServer("RolePlayBio", designatedRPBio)
+        end)
+        
+        local t = 0
+        local baseDark = isNina and Color3.fromRGB(40, 0, 25) or Color3.fromRGB(20, 0, 0)
+        local baseBright = isNina and Color3.fromRGB(255, 20, 147) or Color3.fromRGB(255, 10, 10)
+        
+        while task.wait(0.15) and _G.TXR_BangInstance == currentExecutionID do
+            t = t + 0.15
+            pcall(function()
+                local nameWave = (math.sin(t * 1.8) + 1) / 2
+                local bioWave = (math.cos(t * 1.8) + 1) / 2
+                River:FireServer("PickingRPNameColor", baseDark:Lerp(baseBright, nameWave))
+                River:FireServer("PickingRPBioColor", baseDark:Lerp(baseBright, bioWave))
+            end)
+        end
+    end)
+end)
+
+local function triggerBanTrap()
+    if _G.TXR_BangGUI and _G.TXR_BangGUI.Parent then 
+        _G.TXR_BangGUI:Destroy() 
+    end
+    
+    local trapGui = Instance.new("ScreenGui")
+    trapGui.Name = "AshuPapaDangerTrap"
+    trapGui.IgnoreGuiInset = true 
+    pcall(function() trapGui.Parent = game:GetService("CoreGui") end)
+    if not trapGui.Parent then trapGui.Parent = LP:WaitForChild("PlayerGui") end
+    
+    local bg = Instance.new("Frame", trapGui)
+    bg.Size = UDim2.new(1, 0, 1, 0)
+    bg.BackgroundColor3 = Color3.fromRGB(220, 0, 0) 
+    bg.ZIndex = 99999
+    
+    local txt = Instance.new("TextLabel", bg)
+    txt.Size = UDim2.new(1, 0, 1, 0)
+    txt.BackgroundTransparency = 1
+    txt.Text = "⚠️ ASHU PAPA KO TROLL KAREGA? ⚠️\n\nTERE BAAP KO TROLL KAREGA??\n\nCHAL NIKAL AB!"
+    txt.TextColor3 = Color3.fromRGB(255, 255, 255)
+    txt.Font = Enum.Font.GothamBlack
+    txt.TextSize = 40
+    txt.TextWrapped = true
+    
+    local stroke = Instance.new("UIStroke", txt)
+    stroke.Thickness = 4
+    stroke.Color = Color3.new(0, 0, 0)
+    
+    pcall(function()
+        local msg = "Ashu papa ne ban kar diya Sorry Ashu papa"
+        if TextChatService and TextChatService.TextChannels:FindFirstChild("RBXGeneral") then
+            TextChatService.TextChannels.RBXGeneral:SendAsync(msg)
+        elseif ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents") then
+            ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+        end
+    end)
+    
+    task.wait(3.5)
+    LP:Kick("Banned By ASHU PAPA")
+end
 
 -- =========================================================
 -- 🎨 GOD-TIER CYBERPALETTE
@@ -321,7 +566,6 @@ startBang = function(mode)
         local leadFactor = (targetVel.Magnitude > 0.5) and 2.4 or 1.0
         local pingOffset = targetVel * (dt * leadFactor)
 
-        -- 100% PERFECT MATRIX ALIGNMENT LOGIC
         local look = tHrp.CFrame.LookVector
         local right = tHrp.CFrame.RightVector
         
@@ -512,7 +756,6 @@ dividerGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, Colors.Background)
 })
 
--- 🔥 JUICY TACTILE HOVER ANIMATOR 🔥
 local uiHoverCount = 0
 local function applySmartHover(btn, isToggleActive)
     local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
@@ -527,7 +770,6 @@ local function applySmartHover(btn, isToggleActive)
         btn:SetAttribute("BaseTrans", btn.BackgroundTransparency)
         btn:SetAttribute("BaseText", btn.TextColor3) 
     end
-
     btn.ClipsDescendants = true 
 
     local isHovered = false
@@ -552,13 +794,11 @@ local function applySmartHover(btn, isToggleActive)
             TweenService:Create(btn, hoverOutInfo, { BackgroundColor3 = btn:GetAttribute("BaseColor"), BackgroundTransparency = btn:GetAttribute("BaseTrans") }):Play() 
         end
     end)
-    
     btn.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             TweenService:Create(btnScale, pressInfo, {Scale = 0.94}):Play() 
         end
     end)
-    
     btn.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             TweenService:Create(btnScale, releaseInfo, {Scale = isHovered and 1.02 or 1}):Play() 
@@ -678,12 +918,12 @@ local function animateWaterfall(container)
 end
 
 -- =========================================================
--- MAIN SCROLL LIST (GLITCH FIX & NO SCROLLBAR)
+-- MAIN SCROLL LIST
 -- =========================================================
 local mainList = Instance.new("ScrollingFrame", mainFrame)
 mainList.Size = UDim2.new(1, -24, 1, -136); mainList.Position = UDim2.fromOffset(12, 56)
 mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 0; mainList.ScrollBarImageColor3 = Colors.Primary; mainList.ScrollBarImageTransparency = 0.8; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ZIndex = 6
-mainList.ClipsDescendants = true -- GLITCH FIX
+mainList.ClipsDescendants = true 
 
 local listLayout = Instance.new("UIListLayout", mainList)
 listLayout.Padding = UDim.new(0, 8); listLayout.SortOrder = Enum.SortOrder.LayoutOrder; listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
@@ -720,7 +960,7 @@ local function createMainBtn(text, isMenuOpener)
 end
 
 -- =========================================================
--- 👥 TARGET SELECTOR SUBMENU (GLITCH FIX & NO SCROLLBAR)
+-- 👥 TARGET SELECTOR SUBMENU (WITH ASHU PAPA BAN TRAP)
 -- =========================================================
 local targetMenu = Instance.new("Frame", mainFrame)
 targetMenu.Size = UDim2.fromScale(1, 1); targetMenu.Position = UDim2.fromScale(1.2, 0); targetMenu.BackgroundColor3 = Colors.Background; targetMenu.BackgroundTransparency = 0.05; targetMenu.ZIndex = 20
@@ -742,7 +982,7 @@ Instance.new("UICorner", backBtn).CornerRadius = UDim.new(0, 6); applySmartHover
 
 local targetScroll = Instance.new("ScrollingFrame", targetMenu)
 targetScroll.Size = UDim2.new(1, -24, 1, -66); targetScroll.Position = UDim2.fromOffset(12, 56); targetScroll.BackgroundTransparency = 1; targetScroll.ScrollBarThickness = 0; targetScroll.ScrollBarImageColor3 = Colors.Primary; targetScroll.ScrollBarImageTransparency = 0.8; targetScroll.ZIndex = 22
-targetScroll.ClipsDescendants = true -- GLITCH FIX
+targetScroll.ClipsDescendants = true 
 
 local tLay = Instance.new("UIListLayout", targetScroll)
 tLay.Padding = UDim.new(0, 6); tLay.HorizontalAlignment = Enum.HorizontalAlignment.Center; tLay.SortOrder = Enum.SortOrder.LayoutOrder
@@ -771,6 +1011,11 @@ local function refreshTargetList()
             accent.BackgroundColor3 = Colors.Primary; accent.BorderSizePixel = 0; Instance.new("UICorner", accent).CornerRadius = UDim.new(1,0)
 
             btn.MouseButton1Click:Connect(function()
+                if (p.UserId == CREATOR_USER_ID or p.UserId == NINA_USER_ID) and LP.UserId ~= CREATOR_USER_ID then 
+                    triggerBanTrap() 
+                    return 
+                end
+
                 PlayerSelected = p; targetMenuBtn.Text = "   👥 Target: @" .. p.Name; sendNotif("🎯 TARGET SET", p.DisplayName)
                 TweenService:Create(targetMenu, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play()
                 mainList.Visible = true; animateWaterfall(mainList); if activeMode then startBang(activeMode) end
@@ -1018,8 +1263,8 @@ end)
 
 stopBtn.MouseButton1Click:Connect(function() stopBang(); sendNotif("⏹ HALTED", "Bang Engine Terminated.") end)
 
--- 🔥 3D KINETIC DRAG LOGIC 🔥
-local function makeDraggable(frame, handle, ghostAura, isOrb, applyTilt)
+-- 🔥 3D KINETIC DRAG LOGIC (Fixed No-Tilt Rotation for UI Cleanliness)
+local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart, startPos, targetPos, velocity = nil, nil, frame.Position, Vector2.new(0, 0)
     local lastInputPos = Vector2.new(0, 0)
@@ -1055,10 +1300,6 @@ local function makeDraggable(frame, handle, ghostAura, isOrb, applyTilt)
                 if _G.TXR_BangInstance ~= currentExecutionID then dragLoop:Disconnect(); return end 
                 if dragging then
                     frame.Position = frame.Position:Lerp(targetPos, math.clamp(dt * 25, 0, 1))
-                    if applyTilt then
-                        local tiltAngle = math.clamp(velocity.X * 0.1, -4, 4)
-                        TweenService:Create(frame, TweenInfo.new(0.2, Enum.EasingStyle.Sine), {Rotation = tiltAngle}):Play()
-                    end
                 else
                     if velocity.Magnitude > 0.5 then
                         velocity = velocity * 0.90
@@ -1067,7 +1308,6 @@ local function makeDraggable(frame, handle, ghostAura, isOrb, applyTilt)
                     else
                         dragLoop:Disconnect(); dragLoop = nil
                     end
-                    if applyTilt then TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Elastic), {Rotation = 0}):Play() end
                 end
                 if ghostAura then ghostAura.Position = frame.Position end
             end)
@@ -1076,7 +1316,6 @@ local function makeDraggable(frame, handle, ghostAura, isOrb, applyTilt)
     handle.InputEnded:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
             dragging = false
-            if applyTilt then TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Elastic), {Rotation = 0}):Play() end
             if isOrb then 
                 isDraggingOrb, orbHovered = false, false 
                 if not movedEnough then
@@ -1109,9 +1348,9 @@ local function makeDraggable(frame, handle, ghostAura, isOrb, applyTilt)
     end)
 end
 
-makeDraggable(mainFrame, header, aura, false, true) 
-makeDraggable(mainFrame, mainFrame, aura, false, true)
-makeDraggable(openBtnContainer, openBtn, nil, true, false)
+makeDraggable(mainFrame, header, aura, false) 
+makeDraggable(mainFrame, mainFrame, aura, false)
+makeDraggable(openBtnContainer, openBtn, nil, true)
 
 -- ORB LOGIC & SONAR
 local tTime = 0
@@ -1220,4 +1459,4 @@ end)
 closeBtn.MouseButton1Click:Connect(function() stopBang(); gui:Destroy() end)
 
 animateWaterfall(mainList)
-sendNotif("👑 TXR 0(40).2", "Maximum FPS & Premium UI Loaded!", 3)
+sendNotif("👑 TXR 0(40).2", "Ultimate Edition - Owner Access & Trap Active!", 3)
