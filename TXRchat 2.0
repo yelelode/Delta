@@ -338,8 +338,8 @@ end
 -- =========================================================
 local Colors = {
     Background = Color3.fromRGB(8, 12, 18),       
-    Surface = Color3.fromRGB(22, 28, 40),          
-    SurfaceHover = Color3.fromRGB(30, 38, 55),     
+    Surface = Color3.fromRGB(255, 255, 255), -- Changed for frosted effect
+    SurfaceHover = Color3.fromRGB(255, 255, 255),     
     ActiveTint = Color3.fromRGB(16, 42, 60),       
     Primary = Color3.fromRGB(0, 255, 210),         
     PrimaryDark = Color3.fromRGB(0, 170, 150),     
@@ -578,7 +578,7 @@ startBang = function(mode)
 end
 
 -- =========================================================
--- 🖥️ GOD-TIER GUI CONSTRUCTION (INDEPENDENT LAYERED SYSTEM)
+-- 🖥️ GOD-TIER GUI CONSTRUCTION (FROSTED GLASSMORPHISM)
 -- =========================================================
 local gui = Instance.new("ScreenGui", targetGuiParent)
 gui.Name = "TXR_" .. tostring(math.random(100000, 999999))
@@ -586,11 +586,11 @@ gui.ResetOnSpawn = false
 _G.TXR_BangGUI = gui
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
 
--- 🔥 1. AURA LAYER (FIXED & TIGHT - NO OVERGLOW) 🔥
+-- 🔥 1. AURA LAYER (TIGHT SUBTLE GLOW) 🔥
 local aura = Instance.new("ImageLabel", gui)
 aura.AnchorPoint = Vector2.new(0.5, 0.5)
 aura.Position = UDim2.fromScale(0.5, 0.5)
-aura.Size = UDim2.new(0, 310, 0, 440) 
+aura.Size = UDim2.new(0, 300, 0, 430) 
 aura.BackgroundTransparency = 1
 aura.Image = "rbxassetid://6014261993"
 aura.ImageColor3 = Colors.Primary
@@ -621,17 +621,17 @@ dropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
 dropShadow.BackgroundTransparency = 1
 dropShadow.Image = "rbxassetid://6014261993"
 dropShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-dropShadow.ImageTransparency = 0.3
+dropShadow.ImageTransparency = 0.2
 dropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
 dropShadow.ScaleType = Enum.ScaleType.Slice
 
--- 🔥 3. MAIN GLASS FRAME (MORE POLISHED & GLASSY) 🔥
+-- 🔥 3. MAIN GLASS FRAME (FROSTED DEEP GLASS) 🔥
 local mainFrame = Instance.new("Frame", gui)
 mainFrame.Size = UDim2.new(0, 280, 0, 410)
 mainFrame.Position = UDim2.fromScale(0.5, 0.5)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-mainFrame.BackgroundColor3 = Color3.fromRGB(10, 15, 25) -- Darker base for better glass contrast
-mainFrame.BackgroundTransparency = 0.35 -- More transparent
+mainFrame.BackgroundColor3 = Color3.fromRGB(5, 8, 12) -- Deep frosted dark base
+mainFrame.BackgroundTransparency = 0.55 -- Maximum transparency for glass feel
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true 
 mainFrame.Active = true
@@ -639,32 +639,32 @@ mainFrame.Selectable = true
 mainFrame.ZIndex = 5
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14) 
 
--- Sharper White Edge Glass Light 
+-- Dynamic Edge Lighting (Bright top, fading to bottom)
 local glassStroke = Instance.new("UIStroke", mainFrame)
 glassStroke.Color = Color3.new(1, 1, 1)
-glassStroke.Transparency = 0.4
+glassStroke.Transparency = 0.2
 glassStroke.Thickness = 1.5
 glassStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 local strokeGrad = Instance.new("UIGradient", glassStroke)
 strokeGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
-    ColorSequenceKeypoint.new(0.3, Color3.new(1, 1, 1)),
-    ColorSequenceKeypoint.new(0.5, Color3.new(0.2, 0.2, 0.2)),
-    ColorSequenceKeypoint.new(0.7, Color3.new(1, 1, 1)),
+    ColorSequenceKeypoint.new(0.2, Colors.Primary),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(40, 50, 65)),
+    ColorSequenceKeypoint.new(0.8, Colors.Primary),
     ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1))
 })
 strokeGrad.Transparency = NumberSequence.new({
     NumberSequenceKeypoint.new(0, 0),
-    NumberSequenceKeypoint.new(0.5, 0.85),
+    NumberSequenceKeypoint.new(0.5, 0.9),
     NumberSequenceKeypoint.new(1, 0)
 })
 
--- Ambient Inner Glow
+-- Ambient Glass Volume
 local bgGradient = Instance.new("UIGradient", mainFrame)
 bgGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 45, 60)), 
-    ColorSequenceKeypoint.new(0.5, Colors.Background), 
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 45, 60))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 30, 45)), 
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 0, 0)), 
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 30, 45))
 })
 bgGradient.Rotation = -45
 
@@ -676,12 +676,12 @@ end)
 local mainScale = Instance.new("UIScale", mainFrame)
 mainScale.Scale = 0
 
--- 🔥 ENHANCED SWEEPING GLASS REFLECTION 🔥
+-- 🔥 SWEEPING DIAGONAL SHINE 🔥
 local glassReflection = Instance.new("Frame", mainFrame)
 glassReflection.Size = UDim2.fromScale(1.5, 1.5)
 glassReflection.Position = UDim2.fromScale(-1, -0.5)
 glassReflection.Rotation = 35
-glassReflection.BackgroundTransparency = 0.5 -- More visible shine
+glassReflection.BackgroundTransparency = 0.3 
 glassReflection.BackgroundColor3 = Color3.new(1, 1, 1)
 glassReflection.BorderSizePixel = 0
 glassReflection.ZIndex = 19 
@@ -689,12 +689,13 @@ local glassGrad = Instance.new("UIGradient", glassReflection)
 glassGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(1,1,1)), ColorSequenceKeypoint.new(0.5, Color3.new(1,1,1)), ColorSequenceKeypoint.new(1, Color3.new(1,1,1))})
 glassGrad.Transparency = NumberSequence.new({
     NumberSequenceKeypoint.new(0, 1), 
-    NumberSequenceKeypoint.new(0.4, 0.75), 
-    NumberSequenceKeypoint.new(0.6, 0.75), 
+    NumberSequenceKeypoint.new(0.4, 0.8), 
+    NumberSequenceKeypoint.new(0.5, 0.65), 
+    NumberSequenceKeypoint.new(0.6, 0.8), 
     NumberSequenceKeypoint.new(1, 1)
 })
 
--- Scanlines Effect
+-- Scanlines Effect (Subtle texture)
 local scanlines = Instance.new("ImageLabel", mainFrame)
 scanlines.Size = UDim2.new(1, 0, 2, 0) 
 scanlines.Position = UDim2.fromScale(0, -1)
@@ -708,7 +709,7 @@ scanlines.TileSize = UDim2.new(0, 100, 0, 4)
 TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
 TweenService:Create(shadowScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
 
--- HEADER (Inside mainFrame)
+-- HEADER
 local header = Instance.new("Frame", mainFrame)
 header.Size = UDim2.new(1, 0, 0, 50)
 header.BackgroundTransparency = 1
@@ -760,7 +761,7 @@ dividerGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, Colors.Background)
 })
 
--- 🔥 ULTRA-SMOOTH TACTILE PHYSICS ENGINE 🔥
+-- 🔥 TACTILE BUTTON HOVER PHYSICS 🔥
 local uiHoverCount = 0
 local function applySmartHover(btn, isToggleActive)
     local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
@@ -788,10 +789,10 @@ local function applySmartHover(btn, isToggleActive)
         uiHoverCount = uiHoverCount + 1 
         TweenService:Create(btnScale, hoverInInfo, {Scale = 1.03}):Play()
         if not isToggleActive or type(isToggleActive) ~= "function" or not isToggleActive() then 
-            TweenService:Create(btn, hoverInInfo, { BackgroundColor3 = Colors.SurfaceHover, BackgroundTransparency = 0.15 }):Play() 
+            TweenService:Create(btn, hoverInInfo, { BackgroundColor3 = Colors.Surface, BackgroundTransparency = 0.75 }):Play() 
         end
         local stroke = btn:FindFirstChildOfClass("UIStroke")
-        if stroke and stroke.Name ~= "Accent" then TweenService:Create(stroke, hoverInInfo, {Transparency = 0.4}):Play() end
+        if stroke and stroke.Name ~= "Accent" then TweenService:Create(stroke, hoverInInfo, {Transparency = 0.3}):Play() end
     end)
     
     btn.MouseLeave:Connect(function()
@@ -821,13 +822,13 @@ end
 
 local minimizeBtn = Instance.new("TextButton", header)
 minimizeBtn.Size = UDim2.fromOffset(26, 26); minimizeBtn.Position = UDim2.new(1, -66, 0.5, -13)
-minimizeBtn.BackgroundColor3 = Colors.Surface; minimizeBtn.BackgroundTransparency = 0.6
+minimizeBtn.BackgroundColor3 = Colors.Surface; minimizeBtn.BackgroundTransparency = 0.85
 minimizeBtn.Text = "–"; minimizeBtn.TextColor3 = Colors.Text; minimizeBtn.Font = Enum.Font.GothamBold; minimizeBtn.AutoButtonColor = false; minimizeBtn.ZIndex = 15
 Instance.new("UICorner", minimizeBtn).CornerRadius = UDim.new(0, 6); applySmartHover(minimizeBtn)
 
 local closeBtn = Instance.new("TextButton", header)
 closeBtn.Size = UDim2.fromOffset(26, 26); closeBtn.Position = UDim2.new(1, -34, 0.5, -13)
-closeBtn.BackgroundColor3 = Colors.Surface; closeBtn.BackgroundTransparency = 0.6
+closeBtn.BackgroundColor3 = Colors.Surface; closeBtn.BackgroundTransparency = 0.85
 closeBtn.Text = "×"; closeBtn.TextColor3 = Colors.Danger; closeBtn.Font = Enum.Font.GothamBold; closeBtn.TextSize = 15; closeBtn.AutoButtonColor = false; closeBtn.ZIndex = 15
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6); applySmartHover(closeBtn)
 
@@ -849,7 +850,7 @@ eventGlow.BackgroundTransparency = 1; eventGlow.Image = "rbxassetid://1047060178
 
 local openBtn = Instance.new("TextButton", openBtnContainer)
 openBtn.Size = UDim2.fromScale(0.85, 0.85); openBtn.Position = UDim2.fromScale(0.5, 0.5); openBtn.AnchorPoint = Vector2.new(0.5, 0.5)
-openBtn.BackgroundColor3 = Colors.Surface; openBtn.BackgroundTransparency = 0.15; openBtn.Text = ""; openBtn.AutoButtonColor = false; openBtn.ClipsDescendants = false; openBtn.ZIndex = 101
+openBtn.BackgroundColor3 = Color3.fromRGB(15, 20, 30); openBtn.BackgroundTransparency = 0.35; openBtn.Text = ""; openBtn.AutoButtonColor = false; openBtn.ClipsDescendants = false; openBtn.ZIndex = 101
 Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0)
 
 local gimbalOuter = Instance.new("Frame", openBtnContainer)
@@ -942,12 +943,12 @@ listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() ma
 local layoutIdx = 1
 local function getOrder() layoutIdx = layoutIdx + 1 return layoutIdx end
 
--- 🔥 PREMIUM GLOW STROKES FOR MAIN BUTTONS 🔥
+-- 🔥 FROSTED TRANSLUCENT BUTTONS 🔥
 local function createMainBtn(text, isMenuOpener)
     local btn = Instance.new("TextButton", mainList)
     btn.Size = UDim2.new(1, 0, 0, 42)
     btn.BackgroundColor3 = Colors.Surface
-    btn.BackgroundTransparency = 0.45 
+    btn.BackgroundTransparency = 0.9 -- Extremely frosted look for inside elements
     btn.Text = "   " .. text
     btn.TextColor3 = Colors.Text
     btn.Font = Enum.Font.GothamBold
@@ -988,10 +989,10 @@ local function createMainBtn(text, isMenuOpener)
 end
 
 -- =========================================================
--- 👥 TARGET SELECTOR SUBMENU (Inside mainFrame)
+-- 👥 TARGET SELECTOR SUBMENU
 -- =========================================================
 local targetMenu = Instance.new("Frame", mainFrame)
-targetMenu.Size = UDim2.fromScale(1, 1); targetMenu.Position = UDim2.fromScale(1.2, 0); targetMenu.BackgroundColor3 = Colors.Background; targetMenu.BackgroundTransparency = 0.05; targetMenu.ZIndex = 20
+targetMenu.Size = UDim2.fromScale(1, 1); targetMenu.Position = UDim2.fromScale(1.2, 0); targetMenu.BackgroundColor3 = Colors.Background; targetMenu.BackgroundTransparency = 0.4; targetMenu.ZIndex = 20
 Instance.new("UICorner", targetMenu).CornerRadius = UDim.new(0, 12)
 
 local tTop = Instance.new("Frame", targetMenu)
@@ -1003,7 +1004,7 @@ Instance.new("UIGradient", tLabel).Color = ColorSequence.new({ColorSequenceKeypo
 crispText(tLabel)
 
 local backBtn = Instance.new("TextButton", tTop)
-backBtn.Size = UDim2.fromOffset(36, 26); backBtn.Position = UDim2.new(1, -46, 0.5, -13); backBtn.BackgroundColor3 = Colors.Surface; backBtn.BackgroundTransparency = 0.5
+backBtn.Size = UDim2.fromOffset(36, 26); backBtn.Position = UDim2.new(1, -46, 0.5, -13); backBtn.BackgroundColor3 = Colors.Surface; backBtn.BackgroundTransparency = 0.85
 backBtn.Text = "←"; backBtn.TextColor3 = Colors.Primary; backBtn.Font = Enum.Font.GothamBold; backBtn.TextSize = 14; backBtn.ZIndex = 22
 Instance.new("UICorner", backBtn).CornerRadius = UDim.new(0, 6); applySmartHover(backBtn, nil)
 
@@ -1027,7 +1028,7 @@ local function refreshTargetList()
     for _, p in ipairs(Players:GetPlayers()) do
         if p ~= LP then
             local btn = Instance.new("TextButton", targetScroll)
-            btn.Size = UDim2.new(1, 0, 0, 36); btn.BackgroundColor3 = (PlayerSelected == p) and Colors.ActiveTint or Colors.Surface; btn.BackgroundTransparency = 0.4
+            btn.Size = UDim2.new(1, 0, 0, 36); btn.BackgroundColor3 = (PlayerSelected == p) and Colors.ActiveTint or Colors.Surface; btn.BackgroundTransparency = (PlayerSelected == p) and 0.4 or 0.9
             btn.Text = "    " .. p.DisplayName .. " | @" .. p.Name; btn.TextColor3 = (PlayerSelected == p) and Colors.Primary or Colors.Text
             btn.Font = Enum.Font.GothamMedium; btn.TextSize = 11; btn.TextXAlignment = Enum.TextXAlignment.Left; btn.LayoutOrder = getOrder(); btn.ZIndex = 23
             Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8); applySmartHover(btn, nil); crispText(btn)
@@ -1063,7 +1064,7 @@ end)
 -- ⚡ EMOTE SELECTOR
 -- =========================================================
 local swipeContainer = Instance.new("Frame", mainList)
-swipeContainer.Size = UDim2.new(1, 0, 0, 42); swipeContainer.BackgroundColor3 = Colors.Surface; swipeContainer.BackgroundTransparency = 0.4
+swipeContainer.Size = UDim2.new(1, 0, 0, 42); swipeContainer.BackgroundColor3 = Colors.Surface; swipeContainer.BackgroundTransparency = 0.85
 swipeContainer.ClipsDescendants = true; swipeContainer.LayoutOrder = getOrder(); swipeContainer.ZIndex = 7
 Instance.new("UICorner", swipeContainer).CornerRadius = UDim.new(0, 8)
 
@@ -1128,7 +1129,7 @@ swipeBtn.InputEnded:Connect(function(input)
 end)
 
 -- =========================================================
--- 🔥 LINKED TOGGLES (One ON = Other OFF) & SPECTATE
+-- 🔥 LINKED TOGGLES
 -- =========================================================
 local function createToggle(name, callback)
     local btn = createMainBtn(name, false)
@@ -1142,12 +1143,12 @@ local function createToggle(name, callback)
         local tInfo = TweenInfo.new(0.4, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
         if state then
             btn:SetAttribute("BaseColor", Colors.ActiveTint)
-            TweenService:Create(btn, tInfo, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
+            TweenService:Create(btn, tInfo, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary, BackgroundTransparency = 0.4}):Play()
             TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 3, 0.6, 0)}):Play()
             TweenService:Create(glow, TweenInfo.new(0.3), {Transparency = 0.35}):Play()
         else
             btn:SetAttribute("BaseColor", Colors.Surface)
-            TweenService:Create(btn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play()
+            TweenService:Create(btn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text, BackgroundTransparency = 0.9}):Play()
             TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play()
             TweenService:Create(glow, TweenInfo.new(0.3), {Transparency = 0.85}):Play()
         end
@@ -1191,7 +1192,7 @@ setSpectateState = createToggle("👁️ Spectate Camera", function(v)
 end)
 
 -- =========================================================
--- 🎚️ EXACT SLIDERS (JUICY PHYSICS)
+-- 🎚️ EXACT SLIDERS 
 -- =========================================================
 local function createSlider(name, min, max, defaultVal, callback)
     local container = Instance.new("Frame", mainList)
@@ -1214,7 +1215,7 @@ local function createSlider(name, min, max, defaultVal, callback)
     crispText(valLabel)
 
     local bg = Instance.new("Frame", container)
-    bg.Size = UDim2.new(1, -20, 0, 3); bg.Position = UDim2.new(0, 10, 0, 26); bg.BackgroundColor3 = Colors.SurfaceHover; bg.ZIndex = 8
+    bg.Size = UDim2.new(1, -20, 0, 3); bg.Position = UDim2.new(0, 10, 0, 26); bg.BackgroundColor3 = Color3.fromRGB(40, 50, 65); bg.ZIndex = 8
     Instance.new("UICorner", bg).CornerRadius = UDim.new(1, 0)
     
     local hitbox = Instance.new("TextButton", container)
@@ -1272,7 +1273,7 @@ createSlider("HEIGHT OFFSET", 0, 4, HeadHeightOffset, function(v) HeadHeightOffs
 createSlider("ANGLE OFFSET", -180, 180, AngleOffset, function(v) AngleOffset = v end)
 
 -- =========================================================
--- ⚡ BOTTOM ACTION BAR (GOTO & STOP)
+-- ⚡ BOTTOM ACTION BAR
 -- =========================================================
 local bottomRow = Instance.new("Frame", mainFrame)
 bottomRow.Size = UDim2.new(1, -24, 0, 40); bottomRow.Position = UDim2.new(0, 12, 1, -56); bottomRow.BackgroundTransparency = 1; bottomRow.ZIndex = 15
@@ -1283,7 +1284,7 @@ gotoBtn.Font = Enum.Font.GothamBlack; gotoBtn.TextSize = 11; gotoBtn.AutoButtonC
 Instance.new("UICorner", gotoBtn).CornerRadius = UDim.new(0, 6); crispText(gotoBtn); applySmartHover(gotoBtn, nil)
 
 local stopBtn = Instance.new("TextButton", bottomRow)
-stopBtn.Size = UDim2.new(0.48, 0, 1, 0); stopBtn.Position = UDim2.new(0.52, 0, 0, 0); stopBtn.BackgroundColor3 = Colors.Surface; stopBtn.BackgroundTransparency = 0.5
+stopBtn.Size = UDim2.new(0.48, 0, 1, 0); stopBtn.Position = UDim2.new(0.52, 0, 0, 0); stopBtn.BackgroundColor3 = Colors.Surface; stopBtn.BackgroundTransparency = 0.8
 stopBtn.Text = "⏹ STOP"; stopBtn.TextColor3 = Colors.Danger; stopBtn.Font = Enum.Font.GothamBold; stopBtn.TextSize = 11; stopBtn.AutoButtonColor = false; stopBtn.ZIndex = 16
 Instance.new("UICorner", stopBtn).CornerRadius = UDim.new(0, 6)
 local stopBarStroke = Instance.new("UIStroke", stopBtn); stopBarStroke.Color = Colors.Danger; stopBarStroke.Thickness = 1; stopBarStroke.Transparency = 0.5
@@ -1395,8 +1396,7 @@ RunService.RenderStepped:Connect(function(dt)
         if bgGradient then bgGradient.Rotation = ((tTime * 40)/2) - 45 end
         local breath = (math.sin(tTime * 3) + 1) / 2 
         
-        -- Fixed tight glow without overscaling
-        aura.ImageTransparency = 0.55 + (breath * 0.15)
+        aura.ImageTransparency = 0.6 + (breath * 0.1)
         auraScale.Scale = mainScale.Scale
         
         -- Dynamic glass edges
@@ -1406,7 +1406,7 @@ RunService.RenderStepped:Connect(function(dt)
 
         -- Sweeping shiny glass reflection 
         if glassGrad then
-            glassGrad.Offset = Vector2.new(0, math.sin(tTime * 1.5) * 0.8)
+            glassGrad.Offset = Vector2.new(0, math.sin(tTime * 1.2) * 1.2)
         end
     end
     
