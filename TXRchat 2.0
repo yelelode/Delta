@@ -338,8 +338,8 @@ end
 -- =========================================================
 local Colors = {
     Background = Color3.fromRGB(12, 15, 22),       
-    Surface = Color3.fromRGB(22, 28, 40),          
-    SurfaceHover = Color3.fromRGB(30, 38, 55),     
+    Surface = Color3.fromRGB(20, 25, 38),          
+    SurfaceHover = Color3.fromRGB(30, 40, 60),     
     ActiveTint = Color3.fromRGB(16, 42, 60),       
     Primary = Color3.fromRGB(0, 255, 210),         
     PrimaryDark = Color3.fromRGB(0, 170, 150),     
@@ -360,19 +360,23 @@ end
 local function clickFlash(btn)
     local ripple = Instance.new("Frame", btn)
     ripple.BackgroundColor3 = Color3.new(1, 1, 1)
-    ripple.BackgroundTransparency = 0.5
+    ripple.BackgroundTransparency = 0.3
     ripple.BorderSizePixel = 0
     ripple.Position = UDim2.fromScale(0.5, 0.5)
     ripple.AnchorPoint = Vector2.new(0.5, 0.5)
     ripple.Size = UDim2.fromOffset(0, 0)
     ripple.ZIndex = btn.ZIndex + 2
     Instance.new("UICorner", ripple).CornerRadius = UDim.new(1, 0)
+    
+    local originalClips = btn.ClipsDescendants
     btn.ClipsDescendants = true
-    TweenService:Create(ripple, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-        Size = UDim2.fromOffset(btn.AbsoluteSize.X * 1.5, btn.AbsoluteSize.X * 1.5),
+    
+    TweenService:Create(ripple, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+        Size = UDim2.fromOffset(btn.AbsoluteSize.X * 1.8, btn.AbsoluteSize.X * 1.8),
         BackgroundTransparency = 1
     }):Play()
-    Debris:AddItem(ripple, 0.5)
+    Debris:AddItem(ripple, 0.55)
+    task.delay(0.55, function() btn.ClipsDescendants = originalClips end)
 end
 
 -- =========================================================
@@ -583,28 +587,29 @@ gui.ResetOnSpawn = false
 _G.TXR_BangGUI = gui
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
 
+-- 🔥 RESTORED & ENHANCED BACKGROUND AURA 🔥
 local aura = Instance.new("ImageLabel", gui)
 aura.AnchorPoint = Vector2.new(0.5, 0.5)
 aura.Position = UDim2.fromScale(0.5, 0.5)
-aura.Size = UDim2.new(0, 330, 0, 460)
+aura.Size = UDim2.new(0, 400, 0, 500) -- Slightly bigger for better glow spread
 aura.BackgroundTransparency = 1
 aura.Image = "rbxassetid://1316045217"
 aura.ImageColor3 = Colors.Primary
-aura.ImageTransparency = 1
+aura.ImageTransparency = 0.15 -- Much more visible now
 aura.ZIndex = 1
 
 local auraScale = Instance.new("UIScale", aura)
 auraScale.Scale = 0.85
 
--- 🔥 GLASSMORPHISM MAIN BACKGROUND 🔥
+-- 🔥 TRUE GLASSMORPHISM MAIN BACKGROUND 🔥
 local mainFrame = Instance.new("Frame", gui)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.Position = UDim2.fromScale(0.5, 0.5)
 mainFrame.Size = UDim2.new(0, 280, 0, 410)
-mainFrame.BackgroundColor3 = Color3.fromRGB(20, 25, 35) -- Brighter base for glass
-mainFrame.BackgroundTransparency = 0.35 -- Perfect frosted transparency
+mainFrame.BackgroundColor3 = Color3.fromRGB(15, 20, 30) -- Deep tinted glass base
+mainFrame.BackgroundTransparency = 0.25 -- Perfect balance of visibility and glass effect
 mainFrame.BorderSizePixel = 0
-mainFrame.ClipsDescendants = false -- FIX: Set to false taaki DropShadow round dikhe aur sharp box mein cut na ho
+mainFrame.ClipsDescendants = false -- VERY IMPORTANT: Keeps drop shadow completely unclipped!
 mainFrame.Active = true
 mainFrame.Selectable = true
 mainFrame.ZIndex = 5
@@ -612,20 +617,20 @@ mainFrame.ZIndex = 5
 local mainFrameCorner = Instance.new("UICorner", mainFrame)
 mainFrameCorner.CornerRadius = UDim.new(0, 14) 
 
--- FIX CONTAINER: Naya invisible frame jo internal items ko bahar nikalne se rokega, smooth corners ke sath
-local innerClipper = Instance.new("Frame", mainFrame)
-innerClipper.Size = UDim2.fromScale(1, 1)
-innerClipper.BackgroundTransparency = 1
-innerClipper.ClipsDescendants = true
-innerClipper.ZIndex = 5
-Instance.new("UICorner", innerClipper).CornerRadius = UDim.new(0, 14)
-
--- Subtle Inner Edge Glow for Glass
+-- Premium Edge Lighting (Glass Outline)
 local innerGlassStroke = Instance.new("UIStroke", mainFrame)
 innerGlassStroke.Color = Color3.new(1, 1, 1)
-innerGlassStroke.Transparency = 0.85
-innerGlassStroke.Thickness = 1.2
+innerGlassStroke.Transparency = 0.65 -- Brighter border
+innerGlassStroke.Thickness = 1.5
 innerGlassStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+-- Apply gradient to the stroke to make it look like light hitting glass edges
+local strokeGrad = Instance.new("UIGradient", innerGlassStroke)
+strokeGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
+    ColorSequenceKeypoint.new(0.5, Color3.new(0.4, 0.4, 0.4)),
+    ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1))
+})
 
 -- 🔥 3D DROP SHADOW 🔥
 local dropShadow = Instance.new("ImageLabel", mainFrame)
@@ -636,37 +641,54 @@ dropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
 dropShadow.BackgroundTransparency = 1
 dropShadow.Image = "rbxassetid://6014261993"
 dropShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-dropShadow.ImageTransparency = 0.4
+dropShadow.ImageTransparency = 0.35
 dropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
 dropShadow.ScaleType = Enum.ScaleType.Slice
 dropShadow.ZIndex = mainFrame.ZIndex - 1
 
-local glassReflection = Instance.new("Frame", innerClipper) -- Changed to innerClipper
-glassReflection.Size = UDim2.fromScale(1.5, 1.5)
+-- 🔥 INNER CLIPPER: This hides target menu sliding out, while keeping corners round! 🔥
+local innerClipper = Instance.new("Frame", mainFrame)
+innerClipper.Size = UDim2.fromScale(1, 1)
+innerClipper.BackgroundTransparency = 1
+innerClipper.ClipsDescendants = true
+innerClipper.ZIndex = 5
+Instance.new("UICorner", innerClipper).CornerRadius = UDim.new(0, 14)
+
+-- Dynamic Sweeping Glass Reflection
+local glassReflection = Instance.new("Frame", innerClipper)
+glassReflection.Size = UDim2.new(1.5, 0, 0, 100) -- Made it a beautiful diagonal streak
 glassReflection.Position = UDim2.fromScale(-1, -0.5)
 glassReflection.Rotation = 35
-glassReflection.BackgroundTransparency = 0.8 -- Enhanced reflection visibility
+glassReflection.BackgroundTransparency = 0.5
 glassReflection.BackgroundColor3 = Color3.new(1, 1, 1)
 glassReflection.BorderSizePixel = 0
-glassReflection.ZIndex = 19
+glassReflection.ZIndex = 4
 local glassGrad = Instance.new("UIGradient", glassReflection)
-glassGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(1,1,1)), ColorSequenceKeypoint.new(0.5, Color3.new(1,1,1)), ColorSequenceKeypoint.new(1, Color3.new(1,1,1))})
-glassGrad.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0.9), NumberSequenceKeypoint.new(1, 1)})
+glassGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.new(1,1,1)), 
+    ColorSequenceKeypoint.new(0.5, Color3.new(1,1,1)), 
+    ColorSequenceKeypoint.new(1, Color3.new(1,1,1))
+})
+glassGrad.Transparency = NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 1), 
+    NumberSequenceKeypoint.new(0.5, 0.6), 
+    NumberSequenceKeypoint.new(1, 1)
+})
 
 mainFrame:GetPropertyChangedSignal("Position"):Connect(function() aura.Position = mainFrame.Position end)
 
 local bgGradient = Instance.new("UIGradient", mainFrame)
 bgGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(14, 18, 28)), 
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(18, 24, 38)), 
     ColorSequenceKeypoint.new(0.5, Colors.Background), 
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(14, 18, 28))
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(18, 24, 38))
 })
 bgGradient.Rotation = -45
 
 local mainScale = Instance.new("UIScale", mainFrame)
 mainScale.Scale = 0
 
-local scanlines = Instance.new("ImageLabel", innerClipper) -- Changed to innerClipper
+local scanlines = Instance.new("ImageLabel", innerClipper) 
 scanlines.Size = UDim2.new(1, 0, 2, 0) 
 scanlines.Position = UDim2.fromScale(0, -1)
 scanlines.BackgroundTransparency = 1
@@ -677,13 +699,13 @@ scanlines.ZIndex = 4
 scanlines.TileSize = UDim2.new(0, 100, 0, 4)
 
 TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.35}):Play()
-TweenService:Create(innerGlassStroke, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.85}):Play()
+TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.25}):Play()
+TweenService:Create(innerGlassStroke, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.65}):Play()
 TweenService:Create(auraScale, TweenInfo.new(0.9, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1}):Play()
-TweenService:Create(aura, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.5}):Play()
+TweenService:Create(aura, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.25}):Play()
 
--- HEADER
-local header = Instance.new("Frame", mainFrame)
+-- HEADER (Inside innerClipper so it follows rounded corners nicely)
+local header = Instance.new("Frame", innerClipper)
 header.Size = UDim2.new(1, 0, 0, 50)
 header.BackgroundTransparency = 1
 header.BorderSizePixel = 0
@@ -749,23 +771,22 @@ local function applySmartHover(btn, isToggleActive)
         btn:SetAttribute("BaseTrans", btn.BackgroundTransparency)
         btn:SetAttribute("BaseText", btn.TextColor3) 
     end
-    btn.ClipsDescendants = true 
-
+    
     local isHovered = false
-    local hoverInInfo = TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
-    local hoverOutInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    local pressInfo = TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-    local releaseInfo = TweenInfo.new(0.65, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
+    local hoverInInfo = TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    local hoverOutInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local pressInfo = TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+    local releaseInfo = TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
 
     btn.MouseEnter:Connect(function()
         isHovered = true
         uiHoverCount = uiHoverCount + 1 
-        TweenService:Create(btnScale, hoverInInfo, {Scale = 1.03}):Play()
+        TweenService:Create(btnScale, hoverInInfo, {Scale = 1.05}):Play() -- Extra pop on hover
         if not isToggleActive or type(isToggleActive) ~= "function" or not isToggleActive() then 
             TweenService:Create(btn, hoverInInfo, { BackgroundColor3 = Colors.SurfaceHover, BackgroundTransparency = 0.15 }):Play() 
         end
         local stroke = btn:FindFirstChildOfClass("UIStroke")
-        if stroke and stroke.Name ~= "Accent" then TweenService:Create(stroke, hoverInInfo, {Transparency = 0.4}):Play() end
+        if stroke and stroke.Name ~= "Accent" then TweenService:Create(stroke, hoverInInfo, {Transparency = 0.25}):Play() end
     end)
     
     btn.MouseLeave:Connect(function()
@@ -781,13 +802,13 @@ local function applySmartHover(btn, isToggleActive)
     
     btn.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            TweenService:Create(btnScale, pressInfo, {Scale = 0.92}):Play() 
+            TweenService:Create(btnScale, pressInfo, {Scale = 0.94}):Play() 
         end
     end)
     
     btn.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            TweenService:Create(btnScale, releaseInfo, {Scale = isHovered and 1.03 or 1}):Play() 
+            TweenService:Create(btnScale, releaseInfo, {Scale = isHovered and 1.05 or 1}):Play() 
             clickFlash(btn) 
         end
     end)
@@ -901,7 +922,7 @@ end
 -- =========================================================
 -- MAIN SCROLL LIST
 -- =========================================================
-local mainList = Instance.new("ScrollingFrame", mainFrame)
+local mainList = Instance.new("ScrollingFrame", innerClipper) -- Moved to innerClipper
 mainList.Size = UDim2.new(1, -24, 1, -136); mainList.Position = UDim2.fromOffset(12, 56)
 mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 0; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ZIndex = 6
 mainList.ClipsDescendants = true 
@@ -964,8 +985,8 @@ end
 -- =========================================================
 -- 👥 TARGET SELECTOR SUBMENU
 -- =========================================================
-local targetMenu = Instance.new("Frame", innerClipper) -- Changed to innerClipper
-targetMenu.Size = UDim2.fromScale(1, 1); targetMenu.Position = UDim2.fromScale(1.2, 0); targetMenu.BackgroundColor3 = Colors.Background; targetMenu.BackgroundTransparency = 0.05; targetMenu.ZIndex = 20
+local targetMenu = Instance.new("Frame", innerClipper) -- Inside innerClipper to hide when sliding!
+targetMenu.Size = UDim2.fromScale(1, 1); targetMenu.Position = UDim2.fromScale(1.2, 0); targetMenu.BackgroundColor3 = Colors.Background; targetMenu.BackgroundTransparency = 0.15; targetMenu.ZIndex = 20
 Instance.new("UICorner", targetMenu).CornerRadius = UDim.new(0, 12)
 
 local tTop = Instance.new("Frame", targetMenu)
@@ -990,7 +1011,7 @@ tLay.Padding = UDim.new(0, 6); tLay.HorizontalAlignment = Enum.HorizontalAlignme
 tLay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() targetScroll.CanvasSize = UDim2.new(0, 0, 0, tLay.AbsoluteContentSize.Y + 10) end)
 
 backBtn.MouseButton1Click:Connect(function()
-    TweenService:Create(targetMenu, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play()
+    TweenService:Create(targetMenu, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play()
     mainList.Visible = true; animateWaterfall(mainList)
 end)
 
@@ -1017,7 +1038,7 @@ local function refreshTargetList()
                     return 
                 end
                 PlayerSelected = p; targetMenuBtn.Text = "   👥 Target: @" .. p.Name; sendNotif("🎯 TARGET SET", p.DisplayName)
-                TweenService:Create(targetMenu, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play()
+                TweenService:Create(targetMenu, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play()
                 mainList.Visible = true; animateWaterfall(mainList); if activeMode then startBang(activeMode) end
             end)
         end
@@ -1029,7 +1050,7 @@ refreshTargetList()
 
 targetMenuBtn.MouseButton1Click:Connect(function()
     refreshTargetList(); mainList.Visible = false
-    TweenService:Create(targetMenu, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play()
+    TweenService:Create(targetMenu, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play()
     animateWaterfall(targetScroll)
 end)
 
@@ -1248,8 +1269,8 @@ createSlider("ANGLE OFFSET", -180, 180, AngleOffset, function(v) AngleOffset = v
 -- =========================================================
 -- ⚡ BOTTOM ACTION BAR (GOTO & STOP)
 -- =========================================================
-local bottomRow = Instance.new("Frame", mainFrame)
-bottomRow.Size = UDim2.new(1, -24, 0, 40); bottomRow.Position = UDim2.new(0, 12, 1, -76); bottomRow.BackgroundTransparency = 1; bottomRow.ZIndex = 15
+local bottomRow = Instance.new("Frame", innerClipper) -- Moved inside innerClipper
+bottomRow.Size = UDim2.new(1, -24, 0, 40); bottomRow.Position = UDim2.new(0, 12, 1, -50); bottomRow.BackgroundTransparency = 1; bottomRow.ZIndex = 15
 
 local gotoBtn = Instance.new("TextButton", bottomRow)
 gotoBtn.Size = UDim2.new(0.48, 0, 1, 0); gotoBtn.BackgroundColor3 = Colors.Primary; gotoBtn.Text = "🚀 GOTO"; gotoBtn.TextColor3 = Colors.TextDark
@@ -1272,7 +1293,7 @@ end)
 
 stopBtn.MouseButton1Click:Connect(function() stopBang(); sendNotif("⏹ HALTED", "Bang Engine Terminated.") end)
 
--- 🔥 3D KINETIC DRAG LOGIC (Fixed No-Tilt Rotation for UI Cleanliness & Clamping Fixed)
+-- 🔥 3D KINETIC DRAG LOGIC
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart, startPos, targetPos, velocity = nil, nil, frame.Position, Vector2.new(0, 0)
@@ -1339,8 +1360,8 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
                     auraScale.Scale = 0.8
                     TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
                     TweenService:Create(auraScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-                    TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.35}):Play()
-                    TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
+                    TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.25}):Play()
+                    TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.25}):Play()
                     animateWaterfall(mainList)
                 end
             end
@@ -1362,23 +1383,33 @@ makeDraggable(mainFrame, header, aura, false)
 makeDraggable(mainFrame, mainFrame, aura, false)
 makeDraggable(openBtnContainer, openBtn, nil, true)
 
--- ORB LOGIC & SONAR
+-- ORB LOGIC, ANIMATIONS & SONAR
 local tTime = 0
 local sonarTimer = 0
 RunService.RenderStepped:Connect(function(dt)
     if _G.TXR_BangInstance ~= currentExecutionID or not gui.Parent then return end
     tTime = tTime + dt
     if mainFrame.Visible then
+        -- Background Glassmorphism Animation
         if bgGradient then bgGradient.Rotation = ((tTime * 40)/2) - 45 end
         local breath = (math.sin(tTime * 3) + 1) / 2 
-        aura.ImageTransparency = 0.5 + (breath * 0.1)
-        auraScale.Scale = 0.85 + (breath * 0.02)
-        innerGlassStroke.Transparency = 0.75 + (breath * 0.15)
+        
+        -- Aura pulsing!
+        aura.ImageTransparency = 0.15 + (breath * 0.15) 
+        auraScale.Scale = 0.85 + (breath * 0.05)
+        
+        -- Smooth glass edges lighting up
+        strokeGrad.Rotation = (tTime * 50) % 360
+        innerGlassStroke.Transparency = 0.5 + (breath * 0.3)
+        
         titleGrad.Offset = Vector2.new(math.sin(tTime * 2) * 0.3, 0)
         scanlines.Position = UDim2.new(0, 0, (tTime * 0.05) % 1 - 1, 0)
         
-        if glassGrad then
-            glassGrad.Offset = Vector2.new(0, math.sin(tTime * 1.5) * 0.8)
+        -- The Glass Reflection Sweeping 
+        if glassReflection and glassGrad then
+            local sweep = math.sin(tTime * 1.5)
+            glassReflection.Position = UDim2.fromScale(sweep * 1.5 - 0.5, -0.5)
+            glassGrad.Offset = Vector2.new(0, sweep * 0.8)
         end
     end
     
