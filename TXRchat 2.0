@@ -595,20 +595,21 @@ mainWrapper.AnchorPoint = Vector2.new(0.5, 0.5)
 mainWrapper.BackgroundTransparency = 1
 mainWrapper.Active = true
 mainWrapper.Selectable = true
+mainWrapper.ClipsDescendants = false -- MUST remain false so shadow/aura can breathe
 mainWrapper.ZIndex = 5
 
 local wrapperScale = Instance.new("UIScale", mainWrapper)
 wrapperScale.Scale = 0
 
--- Aura - Strictly bound to Wrapper size so it NEVER infinitely bleeds out
+-- Aura - Restricted inside Wrapper bounds perfectly
 local aura = Instance.new("ImageLabel", mainWrapper)
 aura.AnchorPoint = Vector2.new(0.5, 0.5)
 aura.Position = UDim2.fromScale(0.5, 0.5)
-aura.Size = UDim2.new(1, 100, 1, 100) -- Clean restricted glow padding
+aura.Size = UDim2.new(1, 100, 1, 100) -- Clean restricted glow padding (stops extreme bleeding)
 aura.BackgroundTransparency = 1
 aura.Image = "rbxassetid://1316045217"
 aura.ImageColor3 = Colors.Primary
-aura.ImageTransparency = 0.5
+aura.ImageTransparency = 0.5 -- Default, strictly controlled by RenderStepped now (No Tween Conflict)
 aura.ZIndex = 1
 
 -- Perfect Drop Shadow
@@ -627,8 +628,8 @@ dropShadow.ZIndex = 2
 -- 🔥 REAL GLASS FRAME 🔥
 local mainFrame = Instance.new("Frame", mainWrapper)
 mainFrame.Size = UDim2.fromScale(1, 1)
-mainFrame.BackgroundColor3 = Color3.fromRGB(20, 25, 35) -- Exact Premium Frosted Glass Tint
-mainFrame.BackgroundTransparency = 0.25 -- Smooth Blur Feel
+mainFrame.BackgroundColor3 = Color3.fromRGB(15, 20, 30) -- Premium Frosted Glass Tint
+mainFrame.BackgroundTransparency = 0.25 -- Perfect visibility balance
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true -- Perfectly clips all scrolling contents inside!
 mainFrame.ZIndex = 5
@@ -637,12 +638,13 @@ Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14)
 -- Polished White Edge Glass Light 
 local glassStroke = Instance.new("UIStroke", mainFrame)
 glassStroke.Color = Color3.new(1, 1, 1)
-glassStroke.Transparency = 0.75
-glassStroke.Thickness = 1.2
+glassStroke.Transparency = 0.65
+glassStroke.Thickness = 1.5
+glassStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 local strokeGrad = Instance.new("UIGradient", glassStroke)
 strokeGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
-    ColorSequenceKeypoint.new(0.5, Color3.new(0.3, 0.3, 0.3)),
+    ColorSequenceKeypoint.new(0.5, Color3.new(0.4, 0.4, 0.4)),
     ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1))
 })
 
@@ -655,6 +657,19 @@ bgGradient.Color = ColorSequence.new({
 })
 bgGradient.Rotation = -45
 
+-- 🔥 RESTORED ORIGINAL GLASS REFLECTION SWEEP 🔥
+local glassReflection = Instance.new("Frame", mainFrame)
+glassReflection.Size = UDim2.fromScale(1.5, 1.5)
+glassReflection.Position = UDim2.fromScale(-1, -0.5)
+glassReflection.Rotation = 35
+glassReflection.BackgroundTransparency = 0.7 
+glassReflection.BackgroundColor3 = Color3.new(1, 1, 1)
+glassReflection.BorderSizePixel = 0
+glassReflection.ZIndex = 19 -- Overlays content cleanly
+local glassGrad = Instance.new("UIGradient", glassReflection)
+glassGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(1,1,1)), ColorSequenceKeypoint.new(0.5, Color3.new(1,1,1)), ColorSequenceKeypoint.new(1, Color3.new(1,1,1))})
+glassGrad.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0.85), NumberSequenceKeypoint.new(1, 1)})
+
 -- Original Scanlines Effect
 local scanlines = Instance.new("ImageLabel", mainFrame)
 scanlines.Size = UDim2.new(1, 0, 2, 0) 
@@ -666,9 +681,8 @@ scanlines.ImageTransparency = 0.95
 scanlines.ZIndex = 6
 scanlines.TileSize = UDim2.new(0, 100, 0, 4)
 
+-- Safe opening tween (ONLY scaling the wrapper, so no tween/renderstep conflicts)
 TweenService:Create(wrapperScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.25}):Play()
-TweenService:Create(aura, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.5}):Play()
 
 -- HEADER (Inside mainFrame)
 local header = Instance.new("Frame", mainFrame)
@@ -1323,8 +1337,6 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
                     
                     wrapperScale.Scale = 0.8
                     TweenService:Create(wrapperScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-                    TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.25}):Play()
-                    TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.5}):Play()
                     animateWaterfall(mainList)
                 end
             end
@@ -1352,18 +1364,24 @@ local sonarTimer = 0
 RunService.RenderStepped:Connect(function(dt)
     if _G.TXR_BangInstance ~= currentExecutionID or not gui.Parent then return end
     tTime = tTime + dt
+    
     if mainWrapper.Visible then
         if bgGradient then bgGradient.Rotation = ((tTime * 40)/2) - 45 end
         local breath = (math.sin(tTime * 3) + 1) / 2 
         
-        -- Smooth glow inside strict boundaries
-        aura.ImageTransparency = 0.4 + (breath * 0.15)
+        -- Smooth glow ONLY controlled here now (No fighting tweens)
+        aura.ImageTransparency = 0.35 + (breath * 0.15)
         
         -- Dynamic glass edges
         strokeGrad.Rotation = (tTime * 50) % 360
         
         titleGrad.Offset = Vector2.new(math.sin(tTime * 2) * 0.3, 0)
         scanlines.Position = UDim2.new(0, 0, (tTime * 0.05) % 1 - 1, 0)
+
+        -- Sweeping shiny glass reflection 
+        if glassGrad then
+            glassGrad.Offset = Vector2.new(0, math.sin(tTime * 1.5) * 0.8)
+        end
     end
     
     if openBtnContainer.Visible then
@@ -1441,8 +1459,6 @@ openBtn.MouseButton1Up:Connect(function() TweenService:Create(openBtnScale, Twee
 
 minimizeBtn.MouseButton1Click:Connect(function()
     TweenService:Create(wrapperScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play()
-    TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(aura, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
     task.wait(0.4)
     mainWrapper.Visible = false; openBtnContainer.Visible = true; openBtnScale.Scale = 0
     TweenService:Create(openBtnScale, TweenInfo.new(0.6, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play() 
