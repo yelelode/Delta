@@ -578,7 +578,7 @@ startBang = function(mode)
 end
 
 -- =========================================================
--- 🖥️ GOD-TIER GUI CONSTRUCTION (GLASSMORPHISM UPGRADE)
+-- 🖥️ GOD-TIER GUI CONSTRUCTION (INDEPENDENT LAYERED SYSTEM)
 -- =========================================================
 local gui = Instance.new("ScreenGui", targetGuiParent)
 gui.Name = "TXR_" .. tostring(math.random(100000, 999999))
@@ -586,34 +586,33 @@ gui.ResetOnSpawn = false
 _G.TXR_BangGUI = gui
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
 
--- 🔥 THE ULTIMATE ARCHITECTURE FIX: Invisible Wrapper that holds everything perfectly together 🔥
-local mainWrapper = Instance.new("Frame", gui)
-mainWrapper.Name = "MainWrapper"
-mainWrapper.Size = UDim2.new(0, 280, 0, 410)
-mainWrapper.Position = UDim2.fromScale(0.5, 0.5)
-mainWrapper.AnchorPoint = Vector2.new(0.5, 0.5)
-mainWrapper.BackgroundTransparency = 1
-mainWrapper.Active = true
-mainWrapper.Selectable = true
-mainWrapper.ClipsDescendants = false -- MUST remain false so shadow/aura can breathe
-mainWrapper.ZIndex = 5
-
-local wrapperScale = Instance.new("UIScale", mainWrapper)
-wrapperScale.Scale = 0
-
--- Aura - Restricted inside Wrapper bounds perfectly
-local aura = Instance.new("ImageLabel", mainWrapper)
+-- 🔥 1. AURA LAYER (FIXED SIZE, NO STRETCHING OUTSIDE) 🔥
+local aura = Instance.new("ImageLabel", gui)
 aura.AnchorPoint = Vector2.new(0.5, 0.5)
 aura.Position = UDim2.fromScale(0.5, 0.5)
-aura.Size = UDim2.new(1, 100, 1, 100) -- Clean restricted glow padding (stops extreme bleeding)
+aura.Size = UDim2.new(0, 330, 0, 460) -- Exact original fixed size (NO UDim2 scale bugs)
 aura.BackgroundTransparency = 1
 aura.Image = "rbxassetid://1316045217"
 aura.ImageColor3 = Colors.Primary
-aura.ImageTransparency = 0.5 -- Default, strictly controlled by RenderStepped now (No Tween Conflict)
+aura.ImageTransparency = 1 -- Controlled strictly by RenderStepped now
 aura.ZIndex = 1
 
--- Perfect Drop Shadow
-local dropShadow = Instance.new("ImageLabel", mainWrapper)
+local auraScale = Instance.new("UIScale", aura)
+auraScale.Scale = 0
+
+-- 🔥 2. SHADOW LAYER (SEPARATE SO MAIN FRAME CLIPS CONTENT SAFELY) 🔥
+local shadowContainer = Instance.new("Frame", gui)
+shadowContainer.Name = "ShadowContainer"
+shadowContainer.Size = UDim2.new(0, 280, 0, 410)
+shadowContainer.Position = UDim2.fromScale(0.5, 0.5)
+shadowContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+shadowContainer.BackgroundTransparency = 1
+shadowContainer.ZIndex = 2
+
+local shadowScale = Instance.new("UIScale", shadowContainer)
+shadowScale.Scale = 0
+
+local dropShadow = Instance.new("ImageLabel", shadowContainer)
 dropShadow.Size = UDim2.new(1, 46, 1, 46)
 dropShadow.Position = UDim2.fromScale(0.5, 0.5)
 dropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -623,15 +622,18 @@ dropShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
 dropShadow.ImageTransparency = 0.3
 dropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
 dropShadow.ScaleType = Enum.ScaleType.Slice
-dropShadow.ZIndex = 2
 
--- 🔥 REAL GLASS FRAME 🔥
-local mainFrame = Instance.new("Frame", mainWrapper)
-mainFrame.Size = UDim2.fromScale(1, 1)
+-- 🔥 3. MAIN GLASS FRAME (CLIPS CONTENT) 🔥
+local mainFrame = Instance.new("Frame", gui)
+mainFrame.Size = UDim2.new(0, 280, 0, 410)
+mainFrame.Position = UDim2.fromScale(0.5, 0.5)
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.BackgroundColor3 = Color3.fromRGB(15, 20, 30) -- Premium Frosted Glass Tint
-mainFrame.BackgroundTransparency = 0.25 -- Perfect visibility balance
+mainFrame.BackgroundTransparency = 0.25 
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true -- Perfectly clips all scrolling contents inside!
+mainFrame.Active = true
+mainFrame.Selectable = true
 mainFrame.ZIndex = 5
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14) 
 
@@ -657,15 +659,24 @@ bgGradient.Color = ColorSequence.new({
 })
 bgGradient.Rotation = -45
 
--- 🔥 RESTORED ORIGINAL GLASS REFLECTION SWEEP 🔥
+-- THE MAGICAL FIX: Stick Aura & Shadow to the MainFrame perfectly when dragged
+mainFrame:GetPropertyChangedSignal("Position"):Connect(function()
+    aura.Position = mainFrame.Position
+    shadowContainer.Position = mainFrame.Position
+end)
+
+local mainScale = Instance.new("UIScale", mainFrame)
+mainScale.Scale = 0
+
+-- 🔥 RESTORED SWEEPING GLASS REFLECTION 🔥
 local glassReflection = Instance.new("Frame", mainFrame)
 glassReflection.Size = UDim2.fromScale(1.5, 1.5)
 glassReflection.Position = UDim2.fromScale(-1, -0.5)
 glassReflection.Rotation = 35
-glassReflection.BackgroundTransparency = 0.7 
+glassReflection.BackgroundTransparency = 0.75 
 glassReflection.BackgroundColor3 = Color3.new(1, 1, 1)
 glassReflection.BorderSizePixel = 0
-glassReflection.ZIndex = 19 -- Overlays content cleanly
+glassReflection.ZIndex = 19 -- Overlays content nicely for that sheer glass look
 local glassGrad = Instance.new("UIGradient", glassReflection)
 glassGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(1,1,1)), ColorSequenceKeypoint.new(0.5, Color3.new(1,1,1)), ColorSequenceKeypoint.new(1, Color3.new(1,1,1))})
 glassGrad.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0.85), NumberSequenceKeypoint.new(1, 1)})
@@ -681,8 +692,9 @@ scanlines.ImageTransparency = 0.95
 scanlines.ZIndex = 6
 scanlines.TileSize = UDim2.new(0, 100, 0, 4)
 
--- Safe opening tween (ONLY scaling the wrapper, so no tween/renderstep conflicts)
-TweenService:Create(wrapperScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
+-- ONLY Tween these. Aura scales dynamically in RenderStepped to avoid conflicts!
+TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
+TweenService:Create(shadowScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
 
 -- HEADER (Inside mainFrame)
 local header = Instance.new("Frame", mainFrame)
@@ -1274,7 +1286,7 @@ end)
 
 stopBtn.MouseButton1Click:Connect(function() stopBang(); sendNotif("⏹ HALTED", "Bang Engine Terminated.") end)
 
--- 🔥 3D KINETIC DRAG LOGIC (Now targeting mainWrapper)
+-- 🔥 3D KINETIC DRAG LOGIC 
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart, startPos, targetPos, velocity = nil, nil, frame.Position, Vector2.new(0, 0)
@@ -1333,10 +1345,13 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
                     TweenService:Create(openBtnScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play()
                     task.wait(0.25)
                     openBtnContainer.Visible = false
-                    mainWrapper.Visible = true
+                    mainFrame.Visible = true
+                    aura.Visible = true
+                    shadowContainer.Visible = true
                     
-                    wrapperScale.Scale = 0.8
-                    TweenService:Create(wrapperScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
+                    -- Only tween the main scale now. Aura scale smoothly mimics it dynamically.
+                    TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
+                    TweenService:Create(shadowScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
                     animateWaterfall(mainList)
                 end
             end
@@ -1354,8 +1369,8 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
     end)
 end
 
-makeDraggable(mainWrapper, header, nil, false) 
-makeDraggable(mainWrapper, mainFrame, nil, false)
+makeDraggable(mainFrame, header, nil, false) 
+makeDraggable(mainFrame, mainFrame, nil, false)
 makeDraggable(openBtnContainer, openBtn, nil, true)
 
 -- ORB LOGIC, ANIMATIONS & SONAR
@@ -1365,16 +1380,16 @@ RunService.RenderStepped:Connect(function(dt)
     if _G.TXR_BangInstance ~= currentExecutionID or not gui.Parent then return end
     tTime = tTime + dt
     
-    if mainWrapper.Visible then
+    if mainFrame.Visible then
         if bgGradient then bgGradient.Rotation = ((tTime * 40)/2) - 45 end
         local breath = (math.sin(tTime * 3) + 1) / 2 
         
-        -- Smooth glow ONLY controlled here now (No fighting tweens)
-        aura.ImageTransparency = 0.35 + (breath * 0.15)
+        -- Smooth glow bound strictly to main UI's current scale! Fixes the 1-second fight glitch entirely!
+        aura.ImageTransparency = 0.4 + (breath * 0.15)
+        auraScale.Scale = (0.85 + (breath * 0.05)) * mainScale.Scale
         
         -- Dynamic glass edges
         strokeGrad.Rotation = (tTime * 50) % 360
-        
         titleGrad.Offset = Vector2.new(math.sin(tTime * 2) * 0.3, 0)
         scanlines.Position = UDim2.new(0, 0, (tTime * 0.05) % 1 - 1, 0)
 
@@ -1458,9 +1473,10 @@ openBtn.MouseButton1Down:Connect(function() TweenService:Create(openBtnScale, Tw
 openBtn.MouseButton1Up:Connect(function() TweenService:Create(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05}):Play() end)
 
 minimizeBtn.MouseButton1Click:Connect(function()
-    TweenService:Create(wrapperScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play()
+    TweenService:Create(mainScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play()
+    TweenService:Create(shadowScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play()
     task.wait(0.4)
-    mainWrapper.Visible = false; openBtnContainer.Visible = true; openBtnScale.Scale = 0
+    mainFrame.Visible = false; aura.Visible = false; shadowContainer.Visible = false; openBtnContainer.Visible = true; openBtnScale.Scale = 0
     TweenService:Create(openBtnScale, TweenInfo.new(0.6, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play() 
 end)
 
