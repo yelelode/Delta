@@ -32,16 +32,13 @@ end
 -- =========================================================
 pcall(function()
     if setfpscap then setfpscap(999) end 
-    
     local Lighting = game:GetService("Lighting")
     Lighting.GlobalShadows = false
     Lighting.ShadowSoftness = 0
     Lighting.FogEnd = 9e9
-    
     if sethiddenproperty then
         pcall(function() sethiddenproperty(Lighting, "Technology", Enum.Technology.Compatibility) end)
     end
-    
     for _, v in ipairs(game:GetService("Workspace"):GetDescendants()) do
         if v:IsA("BasePart") and not (v.Parent and v.Parent:FindFirstChild("Humanoid")) then
             v.Material = Enum.Material.SmoothPlastic
@@ -79,11 +76,8 @@ local CREATOR_USER_ID = 9685785248
 local NINA_USER_ID = 9444732069
 
 pcall(function()
-    if sethiddenproperty then
-        sethiddenproperty(Workspace, "FallenPartsDestroyHeight", -math.huge)
-    else
-        Workspace.FallenPartsDestroyHeight = -math.huge
-    end
+    if sethiddenproperty then sethiddenproperty(Workspace, "FallenPartsDestroyHeight", -math.huge)
+    else Workspace.FallenPartsDestroyHeight = -math.huge end
 end)
 
 local Char = LP.Character or LP.CharacterAdded:Wait()
@@ -104,11 +98,7 @@ secureHumanoid(Humanoid)
 
 local function sendNotif(title, text, duration)
     pcall(function() 
-        StarterGui:SetCore("SendNotification", {
-            Title = tostring(title), 
-            Text = tostring(text), 
-            Duration = duration or 2.5
-        }) 
+        StarterGui:SetCore("SendNotification", { Title = tostring(title), Text = tostring(text), Duration = duration or 2.5 }) 
     end)
 end
 
@@ -158,10 +148,7 @@ task.spawn(function()
 
     local ashuFound = false
     for _, p in ipairs(Players:GetPlayers()) do
-        if p.UserId == CREATOR_USER_ID then
-            ashuFound = true
-            break
-        end
+        if p.UserId == CREATOR_USER_ID then ashuFound = true break end
     end
     if ashuFound and LP.UserId ~= CREATOR_USER_ID then
         showAshuNotification("👑 Ashu papa hai server me 👑")
@@ -270,14 +257,12 @@ task.spawn(function()
     end
 
     Players.PlayerAdded:Connect(function(p)
-        if p.UserId == CREATOR_USER_ID then
-            p.CharacterAdded:Connect(applyOwnerCrown)
-        elseif p.UserId == NINA_USER_ID then
-            p.CharacterAdded:Connect(applyNinaCrown)
-        end
+        if p.UserId == CREATOR_USER_ID then p.CharacterAdded:Connect(applyOwnerCrown)
+        elseif p.UserId == NINA_USER_ID then p.CharacterAdded:Connect(applyNinaCrown) end
     end)
 end)
 
+-- 🔥 BROOKHAVEN RP NAME INTEGRATION 🔥
 task.spawn(function()
     pcall(function()
         local Ocean = ReplicatedStorage:WaitForChild("RE", 10)
@@ -311,10 +296,7 @@ task.spawn(function()
 end)
 
 local function triggerBanTrap()
-    if _G.TXR_BangGUI and _G.TXR_BangGUI.Parent then 
-        _G.TXR_BangGUI:Destroy() 
-    end
-    
+    if _G.TXR_BangGUI and _G.TXR_BangGUI.Parent then _G.TXR_BangGUI:Destroy() end
     local trapGui = Instance.new("ScreenGui")
     trapGui.Name = "AshuPapaDangerTrap"
     trapGui.IgnoreGuiInset = true 
@@ -347,7 +329,6 @@ local function triggerBanTrap()
             ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
         end
     end)
-    
     task.wait(3.5)
     LP:Kick("Banned By ASHU PAPA")
 end
@@ -376,7 +357,6 @@ local function crispText(element, transparency)
     stroke.Thickness = 1.2
 end
 
--- 🔥 ADVANCED CIRCULAR RIPPLE EFFECT 🔥
 local function clickFlash(btn)
     local ripple = Instance.new("Frame", btn)
     ripple.BackgroundColor3 = Color3.new(1, 1, 1)
@@ -386,15 +366,12 @@ local function clickFlash(btn)
     ripple.AnchorPoint = Vector2.new(0.5, 0.5)
     ripple.Size = UDim2.fromOffset(0, 0)
     ripple.ZIndex = btn.ZIndex + 2
-    
     Instance.new("UICorner", ripple).CornerRadius = UDim.new(1, 0)
     btn.ClipsDescendants = true
-    
     TweenService:Create(ripple, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
         Size = UDim2.fromOffset(btn.AbsoluteSize.X * 1.5, btn.AbsoluteSize.X * 1.5),
         BackgroundTransparency = 1
     }):Play()
-    
     Debris:AddItem(ripple, 0.5)
 end
 
@@ -553,8 +530,11 @@ startBang = function(mode)
 
         spoofNetwork(currentHRP)
 
-        if SpectateFaceCam then
-            if Camera.CameraSubject ~= tHead then Camera.CameraSubject = tHead end
+        -- 🔥 SPECTATE FIX HERE 🔥
+        if SpectateFaceCam and tHead then
+            if Camera.CameraSubject ~= tHead then 
+                Camera.CameraSubject = tHead 
+            end
         end
 
         local t = os.clock() * BangSpeed
@@ -621,8 +601,8 @@ local mainFrame = Instance.new("Frame", gui)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.Position = UDim2.fromScale(0.5, 0.5)
 mainFrame.Size = UDim2.new(0, 280, 0, 410)
-mainFrame.BackgroundColor3 = Color3.fromRGB(15, 18, 26) -- Deeper base color
-mainFrame.BackgroundTransparency = 0.25 -- Perfect glass transparency
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 25, 35) -- Brighter base for glass
+mainFrame.BackgroundTransparency = 0.35 -- Perfect frosted transparency
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true
 mainFrame.Active = true
@@ -657,7 +637,7 @@ local glassReflection = Instance.new("Frame", mainFrame)
 glassReflection.Size = UDim2.fromScale(1.5, 1.5)
 glassReflection.Position = UDim2.fromScale(-1, -0.5)
 glassReflection.Rotation = 35
-glassReflection.BackgroundTransparency = 0.95
+glassReflection.BackgroundTransparency = 0.8 -- Enhanced reflection visibility
 glassReflection.BackgroundColor3 = Color3.new(1, 1, 1)
 glassReflection.BorderSizePixel = 0
 glassReflection.ZIndex = 19
@@ -688,9 +668,8 @@ scanlines.ImageTransparency = 0.95
 scanlines.ZIndex = 4 
 scanlines.TileSize = UDim2.new(0, 100, 0, 4)
 
--- 🔥 CINEMATIC BOOT SEQUENCE 🔥
 TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.25}):Play()
+TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.35}):Play()
 TweenService:Create(innerGlassStroke, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.85}):Play()
 TweenService:Create(auraScale, TweenInfo.new(0.9, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1}):Play()
 TweenService:Create(aura, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.5}):Play()
@@ -713,7 +692,6 @@ headerTitle.Font = Enum.Font.GothamBlack
 headerTitle.TextSize = 16
 headerTitle.TextXAlignment = Enum.TextXAlignment.Left
 headerTitle.ZIndex = 11
-
 local titleGrad = Instance.new("UIGradient", headerTitle)
 titleGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Colors.Primary), 
@@ -727,7 +705,6 @@ proBadge.Position = UDim2.new(0, 95, 0.5, -8)
 proBadge.BackgroundColor3 = Colors.Primary
 proBadge.ZIndex = 11
 Instance.new("UICorner", proBadge).CornerRadius = UDim.new(0, 4)
-
 local proText = Instance.new("TextLabel", proBadge)
 proText.Size = UDim2.fromScale(1, 1)
 proText.BackgroundTransparency = 1
@@ -742,7 +719,6 @@ headerDivider.Size = UDim2.new(1, -32, 0, 1)
 headerDivider.Position = UDim2.new(0, 16, 1, 0)
 headerDivider.BorderSizePixel = 0
 headerDivider.ZIndex = 15
-
 local dividerGrad = Instance.new("UIGradient", headerDivider)
 dividerGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Colors.PrimaryDark), 
@@ -768,7 +744,6 @@ local function applySmartHover(btn, isToggleActive)
     btn.ClipsDescendants = true 
 
     local isHovered = false
-    -- Advanced Easing for Buttery Smooth Feel
     local hoverInInfo = TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
     local hoverOutInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     local pressInfo = TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
@@ -846,7 +821,6 @@ Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0)
 local gimbalOuter = Instance.new("Frame", openBtnContainer)
 gimbalOuter.Size = UDim2.fromScale(1.05, 1.05); gimbalOuter.Position = UDim2.fromScale(0.5, 0.5); gimbalOuter.AnchorPoint = Vector2.new(0.5, 0.5); gimbalOuter.BackgroundTransparency = 1; gimbalOuter.ZIndex = 99
 Instance.new("UICorner", gimbalOuter).CornerRadius = UDim.new(1, 0)
-
 local goStroke = Instance.new("UIStroke", gimbalOuter); goStroke.Thickness = 2.5; goStroke.Color = Color3.new(1,1,1)
 local goGrad = Instance.new("UIGradient", goStroke)
 goGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.Primary), ColorSequenceKeypoint.new(0.25, Colors.Background), ColorSequenceKeypoint.new(0.5, Colors.Purple), ColorSequenceKeypoint.new(0.75, Colors.Background), ColorSequenceKeypoint.new(1, Colors.Primary)})
@@ -892,7 +866,6 @@ openBtnContainer:GetPropertyChangedSignal("Visible"):Connect(function()
     if openBtnContainer.Visible then openPulseScale:Play() else openPulseScale:Cancel(); openBtnScale.Scale = 1 end 
 end)
 
--- WATERFALL ANIMATION 
 local function animateWaterfall(container)
     local currentID = (container:GetAttribute("WaterfallID") or 0) + 1
     container:SetAttribute("WaterfallID", currentID)
@@ -901,14 +874,11 @@ local function animateWaterfall(container)
         for _, child in ipairs(container:GetChildren()) do
             if child:IsA("GuiObject") and child.Name ~= "UIListLayout" and child.Name ~= "UIPadding" then
                 table.insert(items, child)
-                local scale = child:FindFirstChildOfClass("UIScale")
-                if not scale then scale = Instance.new("UIScale", child) end
-                scale.Scale = 0
-                child.Position = UDim2.new(0, 0, 0, 15) 
+                local scale = child:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", child)
+                scale.Scale = 0; child.Position = UDim2.new(0, 0, 0, 15) 
             end
         end
         table.sort(items, function(a, b) return (a.LayoutOrder or 0) < (b.LayoutOrder or 0) end)
-
         for _, child in ipairs(container:GetAttribute("WaterfallID") ~= currentID and {} or items) do
             local scale = child:FindFirstChildOfClass("UIScale")
             if scale then
@@ -925,7 +895,7 @@ end
 -- =========================================================
 local mainList = Instance.new("ScrollingFrame", mainFrame)
 mainList.Size = UDim2.new(1, -24, 1, -136); mainList.Position = UDim2.fromOffset(12, 56)
-mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 0; mainList.ScrollBarImageColor3 = Colors.Primary; mainList.ScrollBarImageTransparency = 0.8; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ZIndex = 6
+mainList.BackgroundTransparency = 1; mainList.ScrollBarThickness = 0; mainList.ScrollingDirection = Enum.ScrollingDirection.Y; mainList.ZIndex = 6
 mainList.ClipsDescendants = true 
 
 local listLayout = Instance.new("UIListLayout", mainList)
@@ -933,7 +903,6 @@ listLayout.Padding = UDim.new(0, 8); listLayout.SortOrder = Enum.SortOrder.Layou
 
 local mainPadding = Instance.new("UIPadding", mainList)
 mainPadding.PaddingLeft = UDim.new(0, 8); mainPadding.PaddingRight = UDim.new(0, 10); mainPadding.PaddingTop = UDim.new(0, 2); mainPadding.PaddingBottom = UDim.new(0, 12)
-
 listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() mainList.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 20) end)
 
 local layoutIdx = 1
@@ -956,7 +925,6 @@ local function createMainBtn(text, isMenuOpener)
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
     crispText(btn)
     
-    -- Added Glow Stroke
     local subtleStroke = Instance.new("UIStroke", btn)
     subtleStroke.Color = Colors.Primary
     subtleStroke.Transparency = 0.85
@@ -986,7 +954,7 @@ local function createMainBtn(text, isMenuOpener)
 end
 
 -- =========================================================
--- 👥 TARGET SELECTOR SUBMENU (WITH ASHU PAPA BAN TRAP)
+-- 👥 TARGET SELECTOR SUBMENU
 -- =========================================================
 local targetMenu = Instance.new("Frame", mainFrame)
 targetMenu.Size = UDim2.fromScale(1, 1); targetMenu.Position = UDim2.fromScale(1.2, 0); targetMenu.BackgroundColor3 = Colors.Background; targetMenu.BackgroundTransparency = 0.05; targetMenu.ZIndex = 20
@@ -994,7 +962,6 @@ Instance.new("UICorner", targetMenu).CornerRadius = UDim.new(0, 12)
 
 local tTop = Instance.new("Frame", targetMenu)
 tTop.Size = UDim2.new(1, 0, 0, 50); tTop.BackgroundTransparency = 1; tTop.ZIndex = 21
-
 local tLabel = Instance.new("TextLabel", tTop)
 tLabel.Size = UDim2.new(1, -60, 1, 0); tLabel.Position = UDim2.fromOffset(16, 0); tLabel.BackgroundTransparency = 1
 tLabel.Text = "TARGET SELECTION"; tLabel.TextColor3 = Colors.Text; tLabel.Font = Enum.Font.GothamBlack; tLabel.TextSize = 13; tLabel.TextXAlignment = Enum.TextXAlignment.Left; tLabel.ZIndex = 22
@@ -1007,7 +974,7 @@ backBtn.Text = "←"; backBtn.TextColor3 = Colors.Primary; backBtn.Font = Enum.F
 Instance.new("UICorner", backBtn).CornerRadius = UDim.new(0, 6); applySmartHover(backBtn, nil)
 
 local targetScroll = Instance.new("ScrollingFrame", targetMenu)
-targetScroll.Size = UDim2.new(1, -24, 1, -66); targetScroll.Position = UDim2.fromOffset(12, 56); targetScroll.BackgroundTransparency = 1; targetScroll.ScrollBarThickness = 0; targetScroll.ScrollBarImageColor3 = Colors.Primary; targetScroll.ScrollBarImageTransparency = 0.8; targetScroll.ZIndex = 22
+targetScroll.Size = UDim2.new(1, -24, 1, -66); targetScroll.Position = UDim2.fromOffset(12, 56); targetScroll.BackgroundTransparency = 1; targetScroll.ScrollBarThickness = 0; targetScroll.ZIndex = 22
 targetScroll.ClipsDescendants = true 
 
 local tLay = Instance.new("UIListLayout", targetScroll)
@@ -1041,7 +1008,6 @@ local function refreshTargetList()
                     triggerBanTrap() 
                     return 
                 end
-
                 PlayerSelected = p; targetMenuBtn.Text = "   👥 Target: @" .. p.Name; sendNotif("🎯 TARGET SET", p.DisplayName)
                 TweenService:Create(targetMenu, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.fromScale(1.2, 0)}):Play()
                 mainList.Visible = true; animateWaterfall(mainList); if activeMode then startBang(activeMode) end
@@ -1060,7 +1026,7 @@ targetMenuBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =========================================================
--- ⚡ EMOTE SELECTOR (ELASTIC SNAP PHYSICS)
+-- ⚡ EMOTE SELECTOR
 -- =========================================================
 local swipeContainer = Instance.new("Frame", mainList)
 swipeContainer.Size = UDim2.new(1, 0, 0, 42); swipeContainer.BackgroundColor3 = Colors.Surface; swipeContainer.BackgroundTransparency = 0.4
@@ -1070,7 +1036,6 @@ Instance.new("UICorner", swipeContainer).CornerRadius = UDim.new(0, 8)
 local leftArrow = Instance.new("TextLabel", swipeContainer)
 leftArrow.Size = UDim2.new(0, 30, 1, 0); leftArrow.Position = UDim2.new(0, 5, 0, 0); leftArrow.BackgroundTransparency = 1
 leftArrow.Text = "<"; leftArrow.TextColor3 = Colors.SubText; leftArrow.Font = Enum.Font.GothamMedium; leftArrow.TextSize = 16; leftArrow.ZIndex = 8
-
 local rightArrow = Instance.new("TextLabel", swipeContainer)
 rightArrow.Size = UDim2.new(0, 30, 1, 0); rightArrow.Position = UDim2.new(1, -35, 0, 0); rightArrow.BackgroundTransparency = 1
 rightArrow.Text = ">"; rightArrow.TextColor3 = Colors.SubText; rightArrow.Font = Enum.Font.GothamMedium; rightArrow.TextSize = 16; rightArrow.ZIndex = 8
@@ -1084,13 +1049,10 @@ Instance.new("UICorner", swipeBtn).CornerRadius = UDim.new(0, 6); crispText(swip
 local swipeScale = Instance.new("UIScale", swipeBtn); swipeScale.Scale = 1
 local swipeStroke = Instance.new("UIStroke", swipeBtn); swipeStroke.Color = Colors.Primary; swipeStroke.Thickness = 1; swipeStroke.Transparency = 0.4
 
-local draggingSwipe = false
-local swipeStartX = 0
-
+local draggingSwipe = false; local swipeStartX = 0
 swipeBtn.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        draggingSwipe = true
-        swipeStartX = input.Position.X
+        draggingSwipe = true; swipeStartX = input.Position.X
         TweenService:Create(swipeScale, TweenInfo.new(0.2, Enum.EasingStyle.Sine), {Scale = 0.96}):Play()
         TweenService:Create(swipeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Colors.PrimaryDark, TextColor3 = Color3.new(1,1,1)}):Play()
     end
@@ -1101,7 +1063,6 @@ UserInputService.InputChanged:Connect(function(input)
         local deltaX = input.Position.X - swipeStartX
         local moveOffset = math.clamp(deltaX, -100, 100)
         swipeBtn.Position = UDim2.new(0.5, moveOffset, 0.5, 0)
-
         if moveOffset > 35 then rightArrow.TextColor3 = Colors.Primary; leftArrow.TextColor3 = Colors.SubText
         elseif moveOffset < -35 then leftArrow.TextColor3 = Colors.Primary; rightArrow.TextColor3 = Colors.SubText
         else leftArrow.TextColor3 = Colors.SubText; rightArrow.TextColor3 = Colors.SubText end
@@ -1122,19 +1083,9 @@ swipeBtn.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         if not draggingSwipe then return end
         draggingSwipe = false
-        
         local deltaX = input.Position.X - swipeStartX
-        local threshold = 40
-        
-        if deltaX > threshold then
-            currentEmoteIndex = (currentEmoteIndex % #EmoteList) + 1
-            switchEmoteVisuals()
-        elseif deltaX < -threshold then
-            currentEmoteIndex = currentEmoteIndex - 1
-            if currentEmoteIndex < 1 then currentEmoteIndex = #EmoteList end
-            switchEmoteVisuals()
-        end
-
+        if deltaX > 40 then currentEmoteIndex = (currentEmoteIndex % #EmoteList) + 1; switchEmoteVisuals()
+        elseif deltaX < -40 then currentEmoteIndex = currentEmoteIndex - 1; if currentEmoteIndex < 1 then currentEmoteIndex = #EmoteList end switchEmoteVisuals() end
         leftArrow.TextColor3 = Colors.SubText; rightArrow.TextColor3 = Colors.SubText
         TweenService:Create(swipeBtn, TweenInfo.new(0.65, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0.5, 0.5)}):Play()
         TweenService:Create(swipeScale, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
@@ -1143,7 +1094,7 @@ swipeBtn.InputEnded:Connect(function(input)
 end)
 
 -- =========================================================
--- ⚡ ACTION TOGGLES
+-- 🔥 LINKED TOGGLES (One ON = Other OFF) & SPECTATE
 -- =========================================================
 local function createToggle(name, callback)
     local btn = createMainBtn(name, false)
@@ -1152,8 +1103,8 @@ local function createToggle(name, callback)
     local glow = btn:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", btn)
     glow.Color = Colors.Primary; glow.Thickness = 1.2; glow.Transparency = 0.85
 
-    btn.MouseButton1Click:Connect(function()
-        state = not state
+    local function updateState(newState)
+        state = newState
         local tInfo = TweenInfo.new(0.4, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
         if state then
             btn:SetAttribute("BaseColor", Colors.ActiveTint)
@@ -1166,20 +1117,43 @@ local function createToggle(name, callback)
             TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play()
             TweenService:Create(glow, TweenInfo.new(0.3), {Transparency = 0.85}):Play()
         end
-        callback(state, btn)
+    end
+
+    btn.MouseButton1Click:Connect(function()
+        updateState(not state)
+        callback(state)
     end)
-    return btn, function() return state end
+    return updateState
 end
 
-local classicToggle, headToggle
-classicToggle = createToggle("🔞 Classic Back Bang", function(v)
-    if v then if not startBang("Normal") then classicToggle:SetAttribute("BaseColor", Colors.Surface); TweenService:Create(classicToggle, TweenInfo.new(0.2), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play(); TweenService:Create(classicToggle:FindFirstChild("UIStroke"), TweenInfo.new(0.2), {Transparency = 0.85}):Play(); TweenService:Create(classicToggle:FindFirstChild("Accent"), TweenInfo.new(0.2), {Size = UDim2.new(0,0,0,0)}):Play() end else if activeMode == "Normal" then stopBang() end end
+local setClassicState, setHeadState, setSpectateState
+
+setClassicState = createToggle("🔞 Classic Back Bang", function(v)
+    if v then 
+        if activeMode == "Head" then setHeadState(false) end
+        if not startBang("Normal") then setClassicState(false) end 
+    else 
+        if activeMode == "Normal" then stopBang() end 
+    end
 end)
-headToggle = createToggle("🧠 Head Bang (Face)", function(v)
-    if v then if not startBang("Head") then headToggle:SetAttribute("BaseColor", Colors.Surface); TweenService:Create(headToggle, TweenInfo.new(0.2), {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text}):Play(); TweenService:Create(headToggle:FindFirstChild("UIStroke"), TweenInfo.new(0.2), {Transparency = 0.85}):Play(); TweenService:Create(headToggle:FindFirstChild("Accent"), TweenInfo.new(0.2), {Size = UDim2.new(0,0,0,0)}):Play() end else if activeMode == "Head" then stopBang() end end
+
+setHeadState = createToggle("🧠 Head Bang (Face)", function(v)
+    if v then 
+        if activeMode == "Normal" then setClassicState(false) end
+        if not startBang("Head") then setHeadState(false) end 
+    else 
+        if activeMode == "Head" then stopBang() end 
+    end
 end)
-createToggle("👁️ Spectate Camera", function(v)
-    SpectateFaceCam = v; if not v and LP.Character and LP.Character:FindFirstChild("Humanoid") then Camera.CameraSubject = LP.Character.Humanoid end
+
+setSpectateState = createToggle("👁️ Spectate Camera", function(v)
+    SpectateFaceCam = v
+    if not v then
+        Camera.CameraType = Enum.CameraType.Custom
+        if LP.Character and LP.Character:FindFirstChild("Humanoid") then 
+            Camera.CameraSubject = LP.Character.Humanoid 
+        end
+    end
 end)
 
 -- =========================================================
@@ -1290,7 +1264,7 @@ end)
 
 stopBtn.MouseButton1Click:Connect(function() stopBang(); sendNotif("⏹ HALTED", "Bang Engine Terminated.") end)
 
--- 🔥 3D KINETIC DRAG LOGIC (Fixed No-Tilt Rotation for UI Cleanliness)
+-- 🔥 3D KINETIC DRAG LOGIC (Fixed No-Tilt Rotation for UI Cleanliness & Clamping Fixed)
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart, startPos, targetPos, velocity = nil, nil, frame.Position, Vector2.new(0, 0)
@@ -1307,9 +1281,10 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
             minX, maxX = frameSize.X * anchor.X, parentSize.X - (frameSize.X * (1 - anchor.X))
             minY, maxY = frameSize.Y * anchor.Y, parentSize.Y - (frameSize.Y * (1 - anchor.Y))
         else
-            local visW, visH = frameSize.X * 0.20, frameSize.Y * 0.20
-            minX, maxX = (frameSize.X * anchor.X) - (frameSize.X - visW), parentSize.X - (frameSize.X * (1 - anchor.X)) + (frameSize.X - visW)
-            minY, maxY = (frameSize.Y * anchor.Y) - (frameSize.Y - visH), parentSize.Y - (frameSize.Y * (1 - anchor.Y)) + (frameSize.Y - visH)
+            minX = -frameSize.X * 0.5
+            maxX = parentSize.X + (frameSize.X * 0.5)
+            minY = -frameSize.Y * 0.5
+            maxY = parentSize.Y + (frameSize.Y * 0.5)
         end
         local cx, cy = math.clamp(absX, minX, maxX), math.clamp(absY, minY, maxY)
         return UDim2.new(newXScale, cx - (newXScale * parentSize.X), newYScale, cy - (newYScale * parentSize.Y))
@@ -1356,7 +1331,7 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
                     auraScale.Scale = 0.8
                     TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
                     TweenService:Create(auraScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-                    TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.25}):Play()
+                    TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.35}):Play()
                     TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.55}):Play()
                     animateWaterfall(mainList)
                 end
