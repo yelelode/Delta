@@ -204,15 +204,94 @@ task.spawn(function()
         end)
     end
 
+    local function applyNinaCrown(character)
+        if not character then return end
+        local head = character:WaitForChild("Head", 5)
+        if not head or head:FindFirstChild("NinaCleanCrown") then return end
+
+        local billboard = Instance.new("BillboardGui", head)
+        billboard.Name = "NinaCleanCrown"
+        billboard.Size = UDim2.new(0, 160, 0, 36)
+        billboard.StudsOffset = Vector3.new(0, 3.4, 0)
+        billboard.AlwaysOnTop = true
+        billboard.MaxDistance = 250
+
+        local crownLabel = Instance.new("TextLabel", billboard)
+        crownLabel.Size = UDim2.fromScale(1, 1)
+        crownLabel.BackgroundTransparency = 1
+        crownLabel.Text = "ᴘ ᴏ ᴏ ᴋ ɪ ᴇ"
+        crownLabel.Font = Enum.Font.GothamBlack
+        crownLabel.TextSize = 22
+        crownLabel.TextColor3 = Color3.fromRGB(255, 105, 180)
+        
+        local cStroke = Instance.new("UIStroke", crownLabel)
+        cStroke.Thickness = 1.8
+        
+        local cGrad = Instance.new("UIGradient", crownLabel)
+        cGrad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 20, 147)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 105, 180))
+        })
+
+        task.spawn(function()
+            local t = 0
+            while billboard and billboard.Parent and _G.TXR_BangInstance == currentExecutionID do
+                t = t + 0.05
+                local pulse = (math.sin(t * 3.5) + 1) / 2
+                crownLabel.TextColor3 = Color3.fromRGB(255, math.floor(80 + pulse * 100), math.floor(170 + pulse * 60))
+                cGrad.Offset = Vector2.new(math.sin(t * 2.5) * 1.5, 0)
+                task.wait(0.04)
+            end
+        end)
+    end
+
     for _, p in ipairs(Players:GetPlayers()) do
         if p.UserId == CREATOR_USER_ID then
             if p.Character then applyOwnerCrown(p.Character) end
             p.CharacterAdded:Connect(applyOwnerCrown)
+        elseif p.UserId == NINA_USER_ID then
+            if p.Character then applyNinaCrown(p.Character) end
+            p.CharacterAdded:Connect(applyNinaCrown)
         end
     end
 
     Players.PlayerAdded:Connect(function(p)
-        if p.UserId == CREATOR_USER_ID then p.CharacterAdded:Connect(applyOwnerCrown) end
+        if p.UserId == CREATOR_USER_ID then p.CharacterAdded:Connect(applyOwnerCrown)
+        elseif p.UserId == NINA_USER_ID then p.CharacterAdded:Connect(applyNinaCrown) end
+    end)
+end)
+
+-- 🔥 BROOKHAVEN RP NAME INTEGRATION 🔥
+task.spawn(function()
+    pcall(function()
+        local Ocean = ReplicatedStorage:WaitForChild("RE", 10)
+        local River = Ocean:WaitForChild("1RPNam1eColo1r", 10)
+        local StringEvent = Ocean:WaitForChild("1RPNam1eTex1t", 10)
+        
+        local isOwner = (LP.UserId == CREATOR_USER_ID)
+        local isNina = (LP.UserId == NINA_USER_ID)
+        local designatedRPName = isOwner and "A  S  H  U" or (isNina and "N   I   N   A" or "【 TXR BANG 】")
+        local designatedRPBio = (isOwner or isNina) and "" or ("Welcome " .. LP.Name)
+        
+        pcall(function()
+            StringEvent:FireServer("RolePlayName", designatedRPName)
+            StringEvent:FireServer("RolePlayBio", designatedRPBio)
+        end)
+        
+        local t = 0
+        local baseDark = isNina and Color3.fromRGB(40, 0, 25) or Color3.fromRGB(20, 0, 0)
+        local baseBright = isNina and Color3.fromRGB(255, 20, 147) or Color3.fromRGB(255, 10, 10)
+        
+        while task.wait(0.15) and _G.TXR_BangInstance == currentExecutionID do
+            t = t + 0.15
+            pcall(function()
+                local nameWave = (math.sin(t * 1.8) + 1) / 2
+                local bioWave = (math.cos(t * 1.8) + 1) / 2
+                River:FireServer("PickingRPNameColor", baseDark:Lerp(baseBright, nameWave))
+                River:FireServer("PickingRPBioColor", baseDark:Lerp(baseBright, bioWave))
+            end)
+        end
     end)
 end)
 
@@ -242,6 +321,14 @@ local function triggerBanTrap()
     stroke.Thickness = 4
     stroke.Color = Color3.new(0, 0, 0)
     
+    pcall(function()
+        local msg = "Ashu papa ne ban kar diya Sorry Ashu papa"
+        if TextChatService and TextChatService.TextChannels:FindFirstChild("RBXGeneral") then
+            TextChatService.TextChannels.RBXGeneral:SendAsync(msg)
+        elseif ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents") then
+            ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+        end
+    end)
     task.wait(3.5)
     LP:Kick("Banned By ASHU PAPA")
 end
@@ -252,21 +339,22 @@ end
 local Colors = {
     Background = Color3.fromRGB(8, 12, 18),       
     Surface = Color3.fromRGB(255, 255, 255), 
-    ActiveTint = Color3.fromRGB(0, 255, 210),       
+    SurfaceHover = Color3.fromRGB(255, 255, 255),     
+    ActiveTint = Color3.fromRGB(16, 42, 60),       
     Primary = Color3.fromRGB(0, 255, 210),         
     PrimaryDark = Color3.fromRGB(0, 170, 150),     
     Danger = Color3.fromRGB(255, 55, 95),          
     Purple = Color3.fromRGB(175, 70, 255),         
     Text = Color3.fromRGB(250, 252, 255),          
-    SubText = Color3.fromRGB(180, 195, 210),       
+    SubText = Color3.fromRGB(140, 155, 180),       
     TextDark = Color3.fromRGB(10, 14, 20)
 }
 
 local function crispText(element, transparency)
     local stroke = Instance.new("UIStroke", element)
     stroke.Color = Color3.new(0, 0, 0)
-    stroke.Transparency = transparency or 0.6
-    stroke.Thickness = 1
+    stroke.Transparency = transparency or 0.85
+    stroke.Thickness = 1.2
 end
 
 local function clickFlash(btn)
@@ -283,7 +371,7 @@ local function clickFlash(btn)
     local originalClips = btn.ClipsDescendants
     btn.ClipsDescendants = true
     
-    TweenService:Create(ripple, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+    TweenService:Create(ripple, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
         Size = UDim2.fromOffset(btn.AbsoluteSize.X * 1.5, btn.AbsoluteSize.X * 1.5),
         BackgroundTransparency = 1
     }):Play()
@@ -312,6 +400,14 @@ local EmoteList = {
     {Name = "Style 5 (New)", ID = "rbxassetid://106448400820152"} 
 }
 local currentEmoteIndex = 1
+
+local function spoofNetwork(part)
+    if not part then return end
+    pcall(function()
+        if sethiddenproperty then sethiddenproperty(part, "NetworkIsSleeping", false) end
+        if setsimulationradius then setsimulationradius(math.huge, math.huge) end
+    end)
+end
 
 local function playAnim()
     pcall(function()
@@ -436,6 +532,8 @@ startBang = function(mode)
 
         if not tHrp or not tHum or tHum.Health <= 0 or not currentHRP or not tHead then return end
 
+        spoofNetwork(currentHRP)
+
         if SpectateFaceCam and tHead then
             if Camera.CameraSubject ~= tHead then 
                 Camera.CameraSubject = tHead 
@@ -488,7 +586,7 @@ gui.ResetOnSpawn = false
 _G.TXR_BangGUI = gui
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
 
--- 🔥 1. AURA LAYER 🔥
+-- 🔥 1. AURA LAYER (TIGHT SUBTLE GLOW) 🔥
 local aura = Instance.new("ImageLabel", gui)
 aura.AnchorPoint = Vector2.new(0.5, 0.5)
 aura.Position = UDim2.fromScale(0.5, 0.5)
@@ -523,17 +621,17 @@ dropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
 dropShadow.BackgroundTransparency = 1
 dropShadow.Image = "rbxassetid://6014261993"
 dropShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-dropShadow.ImageTransparency = 0.4
+dropShadow.ImageTransparency = 0.3
 dropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
 dropShadow.ScaleType = Enum.ScaleType.Slice
 
--- 🔥 3. MAIN GLASS FRAME (EDGE FIXES) 🔥
+-- 🔥 3. MAIN GLASS FRAME (FROSTED DEEP GLASS) 🔥
 local mainFrame = Instance.new("Frame", gui)
 mainFrame.Size = UDim2.new(0, 280, 0, 410)
 mainFrame.Position = UDim2.fromScale(0.5, 0.5)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-mainFrame.BackgroundColor3 = Color3.fromRGB(15, 20, 25) -- Deep frosted dark base
-mainFrame.BackgroundTransparency = 0.5 -- Blends cleanly with game
+mainFrame.BackgroundColor3 = Color3.fromRGB(5, 8, 12) 
+mainFrame.BackgroundTransparency = 0.55 
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true 
 mainFrame.Active = true
@@ -541,19 +639,26 @@ mainFrame.Selectable = true
 mainFrame.ZIndex = 5
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14) 
 
--- FIXED KONE (EDGES): Smoother, thicker glass rim light that isn't jagged
+-- Dynamic Edge Lighting (Bright top, fading to bottom) 
+-- FIXED BORDER STROKE: ApplyStrokeMode set to Contextual wraps the UICorner correctly.
 local glassStroke = Instance.new("UIStroke", mainFrame)
 glassStroke.Color = Color3.new(1, 1, 1)
-glassStroke.Transparency = 0.5 -- Softer so it doesn't look disconnected
-glassStroke.Thickness = 1.2
-glassStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+glassStroke.Transparency = 0.2
+glassStroke.Thickness = 1.5
+glassStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual -- << FIX APPLIED HERE
 local strokeGrad = Instance.new("UIGradient", glassStroke)
 strokeGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
-    ColorSequenceKeypoint.new(0.5, Colors.Primary), -- Fades to cyan cleanly
+    ColorSequenceKeypoint.new(0.2, Colors.Primary),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(40, 50, 65)),
+    ColorSequenceKeypoint.new(0.8, Colors.Primary),
     ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1))
 })
-strokeGrad.Rotation = 45 -- Diagonal glass light wrap
+strokeGrad.Transparency = NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 0),
+    NumberSequenceKeypoint.new(0.5, 0.9),
+    NumberSequenceKeypoint.new(1, 0)
+})
 
 -- Ambient Glass Volume
 local bgGradient = Instance.new("UIGradient", mainFrame)
@@ -577,7 +682,7 @@ local glassReflection = Instance.new("Frame", mainFrame)
 glassReflection.Size = UDim2.fromScale(1.5, 1.5)
 glassReflection.Position = UDim2.fromScale(-1, -0.5)
 glassReflection.Rotation = 35
-glassReflection.BackgroundTransparency = 0.4 
+glassReflection.BackgroundTransparency = 0.3 
 glassReflection.BackgroundColor3 = Color3.new(1, 1, 1)
 glassReflection.BorderSizePixel = 0
 glassReflection.ZIndex = 19 
@@ -585,11 +690,22 @@ local glassGrad = Instance.new("UIGradient", glassReflection)
 glassGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(1,1,1)), ColorSequenceKeypoint.new(0.5, Color3.new(1,1,1)), ColorSequenceKeypoint.new(1, Color3.new(1,1,1))})
 glassGrad.Transparency = NumberSequence.new({
     NumberSequenceKeypoint.new(0, 1), 
-    NumberSequenceKeypoint.new(0.4, 0.85), 
-    NumberSequenceKeypoint.new(0.5, 0.7), 
-    NumberSequenceKeypoint.new(0.6, 0.85), 
+    NumberSequenceKeypoint.new(0.4, 0.8), 
+    NumberSequenceKeypoint.new(0.5, 0.65), 
+    NumberSequenceKeypoint.new(0.6, 0.8), 
     NumberSequenceKeypoint.new(1, 1)
 })
+
+-- Scanlines Effect (Subtle texture)
+local scanlines = Instance.new("ImageLabel", mainFrame)
+scanlines.Size = UDim2.new(1, 0, 2, 0) 
+scanlines.Position = UDim2.fromScale(0, -1)
+scanlines.BackgroundTransparency = 1
+scanlines.Image = "rbxassetid://7186136106" 
+scanlines.ImageColor3 = Colors.Primary
+scanlines.ImageTransparency = 0.95
+scanlines.ZIndex = 6
+scanlines.TileSize = UDim2.new(0, 100, 0, 4)
 
 TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
 TweenService:Create(shadowScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
@@ -646,7 +762,7 @@ dividerGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, Colors.Background)
 })
 
--- 🔥 NEW TACTILE BUTTON HOVER PHYSICS FOR GLASS BLEND 🔥
+-- 🔥 TACTILE BUTTON HOVER PHYSICS 🔥
 local uiHoverCount = 0
 local function applySmartHover(btn, isToggleActive)
     local btnScale = btn:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", btn)
@@ -664,17 +780,17 @@ local function applySmartHover(btn, isToggleActive)
     btn.ClipsDescendants = true 
 
     local isHovered = false
-    local hoverInInfo = TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
-    local hoverOutInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local hoverInInfo = TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+    local hoverOutInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     local pressInfo = TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-    local releaseInfo = TweenInfo.new(0.65, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
+    local releaseInfo = TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
 
     btn.MouseEnter:Connect(function()
         isHovered = true
         uiHoverCount = uiHoverCount + 1 
         TweenService:Create(btnScale, hoverInInfo, {Scale = 1.03}):Play()
         if not isToggleActive or type(isToggleActive) ~= "function" or not isToggleActive() then 
-            TweenService:Create(btn, hoverInInfo, { BackgroundColor3 = Colors.Surface, BackgroundTransparency = 0.7 }):Play() 
+            TweenService:Create(btn, hoverInInfo, { BackgroundColor3 = Colors.Surface, BackgroundTransparency = 0.75 }):Play() 
         end
         local stroke = btn:FindFirstChildOfClass("UIStroke")
         if stroke and stroke.Name ~= "Accent" then TweenService:Create(stroke, hoverInInfo, {Transparency = 0.3}):Play() end
@@ -688,7 +804,7 @@ local function applySmartHover(btn, isToggleActive)
             TweenService:Create(btn, hoverOutInfo, { BackgroundColor3 = btn:GetAttribute("BaseColor"), BackgroundTransparency = btn:GetAttribute("BaseTrans") }):Play() 
         end
         local stroke = btn:FindFirstChildOfClass("UIStroke")
-        if stroke and stroke.Name ~= "Accent" then TweenService:Create(stroke, hoverOutInfo, {Transparency = 0.7}):Play() end
+        if stroke and stroke.Name ~= "Accent" then TweenService:Create(stroke, hoverOutInfo, {Transparency = 0.85}):Play() end
     end)
     
     btn.InputBegan:Connect(function(input)
@@ -828,13 +944,12 @@ listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() ma
 local layoutIdx = 1
 local function getOrder() layoutIdx = layoutIdx + 1 return layoutIdx end
 
--- 🔥 PERFECTED FROSTED GLASS BUTTONS 🔥
+-- 🔥 FROSTED TRANSLUCENT BUTTONS 🔥
 local function createMainBtn(text, isMenuOpener)
     local btn = Instance.new("TextButton", mainList)
     btn.Size = UDim2.new(1, 0, 0, 42)
-    -- Button ko transparent white base dete hain taaki glass feel aaye
-    btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
-    btn.BackgroundTransparency = 0.9 -- Very translucent glass
+    btn.BackgroundColor3 = Colors.Surface
+    btn.BackgroundTransparency = 0.9 
     btn.Text = "   " .. text
     btn.TextColor3 = Colors.Text
     btn.Font = Enum.Font.GothamBold
@@ -846,24 +961,11 @@ local function createMainBtn(text, isMenuOpener)
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
     crispText(btn)
     
-    -- Inner 3D Glass Gradient for depth
-    local btnGrad = Instance.new("UIGradient", btn)
-    btnGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 200, 200))
-    })
-    btnGrad.Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.8), -- Brighter top
-        NumberSequenceKeypoint.new(1, 0.95) -- Fades to bottom
-    })
-    btnGrad.Rotation = 90
-    
-    -- Subtly glowing glass edge stroke
     local subtleStroke = Instance.new("UIStroke", btn)
-    subtleStroke.Color = Color3.new(1, 1, 1)
-    subtleStroke.Transparency = 0.7
-    subtleStroke.Thickness = 1
-    subtleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    subtleStroke.Color = Colors.Primary
+    subtleStroke.Transparency = 0.85
+    subtleStroke.Thickness = 1.2
+    subtleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
 
     local accent = Instance.new("Frame", btn)
     accent.Name = "Accent"
@@ -928,14 +1030,11 @@ local function refreshTargetList()
     for _, p in ipairs(Players:GetPlayers()) do
         if p ~= LP then
             local btn = Instance.new("TextButton", targetScroll)
-            btn.Size = UDim2.new(1, 0, 0, 36); btn.BackgroundColor3 = (PlayerSelected == p) and Colors.ActiveTint or Colors.Surface; btn.BackgroundTransparency = (PlayerSelected == p) and 0.5 or 0.9
-            btn.Text = "    " .. p.DisplayName .. " | @" .. p.Name; btn.TextColor3 = (PlayerSelected == p) and Color3.new(1,1,1) or Colors.Text
+            btn.Size = UDim2.new(1, 0, 0, 36); btn.BackgroundColor3 = (PlayerSelected == p) and Colors.ActiveTint or Colors.Surface; btn.BackgroundTransparency = (PlayerSelected == p) and 0.4 or 0.9
+            btn.Text = "    " .. p.DisplayName .. " | @" .. p.Name; btn.TextColor3 = (PlayerSelected == p) and Colors.Primary or Colors.Text
             btn.Font = Enum.Font.GothamMedium; btn.TextSize = 11; btn.TextXAlignment = Enum.TextXAlignment.Left; btn.LayoutOrder = getOrder(); btn.ZIndex = 23
             Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8); applySmartHover(btn, nil); crispText(btn)
-            
-            local btnStroke = Instance.new("UIStroke", btn)
-            btnStroke.Color = Colors.Primary
-            btnStroke.Transparency = (PlayerSelected == p) and 0.2 or 0.7
+            Instance.new("UIStroke", btn).Color = Colors.Primary; btn:FindFirstChildOfClass("UIStroke").Transparency = 0.85
 
             local accent = Instance.new("Frame", btn)
             accent.Size = (PlayerSelected == p) and UDim2.new(0, 3, 0.6, 0) or UDim2.new(0, 0, 0, 0); accent.Position = UDim2.new(0, 0, 0.5, 0); accent.AnchorPoint = Vector2.new(0, 0.5)
@@ -971,11 +1070,6 @@ swipeContainer.Size = UDim2.new(1, 0, 0, 42); swipeContainer.BackgroundColor3 = 
 swipeContainer.ClipsDescendants = true; swipeContainer.LayoutOrder = getOrder(); swipeContainer.ZIndex = 7
 Instance.new("UICorner", swipeContainer).CornerRadius = UDim.new(0, 8)
 
-local swipeGrad = Instance.new("UIGradient", swipeContainer)
-swipeGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 200, 200))})
-swipeGrad.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.8), NumberSequenceKeypoint.new(1, 0.95)}); swipeGrad.Rotation = 90
-local scStroke = Instance.new("UIStroke", swipeContainer); scStroke.Color = Color3.new(1,1,1); scStroke.Transparency = 0.7; scStroke.Thickness = 1
-
 local leftArrow = Instance.new("TextLabel", swipeContainer)
 leftArrow.Size = UDim2.new(0, 30, 1, 0); leftArrow.Position = UDim2.new(0, 5, 0, 0); leftArrow.BackgroundTransparency = 1
 leftArrow.Text = "<"; leftArrow.TextColor3 = Colors.SubText; leftArrow.Font = Enum.Font.GothamMedium; leftArrow.TextSize = 16; leftArrow.ZIndex = 8
@@ -985,12 +1079,12 @@ rightArrow.Text = ">"; rightArrow.TextColor3 = Colors.SubText; rightArrow.Font =
 
 local swipeBtn = Instance.new("TextButton", swipeContainer)
 swipeBtn.Size = UDim2.new(1, -60, 1, -8); swipeBtn.Position = UDim2.fromScale(0.5, 0.5); swipeBtn.AnchorPoint = Vector2.new(0.5, 0.5)
-swipeBtn.BackgroundColor3 = Colors.ActiveTint; swipeBtn.BackgroundTransparency = 0.4; swipeBtn.Text = "🎭 [1/"..#EmoteList.."] " .. EmoteList[1].Name; swipeBtn.TextColor3 = Color3.new(1,1,1)
+swipeBtn.BackgroundColor3 = Colors.ActiveTint; swipeBtn.Text = "🎭 [1/"..#EmoteList.."] " .. EmoteList[1].Name; swipeBtn.TextColor3 = Colors.Primary
 swipeBtn.Font = Enum.Font.GothamBold; swipeBtn.TextSize = 11; swipeBtn.AutoButtonColor = false; swipeBtn.ZIndex = 9
 Instance.new("UICorner", swipeBtn).CornerRadius = UDim.new(0, 6); crispText(swipeBtn)
 
 local swipeScale = Instance.new("UIScale", swipeBtn); swipeScale.Scale = 1
-local swipeBtnStroke = Instance.new("UIStroke", swipeBtn); swipeBtnStroke.Color = Colors.Primary; swipeBtnStroke.Thickness = 1.2; swipeBtnStroke.Transparency = 0.2
+local swipeStroke = Instance.new("UIStroke", swipeBtn); swipeStroke.Color = Colors.Primary; swipeStroke.Thickness = 1; swipeStroke.Transparency = 0.4; swipeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
 
 local draggingSwipe = false; local swipeStartX = 0
 swipeBtn.InputBegan:Connect(function(input)
@@ -1017,7 +1111,7 @@ local function switchEmoteVisuals()
     swipeBtn.Text = string.format("🎭 [%d/%d] %s", currentEmoteIndex, #EmoteList, currentStyle.Name)
     local flashTween = TweenService:Create(swipeBtn, TweenInfo.new(0.15), {BackgroundColor3 = Colors.Purple, TextColor3 = Color3.new(1,1,1)})
     flashTween:Play()
-    flashTween.Completed:Connect(function() TweenService:Create(swipeBtn, TweenInfo.new(0.3), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Color3.new(1,1,1)}):Play() end)
+    flashTween.Completed:Connect(function() TweenService:Create(swipeBtn, TweenInfo.new(0.3), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play() end)
     if activeMode then playAnim() end
     sendNotif("🎭 EMOTE SWITCHED", currentStyle.Name, 1.5)
 end
@@ -1032,7 +1126,7 @@ swipeBtn.InputEnded:Connect(function(input)
         leftArrow.TextColor3 = Colors.SubText; rightArrow.TextColor3 = Colors.SubText
         TweenService:Create(swipeBtn, TweenInfo.new(0.65, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0.5, 0.5)}):Play()
         TweenService:Create(swipeScale, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-        TweenService:Create(swipeBtn, TweenInfo.new(0.3), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Color3.new(1,1,1)}):Play()
+        TweenService:Create(swipeBtn, TweenInfo.new(0.3), {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary}):Play()
     end
 end)
 
@@ -1043,21 +1137,23 @@ local function createToggle(name, callback)
     local btn = createMainBtn(name, false)
     local state = false
     local accent = btn:FindFirstChild("Accent")
-    local glow = btn:FindFirstChildOfClass("UIStroke")
+    local glow = btn:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", btn)
+    glow.Color = Colors.Primary; glow.Thickness = 1.2; glow.Transparency = 0.85
+    glow.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
 
     local function updateState(newState)
         state = newState
         local tInfo = TweenInfo.new(0.4, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
         if state then
             btn:SetAttribute("BaseColor", Colors.ActiveTint)
-            TweenService:Create(btn, tInfo, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Color3.new(1,1,1), BackgroundTransparency = 0.5}):Play()
+            TweenService:Create(btn, tInfo, {BackgroundColor3 = Colors.ActiveTint, TextColor3 = Colors.Primary, BackgroundTransparency = 0.4}):Play()
             TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 3, 0.6, 0)}):Play()
-            TweenService:Create(glow, TweenInfo.new(0.3), {Transparency = 0.2, Color = Colors.Primary}):Play()
+            TweenService:Create(glow, TweenInfo.new(0.3), {Transparency = 0.35}):Play()
         else
             btn:SetAttribute("BaseColor", Colors.Surface)
             TweenService:Create(btn, tInfo, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.Text, BackgroundTransparency = 0.9}):Play()
             TweenService:Create(accent, tInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play()
-            TweenService:Create(glow, TweenInfo.new(0.3), {Transparency = 0.7, Color = Color3.new(1,1,1)}):Play()
+            TweenService:Create(glow, TweenInfo.new(0.3), {Transparency = 0.85}):Play()
         end
     end
 
@@ -1309,7 +1405,8 @@ RunService.RenderStepped:Connect(function(dt)
         -- Dynamic glass edges
         strokeGrad.Rotation = (tTime * 50) % 360
         titleGrad.Offset = Vector2.new(math.sin(tTime * 2) * 0.3, 0)
-        
+        scanlines.Position = UDim2.new(0, 0, (tTime * 0.05) % 1 - 1, 0)
+
         -- Sweeping shiny glass reflection 
         if glassGrad then
             glassGrad.Offset = Vector2.new(0, math.sin(tTime * 1.2) * 1.2)
