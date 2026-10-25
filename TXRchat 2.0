@@ -105,7 +105,7 @@ end
 local targetGuiParent = (gethui and gethui()) or game:GetService("CoreGui") or LP:WaitForChild("PlayerGui", 5)
 
 -- =========================================================
--- 👑 OWNER & VIP SYSTEMS (NOTIFICATIONS, CROWNS, RP NAME)
+-- 👑 OWNER & VIP SYSTEMS
 -- =========================================================
 task.spawn(function()
     local function showAshuNotification(textMsg)
@@ -367,12 +367,16 @@ local function clickFlash(btn)
     ripple.Size = UDim2.fromOffset(0, 0)
     ripple.ZIndex = btn.ZIndex + 2
     Instance.new("UICorner", ripple).CornerRadius = UDim.new(1, 0)
+    
+    local originalClips = btn.ClipsDescendants
     btn.ClipsDescendants = true
+    
     TweenService:Create(ripple, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
         Size = UDim2.fromOffset(btn.AbsoluteSize.X * 1.5, btn.AbsoluteSize.X * 1.5),
         BackgroundTransparency = 1
     }):Play()
     Debris:AddItem(ripple, 0.5)
+    task.delay(0.5, function() btn.ClipsDescendants = originalClips end)
 end
 
 -- =========================================================
@@ -530,7 +534,6 @@ startBang = function(mode)
 
         spoofNetwork(currentHRP)
 
-        -- 🔥 SPECTATE FIX HERE 🔥
         if SpectateFaceCam and tHead then
             if Camera.CameraSubject ~= tHead then 
                 Camera.CameraSubject = tHead 
@@ -583,97 +586,76 @@ gui.ResetOnSpawn = false
 _G.TXR_BangGUI = gui
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
 
--- 🔥 EXACT ORIGINAL AURA SETTINGS RESTORED 🔥
-local aura = Instance.new("ImageLabel", gui)
+-- 🔥 THE ULTIMATE ARCHITECTURE FIX: Invisible Wrapper that holds everything perfectly together 🔥
+local mainWrapper = Instance.new("Frame", gui)
+mainWrapper.Name = "MainWrapper"
+mainWrapper.Size = UDim2.new(0, 280, 0, 410)
+mainWrapper.Position = UDim2.fromScale(0.5, 0.5)
+mainWrapper.AnchorPoint = Vector2.new(0.5, 0.5)
+mainWrapper.BackgroundTransparency = 1
+mainWrapper.Active = true
+mainWrapper.Selectable = true
+mainWrapper.ZIndex = 5
+
+local wrapperScale = Instance.new("UIScale", mainWrapper)
+wrapperScale.Scale = 0
+
+-- Aura - Strictly bound to Wrapper size so it NEVER infinitely bleeds out
+local aura = Instance.new("ImageLabel", mainWrapper)
 aura.AnchorPoint = Vector2.new(0.5, 0.5)
 aura.Position = UDim2.fromScale(0.5, 0.5)
-aura.Size = UDim2.new(0, 330, 0, 460) -- Original scale
+aura.Size = UDim2.new(1, 100, 1, 100) -- Clean restricted glow padding
 aura.BackgroundTransparency = 1
 aura.Image = "rbxassetid://1316045217"
 aura.ImageColor3 = Colors.Primary
-aura.ImageTransparency = 1
+aura.ImageTransparency = 0.5
 aura.ZIndex = 1
 
-local auraScale = Instance.new("UIScale", aura)
-auraScale.Scale = 0.85
-
--- 🔥 THE ULTIMATE FIX: Shadow placed OUTSIDE the mainFrame 🔥
-local shadowContainer = Instance.new("Frame", gui)
-shadowContainer.Name = "ShadowContainer"
-shadowContainer.BackgroundTransparency = 1
-shadowContainer.Size = UDim2.new(0, 280, 0, 410)
-shadowContainer.Position = UDim2.fromScale(0.5, 0.5)
-shadowContainer.AnchorPoint = Vector2.new(0.5, 0.5)
-shadowContainer.ZIndex = 4
-
-local shadowScale = Instance.new("UIScale", shadowContainer)
-shadowScale.Scale = 0
-
-local dropShadow = Instance.new("ImageLabel", shadowContainer)
-dropShadow.Name = "DropShadow"
+-- Perfect Drop Shadow
+local dropShadow = Instance.new("ImageLabel", mainWrapper)
 dropShadow.Size = UDim2.new(1, 46, 1, 46)
 dropShadow.Position = UDim2.fromScale(0.5, 0.5)
 dropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
 dropShadow.BackgroundTransparency = 1
 dropShadow.Image = "rbxassetid://6014261993"
 dropShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-dropShadow.ImageTransparency = 0.4
+dropShadow.ImageTransparency = 0.3
 dropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
 dropShadow.ScaleType = Enum.ScaleType.Slice
-dropShadow.ZIndex = 4
+dropShadow.ZIndex = 2
 
--- 🔥 TRUE GLASSMORPHISM MAIN BACKGROUND 🔥
-local mainFrame = Instance.new("Frame", gui)
-mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-mainFrame.Position = UDim2.fromScale(0.5, 0.5)
-mainFrame.Size = UDim2.new(0, 280, 0, 410)
-mainFrame.BackgroundColor3 = Color3.fromRGB(20, 25, 35) -- Original perfect glass color
-mainFrame.BackgroundTransparency = 0.35 -- Original perfect glass transparency
+-- 🔥 REAL GLASS FRAME 🔥
+local mainFrame = Instance.new("Frame", mainWrapper)
+mainFrame.Size = UDim2.fromScale(1, 1)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 25, 35) -- Exact Premium Frosted Glass Tint
+mainFrame.BackgroundTransparency = 0.25 -- Smooth Blur Feel
 mainFrame.BorderSizePixel = 0
-mainFrame.ClipsDescendants = true -- NATIVE CLIPPING RESTORED! NO MORE SPILLING!
-mainFrame.Active = true
-mainFrame.Selectable = true
+mainFrame.ClipsDescendants = true -- Perfectly clips all scrolling contents inside!
 mainFrame.ZIndex = 5
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14) 
 
-local mainFrameCorner = Instance.new("UICorner", mainFrame)
-mainFrameCorner.CornerRadius = UDim.new(0, 14) 
+-- Polished White Edge Glass Light 
+local glassStroke = Instance.new("UIStroke", mainFrame)
+glassStroke.Color = Color3.new(1, 1, 1)
+glassStroke.Transparency = 0.75
+glassStroke.Thickness = 1.2
+local strokeGrad = Instance.new("UIGradient", glassStroke)
+strokeGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
+    ColorSequenceKeypoint.new(0.5, Color3.new(0.3, 0.3, 0.3)),
+    ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1))
+})
 
--- Subtle Inner Edge Glow for Glass
-local innerGlassStroke = Instance.new("UIStroke", mainFrame)
-innerGlassStroke.Color = Color3.new(1, 1, 1)
-innerGlassStroke.Transparency = 0.85
-innerGlassStroke.Thickness = 1.2
-innerGlassStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-
--- Original Glass Reflection
-local glassReflection = Instance.new("Frame", mainFrame)
-glassReflection.Size = UDim2.fromScale(1.5, 1.5)
-glassReflection.Position = UDim2.fromScale(-1, -0.5)
-glassReflection.Rotation = 35
-glassReflection.BackgroundTransparency = 0.8 
-glassReflection.BackgroundColor3 = Color3.new(1, 1, 1)
-glassReflection.BorderSizePixel = 0
-glassReflection.ZIndex = 19
-local glassGrad = Instance.new("UIGradient", glassReflection)
-glassGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(1,1,1)), ColorSequenceKeypoint.new(0.5, Color3.new(1,1,1)), ColorSequenceKeypoint.new(1, Color3.new(1,1,1))})
-glassGrad.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0.9), NumberSequenceKeypoint.new(1, 1)})
-
-mainFrame:GetPropertyChangedSignal("Position"):Connect(function() 
-    aura.Position = mainFrame.Position 
-    shadowContainer.Position = mainFrame.Position -- Shadow ab sath move hoga
-end)
-
+-- Ambient Inner Glow for Depth
 local bgGradient = Instance.new("UIGradient", mainFrame)
 bgGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(14, 18, 28)), 
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(28, 35, 48)), 
     ColorSequenceKeypoint.new(0.5, Colors.Background), 
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(14, 18, 28))
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(28, 35, 48))
 })
 bgGradient.Rotation = -45
 
-local mainScale = Instance.new("UIScale", mainFrame)
-mainScale.Scale = 0
-
+-- Original Scanlines Effect
 local scanlines = Instance.new("ImageLabel", mainFrame)
 scanlines.Size = UDim2.new(1, 0, 2, 0) 
 scanlines.Position = UDim2.fromScale(0, -1)
@@ -681,17 +663,14 @@ scanlines.BackgroundTransparency = 1
 scanlines.Image = "rbxassetid://7186136106" 
 scanlines.ImageColor3 = Colors.Primary
 scanlines.ImageTransparency = 0.95
-scanlines.ZIndex = 4 
+scanlines.ZIndex = 6
 scanlines.TileSize = UDim2.new(0, 100, 0, 4)
 
-TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-TweenService:Create(shadowScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.35}):Play()
-TweenService:Create(innerGlassStroke, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Transparency = 0.85}):Play()
-TweenService:Create(auraScale, TweenInfo.new(0.9, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1}):Play()
+TweenService:Create(wrapperScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
+TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0.25}):Play()
 TweenService:Create(aura, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.5}):Play()
 
--- HEADER
+-- HEADER (Inside mainFrame)
 local header = Instance.new("Frame", mainFrame)
 header.Size = UDim2.new(1, 0, 0, 50)
 header.BackgroundTransparency = 1
@@ -908,7 +887,7 @@ local function animateWaterfall(container)
 end
 
 -- =========================================================
--- MAIN SCROLL LIST
+-- MAIN SCROLL LIST (Inside mainFrame)
 -- =========================================================
 local mainList = Instance.new("ScrollingFrame", mainFrame)
 mainList.Size = UDim2.new(1, -24, 1, -136); mainList.Position = UDim2.fromOffset(12, 56)
@@ -930,7 +909,7 @@ local function createMainBtn(text, isMenuOpener)
     local btn = Instance.new("TextButton", mainList)
     btn.Size = UDim2.new(1, 0, 0, 42)
     btn.BackgroundColor3 = Colors.Surface
-    btn.BackgroundTransparency = 0.45 -- More transparent for glass look
+    btn.BackgroundTransparency = 0.45 
     btn.Text = "   " .. text
     btn.TextColor3 = Colors.Text
     btn.Font = Enum.Font.GothamBold
@@ -971,7 +950,7 @@ local function createMainBtn(text, isMenuOpener)
 end
 
 -- =========================================================
--- 👥 TARGET SELECTOR SUBMENU
+-- 👥 TARGET SELECTOR SUBMENU (Inside mainFrame)
 -- =========================================================
 local targetMenu = Instance.new("Frame", mainFrame)
 targetMenu.Size = UDim2.fromScale(1, 1); targetMenu.Position = UDim2.fromScale(1.2, 0); targetMenu.BackgroundColor3 = Colors.Background; targetMenu.BackgroundTransparency = 0.05; targetMenu.ZIndex = 20
@@ -1281,7 +1260,7 @@ end)
 
 stopBtn.MouseButton1Click:Connect(function() stopBang(); sendNotif("⏹ HALTED", "Bang Engine Terminated.") end)
 
--- 🔥 3D KINETIC DRAG LOGIC
+-- 🔥 3D KINETIC DRAG LOGIC (Now targeting mainWrapper)
 local function makeDraggable(frame, handle, ghostAura, isOrb)
     local dragging = false
     local dragStart, startPos, targetPos, velocity = nil, nil, frame.Position, Vector2.new(0, 0)
@@ -1340,17 +1319,11 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
                     TweenService:Create(openBtnScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play()
                     task.wait(0.25)
                     openBtnContainer.Visible = false
-                    mainFrame.Visible = true
-                    aura.Visible = true
-                    shadowContainer.Visible = true
+                    mainWrapper.Visible = true
                     
-                    mainScale.Scale = 0.8
-                    shadowScale.Scale = 0.8
-                    auraScale.Scale = 0.8
-                    TweenService:Create(mainScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-                    TweenService:Create(shadowScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-                    TweenService:Create(auraScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
-                    TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.35}):Play()
+                    wrapperScale.Scale = 0.8
+                    TweenService:Create(wrapperScale, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play()
+                    TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = 0.25}):Play()
                     TweenService:Create(aura, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0.5}):Play()
                     animateWaterfall(mainList)
                 end
@@ -1369,8 +1342,8 @@ local function makeDraggable(frame, handle, ghostAura, isOrb)
     end)
 end
 
-makeDraggable(mainFrame, header, aura, false) 
-makeDraggable(mainFrame, mainFrame, aura, false)
+makeDraggable(mainWrapper, header, nil, false) 
+makeDraggable(mainWrapper, mainFrame, nil, false)
 makeDraggable(openBtnContainer, openBtn, nil, true)
 
 -- ORB LOGIC, ANIMATIONS & SONAR
@@ -1379,20 +1352,18 @@ local sonarTimer = 0
 RunService.RenderStepped:Connect(function(dt)
     if _G.TXR_BangInstance ~= currentExecutionID or not gui.Parent then return end
     tTime = tTime + dt
-    if mainFrame.Visible then
+    if mainWrapper.Visible then
         if bgGradient then bgGradient.Rotation = ((tTime * 40)/2) - 45 end
         local breath = (math.sin(tTime * 3) + 1) / 2 
         
-        -- Original Aura restored completely
-        aura.ImageTransparency = 0.5 + (breath * 0.1)
-        auraScale.Scale = 0.85 + (breath * 0.02)
+        -- Smooth glow inside strict boundaries
+        aura.ImageTransparency = 0.4 + (breath * 0.15)
+        
+        -- Dynamic glass edges
+        strokeGrad.Rotation = (tTime * 50) % 360
         
         titleGrad.Offset = Vector2.new(math.sin(tTime * 2) * 0.3, 0)
         scanlines.Position = UDim2.new(0, 0, (tTime * 0.05) % 1 - 1, 0)
-        
-        if glassReflection and glassGrad then
-            glassGrad.Offset = Vector2.new(0, math.sin(tTime * 1.5) * 0.8)
-        end
     end
     
     if openBtnContainer.Visible then
@@ -1469,13 +1440,11 @@ openBtn.MouseButton1Down:Connect(function() TweenService:Create(openBtnScale, Tw
 openBtn.MouseButton1Up:Connect(function() TweenService:Create(openBtnScale, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.2), {Scale = 1.05}):Play() end)
 
 minimizeBtn.MouseButton1Click:Connect(function()
-    TweenService:Create(mainScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play()
-    TweenService:Create(shadowScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play()
-    TweenService:Create(auraScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play()
+    TweenService:Create(wrapperScale, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play()
     TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
     TweenService:Create(aura, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
     task.wait(0.4)
-    mainFrame.Visible = false; aura.Visible = false; shadowContainer.Visible = false; openBtnContainer.Visible = true; openBtnScale.Scale = 0
+    mainWrapper.Visible = false; openBtnContainer.Visible = true; openBtnScale.Scale = 0
     TweenService:Create(openBtnScale, TweenInfo.new(0.6, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Scale = 1}):Play() 
 end)
 
