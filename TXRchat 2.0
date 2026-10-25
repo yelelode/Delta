@@ -604,13 +604,21 @@ mainFrame.Size = UDim2.new(0, 280, 0, 410)
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 25, 35) -- Brighter base for glass
 mainFrame.BackgroundTransparency = 0.35 -- Perfect frosted transparency
 mainFrame.BorderSizePixel = 0
-mainFrame.ClipsDescendants = true
+mainFrame.ClipsDescendants = false -- FIX: Set to false taaki DropShadow round dikhe aur sharp box mein cut na ho
 mainFrame.Active = true
 mainFrame.Selectable = true
 mainFrame.ZIndex = 5
 
 local mainFrameCorner = Instance.new("UICorner", mainFrame)
 mainFrameCorner.CornerRadius = UDim.new(0, 14) 
+
+-- FIX CONTAINER: Naya invisible frame jo internal items ko bahar nikalne se rokega, smooth corners ke sath
+local innerClipper = Instance.new("Frame", mainFrame)
+innerClipper.Size = UDim2.fromScale(1, 1)
+innerClipper.BackgroundTransparency = 1
+innerClipper.ClipsDescendants = true
+innerClipper.ZIndex = 5
+Instance.new("UICorner", innerClipper).CornerRadius = UDim.new(0, 14)
 
 -- Subtle Inner Edge Glow for Glass
 local innerGlassStroke = Instance.new("UIStroke", mainFrame)
@@ -633,7 +641,7 @@ dropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
 dropShadow.ScaleType = Enum.ScaleType.Slice
 dropShadow.ZIndex = mainFrame.ZIndex - 1
 
-local glassReflection = Instance.new("Frame", mainFrame)
+local glassReflection = Instance.new("Frame", innerClipper) -- Changed to innerClipper
 glassReflection.Size = UDim2.fromScale(1.5, 1.5)
 glassReflection.Position = UDim2.fromScale(-1, -0.5)
 glassReflection.Rotation = 35
@@ -658,7 +666,7 @@ bgGradient.Rotation = -45
 local mainScale = Instance.new("UIScale", mainFrame)
 mainScale.Scale = 0
 
-local scanlines = Instance.new("ImageLabel", mainFrame)
+local scanlines = Instance.new("ImageLabel", innerClipper) -- Changed to innerClipper
 scanlines.Size = UDim2.new(1, 0, 2, 0) 
 scanlines.Position = UDim2.fromScale(0, -1)
 scanlines.BackgroundTransparency = 1
@@ -956,7 +964,7 @@ end
 -- =========================================================
 -- 👥 TARGET SELECTOR SUBMENU
 -- =========================================================
-local targetMenu = Instance.new("Frame", mainFrame)
+local targetMenu = Instance.new("Frame", innerClipper) -- Changed to innerClipper
 targetMenu.Size = UDim2.fromScale(1, 1); targetMenu.Position = UDim2.fromScale(1.2, 0); targetMenu.BackgroundColor3 = Colors.Background; targetMenu.BackgroundTransparency = 0.05; targetMenu.ZIndex = 20
 Instance.new("UICorner", targetMenu).CornerRadius = UDim.new(0, 12)
 
@@ -1361,8 +1369,7 @@ RunService.RenderStepped:Connect(function(dt)
     if _G.TXR_BangInstance ~= currentExecutionID or not gui.Parent then return end
     tTime = tTime + dt
     if mainFrame.Visible then
-        strokeGrad.Rotation = (tTime * 40) % 360
-        bgGradient.Rotation = ((tTime * 40)/2) - 45
+        if bgGradient then bgGradient.Rotation = ((tTime * 40)/2) - 45 end
         local breath = (math.sin(tTime * 3) + 1) / 2 
         aura.ImageTransparency = 0.5 + (breath * 0.1)
         auraScale.Scale = 0.85 + (breath * 0.02)
