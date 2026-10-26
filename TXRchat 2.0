@@ -363,11 +363,20 @@ local Colors = {
     TextDark = Color3.fromRGB(8, 12, 18)
 }
 
-local function crispText(element, transparency)
-    local stroke = Instance.new("UIStroke", element)
-    stroke.Color = Color3.new(0, 0, 0)
-    stroke.Transparency = transparency or 0.65 
-    stroke.Thickness = 1.2
+local function crispText(element, opacity)
+    local shadow = Instance.new("TextLabel", element)
+    shadow.Size = UDim2.fromScale(1, 1)
+    shadow.Position = UDim2.fromOffset(1, 1)
+    shadow.BackgroundTransparency = 1
+    shadow.Text = element.Text
+    shadow.TextColor3 = Color3.new(0, 0, 0)
+    shadow.TextTransparency = opacity or 0.5
+    shadow.Font = element.Font
+    shadow.TextSize = element.TextSize
+    shadow.TextXAlignment = element.TextXAlignment
+    shadow.TextYAlignment = element.TextYAlignment
+    shadow.ZIndex = element.ZIndex - 1
+    element:GetPropertyChangedSignal("Text"):Connect(function() shadow.Text = element.Text end)
 end
 
 local function clickFlash(btn)
@@ -449,8 +458,10 @@ local function stopBang()
         if LP.Character and LP.Character:FindFirstChild("Humanoid") then
             LP.Character.Humanoid.PlatformStand = false
             LP.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
-            Camera.CameraType = Enum.CameraType.Custom
-            Camera.CameraSubject = LP.Character.Humanoid
+            if not SpectateFaceCam then
+                Camera.CameraType = Enum.CameraType.Custom
+                Camera.CameraSubject = LP.Character.Humanoid
+            end
         end
     end)
     activeMode = nil
@@ -547,14 +558,6 @@ startBang = function(mode)
         if not tHrp or not tHum or tHum.Health <= 0 or not currentHRP or not tHead then return end
 
         spoofNetwork(currentHRP)
-
-        -- 👁️ BRUTE-FORCE SPECTATE FIX (Locks every frame natively to Humanoid)
-        if SpectateFaceCam and tHum then
-            Camera.CameraType = Enum.CameraType.Custom
-            if Camera.CameraSubject ~= tHum then 
-                Camera.CameraSubject = tHum 
-            end
-        end
 
         local t = os.clock() * BangSpeed
         local wave = (math.sin(t) + 1) / 2
@@ -742,7 +745,7 @@ local headerTitle = Instance.new("TextLabel", header)
 headerTitle.Size = UDim2.new(1, -125, 1, 0)
 headerTitle.Position = UDim2.fromOffset(16, 0)
 headerTitle.BackgroundTransparency = 1
-headerTitle.Text = "TXR HUB"
+headerTitle.Text = "TXR BANG"
 headerTitle.TextColor3 = Color3.new(1,1,1)
 headerTitle.Font = Enum.Font.GothamBlack
 headerTitle.TextSize = 16
@@ -755,26 +758,9 @@ titleGrad.Color = ColorSequence.new({
 })
 crispText(headerTitle, 0.5) 
 
--- Dynamic Header Glow
-local headerGlow = Instance.new("TextLabel", header)
-headerGlow.Size = headerTitle.Size
-headerGlow.Position = headerTitle.Position
-headerGlow.BackgroundTransparency = 1
-headerGlow.Text = "TXR HUB"
-headerGlow.TextColor3 = Colors.Primary
-headerGlow.Font = Enum.Font.GothamBlack
-headerGlow.TextSize = 16
-headerGlow.TextXAlignment = Enum.TextXAlignment.Left
-headerGlow.ZIndex = 10
-headerGlow.TextTransparency = 0.6
-local headerGlowStroke = Instance.new("UIStroke", headerGlow)
-headerGlowStroke.Color = Colors.Primary
-headerGlowStroke.Thickness = 2.5
-headerGlowStroke.Transparency = 0.8
-
 local proBadge = Instance.new("Frame", header)
 proBadge.Size = UDim2.fromOffset(38, 16)
-proBadge.Position = UDim2.new(0, 95, 0.5, -8)
+proBadge.Position = UDim2.new(0, 102, 0.5, -8)
 proBadge.BackgroundColor3 = Colors.Primary
 proBadge.ZIndex = 11
 Instance.new("UICorner", proBadge).CornerRadius = UDim.new(0, 4)
@@ -1168,7 +1154,7 @@ swipeBtn.InputEnded:Connect(function(input)
 end)
 
 -- =========================================================
--- 🔥 LINKED TOGGLES
+-- 🔥 LINKED TOGGLES (NATIVE SPECTATE ADDED)
 -- =========================================================
 local function createToggle(name, callback)
     local btn = createMainBtn(name, false)
@@ -1234,6 +1220,26 @@ setSpectateState = createToggle("👁️ Spectate Camera", function(v)
         if TargetHum then
             Camera.CameraType = Enum.CameraType.Custom
             Camera.CameraSubject = TargetHum
+        else
+            sendNotif("⚠️ ERROR", "Select Target First / Target Not Found")
+            setSpectateState(false)
+        end
+    end
+end)
+
+-- Continuous native spectate lock based on V18.26 logic, adapted for PlayerSelected
+RunService.RenderStepped:Connect(function()
+    if SpectateFaceCam then
+        local targetChar = PlayerSelected and PlayerSelected.Character
+        local targetHum = targetChar and targetChar:FindFirstChild("Humanoid")
+        if targetHum and Camera.CameraSubject ~= targetHum then
+            Camera.CameraType = Enum.CameraType.Custom
+            Camera.CameraSubject = targetHum
+        elseif not targetHum then
+            Camera.CameraType = Enum.CameraType.Custom
+            if LP.Character and LP.Character:FindFirstChild("Humanoid") then
+                Camera.CameraSubject = LP.Character.Humanoid
+            end
         end
     end
 end)
@@ -1450,7 +1456,6 @@ RunService.RenderStepped:Connect(function(dt)
         -- Dynamic glass edges
         strokeGrad.Rotation = (tTime * 50) % 360
         titleGrad.Offset = Vector2.new(math.sin(tTime * 2) * 0.3, 0)
-        headerGlowStroke.Transparency = 0.6 + (math.sin(tTime * 4) * 0.2)
         scanlines.Position = UDim2.new(0, 0, (tTime * 0.05) % 1 - 1, 0)
 
         -- Sweeping shiny glass reflection 
