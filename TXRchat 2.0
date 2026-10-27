@@ -604,7 +604,7 @@ aura.ZIndex = 1
 local auraScale = Instance.new("UIScale", aura)
 auraScale.Scale = 0
 
--- 🔥 2. SHADOW LAYER 🔥
+-- 🔥 2. SHADOW LAYER (IMPROVED 3D DEPTH) 🔥
 local shadowContainer = Instance.new("Frame", gui)
 shadowContainer.Name = "ShadowContainer"
 shadowContainer.Size = UDim2.new(0, 280, 0, 410)
@@ -617,29 +617,47 @@ local shadowScale = Instance.new("UIScale", shadowContainer)
 shadowScale.Scale = 0
 
 local dropShadow = Instance.new("ImageLabel", shadowContainer)
-dropShadow.Size = UDim2.new(1, 46, 1, 46)
+dropShadow.Size = UDim2.new(1, 60, 1, 60)
 dropShadow.Position = UDim2.fromScale(0.5, 0.5)
 dropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
 dropShadow.BackgroundTransparency = 1
 dropShadow.Image = "rbxassetid://6014261993"
 dropShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-dropShadow.ImageTransparency = 0.40 
+dropShadow.ImageTransparency = 0.50 
 dropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
 dropShadow.ScaleType = Enum.ScaleType.Slice
 
--- 🔥 3. MAIN GLASS FRAME (LIVING GLASS DEEP POLISH) 🔥
+-- 🔥 3. MAIN GLASS FRAME (ULTRA POLISHED) 🔥
 local mainFrame = Instance.new("Frame", gui)
 mainFrame.Size = UDim2.new(0, 280, 0, 410)
 mainFrame.Position = UDim2.fromScale(0.5, 0.5)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.BackgroundColor3 = Colors.Background
-mainFrame.BackgroundTransparency = 0.45 
+mainFrame.BackgroundTransparency = 0.50 -- Enhanced transparency
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true 
 mainFrame.Active = true
 mainFrame.Selectable = true
 mainFrame.ZIndex = 5
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14) 
+
+-- Top Edge Lighting Highlight (New Depth Polish)
+local topHighlight = Instance.new("Frame", mainFrame)
+topHighlight.Size = UDim2.new(1, 0, 0, 1.5)
+topHighlight.Position = UDim2.new(0, 0, 0, 0)
+topHighlight.BorderSizePixel = 0
+topHighlight.BackgroundColor3 = Color3.new(1, 1, 1)
+topHighlight.ZIndex = 25
+local thCorner = Instance.new("UICorner", topHighlight)
+thCorner.CornerRadius = UDim.new(0, 14)
+local thGrad = Instance.new("UIGradient", topHighlight)
+thGrad.Transparency = NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 1),
+    NumberSequenceKeypoint.new(0.2, 0.6),
+    NumberSequenceKeypoint.new(0.5, 0.4),
+    NumberSequenceKeypoint.new(0.8, 0.6),
+    NumberSequenceKeypoint.new(1, 1)
+})
 
 local glassStroke = Instance.new("UIStroke", mainFrame)
 glassStroke.Color = Color3.new(1, 1, 1)
@@ -656,14 +674,14 @@ strokeGrad.Color = ColorSequence.new({
 })
 strokeGrad.Transparency = NumberSequence.new({
     NumberSequenceKeypoint.new(0, 0),
-    NumberSequenceKeypoint.new(0.5, 0.85),
+    NumberSequenceKeypoint.new(0.5, 0.75),
     NumberSequenceKeypoint.new(1, 0)
 })
 
 local bgGradient = Instance.new("UIGradient", mainFrame)
 bgGradient.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 25, 40)), 
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 0, 0)), 
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(10, 15, 25)), -- Tinted glass instead of void black
     ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 25, 40))
 })
 bgGradient.Rotation = -45
@@ -676,11 +694,11 @@ end)
 local mainScale = Instance.new("UIScale", mainFrame)
 mainScale.Scale = 0
 
--- 🔥 SWEEPING DIAGONAL SHINE (POLISHED INFINITE LOOP) 🔥
+-- 🔥 SWEEPING DIAGONAL SHINE (SMOOTHER & WIDER) 🔥
 local glassReflection = Instance.new("Frame", mainFrame)
-glassReflection.Size = UDim2.fromScale(1.5, 1.5)
-glassReflection.Position = UDim2.fromScale(-1, -0.5)
-glassReflection.Rotation = 35
+glassReflection.Size = UDim2.fromScale(1.8, 1.8)
+glassReflection.Position = UDim2.fromScale(-1.2, -0.5)
+glassReflection.Rotation = 30
 glassReflection.BackgroundTransparency = 0.3 
 glassReflection.BackgroundColor3 = Color3.new(1, 1, 1)
 glassReflection.BorderSizePixel = 0
@@ -689,17 +707,17 @@ local glassGrad = Instance.new("UIGradient", glassReflection)
 glassGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(1,1,1)), ColorSequenceKeypoint.new(0.5, Color3.new(1,1,1)), ColorSequenceKeypoint.new(1, Color3.new(1,1,1))})
 glassGrad.Transparency = NumberSequence.new({
     NumberSequenceKeypoint.new(0, 1), 
-    NumberSequenceKeypoint.new(0.4, 0.8), 
-    NumberSequenceKeypoint.new(0.5, 0.65), 
-    NumberSequenceKeypoint.new(0.6, 0.8), 
+    NumberSequenceKeypoint.new(0.4, 0.85), 
+    NumberSequenceKeypoint.new(0.5, 0.6), 
+    NumberSequenceKeypoint.new(0.6, 0.85), 
     NumberSequenceKeypoint.new(1, 1)
 })
 
 -- Continuous shine loop injection
 task.spawn(function()
     while task.wait(3.5) and _G.TXR_BangInstance == currentExecutionID do
-        glassReflection.Position = UDim2.fromScale(-1, -0.5)
-        TweenService:Create(glassReflection, TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Position = UDim2.fromScale(1.5, 1.5)}):Play()
+        glassReflection.Position = UDim2.fromScale(-1.2, -0.5)
+        TweenService:Create(glassReflection, TweenInfo.new(2.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Position = UDim2.fromScale(1.5, 1.5)}):Play()
     end
 end)
 
@@ -1438,7 +1456,7 @@ RunService.RenderStepped:Connect(function(dt)
         
         aura.ImageTransparency = 0.6 + (breath * 0.1)
         auraScale.Scale = mainScale.Scale
-        mainFrame.BackgroundTransparency = 0.40 + (breath * 0.08) 
+        mainFrame.BackgroundTransparency = 0.50 + (breath * 0.08) 
 
         -- Dynamic glass edges
         strokeGrad.Rotation = (tTime * 50) % 360
